@@ -1,3 +1,3 @@
 # Fish commands
 
-A plugin that adds commands to the server.
+A plugin that adds sudo commands to the server.

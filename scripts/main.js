@@ -9,6 +9,8 @@ const MOD_PREFEIX = '[black]<[green]M[black]>';
 const AFK_PREFIX = '[orange] AFK  | [white]';
 const MUTED_PREFIX = '[white](muted)';
 
+let serverIp = '';
+
 const menuStuff = {
   listeners: {},
   flattenedNonStaffPlayers: [],
@@ -16,6 +18,7 @@ const menuStuff = {
 };
 
 let ohnoSpawnOverride = false;
+let serverCommands;
 
 const save = () => {
   const newPlayers = {};
@@ -419,6 +422,9 @@ let ActionType;
 Events.on(ServerLoadEvent, (e) => {
   ActionType = Packages.mindustry.net.Administration.ActionType;
   const clientCommands = Vars.netServer.clientCommands;
+  serverCommands = Core.app.listeners.find(
+    (l) => l instanceof Packages.mindustry.server.ServerControl
+  ).handler;
   const runner = (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method });
 
   const stringified = Core.settings.get('fish', '');
@@ -1296,16 +1302,50 @@ Events.on(ServerLoadEvent, (e) => {
     })
   );
 
-  // test
+  // save
+  clientCommands.register(
+    'save',
+    'saves the game state.',
+    runner((args, realP) => {
+      const p = players[realP.uuid()];
+      if (!p.admin && !p.mod) {
+        realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
+        return;
+      }
+
+      save();
+      realP.sendMessage('[green]Game saved.');
+      return;
+    })
+  );
+
+  // Load
   // clientCommands.register(
-  //   'test',
-  //   'test',
+  //   'load',
+  //   'loads the most recent game state.',
   //   runner((args, realP) => {
-  //     const temp = Groups.unit.find((u) => u.id === ohnos[0]);
-  //     utils.keys(this);
-  //     // temp.canShoot = true;
-  //     // utils.log(temp.apply);
-  //     temp.apply(StatusEffects.disarmed, 10000);
+  //     const p = players[realP.uuid()];
+  //     if (!p.admin && !p.mod) {
+  //       realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
+  //       return;
+  //     }
+
+  //     if (serverIp === '') {
+  //       realP.sendMessage('[scarlet]⚠ [yellow]There was an issue loading the last save.');
+  //       return;
+  //     }
+
+  //     const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+
+  //     Core.app.post(() => {
+  //       SaveIO.load(file);
+  //       Vars.state.set(GameState.State.playing);
+
+  //       Groups.player.forEach((player) => {
+  //         // Broken ???
+  //         Call.connect(player.con, serverIp, '6567');
+  //       });
+  //     });
   //   })
   // );
 
@@ -1333,6 +1373,11 @@ Events.on(ServerLoadEvent, (e) => {
   );
 
   Core.settings.remove('lastRestart');
+
+  const getIp = Http.get('https://api.ipify.org?format=js');
+  getIp.submit((r) => {
+    serverIp = r.getResultAsString();
+  });
 });
 
 // Timers /////////////////////////////////////////
