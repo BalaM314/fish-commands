@@ -11,6 +11,8 @@ const MUTED_PREFIX = '[white](muted)';
 
 let serverIp = '';
 
+const bannedWords = ['nigger', 'kill yourself', 'kill urself', 'cock', 'cock sucker'];
+
 const menuStuff = {
   listeners: {},
   flattenedNonStaffPlayers: [],
@@ -43,13 +45,16 @@ const clean = (con) => {
     10
   );
   Vars.world.tiles.eachTile((t) => {
-    if ([107, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125].includes(t.block().id)) {
+    if ([107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125].includes(t.block().id)) {
       t.setNet(Blocks.air, Team.sharded, 0);
     }
   });
 };
 
-const tp = (plr, p2) => plr.unit().set(p2.unit().x, p2.unit().y);
+const tp = (plr, p2) => {
+  plr.unit().set(p2.unit().x, p2.unit().y);
+  Call.setCameraPosition(plr.con, plr.unit().x, plr.unit().y);
+};
 
 const plrByName = (plr) => {
   const newPlr = plr.toLowerCase();
@@ -177,10 +182,27 @@ const getName = (realP) => {
   return p.name;
 };
 
+const messageStaff = (name, msg) => {
+  const message = `[gray]<[cyan]staff[gray]>[white]` + name + `[green]: [cyan]` + msg;
+  Groups.player.forEach((pl) => {
+    if (pl.admin) {
+      pl.sendMessage(message);
+      return;
+    }
+    const p = players[pl.uuid()];
+    if (!p.mod) return;
+    pl.sendMessage(message);
+    return;
+  });
+};
+
 const createPlayer = (player) => {
   players[player.uuid()] = {
     name: player.name,
     muted: false,
+    mod: false,
+    admin: player.admin,
+    watch: false,
   };
 };
 
@@ -440,7 +462,9 @@ Events.on(ServerLoadEvent, (e) => {
       return null;
     }
 
-    return text;
+    return bannedWords.some((bw) => text.includes(bw))
+      ? 'I cant wait to get home and kiss my dad on the lips.'
+      : text;
   });
 
   // Action filters
@@ -676,6 +700,23 @@ Events.on(ServerLoadEvent, (e) => {
       options.push(['cancel']);
 
       Call.menu(realP.con, menuStuff.listeners.mute, title, message, options);
+    })
+  );
+
+  // tp
+  clientCommands.register(
+    'tp',
+    '<player>',
+    'teleport to another player.',
+    runner((args, realP) => {
+      const otherPlr = plrByName(args[0]);
+      if (!otherPlr) {
+        realP.sendMessage(
+          '[scarlet]⚠ [yellow]No player found containing "' + args[0] + '[yellow].'
+        );
+        return;
+      }
+      tp(realP, otherPlr);
     })
   );
 
@@ -1085,7 +1126,7 @@ Events.on(ServerLoadEvent, (e) => {
   // Discord
   clientCommands.register(
     'discord',
-    'puts server/discord details into a message block below you.',
+    'takes you to our discord :)',
     runner((args, realP) => {
       Call.openURI(realP.con, 'https://discord.gg/VpzcYSQ33Y');
     })
@@ -1201,7 +1242,7 @@ Events.on(ServerLoadEvent, (e) => {
 
         Core.app.post(() => {
           SaveIO.save(file);
-          realP.sendMessage('[green]Game saved. [scarlet]Server restarting in 5 seconds!');
+          Call.sendMessage('[green]Game saved. [scarlet]Server restarting in 5 seconds!');
           Timer.schedule(() => {
             Core.app.exit();
           }, 5);
@@ -1252,14 +1293,104 @@ Events.on(ServerLoadEvent, (e) => {
   // trail
   clientCommands.register(
     'trail',
-    'add/remove your trail.',
+    '[type] [color/#hex/r,g,b]',
+    'Use command to see options and toggle trail on/off.',
     runner((args, realP) => {
-      if (trails.includes(realP.uuid())) {
-        trails = trails.filter((id) => id !== realP.uuid());
+      if (!args[0]) {
+        if (trails.includes(realP.uuid())) {
+          trails = trails.filter((id) => id !== realP.uuid());
+        }
+        const options = [
+          '1 - fluxVapor (flowing smoke, long lasting)',
+          '2 - overclocked (diamonds)',
+          '3 - overdriven (squares)',
+          '4 - shieldBreak (smol)',
+          '5 - upgradeCoreBloom (square, long lasting, only orange)',
+          '6 - electrified (tiny spiratic diamonds, but only green)',
+          '7 - unitDust (same as above but round, and can change colors)',
+          '[white]Usage: [orange]/trail [lightgrey]<type> [color/#hex/r,g,b]',
+        ];
+        realP.sendMessage(
+          '[green]Trail turned off. Available types:[yellow]\n' + options.join('\n')
+        );
         return;
-      }
+      } else {
+        const p = players[realP.uuid()];
 
-      trails.push(realP.uuid());
+        const types = {
+          1: 'fluxVapor',
+          2: 'overclocked',
+          3: 'overdriven',
+          4: 'shieldBreak',
+          5: 'upgradeCoreBloom',
+          6: 'electrified',
+          7: 'unitDust',
+        };
+
+        if (!Object.keys(types).includes(args[0])) {
+          realP.sendMessage('"' + args[0] + '" is not an available type.');
+          return;
+        }
+
+        if (!args[1]) {
+          p.trail = {
+            type: types[args[0]],
+            color: Color['white'],
+          };
+          trails.push(realP.uuid());
+        } else {
+          // typeof Color['teal'] === typeof Color['pink'] // check if the value passed is a valid "color" string
+          // new Color(Color.abgr(255, 0, 0, 255))
+          // Color.valueOf('696969')
+          const valid = typeof Color['pink'];
+
+          const typedColor = args[1];
+
+          try {
+            if (typedColor.includes(',')) {
+              let formattedColor = typedColor.split(',');
+              const col = {
+                r: Number(formattedColor[0]),
+                g: Number(formattedColor[1]),
+                b: Number(formattedColor[2]),
+                a: 255,
+              };
+
+              p.trail = {
+                type: types[args[0]],
+                color: new Color(Color.abgr(col.a, col.b, col.g, col.r)),
+              };
+            } else if (typedColor.includes('#')) {
+              p.trail = {
+                type: types[args[0]],
+                color: Color.valueOf(typedColor),
+              };
+            } else if (typeof Color[typedColor] === valid) {
+              p.trail = {
+                type: types[args[0]],
+                color: Color[typedColor],
+              };
+            } else {
+              realP.sendMessage(
+                '[scarlet]Sorry, "' +
+                  args[1] +
+                  '" is not a valid color.\n[yellow]Color can be in the following formats:\n[pink]pink [white]| [gray]#696969 [white]| 255,0,0.'
+              );
+              return;
+            }
+
+            trails.push(realP.uuid());
+            return;
+          } catch (e) {
+            realP.sendMessage(
+              '[scarlet]Sorry, "' +
+                args[1] +
+                '" is not a valid color.\nColor can be in the following formats:\npink | #696969 | 255,0,0.'
+            );
+            return;
+          }
+        }
+      }
 
       return;
     })
@@ -1319,36 +1450,6 @@ Events.on(ServerLoadEvent, (e) => {
     })
   );
 
-  // Load
-  // clientCommands.register(
-  //   'load',
-  //   'loads the most recent game state.',
-  //   runner((args, realP) => {
-  //     const p = players[realP.uuid()];
-  //     if (!p.admin && !p.mod) {
-  //       realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
-  //       return;
-  //     }
-
-  //     if (serverIp === '') {
-  //       realP.sendMessage('[scarlet]⚠ [yellow]There was an issue loading the last save.');
-  //       return;
-  //     }
-
-  //     const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-
-  //     Core.app.post(() => {
-  //       SaveIO.load(file);
-  //       Vars.state.set(GameState.State.playing);
-
-  //       Groups.player.forEach((player) => {
-  //         // Broken ???
-  //         Call.connect(player.con, serverIp, '6567');
-  //       });
-  //     });
-  //   })
-  // );
-
   // wave
   clientCommands.register(
     'wave',
@@ -1369,6 +1470,73 @@ Events.on(ServerLoadEvent, (e) => {
         realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
         return;
       }
+    })
+  );
+
+  // clientCommands.register(
+  //   'test',
+  //   'saves the game state.',
+  //   runner((args, realP) => {
+  //     // typeof Color['teal'] === typeof Color['pink'] // check if the value passed is a valid "color" string
+  //     // new Color(Color.abgr(255, 0, 0, 255))
+  //     // Color.valueOf('696969')
+  //     // Call.effect(Fx.fluxVapor, realP.x, realP.y, 0, new Color(Color.abgr(255, 0, 0, 255)));
+  //   })
+  // );
+
+  // staff chat
+  clientCommands.register(
+    's',
+    '<message...>',
+    'sends a message only to staff.',
+    runner((args, realP) => {
+      messageStaff(realP.name, args[0]);
+      return;
+    })
+  );
+
+  // watch
+  clientCommands.register(
+    'watch',
+    '[player]',
+    'watch a player.',
+    runner((args, realP) => {
+      const p = players[realP.uuid()];
+      if (p.watch) {
+        p.watch = false;
+        return;
+      }
+      const target = plrByName(args[0]);
+      if (!target) {
+        realP.sendMessage('[yellow]Player not found.');
+        return;
+      }
+
+      p.watch = true;
+      const stayX = realP.unit().x;
+      const stayY = realP.unit().y;
+
+      const watch = () => {
+        if (p.watch) {
+          // Self.X+(172.5-Self.X)/10
+          Call.setCameraPosition(realP.con, target.unit().x, target.unit().y);
+          realP.unit().set(stayX, stayY);
+          Timer.schedule(
+            () => {
+              watch();
+            },
+            0.1,
+            0.1,
+            0
+          );
+          return;
+        } else {
+          Call.setCameraPosition(realP.con, stayX, stayY);
+          return;
+        }
+      };
+
+      watch();
     })
   );
 
@@ -1413,19 +1581,18 @@ Timer.schedule(
 );
 
 const colors = ['acid', 'pink', 'teal', 'orange', 'purple', 'coral', 'crimson'];
-// autopause
+// trails
 Timer.schedule(
   () => {
-    const ranColor = colors[Math.floor(Math.random() * colors.length)];
-
     trails.forEach((id) => {
-      const p = plrById(id);
-      if (!p) return;
-      Call.effect(Fx.bubble, p.x, p.y, 0, Color[ranColor]);
+      const pl = plrById(id);
+      if (!pl) return;
+      const p = players[pl.uuid()];
+      Call.effect(Fx[p.trail.type], pl.x, pl.y, 0, p.trail.color);
     });
   },
-  10,
-  0.2
+  5,
+  0.15
 );
 
 // Staff online
