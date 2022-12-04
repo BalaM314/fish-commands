@@ -94,6 +94,10 @@ const ohno = (p) => {
     p.sendMessage('[scarlet]⚠[yellow]Sorry, the max number of ohno units has been reached.');
     return;
   }
+  if(Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 8, () -> true) != null){
+    p.sendMessage('[scarlet]⚠[yellow]Too close to an enemy building!');
+    return;
+  }
   const existing = []; // Keep track of spawned units to avoid changing wrong ones
 
   Groups.unit.each((u) => {
