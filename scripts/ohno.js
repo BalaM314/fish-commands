@@ -5,7 +5,7 @@ const totalOhno = () => {
   return ohnos.length;
 };
 
-const canSpawnOhno = (p) => {
+const canSpawnOhno = () => {
   if (ohnoSpawnOverride) {
     return false;
   }
