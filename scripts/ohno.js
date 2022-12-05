@@ -5,7 +5,7 @@ const totalOhno = () => {
   return ohnos.length;
 };
 
-const canSpawnOhno = () => {
+const canSpawnOhno = (p) => {
   if (ohnoSpawnOverride) {
     return false;
   }
@@ -16,6 +16,10 @@ const canSpawnOhno = () => {
 const ohno = (p) => {
   if (!canSpawnOhno()) {
     p.sendMessage('[scarlet]⚠[yellow]Sorry, the max number of ohno units has been reached.');
+    return;
+  }
+  if(Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 8, () -> true) != null){
+    p.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
     return;
   }
   const existing = []; // Keep track of spawned units to avoid changing wrong ones
@@ -35,6 +39,7 @@ const ohno = (p) => {
   );
   targetUnit.type = UnitTypes.alpha; // change the type to make an ohno unit
   targetUnit.apply(StatusEffects.disarmed, 10000);
+  targetUnit.spawnedByCore = true;
   ohnos.push(targetUnit.id); // global for keeping track of how many are spawned
   targetUnit.resetController(); // this gives them mono AI
 };
