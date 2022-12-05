@@ -8,5 +8,5 @@ This started as just a couple simple commands I wanted on my server, and I did n
 
 TODO:
 - [x] Update the repo to latest
-- [ ] Break functions and different events into folders and components
+- [x] Break functions and different events into folders and components
 - [ ] Add comments to explain everything.
