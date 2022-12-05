@@ -18,23 +18,16 @@ const ohno = (p) => {
     p.sendMessage('[scarlet]⚠[yellow]Sorry, the max number of ohno units has been reached.');
     return;
   }
-  const existing = []; // Keep track of spawned units to avoid changing wrong ones
+  if(Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 8, () => true) != null){
+    p.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
+    return;
+  }
 
-  Groups.unit.each((u) => {
-    // loop through all units and save their id
-    if (u.type === UnitTypes.atrax) {
-      existing.push(u.id);
-    }
-  });
-
-  UnitTypes.atrax.spawn(Team.sharded, p.unit().x, p.unit().y); // spawn unit at player's position
-
-  const targetUnit = Groups.unit.find(
-    // get the unit we just spawned
-    (u) => u.type === UnitTypes.atrax && !existing.includes(u.id)
-  );
+  const targetUnit = UnitTypes.atrax.spawn(Team.sharded, p.unit().x, p.unit().y); // spawn unit at player's position
+  
   targetUnit.type = UnitTypes.alpha; // change the type to make an ohno unit
   targetUnit.apply(StatusEffects.disarmed, 10000);
+  targetUnit.spawnedByCore = true; //Disable the death explosion
   ohnos.push(targetUnit.id); // global for keeping track of how many are spawned
   targetUnit.resetController(); // this gives them mono AI
 };
