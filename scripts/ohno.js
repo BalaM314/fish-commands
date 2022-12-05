@@ -18,7 +18,7 @@ const ohno = (p) => {
     p.sendMessage('[scarlet]⚠[yellow]Sorry, the max number of ohno units has been reached.');
     return;
   }
-  if(Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 8, () -> true) != null){
+  if(Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 8, () => true) != null){
     p.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
     return;
   }
