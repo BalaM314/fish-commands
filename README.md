@@ -10,3 +10,4 @@ TODO:
 - [x] Update the repo to latest
 - [x] Break functions and different events into folders and components
 - [ ] Add comments to explain everything.
+- [ ] Update readme with all available commands and features.
