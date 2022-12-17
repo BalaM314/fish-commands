@@ -48,6 +48,11 @@ const setName = (realP) => {
     return;
   }
 
+  if (p.afk) {
+    realP.name = prefix + config.AFK_PREFIX + p.name;
+    return;
+  }
+
   if (realP.admin) {
     p.admin = true;
     realP.name = prefix + config.ADMIN_PREFIX + p.name;

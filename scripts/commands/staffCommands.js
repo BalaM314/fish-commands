@@ -111,7 +111,7 @@ const registerCommands = (clientCommands, runner) => {
         tp.muted = !tp.muted;
 
         realP.sendMessage(foundPlayer.name + '[#48e076] was ' + tp.muted ? 'muted.' : 'unmuted');
-        foundPlayer.name = getName(foundPlayer);
+        players.setName(foundPlayer);
         foundPlayer.sendMessage(
           tp.muted
             ? '[yellow] Hey! You have been muted. You can still use /msg to send a message to someone though.'
@@ -134,7 +134,7 @@ const registerCommands = (clientCommands, runner) => {
       let options = [[]];
       let arrayIndex = 0;
       Groups.player.forEach((pl) => {
-        const pp = players[pl.uuid()];
+        const pp = players.getP(pl);
         if (pp.mod || pp.admin) return;
 
         // TODO - see above todo
@@ -702,6 +702,49 @@ const registerCommands = (clientCommands, runner) => {
       players.setName(targetPlr);
       players.save();
       realP.sendMessage(tp.name + "[green]'s member status set to " + String(tp.member));
+    })
+  );
+
+  // ipban
+  clientCommands.register(
+    'ipban',
+    'Choose a player to ban by ip',
+    runner((args, realP) => {
+      if (!realP.admin) {
+        realP.sendMessage('[yellow]You must be an admin to use this command.');
+        return;
+      }
+
+      menus.menuStuff.flattenedNonStaffPlayers = [];
+      menus.menuStuff.lastOptionIndex = 0;
+
+      const title = 'IP BAN';
+      const message = 'Choose a player to IP ban.';
+      let options = [[]];
+      let arrayIndex = 0;
+      Groups.player.forEach((pl) => {
+        const pp = players.getP(pl);
+        if (pp.mod || pp.admin) return;
+
+        menus.menuStuff.flattenedNonStaffPlayers.push(pl.uuid());
+
+        if (options[arrayIndex].length >= 2) {
+          arrayIndex += 1;
+          menus.menuStuff.lastOptionIndex += 1;
+          options[arrayIndex] = [pl.name];
+          return;
+        } else {
+          menus.menuStuff.lastOptionIndex += 1;
+          options[arrayIndex].push(pl.name);
+          return;
+        }
+      });
+
+      if (options[0].length === 0) options = [];
+
+      options.push(['cancel']);
+
+      Call.menu(realP.con, menus.menuStuff.listeners.ipban, title, message, options);
     })
   );
 };

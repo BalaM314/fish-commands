@@ -90,13 +90,6 @@ Events.on(ServerLoadEvent, (e) => {
   trails.registerCommands(clientCommands, runner);
   membership.registerCommands(clientCommands, runner);
 
-  //test
-  clientCommands.register(
-    'test',
-    'test',
-    runner((args, player) => {})
-  );
-
   Core.settings.remove('lastRestart');
 
   const getIp = Http.get('https://api.ipify.org?format=js');
