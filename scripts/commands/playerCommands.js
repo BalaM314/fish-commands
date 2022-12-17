@@ -184,6 +184,7 @@ const registerCommands = (clientCommands, runner) => {
           'exterminate',
           'label',
           'member',
+          'ipban',
         ],
       };
 
