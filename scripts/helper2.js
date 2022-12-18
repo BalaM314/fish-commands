@@ -39,6 +39,29 @@ const createChuncks = (arr, chunkSize) => {
   return newArr;
 };
 
+const getTimeSinceText = (old) => {
+  const now = Date.now();
+  const timeLeft = now - old;
+
+  const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor(timeLeft / 60000);
+  const seconds = Math.floor((timeLeft % 60000) / 1000);
+
+  let timeSince = '';
+
+  if (hours) {
+    timeSince += '[green]' + hours + ' [lightgray]hrs, ';
+  }
+
+  if (minutes) {
+    timeSince += '[green]' + minutes + ' [lightgray]mins, ';
+  }
+
+  timeSince += '[green]' + seconds + ' [lightgray]secs ago.';
+
+  return timeSince;
+};
+
 const plrByName = (plr) => {
   const newPlr = plr.toLowerCase();
   const realPlayer = Groups.player.find((p) => {
@@ -62,4 +85,5 @@ module.exports = {
   createChuncks: createChuncks,
   plrById: plrById,
   plrByName: plrByName,
+  getTimeSinceText: getTimeSinceText,
 };

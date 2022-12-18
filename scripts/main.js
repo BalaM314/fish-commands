@@ -154,29 +154,6 @@ const addToTileHisotry = (e, eventType) => {
   return;
 };
 
-const getTimeSinceText = (old) => {
-  const now = Date.now();
-  const timeLeft = now - old;
-
-  const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor(timeLeft / 60000);
-  const seconds = Math.floor((timeLeft % 60000) / 1000);
-
-  let timeSince = '';
-
-  if (hours) {
-    timeSince += '[green]' + hours + ' [lightgray]hrs, ';
-  }
-
-  if (minutes) {
-    timeSince += '[green]' + minutes + ' [lightgray]mins, ';
-  }
-
-  timeSince += '[green]' + seconds + ' [lightgray]secs ago.';
-
-  return timeSince;
-};
-
 Events.on(BlockBuildBeginEvent, (e) => {
   addToTileHisotry(e, 'build');
 });
@@ -202,7 +179,7 @@ Events.on(TapEvent, (e) => {
   const history = [];
 
   tileHistory[pos].forEach((t) =>
-    history.push(t.name + `[yellow] ` + t.action + ' a block ' + getTimeSinceText(t.time))
+    history.push(t.name + `[yellow] ` + t.action + ' a block ' + utils.getTimeSinceText(t.time))
   );
   p.tilelog = null;
   realP.sendMessage(history.join('\n'));
