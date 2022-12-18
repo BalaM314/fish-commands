@@ -1,6 +1,6 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
-const utils = require('helper2');
+const utils = require('utils');
 const players = require('players');
 const trails = require('trails');
 const timers = require('timers');
