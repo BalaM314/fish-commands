@@ -1,5 +1,5 @@
 const players = require('players');
-const utils = require('helper2');
+const utils = require('utils');
 const trails = require('trails');
 
 const registerCommands = (clientCommands, runner) => {
