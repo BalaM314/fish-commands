@@ -1,6 +1,7 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
 const utils = require('utils');
+const stopped = require('stopped');
 const players = require('players');
 const trails = require('trails');
 const timers = require('timers');
@@ -17,8 +18,40 @@ let serverCommands;
 let serverIp;
 let tileHistory = {};
 
+const getStopped = (player) => {
+  const req = Http.post(
+    `http://` + config.ip + `:5000/api/getStopped`,
+    JSON.stringify({ id: player.uuid() })
+  )
+    .header('Content-Type', 'application/json')
+    .header('Accept', '*/*');
+  req.timeout = 10000;
+
+  try {
+    req.submit((response, exception) => {
+      if (exception || !response) {
+        Log.info(
+          '\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n'
+        );
+      }
+      let temp = response.getResultAsString();
+      if (!temp.length) return false;
+      Timer.schedule(() => {
+        if (JSON.parse(temp).data) {
+          players.stop(player, { name: 'stopped api' }, true);
+          return;
+        }
+        players.free(player, { name: 'stopped api' }, true);
+      }, 2);
+    });
+  } catch (e) {
+    Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
+  }
+};
+
 Events.on(PlayerJoin, (e) => {
   players.setName(e.player);
+  getStopped(e.player);
 });
 
 Events.on(ServerLoadEvent, (e) => {

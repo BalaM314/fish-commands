@@ -1,4 +1,3 @@
-const players = require('players');
 const old = {};
 
 const logg = (msg) => Call.sendMessage(msg);
