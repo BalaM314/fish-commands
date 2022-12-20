@@ -146,4 +146,5 @@ module.exports = {
   stop: stop,
   free: free,
   getAllIds: getAllIds,
+  getPById: getPById,
 };

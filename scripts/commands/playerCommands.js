@@ -22,9 +22,9 @@ const clean = (con) => {
   );
   Vars.world.tiles.eachTile((t) => {
     if (
-      [107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114].includes(
-        t.block().id
-      )
+      [
+        107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114, 122,
+      ].includes(t.block().id)
     ) {
       t.setNet(Blocks.air, Team.sharded, 0);
     }
