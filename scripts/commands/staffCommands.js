@@ -555,7 +555,13 @@ const registerCommands = (clientCommands, runner) => {
 
       tp.history.forEach((h) => {
         message.push(
-          h.by + ' [yellow]' + h.action + ' ' + tp.name + ' [white]' + utils.getTimeSinceText(h.time)
+          h.by +
+            ' [yellow]' +
+            h.action +
+            ' ' +
+            tp.name +
+            ' [white]' +
+            utils.getTimeSinceText(h.time)
         );
       });
 

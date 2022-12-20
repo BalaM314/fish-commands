@@ -1,4 +1,5 @@
 const config = require('config');
+const stopped = require('stopped');
 
 let players = {};
 
@@ -95,9 +96,9 @@ const getPById = (id) => {
   return players[id];
 };
 
-const stop = (target, staff) => {
+const stop = (target, staff, fromApi) => {
   const tp = players[target.uuid()];
-  if (tp.stopped) return;
+
   tp.stopped = true;
   target.unit().type = UnitTypes.stell;
   setName(target);
@@ -107,19 +108,24 @@ const stop = (target, staff) => {
     by: staff ? staff.name : 'vote',
     time: Date.now(),
   });
+
+  if (fromApi) return;
+  stopped.addStopped(target.uuid());
   save();
 };
 
-const free = (target, staff) => {
+const free = (target, staff, fromApi) => {
   players[target.uuid()].stopped = false;
   setName(target);
   target.unit().type = UnitTypes.alpha;
-  target.sendMessage('[yellow]Looks like someone had mercy on you.');
   addPlayerHistory(target.uuid(), {
     action: 'freed',
     by: staff ? staff.name : 'vote',
     time: Date.now(),
   });
+  if (fromApi) return;
+  target.sendMessage('[yellow]Looks like someone had mercy on you.');
+  stopped.free(target.uuid());
   save();
 };
 
