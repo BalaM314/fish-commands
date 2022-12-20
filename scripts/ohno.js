@@ -23,7 +23,7 @@ const ohno = (p) => {
     return;
   }
 
-  const targetUnit = UnitTypes.atrax.spawn(Team.sharded, p.unit().x, p.unit().y); // spawn unit at player's position
+  const targetUnit = UnitTypes.atrax.spawn(p.team(), p.unit().x, p.unit().y); // spawn unit at player's position
 
   targetUnit.type = UnitTypes.alpha; // change the type to make an ohno unit
   targetUnit.apply(StatusEffects.disarmed, 10000);
