@@ -232,7 +232,7 @@ const registerCommands = (clientCommands, runner) => {
         return;
       }
 
-      normalCommands = utils.createChuncks(normalCommands, 15);
+      normalCommands = utils.createChunks(normalCommands, 15);
 
       if (!page) {
         realP.sendMessage(

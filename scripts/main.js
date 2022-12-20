@@ -96,7 +96,7 @@ Events.on(ServerLoadEvent, (e) => {
         player: realP,
         breaking: null,
       };
-      addToTileHisotry(fakeE, 'rotate');
+      addToTileHistory(fakeE, 'rotate');
       return true;
     }
     //prevent stopped players from configuring
@@ -131,7 +131,7 @@ Events.on(ServerLoadEvent, (e) => {
   });
 });
 
-const addToTileHisotry = (e, eventType) => {
+const addToTileHistory = (e, eventType) => {
   const unit = e.unit;
   if (!unit.player) return;
   const tile = e.tile;
@@ -188,7 +188,7 @@ const addToTileHisotry = (e, eventType) => {
 };
 
 Events.on(BlockBuildBeginEvent, (e) => {
-  addToTileHisotry(e, 'build');
+  addToTileHistory(e, 'build');
 });
 
 Events.on(TapEvent, (e) => {

@@ -28,7 +28,7 @@ const memoize = (callback, dep, id) => {
   }
 };
 
-const createChuncks = (arr, chunkSize) => {
+const createChunks = (arr, chunkSize) => {
   const copyArr = [];
   arr.forEach((i) => copyArr.push(i));
   const newArr = [];
@@ -81,7 +81,7 @@ module.exports = {
   list: list,
   keys: keys,
   memoize: memoize,
-  createChuncks: createChuncks,
+  createChunks: createChunks,
   plrById: plrById,
   plrByName: plrByName,
   getTimeSinceText: getTimeSinceText,
