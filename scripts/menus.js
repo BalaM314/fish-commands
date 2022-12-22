@@ -20,7 +20,6 @@ const stopListener = (player, option) => {
     return;
   }
 
-  const p = players.getPById(menuStuff.flattenedNonStaffPlayers[option]);
   const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
 
   players.stop(pObj, player);
