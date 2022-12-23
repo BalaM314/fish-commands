@@ -110,7 +110,7 @@ const registerCommands = (clientCommands, runner) => {
 
         tp.muted = !tp.muted;
 
-        realP.sendMessage(foundPlayer.name + '[#48e076] was ' + tp.muted ? 'muted.' : 'unmuted');
+        realP.sendMessage(foundPlayer.name + '[#48e076] was ' + (tp.muted ? 'muted.' : 'unmuted'));
         players.setName(foundPlayer);
         foundPlayer.sendMessage(
           tp.muted
@@ -122,7 +122,7 @@ const registerCommands = (clientCommands, runner) => {
           by: realP.name,
           time: Date.now(),
         });
-        save();
+        players.save();
         return;
       }
       // TODO - check if this works and updates the object in the other file
