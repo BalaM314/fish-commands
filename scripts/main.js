@@ -50,7 +50,8 @@ const getStopped = (player) => {
 };
 
 Events.on(PlayerJoin, (e) => {
-  players.setName(e.player);
+  players.nameFilter(e.player);
+  players.updateSavedName(e.player);
   getStopped(e.player);
 });
 
