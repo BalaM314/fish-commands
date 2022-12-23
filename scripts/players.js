@@ -32,8 +32,8 @@ const save = () => {
   Core.settings.manualSave();
 };
 
-const setName = (realP) => {
-  const p = getP(realP);
+const setName = (player) => {
+  const p = getP(player);
   let prefix = '';
 
   if (p.member) {
@@ -41,36 +41,36 @@ const setName = (realP) => {
   }
 
   if (p.stopped) {
-    realP.name = prefix + config.STOPPED_PREFIX + p.name;
+    player.name = prefix + config.STOPPED_PREFIX + p.name;
     return;
   }
   if (p.muted) {
-    realP.name = prefix + config.MUTED_PREFIX + p.name;
+    player.name = prefix + config.MUTED_PREFIX + p.name;
     return;
   }
 
   if (p.afk) {
-    realP.name = prefix + config.AFK_PREFIX + p.name;
+    player.name = prefix + config.AFK_PREFIX + p.name;
     return;
   }
 
-  if (realP.admin) {
+  if (player.admin) {
     p.admin = true;
-    realP.name = prefix + config.ADMIN_PREFIX + p.name;
+    player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
 
   if (p.admin) {
-    realP.admin = true;
-    realP.name = prefix + config.ADMIN_PREFIX + p.name;
+    player.admin = true;
+    player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
 
   if (p.mod) {
-    realP.name = prefix + config.MOD_PREFEIX + p.name;
+    player.name = prefix + config.MOD_PREFEIX + p.name;
     return;
   }
-  realP.name = p.name;
+  player.name = p.name;
 };
 
 const addPlayerHistory = (id, entry) => {
@@ -131,6 +131,24 @@ const free = (target, staff, fromApi) => {
 
 const getAllIds = () => Object.keys(players);
 
+const updateSavedName = (player) => {
+  const p = players[player.uuid()];
+  p.name = player.name;
+  setName(player);
+};
+
+const nameFilter = (player) => {
+  config.bannedNames.forEach((n) => {
+    if (player.name.toLowerCase().includes(n)) {
+      player.kick(
+        '[scarlet]"' +
+          player.name +
+          '[scarlet]" is not an allowed name.\n\nIf you are unable to change it, please download the real client from steam or itch.io.'
+      );
+    }
+  });
+};
+
 Events.on(ServerLoadEvent, (e) => {
   const stringified = Core.settings.get('fish', '');
 
@@ -147,4 +165,6 @@ module.exports = {
   free: free,
   getAllIds: getAllIds,
   getPById: getPById,
+  updateSavedName: updateSavedName,
+  nameFilter: nameFilter,
 };
