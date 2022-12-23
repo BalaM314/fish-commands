@@ -147,7 +147,7 @@ const registerCommands = (clientCommands, runner) => {
         realP.name +
           '[magenta] has gone to the attack server. Use [cyan]/attack [magenta]to join them!'
       );
-      Call.connect(realP.con, '45.79.203.155', '6567');
+      Call.connect(realP.con, '162.248.100.98', '6567');
     })
   );
 
