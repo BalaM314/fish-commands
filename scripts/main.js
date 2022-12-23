@@ -1,13 +1,9 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
 const utils = require('utils');
-const stopped = require('stopped');
 const players = require('players');
 const trails = require('trails');
-const timers = require('timers');
 const config = require('config');
-const staff = require('staff');
-const menus = require('menus');
 const ohno = require('ohno');
 const staffCommands = require('commands/staffCommands');
 const playerCommands = require('commands/playerCommands');
@@ -18,6 +14,7 @@ let serverCommands;
 let serverIp;
 let tileHistory = {};
 
+// Check if player is stopped from API
 const getStopped = (player) => {
   const req = Http.post(
     `http://` + config.ip + `:5000/api/getStopped`,
@@ -36,6 +33,7 @@ const getStopped = (player) => {
       }
       let temp = response.getResultAsString();
       if (!temp.length) return false;
+      // Wrapped in a timer since stopping too soon may not work.
       Timer.schedule(() => {
         if (JSON.parse(temp).data) {
           players.stop(player, { name: 'stopped api' }, true);
@@ -124,6 +122,7 @@ Events.on(ServerLoadEvent, (e) => {
   trails.registerCommands(clientCommands, runner);
   membership.registerCommands(clientCommands, runner);
 
+  // stored for limiting /reset frequency
   Core.settings.remove('lastRestart');
 
   const getIp = Http.get('https://api.ipify.org?format=js');
@@ -132,6 +131,10 @@ Events.on(ServerLoadEvent, (e) => {
   });
 });
 
+/**
+ * Keeps track of any action performed on a tile for use in /tilelog
+ * command.
+ */
 const addToTileHistory = (e, eventType) => {
   const unit = e.unit;
   if (!unit.player) return;

@@ -4,6 +4,15 @@ const logg = (msg) => Call.sendMessage(msg);
 const list = (ar) => Call.sendMessage(ar.join(' | '));
 const keys = (obj) => Call.sendMessage(Object.keys(obj).join(' [scarlet]|[white] '));
 
+/**
+ * Stores the output of a function and returns that value
+ * instead of running the function again unless any
+ * dependencies have changed to improve performance with
+ * functions that have expensive computation.
+ * @param {function} callback function to run if a dependancy has changed
+ * @param {array} dep dependency array of values to monitor
+ * @param {number | string} id arbitrary unique id of the function for storage purposes.
+ */
 const memoize = (callback, dep, id) => {
   if (!old[id]) {
     old[id] = { value: callback(), dep: dep };
@@ -28,6 +37,15 @@ const memoize = (callback, dep, id) => {
   }
 };
 
+/**
+ * Splits an array into a multidimensional array with equal sizes.
+ * @param {array} arr the array to split
+ * @param {number} chunkSize the item limit each "inner" array should contain
+ * @example
+ * const myArr = ['item1', 'item2', 'item3', 'item4', 'item5'];
+ *
+ * const splitArr = createChunks(myArr, 2); // [['item1', 'item2'], ['item3', 'item4'], ['item5']]
+ */
 const createChunks = (arr, chunkSize) => {
   const copyArr = [];
   arr.forEach((i) => copyArr.push(i));
@@ -38,6 +56,10 @@ const createChunks = (arr, chunkSize) => {
   return newArr;
 };
 
+/**
+ * Returns the amount of time passed since the old time in a readable format
+ * @param {number} old
+ */
 const getTimeSinceText = (old) => {
   const now = Date.now();
   const timeLeft = now - old;
@@ -61,6 +83,10 @@ const getTimeSinceText = (old) => {
   return timeSince;
 };
 
+/**
+ * Get an online player by name.
+ * @param {string} plr
+ */
 const plrByName = (plr) => {
   const newPlr = plr.toLowerCase();
   const realPlayer = Groups.player.find((p) => {
@@ -74,6 +100,10 @@ const plrByName = (plr) => {
   return realPlayer;
 };
 
+/**
+ * Get an online player by uuid.
+ * @param {string} plr
+ */
 const plrById = (id) => Groups.player.find((p) => p.uuid() === id);
 
 module.exports = {

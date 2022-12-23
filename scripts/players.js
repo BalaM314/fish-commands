@@ -3,6 +3,7 @@ const stopped = require('stopped');
 
 let players = {};
 
+// Add an entry to players object if it doesnt exist.
 const createPlayer = (player) => {
   players[player.uuid()] = {
     name: player.name,
@@ -19,6 +20,11 @@ const createPlayer = (player) => {
   return;
 };
 
+/**
+ * Saves only staff and members locally so they persist after restart.
+ * Saving all players would cause the object to be too large for
+ * Core.settings to read and causes errors.
+ */
 const save = () => {
   const newPlayers = {};
   Object.keys(players).forEach((pl) => {
@@ -32,6 +38,7 @@ const save = () => {
   Core.settings.manualSave();
 };
 
+// Assign a prefix to a player's name based on their status e.g.: staff/marked etc
 const setName = (player) => {
   const p = getP(player);
   let prefix = '';
@@ -54,14 +61,14 @@ const setName = (player) => {
     return;
   }
 
-  if (player.admin) {
-    p.admin = true;
+  if (p.admin) {
+    player.admin = true;
     player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
 
-  if (p.admin) {
-    player.admin = true;
+  if (player.admin) {
+    p.admin = true;
     player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
@@ -73,6 +80,11 @@ const setName = (player) => {
   player.name = p.name;
 };
 
+/**
+ * Record moderation actions taken on a player.
+ * @param {*} id uuid of the player
+ * @param {*} entry description of action taken
+ */
 const addPlayerHistory = (id, entry) => {
   const p = getPById(id);
 
@@ -85,6 +97,7 @@ const addPlayerHistory = (id, entry) => {
   p.history.push(entry);
 };
 
+// Get local player object. Creates a new one if it doesn't exist
 const getP = (player) => {
   if (!players[player.uuid()]) {
     createPlayer(player);
@@ -96,6 +109,7 @@ const getPById = (id) => {
   return players[id];
 };
 
+// Marks a player
 const stop = (target, staff, fromApi) => {
   const tp = players[target.uuid()];
 
@@ -114,6 +128,7 @@ const stop = (target, staff, fromApi) => {
   save();
 };
 
+// Unmarks a player
 const free = (target, staff, fromApi) => {
   players[target.uuid()].stopped = false;
   setName(target);
@@ -129,6 +144,7 @@ const free = (target, staff, fromApi) => {
   save();
 };
 
+// Get all ids of stored players
 const getAllIds = () => Object.keys(players);
 
 const updateSavedName = (player) => {
@@ -137,6 +153,7 @@ const updateSavedName = (player) => {
   setName(player);
 };
 
+// Kick a player if their name is in the bannedNames list
 const nameFilter = (player) => {
   config.bannedNames.forEach((n) => {
     if (player.name.toLowerCase().includes(n)) {
@@ -149,6 +166,7 @@ const nameFilter = (player) => {
   });
 };
 
+// Load saved players
 Events.on(ServerLoadEvent, (e) => {
   const stringified = Core.settings.get('fish', '');
 

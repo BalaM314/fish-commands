@@ -88,7 +88,7 @@ const registerCommands = (clientCommands, runner) => {
   // Discord
   clientCommands.register(
     'discord',
-    'takes you to our discord :)',
+    'takes you to our discord.',
     runner((args, realP) => {
       Call.openURI(realP.con, 'https://discord.gg/VpzcYSQ33Y');
     })
@@ -130,7 +130,7 @@ const registerCommands = (clientCommands, runner) => {
   // tileid
   clientCommands.register(
     'tileid',
-    'check id of a tile',
+    'check id of a tile.',
     runner((args, realP) => {
       const p = players.getP(realP);
       p.tileId = true;
@@ -141,7 +141,7 @@ const registerCommands = (clientCommands, runner) => {
   // attack
   clientCommands.register(
     'attack',
-    'switch to the attack server',
+    'switch to the attack server.',
     runner((args, realP) => {
       Call.sendMessage(
         realP.name +
@@ -154,7 +154,7 @@ const registerCommands = (clientCommands, runner) => {
   // survival
   clientCommands.register(
     'survival',
-    'switch to the survival server',
+    'switch to the survival server.',
     runner((args, realP) => {
       Call.sendMessage(
         realP.name +
@@ -285,7 +285,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'watch',
     '[player]',
-    'watch a player.',
+    'watch/unwatch a player.',
     runner((args, realP) => {
       const p = players.getP(realP);
       if (p.watch) {

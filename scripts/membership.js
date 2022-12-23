@@ -7,7 +7,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'pet',
     '[name...]',
-    'spawns a cool pet',
+    'spawns a cool pet with a displayed name that follows you around.',
 
     runner((args, player) => {
       const p = players.getP(player);
@@ -48,10 +48,6 @@ const registerCommands = (clientCommands, runner) => {
 
       Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
 
-      /**
-       * I'd love to refactor this function but it took hours
-       * to get it to this point.
-       */
       const controlUnit = (props) => {
         return Timer.schedule(() => {
           if (props.su.id !== props.p.pet || !utils.plrById(props.player.uuid())) {
@@ -78,7 +74,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'highlight',
     '<color>',
-    'make your chat text colored by default',
+    'make your chat text colored by default.',
     runner((args, realP) => {
       const p = players.getP(realP);
       if (!p.member) {
@@ -102,7 +98,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'rainbow',
     '[speed]',
-    'rainbow name!',
+    'make your name change colors.',
 
     runner((args, player) => {
       const p = players.getP(player);
