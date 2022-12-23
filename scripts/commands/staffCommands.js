@@ -1,6 +1,6 @@
 const players = require('./players');
 const utils = require('./utils');
-const menus = require('./menus');
+const menus = require('menus');
 const config = require('config');
 const ohno = require('ohno');
 

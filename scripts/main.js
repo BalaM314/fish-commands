@@ -1,5 +1,9 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
+require('timers');
+require('stopped');
+require('menus');
+
 const utils = require('utils');
 const players = require('players');
 const trails = require('trails');
