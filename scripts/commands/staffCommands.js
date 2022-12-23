@@ -49,7 +49,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'warn',
     '<name> [reason...]',
-    'warn a player',
+    'warn a player.',
     runner((args, realP) => {
       const typedPlr = args[0];
       const reason = args[1];
@@ -261,7 +261,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'free',
     '<player>',
-    'frees a player.',
+    'free a player.',
     runner((args, realP) => {
       const p = players.getP(realP);
       if (p.admin || p.mod) {
@@ -614,7 +614,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'label',
     '<time> <message...>',
-    'places a label at your position',
+    'places a label at your position for designated length of time.',
 
     runner((args, player) => {
       const message = args[1];
