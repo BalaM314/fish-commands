@@ -148,7 +148,7 @@ const free = (target, staff, fromApi) => {
 const getAllIds = () => Object.keys(players);
 
 const updateSavedName = (player) => {
-  const p = players[player.uuid()];
+  const p = getP(player);
   p.name = player.name;
   setName(player);
 };
