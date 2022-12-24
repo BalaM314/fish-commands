@@ -112,7 +112,6 @@ const getPById = (id) => {
 // Marks a player
 const stop = (target, staff, fromApi) => {
   const tp = players[target.uuid()];
-
   tp.stopped = true;
   target.unit().type = UnitTypes.stell;
   setName(target);
@@ -130,7 +129,9 @@ const stop = (target, staff, fromApi) => {
 
 // Unmarks a player
 const free = (target, staff, fromApi) => {
-  players[target.uuid()].stopped = false;
+  const p = getP(target);
+  if (!p.stopped) return;
+  p.stopped = false;
   setName(target);
   target.unit().type = UnitTypes.alpha;
   addPlayerHistory(target.uuid(), {
