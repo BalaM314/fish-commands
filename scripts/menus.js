@@ -20,7 +20,6 @@ const stopListener = (player, option) => {
     return;
   }
 
-  const p = players.getPById(menuStuff.flattenedNonStaffPlayers[option]);
   const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
 
   players.stop(pObj, player);
@@ -39,7 +38,6 @@ const muteListener = (player, option) => {
     return;
   }
 
-  const p = playersgetPById(menuStuff.flattenedNonStaffPlayers[option]);
   const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
 
   p.muted = !p.muted;
@@ -100,7 +98,6 @@ const ipBanListener = (player, option) => {
     return;
   }
 
-  const p = players.getPById(menuStuff.flattenedNonStaffPlayers[option]);
   const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
 
   serverCommands.handleMessage('ban ip ' + pObj.ip());

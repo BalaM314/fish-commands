@@ -2,6 +2,7 @@ const config = require('config');
 
 const ip = config.ip;
 
+// Add a player's uuid to the stopped api
 const addStopped = (id) => {
   const req = Http.post(`http://` + ip + `:5000/api/addStopped`, JSON.stringify({ id: id }))
     .header('Content-Type', 'application/json')
@@ -20,6 +21,7 @@ const addStopped = (id) => {
   }
 };
 
+// Remove a player's uuid from the stopped api
 const free = (id) => {
   const req = Http.post(`http://` + ip + `:5000/api/free`, JSON.stringify({ id: id }))
     .header('Content-Type', 'application/json')

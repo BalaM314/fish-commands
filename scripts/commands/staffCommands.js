@@ -1,6 +1,6 @@
 const players = require('./players');
 const utils = require('./utils');
-const menus = require('./menus');
+const menus = require('menus');
 const config = require('config');
 const ohno = require('ohno');
 
@@ -49,7 +49,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'warn',
     '<name> [reason...]',
-    'warn a player',
+    'warn a player.',
     runner((args, realP) => {
       const typedPlr = args[0];
       const reason = args[1];
@@ -110,7 +110,7 @@ const registerCommands = (clientCommands, runner) => {
 
         tp.muted = !tp.muted;
 
-        realP.sendMessage(foundPlayer.name + '[#48e076] was ' + tp.muted ? 'muted.' : 'unmuted');
+        realP.sendMessage(foundPlayer.name + '[#48e076] was ' + (tp.muted ? 'muted.' : 'unmuted'));
         players.setName(foundPlayer);
         foundPlayer.sendMessage(
           tp.muted
@@ -122,7 +122,7 @@ const registerCommands = (clientCommands, runner) => {
           by: realP.name,
           time: Date.now(),
         });
-        save();
+        players.save();
         return;
       }
       // TODO - check if this works and updates the object in the other file
@@ -261,7 +261,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'free',
     '<player>',
-    'frees a player.',
+    'free a player.',
     runner((args, realP) => {
       const p = players.getP(realP);
       if (p.admin || p.mod) {
@@ -614,7 +614,7 @@ const registerCommands = (clientCommands, runner) => {
   clientCommands.register(
     'label',
     '<time> <message...>',
-    'places a label at your position',
+    'places a label at your position for designated length of time.',
 
     runner((args, player) => {
       const message = args[1];

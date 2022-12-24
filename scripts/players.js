@@ -3,6 +3,7 @@ const stopped = require('stopped');
 
 let players = {};
 
+// Add an entry to players object if it doesnt exist.
 const createPlayer = (player) => {
   players[player.uuid()] = {
     name: player.name,
@@ -19,6 +20,11 @@ const createPlayer = (player) => {
   return;
 };
 
+/**
+ * Saves only staff and members locally so they persist after restart.
+ * Saving all players would cause the object to be too large for
+ * Core.settings to read and causes errors.
+ */
 const save = () => {
   const newPlayers = {};
   Object.keys(players).forEach((pl) => {
@@ -32,8 +38,9 @@ const save = () => {
   Core.settings.manualSave();
 };
 
-const setName = (realP) => {
-  const p = getP(realP);
+// Assign a prefix to a player's name based on their status e.g.: staff/marked etc
+const setName = (player) => {
+  const p = getP(player);
   let prefix = '';
 
   if (p.member) {
@@ -41,38 +48,43 @@ const setName = (realP) => {
   }
 
   if (p.stopped) {
-    realP.name = prefix + config.STOPPED_PREFIX + p.name;
+    player.name = prefix + config.STOPPED_PREFIX + p.name;
     return;
   }
   if (p.muted) {
-    realP.name = prefix + config.MUTED_PREFIX + p.name;
+    player.name = prefix + config.MUTED_PREFIX + p.name;
     return;
   }
 
   if (p.afk) {
-    realP.name = prefix + config.AFK_PREFIX + p.name;
-    return;
-  }
-
-  if (realP.admin) {
-    p.admin = true;
-    realP.name = prefix + config.ADMIN_PREFIX + p.name;
+    player.name = prefix + config.AFK_PREFIX + p.name;
     return;
   }
 
   if (p.admin) {
-    realP.admin = true;
-    realP.name = prefix + config.ADMIN_PREFIX + p.name;
+    player.admin = true;
+    player.name = prefix + config.ADMIN_PREFIX + p.name;
+    return;
+  }
+
+  if (player.admin) {
+    p.admin = true;
+    player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
 
   if (p.mod) {
-    realP.name = prefix + config.MOD_PREFEIX + p.name;
+    player.name = prefix + config.MOD_PREFEIX + p.name;
     return;
   }
-  realP.name = p.name;
+  player.name = p.name;
 };
 
+/**
+ * Record moderation actions taken on a player.
+ * @param {*} id uuid of the player
+ * @param {*} entry description of action taken
+ */
 const addPlayerHistory = (id, entry) => {
   const p = getPById(id);
 
@@ -85,6 +97,7 @@ const addPlayerHistory = (id, entry) => {
   p.history.push(entry);
 };
 
+// Get local player object. Creates a new one if it doesn't exist
 const getP = (player) => {
   if (!players[player.uuid()]) {
     createPlayer(player);
@@ -96,6 +109,7 @@ const getPById = (id) => {
   return players[id];
 };
 
+// Marks a player
 const stop = (target, staff, fromApi) => {
   const tp = players[target.uuid()];
 
@@ -114,6 +128,7 @@ const stop = (target, staff, fromApi) => {
   save();
 };
 
+// Unmarks a player
 const free = (target, staff, fromApi) => {
   players[target.uuid()].stopped = false;
   setName(target);
@@ -129,8 +144,29 @@ const free = (target, staff, fromApi) => {
   save();
 };
 
+// Get all ids of stored players
 const getAllIds = () => Object.keys(players);
 
+const updateSavedName = (player) => {
+  const p = players[player.uuid()];
+  p.name = player.name;
+  setName(player);
+};
+
+// Kick a player if their name is in the bannedNames list
+const nameFilter = (player) => {
+  config.bannedNames.forEach((n) => {
+    if (player.name.toLowerCase().includes(n)) {
+      player.kick(
+        '[scarlet]"' +
+          player.name +
+          '[scarlet]" is not an allowed name.\n\nIf you are unable to change it, please download the real client from steam or itch.io.'
+      );
+    }
+  });
+};
+
+// Load saved players
 Events.on(ServerLoadEvent, (e) => {
   const stringified = Core.settings.get('fish', '');
 
@@ -147,4 +183,6 @@ module.exports = {
   free: free,
   getAllIds: getAllIds,
   getPById: getPById,
+  updateSavedName: updateSavedName,
+  nameFilter: nameFilter,
 };
