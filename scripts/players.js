@@ -49,27 +49,23 @@ const setName = (player) => {
 
   if (p.stopped) {
     player.name = prefix + config.STOPPED_PREFIX + p.name;
-    return;
   }
   if (p.muted) {
     player.name = prefix + config.MUTED_PREFIX + p.name;
-    return;
   }
 
   if (p.afk) {
     player.name = prefix + config.AFK_PREFIX + p.name;
-    return;
   }
 
   if (p.admin) {
+    player.name = prefix + config.ADMIN_PREFEIX + p.name;
     player.admin = true;
-    player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
 
   if (player.admin) {
     p.admin = true;
-    player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
 

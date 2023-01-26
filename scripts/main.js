@@ -115,7 +115,7 @@ Events.on(ServerLoadEvent, (e) => {
   // clientCommands.removeCommand('votekick');
   // clientCommands.removeCommand('vote');
 
-  staffCommands.registerCommands(clientCommands, runner);
+  staffCommands.registerCommands(clientCommands, serverCommands, runner);
   playerCommands.registerCommands(clientCommands, runner);
   ohno.registerCommands(clientCommands, runner);
   whisper.registerCommands(clientCommands, runner);

@@ -5,7 +5,7 @@ const AFK_PREFIX = '[orange] AFK  | [white]';
 const MUTED_PREFIX = '[white](muted)';
 const MEMBER_PREFIX = '[black]<[yellow][black]>[white]';
 const bannedWords = ['nigger', 'kill yourself', 'kill urself', 'kys', 'cock', 'cock sucker'];
-const bannedNames = ['goldberg'];
+const bannedNames = ['goldberg', 'eshay'];
 
 // const ip = 'localhost';
 const ip = '45.79.202.111';
