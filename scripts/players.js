@@ -59,7 +59,7 @@ const setName = (player) => {
   }
 
   if (p.admin) {
-    player.name = prefix + config.ADMIN_PREFEIX + p.name;
+    player.name = prefix + config.ADMIN_PREFIX + p.name;
     player.admin = true;
     return;
   }
