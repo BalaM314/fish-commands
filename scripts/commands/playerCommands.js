@@ -11,24 +11,31 @@ const tp = (plr, p2) => {
   Call.setCameraPosition(plr.con, plr.unit().x, plr.unit().y);
 };
 
-const clean = (con) => {
-  Timer.schedule(
-    () => {
-      Call.sound(con, Sounds.rockBreak, 1, 1, 0);
-    },
-    0,
-    0.05,
-    10
-  );
-  Vars.world.tiles.eachTile((t) => {
-    if (
-      [
-        107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114, 122,
-      ].includes(t.block().id)
-    ) {
-      t.setNet(Blocks.air, Team.sharded, 0);
-    }
-  });
+const Cleaner = {
+  clean(con) {
+    if(Time.millis() - this.lastCleaned < this.cooldown) return false;
+    this.lastCleaned = Time.millis();
+    Timer.schedule(
+      () => {
+        Call.sound(con, Sounds.rockBreak, 1, 1, 0);
+      },
+      0,
+      0.05,
+      10
+    );
+    Vars.world.tiles.eachTile((t) => {
+      if (
+        [
+          107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114, 122,
+        ].includes(t.block().id)
+      ) {
+        t.setNet(Blocks.air, Team.sharded, 0);
+      }
+    });
+    return true;
+  },
+  lastCleaned: 0,
+  cooldown: 10000
 };
 
 const messageStaff = (name, msg) => {
@@ -75,7 +82,15 @@ const registerCommands = (clientCommands, runner) => {
     'clean',
     'clear the map of boulders.',
     runner((args, realP) => {
-      clean(realP.con);
+      if(Cleaner.clean(realP.con)){
+        realP.sendMessage(
+          '[green]✔ Cleared the map of boulders.'
+        );
+      } else {
+        realP.sendMessage(
+          '[scarlet]⚠ [yellow]This command was run recently and is on cooldown.'
+        );
+      }
     })
   );
 
