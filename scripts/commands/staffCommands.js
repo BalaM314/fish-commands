@@ -410,7 +410,8 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
         }
 
         if (action === 'add') {
-          players.getP(targetPlr).admin = true;
+          const tp = players.getP(targetPlr);
+          tp.admin = true;
           targetPlr.admin = true;
           serverCommands.handleMessage('admin add ' + targetPlr.uuid());
           realP.sendMessage(targetPlr.name + '[#48e076] is now ranked Admin.');
@@ -429,9 +430,10 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
         }
 
         if (action === 'remove') {
-          players.setName(targetPlr);
-          players.getP(targetPlr).admin = false;
+          const tp = players.getP(targetPlr);
+          tp.admin = false;
           targetPlr.admin = false;
+          players.setName(targetPlr);
           serverCommands.handleMessage('admin remove ' + targetPlr.uuid());
           realP.sendMessage(targetPlr.name + '[#48e076] just got demoted to player.');
           players.save();
@@ -475,8 +477,8 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
         allIds.forEach((id) => {
           const targetPlr = utils.plrById(id);
           if (!targetPlr) return;
-          if (players[id].muted) {
-            players[id].muted = false;
+          if (players.getP(targetPlr).muted) {
+            players.getP(targetPlr).muted = false;
             players.setName(targetPlr);
           }
         });
