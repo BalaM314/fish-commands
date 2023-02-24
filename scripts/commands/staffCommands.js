@@ -4,7 +4,7 @@ const menus = require('menus');
 const config = require('config');
 const ohno = require('ohno');
 
-const registerCommands = (clientCommands, runner) => {
+const registerCommands = (clientCommands, serverCommands, runner) => {
   // sus
   clientCommands.register(
     'sus',
@@ -51,18 +51,17 @@ const registerCommands = (clientCommands, runner) => {
     '<name> [reason...]',
     'warn a player.',
     runner((args, realP) => {
+      const p = players.getP(realP);
+      if (!p.admin && !p.mod) {
+        realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
+        return;
+      }
       const typedPlr = args[0];
       const reason = args[1];
       const targetPlr = utils.plrByName(typedPlr);
 
       if (!targetPlr) {
         realP.sendMessage('[scarlet]⚠ [yellow]Player "' + typedPlr + '[yellow]" not found.');
-        return;
-      }
-      const p = players.getP(targetPlr);
-
-      if (!p.admin && !p.mod) {
-        realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
         return;
       }
 
@@ -233,7 +232,7 @@ const registerCommands = (clientCommands, runner) => {
       let arrayIndex = 0;
       Groups.player.forEach((pl) => {
         const pp = players.getP(pl);
-        if (pp.mod || pp.admin || p.stopped) return;
+        if (pp.mod || pp.admin || pp.stopped) return;
 
         menus.menuStuff.flattenedNonStaffPlayers.push(pl.uuid());
 
@@ -386,6 +385,7 @@ const registerCommands = (clientCommands, runner) => {
         if (action === 'add') {
           players.getP(targetPlr).admin = true;
           targetPlr.admin = true;
+          serverCommands.handleMessage('admin add ' + targetPlr.uuid());
           realP.sendMessage(targetPlr.name + '[#48e076] is now ranked Admin.');
           targetPlr.sendMessage(
             '[yellow] Your rank is now [#514ced]Admin.[yellow] Use [sky]"/help admin"[yellow] to see available commands.'
@@ -405,6 +405,7 @@ const registerCommands = (clientCommands, runner) => {
           players.setName(targetPlr);
           players.getP(targetPlr).admin = false;
           targetPlr.admin = false;
+          serverCommands.handleMessage('admin remove ' + targetPlr.uuid());
           realP.sendMessage(targetPlr.name + '[#48e076] just got demoted to player.');
           players.save();
           return;
@@ -582,6 +583,8 @@ const registerCommands = (clientCommands, runner) => {
       }
 
       players.save();
+      const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+      SaveIO.save(file);
       realP.sendMessage('[green]Game saved.');
       return;
     })

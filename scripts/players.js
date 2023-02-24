@@ -49,27 +49,23 @@ const setName = (player) => {
 
   if (p.stopped) {
     player.name = prefix + config.STOPPED_PREFIX + p.name;
-    return;
   }
   if (p.muted) {
     player.name = prefix + config.MUTED_PREFIX + p.name;
-    return;
   }
 
   if (p.afk) {
     player.name = prefix + config.AFK_PREFIX + p.name;
-    return;
   }
 
   if (p.admin) {
-    player.admin = true;
     player.name = prefix + config.ADMIN_PREFIX + p.name;
+    player.admin = true;
     return;
   }
 
   if (player.admin) {
     p.admin = true;
-    player.name = prefix + config.ADMIN_PREFIX + p.name;
     return;
   }
 
@@ -112,7 +108,6 @@ const getPById = (id) => {
 // Marks a player
 const stop = (target, staff, fromApi) => {
   const tp = players[target.uuid()];
-
   tp.stopped = true;
   target.unit().type = UnitTypes.stell;
   setName(target);
@@ -130,7 +125,9 @@ const stop = (target, staff, fromApi) => {
 
 // Unmarks a player
 const free = (target, staff, fromApi) => {
-  players[target.uuid()].stopped = false;
+  const p = getP(target);
+  if (!p.stopped) return;
+  p.stopped = false;
   setName(target);
   target.unit().type = UnitTypes.alpha;
   addPlayerHistory(target.uuid(), {
@@ -148,7 +145,7 @@ const free = (target, staff, fromApi) => {
 const getAllIds = () => Object.keys(players);
 
 const updateSavedName = (player) => {
-  const p = players[player.uuid()];
+  const p = getP(player);
   p.name = player.name;
   setName(player);
 };

@@ -54,9 +54,6 @@ const registerCommands = (clientCommands, runner) => {
             type: types[args[0]],
             color: Color['white'],
           };
-          if (!trails.includes(realP.uuid())) {
-            trails.push(realP.uuid());
-          }
         } else {
           const valid = typeof Color['pink'];
 
@@ -95,7 +92,9 @@ const registerCommands = (clientCommands, runner) => {
               return;
             }
 
-            trails.push(realP.uuid());
+            if (!trails.includes(realP.uuid())) {
+              trails.push(realP.uuid());
+            }
             return;
           } catch (e) {
             realP.sendMessage(

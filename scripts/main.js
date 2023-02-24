@@ -87,28 +87,24 @@ Events.on(ServerLoadEvent, (e) => {
     const realP = action.player;
     const p = players.getP(realP);
 
-    if (action.type === ActionType.rotate) {
-      if (p.stopped) {
-        realP.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
-        return false;
-      }
-
-      const fakeE = {
-        unit: realP.unit(),
-        tile: action.tile,
-        player: realP,
-        breaking: null,
-      };
-      addToTileHistory(fakeE, 'rotate');
-      return true;
-    }
-    //prevent stopped players from configuring
+    //prevent stopped players from doing anything other than deposit items.
     if (p.stopped) {
       if (action.type == ActionType.depositItem) {
         return true;
       }
       action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
       return false;
+    }
+
+    if (action.type === ActionType.rotate) {
+      const rotateAction = {
+        unit: realP.unit(),
+        tile: action.tile,
+        player: realP,
+        breaking: null,
+      };
+      addToTileHistory(rotateAction, 'rotate');
+      return true;
     }
     return true;
   });
@@ -119,7 +115,7 @@ Events.on(ServerLoadEvent, (e) => {
   // clientCommands.removeCommand('votekick');
   // clientCommands.removeCommand('vote');
 
-  staffCommands.registerCommands(clientCommands, runner);
+  staffCommands.registerCommands(clientCommands, serverCommands, runner);
   playerCommands.registerCommands(clientCommands, runner);
   ohno.registerCommands(clientCommands, runner);
   whisper.registerCommands(clientCommands, runner);
