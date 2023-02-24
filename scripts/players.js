@@ -70,7 +70,7 @@ const setName = (player) => {
   }
 
   if (p.mod) {
-    player.name = prefix + config.MOD_PREFEIX + p.name;
+    player.name = prefix + config.MOD_PREFIX + p.name;
     return;
   }
   player.name = p.name;
