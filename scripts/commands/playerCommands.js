@@ -59,6 +59,13 @@ const registerCommands = (clientCommands, runner) => {
         );
         return;
       }
+      const playerUnit = realP.unit();
+      if(playerUnit && !playerUnit.spawnedByCore){
+        realP.sendMessage(
+          '[scarlet]⚠ [yellow]Cannot teleport while in a non-core unit.'
+        );
+        return;
+      }
       tp(realP, otherPlr);
     })
   );
