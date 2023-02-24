@@ -98,7 +98,20 @@ const getP = (player) => {
   if (!players[player.uuid()]) {
     createPlayer(player);
   }
-  return players[player.uuid()];
+  return {
+    ...players[player.uuid()],
+    player
+  };
+};
+
+//Added in commands rewrite
+const getPByName = (name) => {
+  const player = utils.plrByName(name);
+  if(!player) return null;
+  return {
+    ...getP(player),
+    player
+  };
 };
 
 const getPById = (id) => {

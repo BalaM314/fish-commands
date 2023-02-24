@@ -116,6 +116,7 @@ Events.on(ServerLoadEvent, (e) => {
   // clientCommands.removeCommand('vote');
 
   staffCommands.registerCommands(clientCommands, serverCommands, runner);
+  //commands.register(staffCommands2 /*default export?*/, clientCommands, runner);
   playerCommands.registerCommands(clientCommands, runner);
   ohno.registerCommands(clientCommands, runner);
   whisper.registerCommands(clientCommands, runner);

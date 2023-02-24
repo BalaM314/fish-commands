@@ -84,7 +84,7 @@ const getTimeSinceText = (old) => {
 };
 
 /**
- * Get an online player by name.
+ * Get an online player by name. May return null.
  * @param {string} plr
  */
 const plrByName = (plr) => {
