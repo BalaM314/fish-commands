@@ -259,32 +259,59 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
   // Free
   clientCommands.register(
     'free',
-    '<player>',
+    '[player(optional)]',
     'free a player.',
     runner((args, realP) => {
       const p = players.getP(realP);
-      if (p.admin || p.mod) {
-        const typedPlr = args[0];
-        const targetPlr = utils.plrByName(typedPlr);
-
-        if (!targetPlr) {
-          realP.sendMessage('[scarlet]⚠ "' + typedPlr + '"' + ' [yellow] was not found.');
-          return;
-        }
-
-        const canFreePlr = players.getP(targetPlr).stopped;
-        if (canFreePlr) {
-          realP.sendMessage(targetPlr.name + '[#48e076] was freed.');
-          players.free(targetPlr, realP);
-          return;
-        } else {
-          realP.sendMessage('[scarlet]⚠[yellow] ' + targetPlr.name + ' is not stopped.');
-          return;
-        }
-      } else {
-        realP.sendMessage('[scarlet]⚠ You do not have access to this command.');
+      if (!p.mod && !p.admin) {
+        realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
         return;
       }
+
+      if (args[0]) {
+        const foundPlayer = utils.plrByName(args[0]);
+        if (!foundPlayer) {
+          realP.sendMessage('[scarlet]⚠ [yellow]Player "' + args[0] + '[yellow]" not found.');
+        } else if(!players.getP(foundPlayer).stopped){
+          realP.sendMessage('[scarlet]⚠[yellow] ' + foundPlayer.name + ' is not stopped.');
+        } else {
+          players.free(foundPlayer);
+          realP.sendMessage(foundPlayer.name + '[#48e076] was stopped.');
+          return;
+        }
+      }
+
+      menus.menuStuff.flattenedNonStaffPlayers = [];
+      menus.menuStuff.lastOptionIndex = 0;
+
+      const title = 'Free';
+      const message = 'Choose a player to free.';
+      let options = [[]];
+      let arrayIndex = 0;
+      Groups.player.forEach((pl) => {
+        const pp = players.getP(pl);
+        if (!pp.stopped) return;
+        //Only show stopped players
+
+        menus.menuStuff.flattenedNonStaffPlayers.push(pl.uuid());
+
+        if (options[arrayIndex].length >= 2) {
+          arrayIndex += 1;
+          menus.menuStuff.lastOptionIndex += 1;
+          options[arrayIndex] = [pl.name];
+          return;
+        } else {
+          menus.menuStuff.lastOptionIndex += 1;
+          options[arrayIndex].push(pl.name);
+          return;
+        }
+      });
+
+      if (options[0].length === 0) options = [];
+
+      options.push(['cancel']);
+
+      Call.menu(realP.con, menus.menuStuff.listeners.free, title, message, options);
     })
   );
 
