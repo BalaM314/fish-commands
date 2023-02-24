@@ -18,7 +18,7 @@ const ohno = (p) => {
     p.sendMessage('[scarlet]⚠[yellow]Sorry, the max number of ohno units has been reached.');
     return;
   }
-  if (Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 8, () => true) != null) {
+  if (Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 20 * 8, () => false) != null) {
     p.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
     return;
   }
@@ -26,7 +26,7 @@ const ohno = (p) => {
   const targetUnit = UnitTypes.atrax.spawn(p.team(), p.unit().x, p.unit().y); // spawn unit at player's position
 
   targetUnit.type = UnitTypes.alpha; // change the type to make an ohno unit
-  targetUnit.apply(StatusEffects.disarmed, 10000);
+  targetUnit.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
   // targetUnit.spawnedByCore = true; //Disable the death explosion -- this doesn't work
   ohnos.push(targetUnit.id); // global for keeping track of how many are spawned
   targetUnit.resetController(); // this gives them mono AI

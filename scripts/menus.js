@@ -27,6 +27,24 @@ const stopListener = (player, option) => {
   return;
 };
 
+// free
+const freeListener = (player, option) => {
+  if (option === -1 || option === menuStuff.lastOptionIndex) return;
+
+  const fishPlr = players.getP(player);
+
+  if (!fishPlr.mod && !fishPlr.admin) {
+    player.kick('You tried to access a menu incorrectly.');
+    return;
+  }
+
+  const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
+
+  players.free(pObj, player);
+  player.sendMessage(pObj.name + '[#48e076] was freed.');
+  return;
+};
+
 // mute
 const muteListener = (player, option) => {
   if (option === -1 || option === menuStuff.lastOptionIndex) return;
@@ -109,6 +127,7 @@ const ipBanListener = (player, option) => {
 
 Events.on(ServerLoadEvent, (e) => {
   menuStuff.listeners.stop = Menus.registerMenu(stopListener);
+  menuStuff.listeners.free = Menus.registerMenu(freeListener);
   menuStuff.listeners.mute = Menus.registerMenu(muteListener);
   menuStuff.listeners.warn = Menus.registerMenu(warnListener);
   menuStuff.listeners.ipban = Menus.registerMenu(ipBanListener);
