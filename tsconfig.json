@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "ES5",
-		"module": "Node16",
+		// "module": "Node16",
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,
 		"skipLibCheck": true,

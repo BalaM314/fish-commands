@@ -52,7 +52,7 @@ interface FishPlayer {
 type mindustryPlayer = any;
 
 interface ClientCommandHandler {
-	register(name:string, args:string, description:string, runner:(args:string[], player:any) => void);
+	register(name:string, args:string, description:string, runner:(args:string[], player:any) => void):void;
 }
 
 
@@ -92,7 +92,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 
 }
 
-function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, runner:(func:(args, player) => void) => (args, player) => void){
+function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
 	function outputFail(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 	}
