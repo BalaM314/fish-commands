@@ -39,7 +39,7 @@ const save = () => {
 };
 
 // Assign a prefix to a player's name based on their status e.g.: staff/marked etc
-const setName = (player) => {
+const updateName = (player) => {
   const p = getP(player);
   let prefix = '';
 
@@ -93,25 +93,23 @@ const addPlayerHistory = (id, entry) => {
   p.history.push(entry);
 };
 
-// Get local player object. Creates a new one if it doesn't exist
+// Get fish player object. Creates a new one if it doesn't exist
 const getP = (player) => {
   if (!players[player.uuid()]) {
     createPlayer(player);
   }
-  return {
-    ...players[player.uuid()],
-    player
-  };
+  // return {
+  //   players[player.uuid()],
+  //   player
+  // };
+  return Object.assign(Object.assign({}, players[player.uuid()]), { player: player });
 };
 
 //Added in commands rewrite
 const getPByName = (name) => {
   const player = utils.plrByName(name);
   if(!player) return null;
-  return {
-    ...getP(player),
-    player
-  };
+  return getP(player);
 };
 
 const getPById = (id) => {
@@ -123,7 +121,7 @@ const stop = (target, staff, fromApi) => {
   const tp = players[target.uuid()];
   tp.stopped = true;
   target.unit().type = UnitTypes.stell;
-  setName(target);
+  updateName(target);
   target.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
   addPlayerHistory(target.uuid(), {
     action: 'stopped',
@@ -141,7 +139,7 @@ const free = (target, staff, fromApi) => {
   const p = getP(target);
   if (!p.stopped) return;
   p.stopped = false;
-  setName(target);
+  updateName(target);
   target.unit().type = UnitTypes.alpha;
   addPlayerHistory(target.uuid(), {
     action: 'freed',
@@ -160,7 +158,7 @@ const getAllIds = () => Object.keys(players);
 const updateSavedName = (player) => {
   const p = getP(player);
   p.name = player.name;
-  setName(player);
+  updateName(player);
 };
 
 // Kick a player if their name is in the bannedNames list
@@ -186,7 +184,7 @@ Events.on(ServerLoadEvent, (e) => {
 module.exports = {
   createPlayer: createPlayer,
   save: save,
-  setName: setName,
+  updateName: updateName,
   addPlayerHistory: addPlayerHistory,
   getP: getP,
   stop: stop,

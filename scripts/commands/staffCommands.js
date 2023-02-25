@@ -110,7 +110,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
         tp.muted = !tp.muted;
 
         realP.sendMessage(foundPlayer.name + '[#48e076] was ' + (tp.muted ? 'muted.' : 'unmuted'));
-        players.setName(foundPlayer);
+        players.updateName(foundPlayer);
         foundPlayer.sendMessage(
           tp.muted
             ? '[yellow] Hey! You have been muted. You can still use /msg to send a message to someone though.'
@@ -354,7 +354,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
           targetPlr.sendMessage(
             '[yellow] Your rank is now [#48e076]Moderator.[yellow] Use [acid]"/help mod"[yellow] to see available commands.'
           );
-          players.setName(targetPlr);
+          players.updateName(targetPlr);
           players.save();
           return;
         }
@@ -368,7 +368,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
         if (action === 'remove') {
           tp.mod = false;
           realP.sendMessage(targetPlr.name + '[#48e076] just got demoted to player.');
-          players.setName(targetPlr);
+          players.updateName(targetPlr);
           players.save();
           return;
         }
@@ -417,7 +417,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
           targetPlr.sendMessage(
             '[yellow] Your rank is now [#514ced]Admin.[yellow] Use [sky]"/help admin"[yellow] to see available commands.'
           );
-          players.setName(targetPlr);
+          players.updateName(targetPlr);
           players.save();
           return;
         }
@@ -429,7 +429,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
         }
 
         if (action === 'remove') {
-          players.setName(targetPlr);
+          players.updateName(targetPlr);
           players.getP(targetPlr).admin = false;
           targetPlr.admin = false;
           serverCommands.handleMessage('admin remove ' + targetPlr.uuid());
@@ -477,7 +477,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
           if (!targetPlr) return;
           if (players[id].muted) {
             players[id].muted = false;
-            players.setName(targetPlr);
+            players.updateName(targetPlr);
           }
         });
         realP.sendMessage('[#48e076]All players have the ability to speak.');
@@ -735,7 +735,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
       const tp = players.getP(targetPlr);
 
       tp.member = args[0] === 'add' ? true : false;
-      players.setName(targetPlr);
+      players.updateName(targetPlr);
       players.save();
       realP.sendMessage(tp.name + "[green]'s member status set to " + String(tp.member));
     })

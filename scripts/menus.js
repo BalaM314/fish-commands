@@ -60,7 +60,7 @@ const muteListener = (player, option) => {
 
   p.muted = !p.muted;
   player.sendMessage(pObj.name + '[#48e076] was ' + p.muted ? 'muted.' : 'unmuted');
-  players.setName(pObj);
+  players.updateName(pObj);
   pObj.sendMessage(
     p.muted
       ? '[yellow] Hey! You have been muted. You can still use /msg to send a message to someone though.'
@@ -93,7 +93,7 @@ const warnListener = (player, option) => {
   p.stopped = true;
   pObj.unit().type = UnitTypes.stell;
   player.sendMessage(pObj.name + '[#48e076] was stopped.');
-  players.setName(pObj);
+  players.updateName(pObj);
   pObj.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
   players.addPlayerHistory(pObj.uuid(), {
     action: 'stopped',

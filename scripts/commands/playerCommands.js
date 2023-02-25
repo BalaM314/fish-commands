@@ -138,12 +138,12 @@ const registerCommands = (clientCommands, runner) => {
       const p = players.getP(realP);
       if (p.afk) {
         p.afk = false;
-        players.setName(realP);
+        players.updateName(realP);
         realP.sendMessage('[yellow] You are no longer AFK.');
         return;
       }
       p.afk = true;
-      players.setName(realP);
+      players.updateName(realP);
       realP.sendMessage('[yellow] You are marked as AFK.');
       return;
     })

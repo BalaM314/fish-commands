@@ -112,7 +112,7 @@ const registerCommands = (clientCommands, runner) => {
       const speed = args[0];
 
       if (!speed) {
-        players.setName(player);
+        players.updateName(player);
         p.rainbow = null;
         return;
       }
