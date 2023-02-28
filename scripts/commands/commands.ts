@@ -1,6 +1,9 @@
 const menus = require('../menus');
 const players = require("../players");
 declare const Call: any;
+declare const Strings: {
+	stripColors(string:string): string;
+}
 /**
  * Misc notes:
  * I made a handful of arbitrary choices, you can change them if you want
@@ -9,9 +12,11 @@ declare const Call: any;
  * maybe we should abstract away the "select a player" menu?
  */
 
-
+/** Represents a permission level that is required to run a specific command. */
 enum PermissionsLevel {
-	player, mod, admin
+	player = "player",
+	mod = "mod",
+	admin = "admin",
 }
 
 
@@ -20,7 +25,7 @@ interface FishCommandRunner {
 		rawArgs:(string | undefined)[],
 		args:Record<string, any>,
 		sender:FishPlayer,
-		outputSucess:(message:string) => void,
+		outputSuccess:(message:string) => void,
 		outputFail:(message:string) => void
 	}): void;
 }
@@ -92,6 +97,14 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 
 }
 
+const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel){
+	switch(level){
+		case PermissionsLevel.player: return true;
+		case PermissionsLevel.mod: return player.mod;
+		case PermissionsLevel.admin: return player.admin;
+	}
+}
+
 function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
 	function outputFail(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
@@ -109,8 +122,10 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 			runner((rawArgs, sender) => {
 				const fishSender = players.getP(sender);
 
-				//TODO validate the players permissions
-				fishSender.admin; fishSender.mod;
+				if(!canPlayerAccess(fishSender, data.level)){
+					outputFail(`You do not have the required permission (${data.level}) to execute this command`, fishSender);
+					return;
+				}
 
 				
 				const output = processArgs(rawArgs, processedCmdArgs);
@@ -126,7 +141,7 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 					sender: fishSender,
 					//getP was modified for this to work
 					outputFail: message => outputFail(message, sender),
-					outputSucess: message => outputSuccess(message, sender),
+					outputSuccess: message => outputSuccess(message, sender),
 				});
 			})
 		);
