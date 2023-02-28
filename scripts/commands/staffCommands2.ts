@@ -5,7 +5,7 @@ const staffCommands:FishCommandsList = {
 		args: ['player:player', 'reason:string?'],
 		description: 'warn a player.',
 		level: PermissionsLevel.mod,
-		handler({rawArgs, args, sender}){
+		handler({rawArgs, args, sender, outputSuccess, outputFail}){
 			//declare let args: [player:FishPlayer, reason:string | null];
 			
 			
@@ -16,14 +16,15 @@ const staffCommands:FishCommandsList = {
 			// }
 
 			
-			if (/*args[0].rank > Rank.mod*/ args.player.mod || args.player.admin) {
-				sender.player.sendMessage('[scarlet]⚠ [yellow] You cannot warn staff.');
-				//replyFail("You cannot warn staff.");
+			if (/*args[0].rank >= Rank.mod*/ args.player.mod || args.player.admin) {
+				outputFail('You cannot warn staff.');
 				return;
 			}
 
 			Call.menu(args.player.player.con, menus.getMenus().listeners.warn, 'Warning', args.reason ?? "You have been warned. I suggest you stop what you're doing", [['accept']]);
 			//menu()
+			outputSuccess(`Warned player "${args.player.name}" for "${args.reason ?? "You have been warned. I suggest you stop what you're doing"}"`);
+			//TODO: add FishPlayer.cleanedName for Strings.stripColors
 		}
 	}
 };
