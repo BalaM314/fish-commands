@@ -26,5 +26,20 @@ const staffCommands:FishCommandsList = {
 			outputSuccess(`Warned player "${args.player.name}" for "${args.reason ?? "You have been warned. I suggest you stop what you're doing"}"`);
 			//TODO: add FishPlayer.cleanedName for Strings.stripColors
 		}
-	}
+	},
+
+	kick: {
+		args: ['player:player', 'reason:string?'],
+		description: 'Kick a player with optional reason.',
+		level: PermissionsLevel.mod,
+		handler({args, outputSuccess, outputFail}) {
+			if (args.player.admin || args.player.mod) {
+				outputFail('You do not have permission to kick this player.');
+			} else {
+				args.player.player.kick(args.reason ?? 'A staff member did not like your actions.');
+				outputSuccess(`Kicked player "${args.player.name}" for "${args.reason ?? 'A staff member did not like your actions.'}"`);
+			}
+		}
+	},
+
 };
