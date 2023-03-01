@@ -104,7 +104,7 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 				const fishSender = players.getP(sender);
 
 				if(!canPlayerAccess(fishSender, data.level)){
-					outputFail(`You do not have the required permission (${data.level}) to execute this command`, sender);
+					outputFail(data.customUnauthorizedMessage ?? `You do not have the required permission (${data.level}) to execute this command`, sender);
 					return;
 				}
 

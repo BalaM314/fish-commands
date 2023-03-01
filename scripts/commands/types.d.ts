@@ -6,36 +6,37 @@ type FishCommandArgType = string | number | FishPlayer | boolean | null;
 
 interface FishCommandRunner {
 	(_:{
-		rawArgs:(string | undefined)[],
-		args:Record<string, any>,
-		sender:FishPlayer,
-		outputSuccess:(message:string) => void,
-		outputFail:(message:string) => void
+		rawArgs:(string | undefined)[];
+		args:Record<string, any>;
+		sender:FishPlayer;
+		outputSuccess:(message:string) => void;
+		outputFail:(message:string) => void;
 	}): void;
 }
 
 interface FishCommandData {
-	args: string[],
-	description: string,
-	level: PermissionsLevel,
-	handler: FishCommandRunner,
+	args: string[];
+	description: string;
+	level: PermissionsLevel;
+	customUnauthorizedMessage?: string;
+	handler: FishCommandRunner;
 }
 type FishCommandsList = Record<string, FishCommandData>;
 
 interface FishPlayer {
 	player: mindustryPlayer;
-	name: string,
-	muted: boolean,
-	mod: boolean,
-	admin: boolean,
-	member: boolean,
-	stopped: boolean,
+	name: string;
+	muted: boolean;
+	mod: boolean;
+	admin: boolean;
+	member: boolean;
+	stopped: boolean;
 	/*rank*/
-	watch: boolean,
-	pet: string,
-	highlight: null,
-	history: [],
-	fakeAdmin: false,
+	watch: boolean;
+	pet: string;
+	highlight: null;
+	history: [];
+	fakeAdmin: false;
 }
 
 /* mindustry.gen.Player */

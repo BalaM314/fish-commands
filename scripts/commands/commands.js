@@ -153,9 +153,10 @@ function register(commands, clientCommands, runner) {
         }).join(" "), data.description, 
         //closure over processedCmdArgs, should be fine
         runner(function (rawArgs, sender) {
+            var _a;
             var fishSender = players.getP(sender);
             if (!canPlayerAccess(fishSender, data.level)) {
-                outputFail("You do not have the required permission (".concat(data.level, ") to execute this command"), sender);
+                outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : "You do not have the required permission (".concat(data.level, ") to execute this command"), sender);
                 return;
             }
             var output = processArgs(rawArgs, processedCmdArgs);
