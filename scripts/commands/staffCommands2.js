@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var PermissionsLevel = require("./commands").PermissionsLevel;
 var menus = require('./menus');
 var commands = {

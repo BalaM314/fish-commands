@@ -1,9 +1,6 @@
 const menus = require('menus');
 const players = require("players");
-declare const Call: any;
-declare const Strings: {
-	stripColors(string:string): string;
-}
+
 /**
  * Misc notes:
  * I made a handful of arbitrary choices, you can change them if you want
@@ -20,56 +17,10 @@ enum PermissionsLevel {
 	admin = "admin",
 }
 
-type FishCommandArgType = string | number | FishPlayer | null;
 
-interface FishCommandRunner {
-	(_:{
-		rawArgs:(string | undefined)[],
-		args:Record<string, any>,
-		sender:FishPlayer,
-		outputSuccess:(message:string) => void,
-		outputFail:(message:string) => void
-	}): void;
-}
-
-interface FishCommandData {
-	args: string[],
-	description: string,
-	level: PermissionsLevel,
-	handler: FishCommandRunner,
-}
-type FishCommandsList = Record<string, FishCommandData>;
-
-interface FishPlayer {
-	player: mindustryPlayer;
-	name: string,
-	muted: boolean,
-	mod: boolean,
-	admin: boolean,
-	member: boolean,
-	stopped: boolean,
-	/*rank*/
-	watch: boolean,
-	pet: string,
-	highlight: null,
-	history: [],
-	fakeAdmin: false,
-}
-
-/* mindustry.gen.Player */
-type mindustryPlayer = any;
-
-interface ClientCommandHandler {
-	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => void):void;
-}
 const commandArgTypes = ["string", "number", "player"] as const;
 type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
-interface CommandArg {
-	name: string;
-	type: CommandArgType;
-	isOptional: boolean;
-}
 
 function processArgString(str:string):CommandArg {
 	//this was copypasted from mlogx haha
@@ -78,8 +29,8 @@ function processArgString(str:string):CommandArg {
 		throw new Error(`Bad arg string ${str}: does not match pattern word:word(?)`);
 	}
 	const [, name, type, isOptional] = matchResult;
-	if(commandArgTypes.includes(<any>type)){
-		return { name, type: type as CommandArgType, isOptional: !! isOptional };
+	if((commandArgTypes.includes as (thing:string) => thing is CommandArgType)(type)){
+		return { name, type, isOptional: !! isOptional };
 	} else {
 		throw new Error(`Bad arg string ${str}: invalid type ${type}`);
 	}

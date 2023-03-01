@@ -1,7 +1,8 @@
 {
 	"compilerOptions": {
 		"target": "ES5",
-		// "module": "Node16",
+		"module": "CommonJS",
+		"moduleDetection": "force",
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,
 		"skipLibCheck": true,
