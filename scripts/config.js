@@ -1,9 +1,9 @@
-const STOPPED_PREFIX = '[yellow]⚠[scarlet]Marked Griefer[yellow]⚠[white]';
+const STOPPED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 const ADMIN_PREFIX = '[black]<[scarlet]A[black]>';
 const MOD_PREFIX = '[black]<[green]M[black]>';
-const AFK_PREFIX = '[orange] AFK  | [white]';
+const AFK_PREFIX = '[orange]\uE876 AFK \uE876 | [white]';
 const MUTED_PREFIX = '[white](muted)';
-const MEMBER_PREFIX = '[black]<[yellow][black]>[white]';
+const MEMBER_PREFIX = '[black]<[yellow]\uE809[black]>[white]';
 const bannedWords = ['nigger', 'kill yourself', 'kill urself', 'kys', 'cock', 'cock sucker'];
 const bannedNames = ['goldberg', 'eshay'];
 
