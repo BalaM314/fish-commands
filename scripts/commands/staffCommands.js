@@ -67,18 +67,18 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
 
       const tp = players.getP(targetPlr);
 
-      if (tp.admin || tp.mod) {
-        realP.sendMessage('[scarlet]⚠ [yellow] You cannot warn staff.');
-        return;
-      }
+      // if (!p.admin && tp.mod) {
+      //   realP.sendMessage('[scarlet]⚠ [yellow] You cannot warn staff.');
+      //   return;
+      // }
 
       const title = 'Warning';
       const message = reason
         ? reason
         : "You have been warned. I suggest you stop what you're doing";
-      let options = [['accept']];
+      let options = [['Ok']];
 
-      Call.menu(targetPlr.con, menus.getMenus().listeners.warn, title, message, options);
+      Call.menu(targetPlr.con, menus.getMenus().warn, title, message, options);
     })
   );
 
