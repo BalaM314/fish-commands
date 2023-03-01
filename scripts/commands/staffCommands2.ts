@@ -1,5 +1,7 @@
 const { PermissionsLevel } = require("./commands");
 const menus = require('./menus');
+const players = require('./players');
+const ohno = require('./ohno');
 
 const commands:FishCommandsList = {
 	warn2: {
@@ -41,6 +43,101 @@ const commands:FishCommandsList = {
 				outputSuccess(`Kicked player "${args.player.name}" for "${args.reason ?? 'A staff member did not like your actions.'}"`);
 			}
 		}
+	},
+
+	mod2: {
+    args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
+    description: "Add or remove a player's mod status.",
+		level: PermissionsLevel.admin,
+    handler({args, outputSuccess, outputFail}){
+      
+			switch(args["add/remove"]){
+				case "add": case "a": case "give": case "promote":
+					if(args.player.mod == true){
+						outputFail(`${args.player.name} is already a Moderator.`);
+					} else {
+						args.player.mod = true;
+						outputSuccess(`${args.player.name} [#48e076] is now ranked Moderator.`);
+						args.player.sendMessage(
+							'[yellow] Your rank is now [#48e076]Moderator.[yellow] Use [acid]"/help mod"[yellow] to see available commands.'
+						);
+						players.updateName(args.player);
+						players.save();
+					}
+					break;
+				case "remove": case "rm": case "r": case "demote":
+					if(args.player.admin){
+						outputFail(`${args.player.name} is an Admin.`);
+					} else if(!args.player.mod){
+						outputFail(`${args.player.name} is not a Moderator.`);
+					} else {
+						args.player.mod = false;
+						players.updateName(args.player);
+						players.save();
+						if(args.tellPlayer){
+							args.player.sendMessage(
+								'[scarlet] You are now no longer a Moderator.'
+							);
+						}
+						outputSuccess(`${args.player.name} [#48e076]is no longer a moderator.`);
+					}
+					break;
+				default: outputFail(`Invalid argument. [yellow]Usage: "/mod <add|remove> <player>"`); return;
+			}
+
+    }
+	},
+	admin2: {
+    args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
+    description: "Add or remove a player's admin status.",
+		level: PermissionsLevel.admin,
+    handler({args, outputSuccess, outputFail}){
+      
+			switch(args["add/remove"]){
+				case "add": case "a": case "give": case "promote":
+					if(args.player.admin == true){
+						outputFail(`${args.player.name} is already an Admin.`);
+					} else {
+						args.player.admin = true;
+						outputSuccess(`${args.player.name} [#48e076] is now an Admin.`);
+						args.player.sendMessage(
+							'[yellow] Your rank is now [#48e076]Admin.[yellow] Use [sky]"/help mod"[yellow] to see available commands.'
+						);
+						players.updateName(args.player);
+						players.save();
+					}
+					break;
+				case "remove": case "rm": case "r": case "demote":
+					if(!args.player.admin){
+						outputFail(`${args.player.name} is not an Admin.`);
+					} else {
+						args.player.admin = false;
+						players.updateName(args.player);
+						players.save();
+						if(args.tellPlayer){
+							args.player.sendMessage(
+								'[scarlet] You are now no longer an Admin.'
+							);
+						}
+						outputSuccess(`${args.player.name} [#48e076]is no longer an admin.`);
+					}
+					break;
+				default: outputFail(`Invalid argument. [yellow]Usage: "/admin <add|remove> <player>"`); return;
+			}
+
+    }
+	},
+
+	murder2: {
+    args: [],
+    description: 'Kills all ohno units',
+		level: PermissionsLevel.mod,
+		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
+    handler({outputSuccess}){
+			const numOhnos = ohno.totalOhno();
+			ohno.killOhno();
+			outputSuccess(`You massacred [#48e076]' ${numOhnos} '[yellow] helpless ohno crawlers.`);
+    }
 	},
 
 };
