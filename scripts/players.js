@@ -42,40 +42,31 @@ const save = () => {
 
 // Assign a prefix to a player's name based on their status e.g.: staff/marked etc
 const updateName = (player) => {
-  const p = getP(player);
+  const fishP = getP(player);
+  
   let prefix = '';
-
-  if (p.member) {
-    prefix = config.MEMBER_PREFIX + ' ';
+  if (fishP.stopped) {
+    prefix += config.STOPPED_PREFIX;
+  }
+  if (fishP.muted) {
+    prefix += config.MUTED_PREFIX;
+  }
+  if (fishP.afk) {
+    prefix += config.AFK_PREFIX;
+  }
+  if (fishP.member) {
+    prefix += config.MEMBER_PREFIX;
   }
 
-  if (p.stopped) {
-    player.name = prefix + config.STOPPED_PREFIX + p.name;
-  }
-  if (p.muted) {
-    player.name = prefix + config.MUTED_PREFIX + p.name;
-  }
-
-  if (p.afk) {
-    player.name = prefix + config.AFK_PREFIX + p.name;
-  }
-
-  if (p.admin) {
-    player.name = prefix + config.ADMIN_PREFIX + p.name;
+  if (fishP.admin || player.admin) {
+    prefix += config.ADMIN_PREFIX;
     player.admin = true;
-    return;
+    fishP.admin = true;
+    //this should not be in this method
+  } else if (fishP.mod) {
+    prefix += config.MOD_PREFIX;
   }
-
-  if (player.admin) {
-    p.admin = true;
-    return;
-  }
-
-  if (p.mod) {
-    player.name = prefix + config.MOD_PREFEIX + p.name;
-    return;
-  }
-  player.name = p.name;
+  player.name = prefix + fishP.name;
 };
 
 /**
