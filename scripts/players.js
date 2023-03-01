@@ -1,5 +1,6 @@
 const config = require('config');
 const stopped = require('stopped');
+const utils = require('utils');
 
 let players = {};
 
@@ -188,6 +189,7 @@ module.exports = {
   updateName: updateName,
   addPlayerHistory: addPlayerHistory,
   getP: getP,
+  getPByName: getPByName,
   stop: stop,
   free: free,
   getAllIds: getAllIds,

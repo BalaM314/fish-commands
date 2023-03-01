@@ -17,12 +17,12 @@ const commands:FishCommandsList = {
 			// }
 
 			
-			if (/*args[0].rank >= Rank.mod*/ args.player.mod || args.player.admin) {
-				outputFail('You cannot warn staff.');
-				return;
-			}
+			// if (/*args[0].rank >= Rank.mod*/ args.player.mod || args.player.admin) {
+			// 	outputFail('You cannot warn staff.');
+			// 	return;
+			// }
 
-			Call.menu(args.player.player.con, menus.getMenus().listeners.warn, 'Warning', args.reason ?? "You have been warned. I suggest you stop what you're doing", [['accept']]);
+			Call.menu(args.player.player.con, menus.getMenus().warn, 'Warning', args.reason ?? "You have been warned. I suggest you stop what you're doing", [['accept']]);
 			//menu()
 			outputSuccess(`Warned player "${args.player.name}" for "${args.reason ?? "You have been warned. I suggest you stop what you're doing"}"`);
 			//TODO: add FishPlayer.cleanedName for Strings.stripColors

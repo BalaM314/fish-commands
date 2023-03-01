@@ -1,5 +1,5 @@
-const menus = require('../menus');
-const players = require("../players");
+const menus = require('menus');
+const players = require("players");
 declare const Call: any;
 declare const Strings: {
 	stripColors(string:string): string;
@@ -137,8 +137,8 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel){
 	switch(level){
 		case PermissionsLevel.all: return true;
-		case PermissionsLevel.player: return !player.stopped;
-		case PermissionsLevel.mod: return player.mod;
+		case PermissionsLevel.player: return !player.stopped || player.mod || player.admin;
+		case PermissionsLevel.mod: return player.mod || player.admin;
 		case PermissionsLevel.admin: return player.admin;
 	}
 }
@@ -150,7 +150,8 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 	function outputSuccess(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[#48e076]${message}`);
 	}
-	for(const [name, data] of Object.entries(commands)){
+	for(const name of Object.keys(commands)){
+		const data = commands[name];
 		const processedCmdArgs = data.args.map(processArgString);
 		clientCommands.register(
 			name,
@@ -161,7 +162,7 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 				const fishSender = players.getP(sender);
 
 				if(!canPlayerAccess(fishSender, data.level)){
-					outputFail(`You do not have the required permission (${data.level}) to execute this command`, fishSender);
+					outputFail(`You do not have the required permission (${data.level}) to execute this command`, sender);
 					return;
 				}
 
@@ -185,3 +186,8 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 		);
 	}
 }
+
+module.exports = {
+	register,
+	PermissionsLevel
+};
