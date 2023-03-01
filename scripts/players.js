@@ -9,6 +9,7 @@ const createPlayer = (player) => {
     name: player.name,
     muted: false,
     mod: false,
+    stopped: false,
     admin: player.admin,
     watch: false,
     member: false,
