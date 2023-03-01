@@ -136,7 +136,7 @@ var canPlayerAccess = function canPlayerAccess(player, level) {
         case PermissionsLevel.admin: return player.admin;
     }
 };
-function register(commands, clientCommands, runner) {
+function register(commands, clientCommands, serverCommands, runner) {
     var e_2, _a;
     function outputFail(message, sender) {
         sender.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
@@ -172,6 +172,7 @@ function register(commands, clientCommands, runner) {
                 //getP was modified for this to work
                 outputFail: function (message) { return outputFail(message, sender); },
                 outputSuccess: function (message) { return outputSuccess(message, sender); },
+                execServer: function (command) { return serverCommands.handleMessage(command); }
             });
         }));
     };

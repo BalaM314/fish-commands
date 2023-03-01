@@ -97,7 +97,7 @@ var commands = {
         description: "Add or remove a player's admin status.",
         level: PermissionsLevel.admin,
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, execServer = _a.execServer;
             switch (args["add/remove"]) {
                 case "add":
                 case "a":
@@ -108,6 +108,7 @@ var commands = {
                     }
                     else {
                         args.player.admin = true;
+                        execServer("admin add ".concat(args.player.player.uuid()));
                         outputSuccess("".concat(args.player.name, " [#48e076] is now an Admin."));
                         args.player.sendMessage('[yellow] Your rank is now [#48e076]Admin.[yellow] Use [sky]"/help mod"[yellow] to see available commands.');
                         players.updateName(args.player);
@@ -123,6 +124,7 @@ var commands = {
                     }
                     else {
                         args.player.admin = false;
+                        execServer("admin remove ".concat(args.player.player.uuid()));
                         players.updateName(args.player);
                         players.save();
                         if (args.tellPlayer) {

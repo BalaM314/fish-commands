@@ -82,7 +82,7 @@ const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:Permis
 	}
 }
 
-function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
+function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, serverCommands:ServerCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
 	function outputFail(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 	}
@@ -123,6 +123,7 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 					//getP was modified for this to work
 					outputFail: message => outputFail(message, sender),
 					outputSuccess: message => outputSuccess(message, sender),
+					execServer: command => serverCommands.handleMessage(command)
 				});
 			})
 		);

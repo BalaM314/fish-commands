@@ -91,7 +91,7 @@ const commands:FishCommandsList = {
     args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
     description: "Add or remove a player's admin status.",
 		level: PermissionsLevel.admin,
-    handler({args, outputSuccess, outputFail}){
+    handler({args, outputSuccess, outputFail, execServer}){
       
 			switch(args["add/remove"]){
 				case "add": case "a": case "give": case "promote":
@@ -99,6 +99,7 @@ const commands:FishCommandsList = {
 						outputFail(`${args.player.name} is already an Admin.`);
 					} else {
 						args.player.admin = true;
+						execServer(`admin add ${args.player.player.uuid()}`);
 						outputSuccess(`${args.player.name} [#48e076] is now an Admin.`);
 						args.player.sendMessage(
 							'[yellow] Your rank is now [#48e076]Admin.[yellow] Use [sky]"/help mod"[yellow] to see available commands.'
@@ -112,6 +113,7 @@ const commands:FishCommandsList = {
 						outputFail(`${args.player.name} is not an Admin.`);
 					} else {
 						args.player.admin = false;
+						execServer(`admin remove ${args.player.player.uuid()}`);
 						players.updateName(args.player);
 						players.save();
 						if(args.tellPlayer){
