@@ -155,7 +155,10 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 		const processedCmdArgs = data.args.map(processArgString);
 		clientCommands.register(
 			name,
-			processedCmdArgs.map(arg => arg.isOptional ? `[${arg.name}(optional)]` : `<${arg.name}>`).join(" "),
+			processedCmdArgs.map((arg, index, array) => {
+				const brackets = arg.isOptional ? ["[", "]"] : ["<", ">"];
+				return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
+			}).join(" "),
 			data.description,
 			//closure over processedCmdArgs, should be fine
 			runner((rawArgs, sender) => {

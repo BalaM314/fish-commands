@@ -140,7 +140,10 @@ function register(commands, clientCommands, runner) {
     var _loop_1 = function (name) {
         var data = commands[name];
         var processedCmdArgs = data.args.map(processArgString);
-        clientCommands.register(name, processedCmdArgs.map(function (arg) { return arg.isOptional ? "[".concat(arg.name, "(optional)]") : "<".concat(arg.name, ">"); }).join(" "), data.description, 
+        clientCommands.register(name, processedCmdArgs.map(function (arg, index, array) {
+            var brackets = arg.isOptional ? ["[", "]"] : ["<", ">"];
+            return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
+        }).join(" "), data.description, 
         //closure over processedCmdArgs, should be fine
         runner(function (rawArgs, sender) {
             var fishSender = players.getP(sender);
