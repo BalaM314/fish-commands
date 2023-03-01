@@ -14,7 +14,8 @@ declare const Strings: {
 
 /** Represents a permission level that is required to run a specific command. */
 enum PermissionsLevel {
-	player = "player",
+	all = "all",
+	player = "player",//Must be not marked griefer
 	mod = "mod",
 	admin = "admin",
 }
@@ -45,6 +46,7 @@ interface FishPlayer {
 	mod: boolean,
 	admin: boolean,
 	member: boolean,
+	stopped: boolean,
 	/*rank*/
 	watch: boolean,
 	pet: string,
@@ -97,9 +99,11 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 
 }
 
+//const cause why not?
 const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel){
 	switch(level){
-		case PermissionsLevel.player: return true;
+		case PermissionsLevel.all: return true;
+		case PermissionsLevel.player: return !player.stopped;
 		case PermissionsLevel.mod: return player.mod;
 		case PermissionsLevel.admin: return player.admin;
 	}
