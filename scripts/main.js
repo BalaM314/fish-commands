@@ -9,7 +9,9 @@ const players = require('players');
 const trails = require('trails');
 const config = require('config');
 const ohno = require('ohno');
+const commands = require('commands/commands');
 const staffCommands = require('commands/staffCommands');
+const staffCommands2 = require('commands/staffCommands2');
 const playerCommands = require('commands/playerCommands');
 const whisper = require('whisper');
 const membership = require('membership');
@@ -116,7 +118,7 @@ Events.on(ServerLoadEvent, (e) => {
   // clientCommands.removeCommand('vote');
 
   staffCommands.registerCommands(clientCommands, serverCommands, runner);
-  //commands.register(staffCommands2 /*default export?*/, clientCommands, runner);
+  commands.register(staffCommands2.commands, clientCommands, runner);
   playerCommands.registerCommands(clientCommands, runner);
   ohno.registerCommands(clientCommands, runner);
   whisper.registerCommands(clientCommands, runner);

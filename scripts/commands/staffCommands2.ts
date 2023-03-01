@@ -1,7 +1,8 @@
+const { PermissionsLevel } = require("./commands");
+const menus = require('./menus');
 
-
-const staffCommands:FishCommandsList = {
-	warn: {
+const commands:FishCommandsList = {
+	warn2: {
 		args: ['player:player', 'reason:string?'],
 		description: 'warn a player.',
 		level: PermissionsLevel.mod,
@@ -28,7 +29,7 @@ const staffCommands:FishCommandsList = {
 		}
 	},
 
-	kick: {
+	kick2: {
 		args: ['player:player', 'reason:string?'],
 		description: 'Kick a player with optional reason.',
 		level: PermissionsLevel.mod,
@@ -42,4 +43,8 @@ const staffCommands:FishCommandsList = {
 		}
 	},
 
+};
+
+module.exports = {
+	commands
 };
