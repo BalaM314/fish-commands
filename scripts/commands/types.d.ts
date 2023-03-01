@@ -2,7 +2,7 @@ declare const Call: any;
 declare const Strings: {
 	stripColors(string:string): string;
 }
-type FishCommandArgType = string | number | FishPlayer | null;
+type FishCommandArgType = string | number | FishPlayer | boolean | null;
 
 interface FishCommandRunner {
 	(_:{

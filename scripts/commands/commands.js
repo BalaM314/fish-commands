@@ -44,7 +44,7 @@ var PermissionsLevel;
     PermissionsLevel["mod"] = "mod";
     PermissionsLevel["admin"] = "admin";
 })(PermissionsLevel || (PermissionsLevel = {}));
-var commandArgTypes = ["string", "number", "player"];
+var commandArgTypes = ["string", "number", "boolean", "player"];
 function processArgString(str) {
     //this was copypasted from mlogx haha
     var matchResult = str.match(/(\w+):(\w+)(\?)?/);
@@ -60,54 +60,60 @@ function processArgString(str) {
     }
 }
 function processArgs(args, processedCmdArgs) {
-    /**
-     * not an actual implementation
-     * don't try to implement this, I have some very similar code from mlogx
-     * if one of the command args is of type "number", this function should find that from the provided args, make sure its a number, and turn it into a number
-     * if its of type "player", it should return a FishPlayer
-     * (if players.getPByName returns null then return an error message "player ${} not found")
-     * */
     var e_1, _a;
     var outputArgs = {};
     try {
         for (var _b = __values(processedCmdArgs.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), i = _d[0], cmdArg = _d[1];
+            if (!args[i]) {
+                if (cmdArg.isOptional) {
+                    outputArgs[cmdArg.name] = null;
+                    continue;
+                }
+                else {
+                    throw new Error("arg parsing failed");
+                }
+            }
             switch (cmdArg.type) {
                 case "player":
-                    if (!args[i]) {
-                        if (cmdArg.isOptional) {
-                            outputArgs[cmdArg.name] = null;
-                            break;
-                        }
-                        throw new Error("arg parsing failed");
-                    }
                     var player = players.getPByName(args[i]);
                     if (player == null)
                         return "Player \"".concat(args[i], "\" not found.");
                     outputArgs[cmdArg.name] = player;
                     break;
                 case "number":
-                    if (!args[i]) {
-                        if (cmdArg.isOptional) {
-                            outputArgs[cmdArg.name] = null;
-                            break;
-                        }
-                        throw new Error("arg parsing failed");
-                    }
                     var number = parseInt(args[i]);
                     if (isNaN(number))
                         return "Invalid number \"".concat(args[i], "\"");
                     outputArgs[cmdArg.name] = number;
                     break;
                 case "string":
-                    if (!args[i]) {
-                        if (cmdArg.isOptional) {
-                            outputArgs[cmdArg.name] = null;
-                            break;
-                        }
-                        throw new Error("arg parsing failed");
-                    }
                     outputArgs[cmdArg.name] = args[i];
+                    break;
+                case "boolean":
+                    switch (args[i].toLowerCase()) {
+                        case "true":
+                        case "yes":
+                        case "yeah":
+                        case "ya":
+                        case "ya":
+                        case "t":
+                        case "y":
+                            outputArgs[cmdArg.name] = true;
+                            break;
+                        case "false":
+                        case "no":
+                        case "nah":
+                        case "nay":
+                        case "nope":
+                        case "f":
+                        case "n":
+                            outputArgs[cmdArg.name] = true;
+                            break;
+                        default:
+                            return "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".");
+                            break;
+                    }
                     break;
             }
         }
