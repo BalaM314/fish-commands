@@ -20,6 +20,7 @@ enum PermissionsLevel {
 	admin = "admin",
 }
 
+type FishCommandArgType = string | number | FishPlayer | null;
 
 interface FishCommandRunner {
 	(_:{
@@ -59,13 +60,14 @@ interface FishPlayer {
 type mindustryPlayer = any;
 
 interface ClientCommandHandler {
-	register(name:string, args:string, description:string, runner:(args:string[], player:any) => void):void;
+	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => void):void;
 }
-
+const commandArgTypes = ["string", "number", "player"] as const;
+type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 interface CommandArg {
 	name: string;
-	type: string;
+	type: CommandArgType;
 	isOptional: boolean;
 }
 
@@ -76,10 +78,14 @@ function processArgString(str:string):CommandArg {
 		throw new Error(`Bad arg string ${str}: does not match pattern word:word(?)`);
 	}
 	const [, name, type, isOptional] = matchResult;
-	return { name, type, isOptional: !! isOptional };
+	if(commandArgTypes.includes(<any>type)){
+		return { name, type: type as CommandArgType, isOptional: !! isOptional };
+	} else {
+		throw new Error(`Bad arg string ${str}: invalid type ${type}`);
+	}
 }
 
-function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string, any> | string {
+function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string, FishCommandArgType> | string {
 	/** 
 	 * not an actual implementation 
 	 * don't try to implement this, I have some very similar code from mlogx
@@ -87,16 +93,44 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 	 * if its of type "player", it should return a FishPlayer
 	 * (if players.getPByName returns null then return an error message "player ${} not found")
 	 * */
-	if(args == <any>["SussyImpasta", "being sus"] && processedCmdArgs == <any>[{name: "player", type: "player", isOptional: false}, {name: "reason", type: "string", isOptional: true}]){
-		return {
-			reason: args[1],
-			player: players.getPByName("SussyImpasta")
-			//function added in commands rewrite
-		};
-	} else {
-		return `Invalid arguments: Insufficient sus level`;//
-	}
 
+	let outputArgs:Record<string, FishCommandArgType> = {};
+	for(const [i, cmdArg] of processedCmdArgs.entries()){
+		switch(cmdArg.type){
+			case "player":
+				if(!args[i]){
+					if(cmdArg.isOptional){
+						outputArgs[cmdArg.name] = null; break;
+					}
+					throw new Error("arg parsing failed");
+				}
+				const player = players.getPByName(args[i]);
+				if(player == null) return `Player "${args[i]}" not found.`;
+				outputArgs[cmdArg.name] = player;
+				break;
+			case "number":
+				if(!args[i]){
+					if(cmdArg.isOptional){
+						outputArgs[cmdArg.name] = null; break;
+					}
+					throw new Error("arg parsing failed");
+				}
+				const number = parseInt(args[i]);
+				if(isNaN(number)) return `Invalid number "${args[i]}"`;
+				outputArgs[cmdArg.name] = number;
+				break;
+			case "string":
+				if(!args[i]){
+					if(cmdArg.isOptional){
+						outputArgs[cmdArg.name] = null; break;
+					}
+					throw new Error("arg parsing failed");
+				}
+				outputArgs[cmdArg.name] = args[i];
+				break;
+		}
+	}
+	return outputArgs;
 }
 
 //const cause why not?
