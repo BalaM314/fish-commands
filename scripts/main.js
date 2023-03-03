@@ -112,6 +112,7 @@ Events.on(ServerLoadEvent, (e) => {
   });
 
   const runner = (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method });
+  //Is this necessary? Can this function be moved to register()?
 
   clientCommands.removeCommand('help');
   // clientCommands.removeCommand('votekick');

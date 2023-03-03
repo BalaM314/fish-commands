@@ -32,19 +32,19 @@ var players = require("players");
 /**
  * Misc notes:
  * I made a handful of arbitrary choices, you can change them if you want
- * this is very, very incomplete
- * the api I want seems feasible to implement
- * maybe we should abstract away the "select a player" menu?
+ * the api i wanted is pretty much complete, we just need to port over the commands and maybe abstract away the "select a player" menu?
  */
 /** Represents a permission level that is required to run a specific command. */
 var PermissionsLevel;
 (function (PermissionsLevel) {
     PermissionsLevel["all"] = "all";
     PermissionsLevel["player"] = "player";
+    //trusted = "trusted",//
     PermissionsLevel["mod"] = "mod";
     PermissionsLevel["admin"] = "admin";
 })(PermissionsLevel || (PermissionsLevel = {}));
 var commandArgTypes = ["string", "number", "boolean", "player"];
+/**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha
     var matchResult = str.match(/(\w+):(\w+)(\?)?/);
@@ -59,6 +59,7 @@ function processArgString(str) {
         throw new Error("Bad arg string ".concat(str, ": invalid type ").concat(type));
     }
 }
+/**Takes a list of args passed to the command, and processes it, turning into a kwargs style object. */
 function processArgs(args, processedCmdArgs) {
     var e_1, _a;
     var outputArgs = {};
@@ -128,6 +129,7 @@ function processArgs(args, processedCmdArgs) {
     return outputArgs;
 }
 //const cause why not?
+/**Determines if a FishPlayer can run a command with a specific permission level. */
 var canPlayerAccess = function canPlayerAccess(player, level) {
     switch (level) {
         case PermissionsLevel.all: return true;
@@ -136,6 +138,10 @@ var canPlayerAccess = function canPlayerAccess(player, level) {
         case PermissionsLevel.admin: return player.admin;
     }
 };
+/**
+ * Registers all commands in a list to a client command handler.
+ * @argument runner (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method })
+ * */
 function register(commands, clientCommands, serverCommands, runner) {
     var e_2, _a;
     function outputFail(message, sender) {
@@ -145,31 +151,36 @@ function register(commands, clientCommands, serverCommands, runner) {
         sender.sendMessage("[#48e076]".concat(message));
     }
     var _loop_1 = function (name) {
+        //Cursed for of loop due to lack of object.entries
         var data = commands[name];
+        //Process the args
         var processedCmdArgs = data.args.map(processArgString);
-        clientCommands.register(name, processedCmdArgs.map(function (arg, index, array) {
+        clientCommands.register(name, 
+        //Convert the CommandArg[] to the format accepted by Arc CommandHandler
+        processedCmdArgs.map(function (arg, index, array) {
             var brackets = arg.isOptional ? ["[", "]"] : ["<", ">"];
+            //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
             return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
-        }).join(" "), data.description, 
-        //closure over processedCmdArgs, should be fine
-        runner(function (rawArgs, sender) {
+        }).join(" "), data.description, runner(function (rawArgs, sender) {
             var _a;
             var fishSender = players.getP(sender);
+            //Verify authorization
             if (!canPlayerAccess(fishSender, data.level)) {
                 outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : "You do not have the required permission (".concat(data.level, ") to execute this command"), sender);
                 return;
             }
+            //closure over processedCmdArgs, should be fine
             var output = processArgs(rawArgs, processedCmdArgs);
             if (typeof output == "string") {
                 //args are invalid
                 outputFail(output, sender);
                 return;
             }
+            //Run the command handler
             data.handler({
                 rawArgs: rawArgs,
                 args: output,
                 sender: fishSender,
-                //getP was modified for this to work
                 outputFail: function (message) { return outputFail(message, sender); },
                 outputSuccess: function (message) { return outputSuccess(message, sender); },
                 execServer: function (command) { return serverCommands.handleMessage(command); }

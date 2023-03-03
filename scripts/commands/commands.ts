@@ -4,15 +4,14 @@ const players = require("players");
 /**
  * Misc notes:
  * I made a handful of arbitrary choices, you can change them if you want
- * this is very, very incomplete
- * the api I want seems feasible to implement
- * maybe we should abstract away the "select a player" menu?
+ * the api i wanted is pretty much complete, we just need to port over the commands and maybe abstract away the "select a player" menu?
  */
 
 /** Represents a permission level that is required to run a specific command. */
 enum PermissionsLevel {
 	all = "all",
 	player = "player",//Must be not marked griefer
+	//trusted = "trusted",//
 	mod = "mod",
 	admin = "admin",
 }
@@ -21,7 +20,7 @@ enum PermissionsLevel {
 const commandArgTypes = ["string", "number", "boolean", "player"] as const;
 type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
-
+/**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str:string):CommandArg {
 	//this was copypasted from mlogx haha
 	const matchResult = str.match(/(\w+):(\w+)(\?)?/);
@@ -36,6 +35,8 @@ function processArgString(str:string):CommandArg {
 	}
 }
 
+
+/**Takes a list of args passed to the command, and processes it, turning into a kwargs style object. */
 function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string, FishCommandArgType> | string {
 	let outputArgs:Record<string, FishCommandArgType> = {};
 	for(const [i, cmdArg] of processedCmdArgs.entries()){
@@ -73,6 +74,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 }
 
 //const cause why not?
+/**Determines if a FishPlayer can run a command with a specific permission level. */
 const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel){
 	switch(level){
 		case PermissionsLevel.all: return true;
@@ -82,6 +84,10 @@ const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:Permis
 	}
 }
 
+/**
+ * Registers all commands in a list to a client command handler.
+ * @argument runner (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method })
+ * */
 function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, serverCommands:ServerCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
 	function outputFail(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
@@ -89,26 +95,35 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 	function outputSuccess(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[#48e076]${message}`);
 	}
+
+
 	for(const name of Object.keys(commands)){
+		//Cursed for of loop due to lack of object.entries
 		const data = commands[name];
+
+		//Process the args
 		const processedCmdArgs = data.args.map(processArgString);
+
 		clientCommands.register(
 			name,
+			//Convert the CommandArg[] to the format accepted by Arc CommandHandler
 			processedCmdArgs.map((arg, index, array) => {
 				const brackets = arg.isOptional ? ["[", "]"] : ["<", ">"];
+				//if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
 				return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
 			}).join(" "),
 			data.description,
-			//closure over processedCmdArgs, should be fine
 			runner((rawArgs, sender) => {
 				const fishSender = players.getP(sender);
 
+				//Verify authorization
 				if(!canPlayerAccess(fishSender, data.level)){
 					outputFail(data.customUnauthorizedMessage ?? `You do not have the required permission (${data.level}) to execute this command`, sender);
 					return;
 				}
 
 				
+				//closure over processedCmdArgs, should be fine
 				const output = processArgs(rawArgs, processedCmdArgs);
 				if(typeof output == "string"){
 					//args are invalid
@@ -116,11 +131,11 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 					return;
 				}
 
+				//Run the command handler
 				data.handler({
 					rawArgs,
 					args: output,
 					sender: fishSender,
-					//getP was modified for this to work
 					outputFail: message => outputFail(message, sender),
 					outputSuccess: message => outputSuccess(message, sender),
 					execServer: command => serverCommands.handleMessage(command)
