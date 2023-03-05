@@ -1,4 +1,10 @@
 declare const Call: any;
+declare const Log: {
+	debug(message:string);
+	info(message:string);
+	warn(message:string);
+	err(message:string);
+};
 declare const Strings: {
 	stripColors(string:string): string;
 }

@@ -8,12 +8,13 @@ const players = require("players");
  */
 
 /** Represents a permission level that is required to run a specific command. */
-enum PermissionsLevel {
-	all = "all",
-	player = "player",//Must be not marked griefer
-	//trusted = "trusted",//
-	mod = "mod",
-	admin = "admin",
+class PermissionsLevel {
+	static all = new PermissionsLevel("all");
+	static player = new PermissionsLevel("player");
+	static mod = new PermissionsLevel("mod");
+	static admin = new PermissionsLevel("admin");
+	static member = new PermissionsLevel("member", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	constructor(public name:string, public customErrorMessage?:string){}
 }
 
 
@@ -36,7 +37,7 @@ function processArgString(str:string):CommandArg {
 }
 
 
-/**Takes a list of args passed to the command, and processes it, turning into a kwargs style object. */
+/**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
 function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string, FishCommandArgType> | string {
 	let outputArgs:Record<string, FishCommandArgType> = {};
 	for(const [i, cmdArg] of processedCmdArgs.entries()){
@@ -75,12 +76,14 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 
 //const cause why not?
 /**Determines if a FishPlayer can run a command with a specific permission level. */
-const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel){
+const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel):boolean {
 	switch(level){
 		case PermissionsLevel.all: return true;
 		case PermissionsLevel.player: return !player.stopped || player.mod || player.admin;
 		case PermissionsLevel.mod: return player.mod || player.admin;
 		case PermissionsLevel.admin: return player.admin;
+		case PermissionsLevel.member: return player.member;
+		default: Log.err(`ERROR!: canPlayerAccess called with invalid permissions level ${level}`); return false;
 	}
 }
 
@@ -118,7 +121,7 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 
 				//Verify authorization
 				if(!canPlayerAccess(fishSender, data.level)){
-					outputFail(data.customUnauthorizedMessage ?? `You do not have the required permission (${data.level}) to execute this command`, sender);
+					outputFail(data.customUnauthorizedMessage ?? data.level.customErrorMessage ?? `You do not have the required permission (${data.level}) to execute this command`, sender);
 					return;
 				}
 
