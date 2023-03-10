@@ -256,6 +256,59 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
     })
   );
 
+  clientCommands.register(
+    'stop_offline',
+    '<name>',
+    'Stops an offline player.',
+    runner((args, realP) => {
+      const p = players.getP(realP);
+      const admins = Vars.netServer.admins;
+
+      if (p.fakeAdmin) {
+        return;
+      }
+
+      if (!p.mod && !p.admin) {
+        realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
+        return;
+      }
+      let possiblePlayers = admins.searchNames(args[0]);
+      if(possiblePlayers.length > 20){
+        let exactPlayers = possiblePlayers.select(pdata => pdata.lastName == args[0]);
+        if(exactPlayers.length > 0){
+          possiblePlayers = exactPlayers;
+        } else {
+          realP.sendMessage('[scarlet]⚠ [yellow]Too many players with that name.');
+        }
+      }
+
+      menus.menuStuff.playerList = [];
+      menus.menuStuff.lastOptionIndex = 0;
+
+      const title = 'Stop';
+      const message = 'Choose a player to stop.';
+      let options = [[]];
+      let arrayIndex = 0;
+      possiblePlayers.forEach(pData => {
+        
+        menus.menuStuff.playerList.push(pData.id);
+        menus.menuStuff.lastOptionIndex += 1;
+        if (options[arrayIndex].length >= 2) {
+          arrayIndex += 1;
+          options[arrayIndex] = [pData.lastName];
+        } else {
+          options[arrayIndex].push(pData.lastName);
+        }
+      });
+
+      if (options[0].length === 0) options = [];
+
+      options.push(['cancel']);
+
+      Call.menu(realP.con, menus.menuStuff.listeners.stopOffline, title, message, options);
+    })
+  );
+
   // Free
   clientCommands.register(
     'free',

@@ -1,11 +1,14 @@
 const players = require('players');
 const utils = require('utils');
+const stopped = require('stopped');
 
 let serverCommands;
 
 const menuStuff = {
   listeners: {},
   flattenedNonStaffPlayers: [],
+  /**Only used by stop_offline. Not sure how this stuff works, will fix in rewrite. */
+  playerList: [],
   lastOptionIndex: 0,
 };
 
@@ -24,6 +27,29 @@ const stopListener = (player, option) => {
 
   players.stop(pObj, player);
   player.sendMessage(pObj.name + '[#48e076] was stopped.');
+  return;
+};
+
+// stop_offline
+const stopOfflineListener = (player, option) => {
+  if (option === -1 || option === menuStuff.lastOptionIndex) return;
+
+  const fishPlr = players.getP(player);
+
+  if (!fishPlr.mod && !fishPlr.admin) {
+    player.kick('You tried to access a menu incorrectly.');
+    return;
+  }
+
+  const uuid = menuStuff.playerList[option];
+  stopped.addStopped(uuid);
+  players.addPlayerHistory(uuid, {
+    action: 'stopped',
+    by: player.name,
+    time: Date.now(),
+  });
+  player.sendMessage('[#48e076]Selected player was stopped.');
+  //Do NOT send the uuid in the messge.
   return;
 };
 
@@ -127,6 +153,7 @@ const ipBanListener = (player, option) => {
 
 Events.on(ServerLoadEvent, (e) => {
   menuStuff.listeners.stop = Menus.registerMenu(stopListener);
+  menuStuff.listeners.stopOffline = Menus.registerMenu(stopOfflineListener);
   menuStuff.listeners.free = Menus.registerMenu(freeListener);
   menuStuff.listeners.mute = Menus.registerMenu(muteListener);
   menuStuff.listeners.warn = Menus.registerMenu(warnListener);
