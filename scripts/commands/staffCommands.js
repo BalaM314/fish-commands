@@ -330,7 +330,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
           realP.sendMessage('[scarlet]⚠[yellow] ' + foundPlayer.name + ' is not stopped.');
         } else {
           players.free(foundPlayer);
-          realP.sendMessage(foundPlayer.name + '[#48e076] was stopped.');
+          realP.sendMessage(foundPlayer.name + '[#48e076] was freed.');
           return;
         }
       }
