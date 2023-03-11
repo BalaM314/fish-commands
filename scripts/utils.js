@@ -106,6 +106,17 @@ const plrByName = (plr) => {
  */
 const plrById = (id) => Groups.player.find((p) => p.uuid() === id);
 
+function to2DArray(array, width){
+  let output = [[]];
+  array.forEach(el => {
+    if(output[output.length - 1].length >= width){
+      output.push([]);
+    }
+    output[output.length - 1].push(el);
+  });
+  return output;
+}
+
 module.exports = {
   log: logg,
   list: list,
@@ -115,4 +126,5 @@ module.exports = {
   plrById: plrById,
   plrByName: plrByName,
   getTimeSinceText: getTimeSinceText,
+  to2DArray: to2DArray,
 };

@@ -150,5 +150,6 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 
 module.exports = {
 	register,
-	PermissionsLevel
+	PermissionsLevel,
+	canPlayerAccess
 };

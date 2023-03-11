@@ -8,6 +8,14 @@ declare const Log: {
 declare const Strings: {
 	stripColors(string:string): string;
 }
+declare const Vars: any;
+declare const Events: {
+	on(event:any, handler:(e:any) => void);
+}
+declare const ServerLoadEvent: any;
+declare const Menus: {
+	registerMenu(listener:MenuListener):number;
+}
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 
 interface FishCommandRunner {
@@ -37,24 +45,44 @@ interface FishCommandData {
 }
 type FishCommandsList = Record<string, FishCommandData>;
 
-interface FishPlayer {
+interface FishPlayer extends FishPlayerData {
 	player: mindustryPlayer;
+	watch: boolean;
+	activeMenu: {
+		cancelOptionId: number;
+		callback?: (sender:FishPlayer, option:number) => void;
+	}
+}
+
+interface FishPlayerData {
 	name: string;
 	muted: boolean;
 	mod: boolean;
 	admin: boolean;
 	member: boolean;
 	stopped: boolean;
-	/*rank*/
-	watch: boolean;
+	/*rank: Rank*/
 	pet: string;
-	highlight: null;
+	highlight: string;
 	history: [];
 	fakeAdmin: false;
 }
 
 /* mindustry.gen.Player */
 type mindustryPlayer = any;
+interface mindustryPlayerData {
+	/**uuid */
+	id: string;
+	lastName: string;
+	ips: Seq<string>;
+	names: Seq<string>;
+	adminUsid: string;
+	timesKicked: number;
+	timesJoined: number;
+	admin: boolean;
+	banned: boolean;
+	lastKicked: number;
+}
 
 interface ClientCommandHandler {
 	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => void):void;

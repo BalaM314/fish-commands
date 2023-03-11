@@ -1,7 +1,9 @@
-const { PermissionsLevel } = require("./commands");
-const menus = require('./menus');
+const { PermissionsLevel, canPlayerAccess } = require("./commands");
+const { menu, listeners } = require('./menus');
 const players = require('./players');
+const stopped = require('./stopped');
 const ohno = require('./ohno');
+const utils = require('./utils');
 
 const commands:FishCommandsList = {
 	warn2: {
@@ -9,25 +11,9 @@ const commands:FishCommandsList = {
 		description: 'warn a player.',
 		level: PermissionsLevel.mod,
 		handler({rawArgs, args, sender, outputSuccess, outputFail}){
-			//declare let args: [player:FishPlayer, reason:string | null];
-			
-			
-			//Should be handled by register()
-			// if (!playerData.admin && !playerData.mod) {
-			// 	realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
-			// 	return;
-			// }
-
-			
-			// if (/*args[0].rank >= Rank.mod*/ args.player.mod || args.player.admin) {
-			// 	outputFail('You cannot warn staff.');
-			// 	return;
-			// }
-
-			Call.menu(args.player.player.con, menus.getMenus().warn, 'Warning', args.reason ?? "You have been warned. I suggest you stop what you're doing", [['accept']]);
-			//menu()
-			outputSuccess(`Warned player "${args.player.name}" for "${args.reason ?? "You have been warned. I suggest you stop what you're doing"}"`);
-			//TODO: add FishPlayer.cleanedName for Strings.stripColors
+			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
+			Call.menu(args.player.player.con, listeners.none, 'Warning', reason, [['accept']]);
+			outputSuccess(`Warned player "${args.player.name}" for "${reason}"`);
 		}
 	},
 
@@ -35,12 +21,14 @@ const commands:FishCommandsList = {
 		args: ['player:player', 'reason:string?'],
 		description: 'Kick a player with optional reason.',
 		level: PermissionsLevel.mod,
-		handler({args, outputSuccess, outputFail}) {
+		handler({args, outputSuccess, outputFail, sender}) {
 			if (args.player.admin || args.player.mod) {
+			//if(args.player.rank.level >= sender.rank.level)
 				outputFail('You do not have permission to kick this player.');
 			} else {
-				args.player.player.kick(args.reason ?? 'A staff member did not like your actions.');
-				outputSuccess(`Kicked player "${args.player.name}" for "${args.reason ?? 'A staff member did not like your actions.'}"`);
+				const reason = args.reason ?? 'A staff member did not like your actions.';
+				args.player.player.kick(reason);
+				outputSuccess(`Kicked player "${args.player.name}" for "${reason}"`);
 			}
 		}
 	},
@@ -140,6 +128,34 @@ const commands:FishCommandsList = {
 			ohno.killOhno();
 			outputSuccess(`You massacred [#48e076]' ${numOhnos} '[yellow] helpless ohno crawlers.`);
     }
+	},
+
+	stop_offline2: {
+		args: ["name:string"],
+		description: "Stops an offline player.",
+		level: PermissionsLevel.mod,
+		handler({args, sender, outputFail, outputSuccess}){
+			const admins = Vars.netServer.admins;
+			let possiblePlayers:mindustryPlayerData[] = admins.searchNames(args.name).toSeq().items;
+      if(possiblePlayers.length > 20){
+        let exactPlayers = admins.findByName(args.name).toSeq().items;
+        if(exactPlayers.size > 0){
+          possiblePlayers = exactPlayers;
+        } else {
+          outputFail('Too many players with that name.');
+        }
+      }
+
+			menu("Stop", "Choose a player to stop", possiblePlayers, ({option, sender}) => {
+				stopped.addStopped(option.id);
+				players.addPlayerHistory(option.id, {
+					action: 'stopped',
+					by: sender.name,
+					time: Date.now(),
+				});
+				outputSuccess(`Player ${option.lastName} was stopped.`);
+			}, sender, true, p => p.lastName);
+		}
 	},
 
 };
