@@ -41,16 +41,17 @@ const stopOfflineListener = (player, option) => {
     return;
   }
 
-  const uuid = menuStuff.playerList[option];
-  stopped.addStopped(uuid);
-  players.addPlayerHistory(uuid, {
+  const info = menuStuff.playerList[option];
+  const fishP = players.getPlayerByInfo(info);
+  fishP.stopped = true;
+  stopped.addStopped(info.id);
+  players.addPlayerHistory(info.id, {
     action: 'stopped',
     by: player.name,
     time: Date.now(),
   });
-  player.sendMessage('[#48e076]Selected player was stopped.');
-  //Do NOT send the uuid in the messge.
-  return;
+  player.sendMessage(info.lastName + ' [#48e076] was stopped.');
+  menuStuff.playerList = [];
 };
 
 // free

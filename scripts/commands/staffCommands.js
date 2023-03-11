@@ -292,7 +292,7 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
       let arrayIndex = 0;
       possiblePlayers.forEach(pData => {
         
-        menus.menuStuff.playerList.push(pData.id);
+        menus.menuStuff.playerList.push(pData);
         menus.menuStuff.lastOptionIndex += 1;
         if (options[arrayIndex].length >= 2) {
           arrayIndex += 1;
