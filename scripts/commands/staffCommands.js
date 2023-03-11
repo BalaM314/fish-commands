@@ -67,18 +67,18 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
 
       const tp = players.getP(targetPlr);
 
-      if (tp.admin || tp.mod) {
-        realP.sendMessage('[scarlet]⚠ [yellow] You cannot warn staff.');
-        return;
-      }
+      // if (!p.admin && tp.mod) {
+      //   realP.sendMessage('[scarlet]⚠ [yellow] You cannot warn staff.');
+      //   return;
+      // }
 
       const title = 'Warning';
       const message = reason
         ? reason
         : "You have been warned. I suggest you stop what you're doing";
-      let options = [['accept']];
+      let options = [['Ok']];
 
-      Call.menu(targetPlr.con, menus.getMenus().listeners.warn, title, message, options);
+      Call.menu(targetPlr.con, menus.getMenus().warn, title, message, options);
     })
   );
 
@@ -253,6 +253,60 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
       options.push(['cancel']);
 
       Call.menu(realP.con, menus.menuStuff.listeners.stop, title, message, options);
+    })
+  );
+
+  clientCommands.register(
+    'stop_offline',
+    '<name>',
+    'Stops an offline player.',
+    runner((args, realP) => {
+      const p = players.getP(realP);
+      const admins = Vars.netServer.admins;
+
+      if (p.fakeAdmin) {
+        return;
+      }
+
+      if (!p.mod && !p.admin) {
+        realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
+        return;
+      }
+      let possiblePlayers = admins.searchNames(args[0]).toSeq();
+      if(possiblePlayers.size > 20){
+        let exactPlayers = admins.findByName(args[0]).toSeq();
+        if(exactPlayers.length > 0){
+          possiblePlayers = exactPlayers;
+        } else {
+          realP.sendMessage('[scarlet]⚠ [yellow]Too many players with that name, be more specific.');
+          return;
+        }
+      }
+
+      menus.menuStuff.playerList = [];
+      menus.menuStuff.lastOptionIndex = 0;
+
+      const title = 'Stop';
+      const message = 'Choose a player to stop.';
+      let options = [[]];
+      let arrayIndex = 0;
+      possiblePlayers.forEach(pData => {
+        
+        menus.menuStuff.playerList.push(pData);
+        menus.menuStuff.lastOptionIndex += 1;
+        if (options[arrayIndex].length >= 2) {
+          arrayIndex += 1;
+          options[arrayIndex] = [pData.lastName];
+        } else {
+          options[arrayIndex].push(pData.lastName);
+        }
+      });
+
+      if (options[0].length === 0) options = [];
+
+      options.push(['cancel']);
+
+      Call.menu(realP.con, menus.menuStuff.listeners.stopOffline, title, message, options);
     })
   );
 
