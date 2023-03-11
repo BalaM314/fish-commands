@@ -272,13 +272,14 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
         realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
         return;
       }
-      let possiblePlayers = admins.searchNames(args[0]);
-      if(possiblePlayers.length > 20){
-        let exactPlayers = possiblePlayers.select(pdata => pdata.lastName == args[0]);
+      let possiblePlayers = admins.searchNames(args[0]).toSeq();
+      if(possiblePlayers.size > 20){
+        let exactPlayers = admins.findByName(args[0]).toSeq();
         if(exactPlayers.length > 0){
           possiblePlayers = exactPlayers;
         } else {
-          realP.sendMessage('[scarlet]⚠ [yellow]Too many players with that name.');
+          realP.sendMessage('[scarlet]⚠ [yellow]Too many players with that name, be more specific.');
+          return;
         }
       }
 
