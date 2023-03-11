@@ -20,6 +20,22 @@ const createPlayer = (player) => {
   return;
 };
 
+/**Gets/creates a FishPlayer from stored playerInfo */
+const getPlayerByInfo = (playerInfo) => {
+  return players[playerInfo.id] ? players[playerInfo.id] :players[playerInfo.id] = {
+    name: playerInfo.lastName,
+    muted: false,
+    mod: false,
+    admin: false,
+    watch: false,
+    member: false,
+    pet: '',
+    highlight: null,
+    history: [],
+    fakeAdmin: false,
+  };
+};
+
 /**
  * Saves only staff and members locally so they persist after restart.
  * Saving all players would cause the object to be too large for
@@ -167,6 +183,7 @@ module.exports = {
   setName: setName,
   addPlayerHistory: addPlayerHistory,
   getP: getP,
+  getPlayerByInfo: getPlayerByInfo,
   stop: stop,
   free: free,
   getAllIds: getAllIds,
