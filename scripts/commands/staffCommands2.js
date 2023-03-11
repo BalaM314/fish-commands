@@ -16,7 +16,7 @@ exports.commands = {
             var _b;
             var rawArgs = _a.rawArgs, args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
-            Call.menu(args.player.player.con, menus_1.listeners.none, 'Warning', reason, [['accept']]);
+            (0, menus_1.menu)('Warning', reason, [['accept']], args.player);
             outputSuccess("Warned player \"".concat(args.player.name, "\" for \"").concat(reason, "\""));
         }
     },
@@ -162,7 +162,7 @@ exports.commands = {
                     outputFail('Too many players with that name.');
                 }
             }
-            (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, function (_a) {
+            (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, sender, function (_a) {
                 var option = _a.option, sender = _a.sender;
                 stopped.addStopped(option.id);
                 players.addPlayerHistory(option.id, {
@@ -171,7 +171,7 @@ exports.commands = {
                     time: Date.now(),
                 });
                 outputSuccess("Player ".concat(option.lastName, " was stopped."));
-            }, sender, true, function (p) { return p.lastName; });
+            }, true, function (p) { return p.lastName; });
         }
     },
 };

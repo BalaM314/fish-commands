@@ -45,37 +45,44 @@ Events.on(ServerLoadEvent, function (e) {
         finally { if (e_1) throw e_1.error; }
     }
 });
-/**Displays a menu. */
-function menu(title, description, options, callback, target, includeCancel, optionStringifier //this is dubious
+//this is a minor abomination but theres no good way to do overloads in typescript
+function menu(title, description, options, target, callback, includeCancel, optionStringifier //this is dubious
 ) {
     if (includeCancel === void 0) { includeCancel = true; }
     if (optionStringifier === void 0) { optionStringifier = function (t) { return t; }; }
-    //Set up the 2D array of options, and add cancel
-    var arrangedOptions = utils.to2DArray(options.map(optionStringifier), 3);
-    if (includeCancel) {
-        arrangedOptions.push("Cancel");
-        target.activeMenu.cancelOptionId = options.length;
+    if (!callback) {
+        //overload 1, just display a menu with no callback
+        Call.menu(target.player.con, registeredListeners.none, title, description, options);
     }
     else {
-        target.activeMenu.cancelOptionId = -1;
+        //overload 2, display a menu with callback
+        //Set up the 2D array of options, and add cancel
+        var arrangedOptions = utils.to2DArray(options.map(optionStringifier), 3);
+        if (includeCancel) {
+            arrangedOptions.push("Cancel");
+            target.activeMenu.cancelOptionId = options.length;
+        }
+        else {
+            target.activeMenu.cancelOptionId = -1;
+        }
+        //The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
+        target.activeMenu.callback = function (fishSender, option) {
+            //Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
+            //and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
+            //which already checks permissions.
+            //Additionally, the callback is cleared by the generic menu listener after it is executed.
+            callback({
+                option: options[option],
+                sender: target,
+                outputFail: function (message) {
+                    target.player.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
+                },
+                outputSuccess: function (message) {
+                    target.player.sendMessage("[#48e076]".concat(message));
+                }
+            });
+        };
+        Call.menu(target.player.con, registeredListeners.generic, title, description, arrangedOptions);
     }
-    //The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
-    target.activeMenu.callback = function (fishSender, option) {
-        //Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
-        //and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
-        //which already checks permissions.
-        //Additionally, the callback is cleared by the generic menu listener after it is executed.
-        callback({
-            option: options[option],
-            sender: target,
-            outputFail: function (message) {
-                target.player.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
-            },
-            outputSuccess: function (message) {
-                target.player.sendMessage("[#48e076]".concat(message));
-            }
-        });
-    };
-    Call.menu(target.player.con, registeredListeners.generic, title, description, arrangedOptions);
 }
 exports.menu = menu;

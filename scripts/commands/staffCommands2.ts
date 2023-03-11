@@ -12,7 +12,7 @@ export const commands:FishCommandsList = {
 		level: PermissionsLevel.mod,
 		handler({rawArgs, args, sender, outputSuccess, outputFail}){
 			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
-			Call.menu(args.player.player.con, listeners.none, 'Warning', reason, [['accept']]);
+			menu('Warning', reason, [['accept']], args.player);
 			outputSuccess(`Warned player "${args.player.name}" for "${reason}"`);
 		}
 	},
@@ -146,7 +146,7 @@ export const commands:FishCommandsList = {
         }
       }
 
-			menu("Stop", "Choose a player to stop", possiblePlayers, ({option, sender}) => {
+			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
 				stopped.addStopped(option.id);
 				players.addPlayerHistory(option.id, {
 					action: 'stopped',
@@ -154,7 +154,7 @@ export const commands:FishCommandsList = {
 					time: Date.now(),
 				});
 				outputSuccess(`Player ${option.lastName} was stopped.`);
-			}, sender, true, p => p.lastName);
+			}, true, p => p.lastName);
 		}
 	},
 
