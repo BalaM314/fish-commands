@@ -1,4 +1,3 @@
-const menus = require('menus');
 const players = require("players");
 
 /**
@@ -8,7 +7,7 @@ const players = require("players");
  */
 
 /** Represents a permission level that is required to run a specific command. */
-class PermissionsLevel {
+export class PermissionsLevel {
 	static all = new PermissionsLevel("all");
 	static player = new PermissionsLevel("player");
 	static mod = new PermissionsLevel("mod");
@@ -76,7 +75,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 
 //const cause why not?
 /**Determines if a FishPlayer can run a command with a specific permission level. */
-const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel):boolean {
+export const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel):boolean {
 	switch(level){
 		case PermissionsLevel.all: return true;
 		case PermissionsLevel.player: return !player.stopped || player.mod || player.admin;
@@ -91,7 +90,7 @@ const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:Permis
  * Registers all commands in a list to a client command handler.
  * @argument runner (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method })
  * */
-function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, serverCommands:ServerCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
+export function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, serverCommands:ServerCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
 	function outputFail(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 	}
@@ -148,8 +147,3 @@ function register(commands:FishCommandsList, clientCommands:ClientCommandHandler
 	}
 }
 
-module.exports = {
-	register,
-	PermissionsLevel,
-	canPlayerAccess
-};

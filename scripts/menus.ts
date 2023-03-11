@@ -28,9 +28,14 @@ Events.on(ServerLoadEvent, (e) => {
 });
 
 /**Displays a menu. */
-function menu<T>(title:string, description:string, options:T[], callback: (opts: {
-	option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
-}) => void, target:FishPlayer, includeCancel:boolean = true, optionStringifier:(opt:T) => string = t => t as string){
+function menu<T>(
+	title:string, description:string, options:T[],
+	callback: (opts: {
+		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
+	}) => void,
+	target:FishPlayer, includeCancel:boolean = true,
+	optionStringifier:(opt:T) => string = t => t as any as string //this is dubious
+){
 
 	//Set up the 2D array of options, and add cancel
 	const arrangedOptions = utils.to2DArray(options.map(optionStringifier), 3);
@@ -62,7 +67,7 @@ function menu<T>(title:string, description:string, options:T[], callback: (opts:
 	Call.menu(target.player.con, registeredListeners.generic, title, description, arrangedOptions);
 }
 
-module.exports = {
-	listeners: registeredListeners,
+export {
+	registeredListeners as listeners,
 	menu
 };

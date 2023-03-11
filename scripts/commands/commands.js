@@ -27,7 +27,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var menus = require('menus');
+exports.register = exports.canPlayerAccess = exports.PermissionsLevel = void 0;
 var players = require("players");
 /**
  * Misc notes:
@@ -35,14 +35,19 @@ var players = require("players");
  * the api i wanted is pretty much complete, we just need to port over the commands and maybe abstract away the "select a player" menu?
  */
 /** Represents a permission level that is required to run a specific command. */
-var PermissionsLevel;
-(function (PermissionsLevel) {
-    PermissionsLevel["all"] = "all";
-    PermissionsLevel["player"] = "player";
-    //trusted = "trusted",//
-    PermissionsLevel["mod"] = "mod";
-    PermissionsLevel["admin"] = "admin";
-})(PermissionsLevel || (PermissionsLevel = {}));
+var PermissionsLevel = /** @class */ (function () {
+    function PermissionsLevel(name, customErrorMessage) {
+        this.name = name;
+        this.customErrorMessage = customErrorMessage;
+    }
+    PermissionsLevel.all = new PermissionsLevel("all");
+    PermissionsLevel.player = new PermissionsLevel("player");
+    PermissionsLevel.mod = new PermissionsLevel("mod");
+    PermissionsLevel.admin = new PermissionsLevel("admin");
+    PermissionsLevel.member = new PermissionsLevel("member", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
+    return PermissionsLevel;
+}());
+exports.PermissionsLevel = PermissionsLevel;
 var commandArgTypes = ["string", "number", "boolean", "player"];
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
@@ -59,7 +64,7 @@ function processArgString(str) {
         throw new Error("Bad arg string ".concat(str, ": invalid type ").concat(type));
     }
 }
-/**Takes a list of args passed to the command, and processes it, turning into a kwargs style object. */
+/**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
 function processArgs(args, processedCmdArgs) {
     var e_1, _a;
     var outputArgs = {};
@@ -136,8 +141,13 @@ var canPlayerAccess = function canPlayerAccess(player, level) {
         case PermissionsLevel.player: return !player.stopped || player.mod || player.admin;
         case PermissionsLevel.mod: return player.mod || player.admin;
         case PermissionsLevel.admin: return player.admin;
+        case PermissionsLevel.member: return player.member;
+        default:
+            Log.err("ERROR!: canPlayerAccess called with invalid permissions level ".concat(level));
+            return false;
     }
 };
+exports.canPlayerAccess = canPlayerAccess;
 /**
  * Registers all commands in a list to a client command handler.
  * @argument runner (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method })
@@ -162,11 +172,11 @@ function register(commands, clientCommands, serverCommands, runner) {
             //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
             return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
         }).join(" "), data.description, runner(function (rawArgs, sender) {
-            var _a;
+            var _a, _b;
             var fishSender = players.getP(sender);
             //Verify authorization
-            if (!canPlayerAccess(fishSender, data.level)) {
-                outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : "You do not have the required permission (".concat(data.level, ") to execute this command"), sender);
+            if (!(0, exports.canPlayerAccess)(fishSender, data.level)) {
+                outputFail((_b = (_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.level.customErrorMessage) !== null && _b !== void 0 ? _b : "You do not have the required permission (".concat(data.level, ") to execute this command"), sender);
                 return;
             }
             //closure over processedCmdArgs, should be fine
@@ -201,7 +211,4 @@ function register(commands, clientCommands, serverCommands, runner) {
         finally { if (e_2) throw e_2.error; }
     }
 }
-module.exports = {
-    register: register,
-    PermissionsLevel: PermissionsLevel
-};
+exports.register = register;

@@ -1,11 +1,11 @@
-const { PermissionsLevel, canPlayerAccess } = require("./commands");
-const { menu, listeners } = require('./menus');
+import { PermissionsLevel, canPlayerAccess } from "./commands";
+import { menu, listeners } from '../menus';
 const players = require('./players');
 const stopped = require('./stopped');
 const ohno = require('./ohno');
 const utils = require('./utils');
 
-const commands:FishCommandsList = {
+export const commands:FishCommandsList = {
 	warn2: {
 		args: ['player:player', 'reason:string?'],
 		description: 'warn a player.',
@@ -158,8 +158,4 @@ const commands:FishCommandsList = {
 		}
 	},
 
-};
-
-module.exports = {
-	commands
 };

@@ -1,53 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var PermissionsLevel = require("./commands").PermissionsLevel;
-var menus = require('./menus');
+exports.commands = void 0;
+var commands_1 = require("./commands");
+var menus_1 = require("../menus");
 var players = require('./players');
+var stopped = require('./stopped');
 var ohno = require('./ohno');
-var commands = {
+var utils = require('./utils');
+exports.commands = {
     warn2: {
         args: ['player:player', 'reason:string?'],
         description: 'warn a player.',
-        level: PermissionsLevel.mod,
+        level: commands_1.PermissionsLevel.mod,
         handler: function (_a) {
-            //declare let args: [player:FishPlayer, reason:string | null];
-            var _b, _c;
+            var _b;
             var rawArgs = _a.rawArgs, args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            //Should be handled by register()
-            // if (!playerData.admin && !playerData.mod) {
-            // 	realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
-            // 	return;
-            // }
-            // if (/*args[0].rank >= Rank.mod*/ args.player.mod || args.player.admin) {
-            // 	outputFail('You cannot warn staff.');
-            // 	return;
-            // }
-            Call.menu(args.player.player.con, menus.getMenus().warn, 'Warning', (_b = args.reason) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing", [['accept']]);
-            //menu()
-            outputSuccess("Warned player \"".concat(args.player.name, "\" for \"").concat((_c = args.reason) !== null && _c !== void 0 ? _c : "You have been warned. I suggest you stop what you're doing", "\""));
-            //TODO: add FishPlayer.cleanedName for Strings.stripColors
+            var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
+            Call.menu(args.player.player.con, menus_1.listeners.none, 'Warning', reason, [['accept']]);
+            outputSuccess("Warned player \"".concat(args.player.name, "\" for \"").concat(reason, "\""));
         }
     },
     kick2: {
         args: ['player:player', 'reason:string?'],
         description: 'Kick a player with optional reason.',
-        level: PermissionsLevel.mod,
+        level: commands_1.PermissionsLevel.mod,
         handler: function (_a) {
-            var _b, _c;
-            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var _b;
+            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, sender = _a.sender;
             if (args.player.admin || args.player.mod) {
+                //if(args.player.rank.level >= sender.rank.level)
                 outputFail('You do not have permission to kick this player.');
             }
             else {
-                args.player.player.kick((_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.');
-                outputSuccess("Kicked player \"".concat(args.player.name, "\" for \"").concat((_c = args.reason) !== null && _c !== void 0 ? _c : 'A staff member did not like your actions.', "\""));
+                var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
+                args.player.player.kick(reason);
+                outputSuccess("Kicked player \"".concat(args.player.name, "\" for \"").concat(reason, "\""));
             }
         }
     },
     mod2: {
         args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
         description: "Add or remove a player's mod status.",
-        level: PermissionsLevel.admin,
+        level: commands_1.PermissionsLevel.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             switch (args["add/remove"]) {
@@ -95,7 +89,7 @@ var commands = {
     admin2: {
         args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
         description: "Add or remove a player's admin status.",
-        level: PermissionsLevel.admin,
+        level: commands_1.PermissionsLevel.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, execServer = _a.execServer;
             switch (args["add/remove"]) {
@@ -142,7 +136,7 @@ var commands = {
     murder2: {
         args: [],
         description: 'Kills all ohno units',
-        level: PermissionsLevel.mod,
+        level: commands_1.PermissionsLevel.mod,
         customUnauthorizedMessage: "[yellow]You're a [scarlet]monster[].",
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
@@ -151,7 +145,33 @@ var commands = {
             outputSuccess("You massacred [#48e076]' ".concat(numOhnos, " '[yellow] helpless ohno crawlers."));
         }
     },
-};
-module.exports = {
-    commands: commands
+    stop_offline2: {
+        args: ["name:string"],
+        description: "Stops an offline player.",
+        level: commands_1.PermissionsLevel.mod,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            var admins = Vars.netServer.admins;
+            var possiblePlayers = admins.searchNames(args.name).toSeq().items;
+            if (possiblePlayers.length > 20) {
+                var exactPlayers = admins.findByName(args.name).toSeq().items;
+                if (exactPlayers.size > 0) {
+                    possiblePlayers = exactPlayers;
+                }
+                else {
+                    outputFail('Too many players with that name.');
+                }
+            }
+            (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, function (_a) {
+                var option = _a.option, sender = _a.sender;
+                stopped.addStopped(option.id);
+                players.addPlayerHistory(option.id, {
+                    action: 'stopped',
+                    by: sender.name,
+                    time: Date.now(),
+                });
+                outputSuccess("Player ".concat(option.lastName, " was stopped."));
+            }, sender, true, function (p) { return p.lastName; });
+        }
+    },
 };

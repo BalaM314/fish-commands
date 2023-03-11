@@ -1,145 +1,81 @@
-const players = require('players');
-const utils = require('utils');
-
-let serverCommands;
-
-const menuStuff = {
-  listeners: {},
-  flattenedNonStaffPlayers: [],
-  lastOptionIndex: 0,
+"use strict";
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-
-// stop
-const stopListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
-
-  const fishPlr = players.getP(player);
-
-  if (!fishPlr.mod && !fishPlr.admin) {
-    player.kick('You tried to access a menu incorrectly.');
-    return;
-  }
-
-  const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
-
-  players.stop(pObj, player);
-  player.sendMessage(pObj.name + '[#48e076] was stopped.');
-  return;
-};
-
-// free
-const freeListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
-
-  const fishPlr = players.getP(player);
-
-  if (!fishPlr.mod && !fishPlr.admin) {
-    player.kick('You tried to access a menu incorrectly.');
-    return;
-  }
-
-  const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
-
-  players.free(pObj, player);
-  player.sendMessage(pObj.name + '[#48e076] was freed.');
-  return;
-};
-
-// mute
-const muteListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
-
-  const fishPlr = players.getP(player);
-
-  if (!fishPlr.mod && !fishPlr.admin) {
-    player.kick('You tried to access a menu incorrectly.');
-    return;
-  }
-
-  const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
-
-  p.muted = !p.muted;
-  player.sendMessage(pObj.name + '[#48e076] was ' + p.muted ? 'muted.' : 'unmuted');
-  players.updateName(pObj);
-  pObj.sendMessage(
-    p.muted
-      ? '[yellow] Hey! You have been muted. You can still use /msg to send a message to someone though.'
-      : '[green]You have been unmuted.'
-  );
-  players.addPlayerHistory(pObj.uuid(), {
-    action: tp.muted ? 'muted' : 'unmuted',
-    by: player.name,
-    time: Date.now(),
-  });
-  players.save();
-
-  return;
-};
-
-// warn
-const warnListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
-
-  const fishPlr = players.getP(player);
-
-  if (!fishPlr.mod && !fishPlr.admin) {
-    player.kick('You tried to access a menu incorrectly.');
-    return;
-  }
-
-  const p = players.getPById(menuStuff.flattenedNonStaffPlayers[option]);
-  const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
-
-  p.stopped = true;
-  pObj.unit().type = UnitTypes.stell;
-  player.sendMessage(pObj.name + '[#48e076] was stopped.');
-  players.updateName(pObj);
-  pObj.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
-  players.addPlayerHistory(pObj.uuid(), {
-    action: 'stopped',
-    by: player.name,
-    time: Date.now(),
-  });
-  players.save();
-
-  return;
-};
-
-// ip ban
-const ipBanListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
-
-  const fishPlr = players.getP(player);
-
-  if (!fishPlr.mod && !fishPlr.admin) {
-    player.kick('You tried to access a menu incorrectly.');
-    return;
-  }
-
-  const pObj = utils.plrById(menuStuff.flattenedNonStaffPlayers[option]);
-
-  serverCommands.handleMessage('ban ip ' + pObj.ip());
-
-  player.sendMessage(pObj.name + '[#48e076] was banned.');
-
-  return;
-};
-
-Events.on(ServerLoadEvent, (e) => {
-  menuStuff.listeners.stop = Menus.registerMenu(stopListener);
-  menuStuff.listeners.free = Menus.registerMenu(freeListener);
-  menuStuff.listeners.mute = Menus.registerMenu(muteListener);
-  menuStuff.listeners.warn = Menus.registerMenu(warnListener);
-  menuStuff.listeners.ipban = Menus.registerMenu(ipBanListener);
-  serverCommands = Core.app.listeners.find(
-    (l) => l instanceof Packages.mindustry.server.ServerControl
-  ).handler;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.menu = exports.listeners = void 0;
+var players = require("players");
+var utils = require("utils");
+var registeredListeners = {};
+exports.listeners = registeredListeners;
+var listeners = (function (d) { return d; })({
+    generic: function (player, option) {
+        var _a, _b;
+        var fishSender = players.getP(player);
+        if (option === -1 || option === fishSender.activeMenu.cancelOptionId)
+            return;
+        (_b = (_a = fishSender.activeMenu).callback) === null || _b === void 0 ? void 0 : _b.call(_a, fishSender, option);
+        fishSender.activeMenu.callback = undefined;
+    },
+    none: function (player, option) {
+        //do nothing
+    }
 });
-
-const getMenus = () => {
-  return menuStuff.listeners;
-};
-module.exports = {
-  menuStuff: menuStuff,
-  getMenus: getMenus,
-};
+Events.on(ServerLoadEvent, function (e) {
+    var e_1, _a;
+    try {
+        for (var _b = __values(Object.keys(listeners)), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var key = _c.value;
+            registeredListeners[key] = Menus.registerMenu(listeners[key]);
+        }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+        }
+        finally { if (e_1) throw e_1.error; }
+    }
+});
+/**Displays a menu. */
+function menu(title, description, options, callback, target, includeCancel, optionStringifier //this is dubious
+) {
+    if (includeCancel === void 0) { includeCancel = true; }
+    if (optionStringifier === void 0) { optionStringifier = function (t) { return t; }; }
+    //Set up the 2D array of options, and add cancel
+    var arrangedOptions = utils.to2DArray(options.map(optionStringifier), 3);
+    if (includeCancel) {
+        arrangedOptions.push("Cancel");
+        target.activeMenu.cancelOptionId = options.length;
+    }
+    else {
+        target.activeMenu.cancelOptionId = -1;
+    }
+    //The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
+    target.activeMenu.callback = function (fishSender, option) {
+        //Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
+        //and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
+        //which already checks permissions.
+        //Additionally, the callback is cleared by the generic menu listener after it is executed.
+        callback({
+            option: options[option],
+            sender: target,
+            outputFail: function (message) {
+                target.player.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
+            },
+            outputSuccess: function (message) {
+                target.player.sendMessage("[#48e076]".concat(message));
+            }
+        });
+    };
+    Call.menu(target.player.con, registeredListeners.generic, title, description, arrangedOptions);
+}
+exports.menu = menu;
