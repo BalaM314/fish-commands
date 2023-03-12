@@ -6,9 +6,9 @@ const ohno = require('./ohno');
 const utils = require('./utils');
 
 export const commands:FishCommandsList = {
-	warn2: {
+	warn: {
 		args: ['player:player', 'reason:string?'],
-		description: 'warn a player.',
+		description: 'Warn a player.',
 		level: PermissionsLevel.mod,
 		handler({args, outputSuccess }){
 			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
@@ -17,11 +17,40 @@ export const commands:FishCommandsList = {
 		}
 	},
 
-	kick2: {
+	mute: {
+		args: ['player:player'],
+		description: 'Toggles whether a player is muted.',
+		level: PermissionsLevel.mod,
+		handler({args, sender, outputSuccess }){
+			if(args.player.muted){
+				args.player.muted = false;
+				players.updateName(args.player);
+				outputSuccess(`Unmuted player "${args.player.name}".`);
+				args.player.player.sendMessage(`[green]You have been unmuted.`);
+				players.addPlayerHistory(args.player.player.uuid(), {
+          action: 'unmuted',
+          by: sender.name,
+          time: Date.now(),
+        });
+			} else {
+				args.player.muted = true;
+				players.updateName(args.player);
+				outputSuccess(`Muted player "${args.player.name}".`);
+				args.player.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
+				players.addPlayerHistory(args.player.player.uuid(), {
+          action: 'unmuted',
+          by: sender.name,
+          time: Date.now(),
+        });
+			}
+		}
+	},
+
+	kick: {
 		args: ['player:player', 'reason:string?'],
 		description: 'Kick a player with optional reason.',
 		level: PermissionsLevel.mod,
-		handler({args, outputSuccess, outputFail, sender}) {
+		handler({args, outputSuccess, outputFail }) {
 			if (args.player.admin || args.player.mod) {
 			//if(args.player.rank.level >= sender.rank.level)
 				outputFail('You do not have permission to kick this player.');
@@ -33,12 +62,39 @@ export const commands:FishCommandsList = {
 		}
 	},
 
-	mod2: {
+	stop: {
+		args: ['player:player'],
+		description: 'Stops a player.',
+		level: PermissionsLevel.mod,
+		handler({args, sender, outputSuccess, outputFail}) {
+			if(args.player.stopped){
+				outputFail(`Player "${args.player.name}" is already stopped.`);
+			} else {
+				players.stop(args.player.player, sender, false);
+				outputSuccess(`Player "${args.player.name}" has been stopped.`);
+			}
+		}
+	},
+
+	free: {
+		args: ['player:player'],
+		description: 'Frees a player.',
+		level: PermissionsLevel.mod,
+		handler({args, sender, outputSuccess, outputFail}) {
+			if(args.player.stopped){
+				players.free(args.player.player, sender, false);
+				outputSuccess(`Player "${args.player.name}" has been freed.`);
+			} else {
+				outputFail(`Player "${args.player.name}" is not stopped.`);;
+			}
+		}
+	},
+
+	mod: {
     args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
     description: "Add or remove a player's mod status.",
 		level: PermissionsLevel.admin,
     handler({args, outputSuccess, outputFail}){
-      
 			switch(args["add/remove"]){
 				case "add": case "a": case "give": case "promote":
 					if(args.player.mod == true){
@@ -72,10 +128,10 @@ export const commands:FishCommandsList = {
 					break;
 				default: outputFail(`Invalid argument. [yellow]Usage: "/mod <add|remove> <player>"`); return;
 			}
-
     }
 	},
-	admin2: {
+
+	admin: {
     args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
     description: "Add or remove a player's admin status.",
 		level: PermissionsLevel.admin,
@@ -118,7 +174,7 @@ export const commands:FishCommandsList = {
     }
 	},
 
-	murder2: {
+	murder: {
     args: [],
     description: 'Kills all ohno units',
 		level: PermissionsLevel.mod,
@@ -159,5 +215,147 @@ export const commands:FishCommandsList = {
 			}, true, p => p.lastName);
 		}
 	},
+
+	restart: {
+		args: [],
+		description: "Stops and restarts the server. Do not run when the player count is high.",
+		level: PermissionsLevel.admin,
+		handler({outputFail}){
+			const now = Date.now();
+			const lastRestart = Core.settings.get("lastRestart", "");
+			if(lastRestart != ""){
+				const numOld = Number(lastRestart);
+				if (now - numOld < 600000) {
+          outputFail(`You need to wait at least 10 minutes between restarts.`);
+          return;
+        }
+			}
+			Core.settings.put("lastRestart", String(now));
+			Core.settings.manualSave();
+			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+			const restartLoop = (sec:number) => {
+				if (sec === 5) {
+					Call.sendMessage('[green]Game saved. [scarlet]Server restarting in:');
+				}
+
+				Call.sendMessage('[scarlet]' + String(sec));
+
+				if (sec <= 0) {
+					Core.app.post(() => {
+						SaveIO.save(file);
+						Core.app.exit();
+					});
+					return;
+				}
+				Timer.schedule(() => {
+					const newSec = sec - 1;
+					restartLoop(newSec);
+				}, 1);
+			};
+			restartLoop(5);
+		}
+	},
+
+	history: {
+		args: ["player:player"],
+		description: "Shows moderation history for a player.",
+		level: PermissionsLevel.mod,
+		handler({args, output}){
+			if(args.player.history && args.player.history.length > 0){
+				output(
+					`[yellow]_______________Player history_______________\n\n` +
+					(args.player as FishPlayer).history.map(e =>
+						`${e.by} [yellow]${e.action} ${args.player.name} [white]${utils.getTimeSinceText(e.time)}`
+					).join("\n")
+				);
+			} else {
+				output(`[yellow]No history was found for player ${args.player.name}.`);
+			}
+		}
+	},
+
+	save: {
+		args: [],
+		description: "Saves the game state.",
+		level: PermissionsLevel.mod,
+		handler({outputSuccess}){
+			players.save();
+			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+      SaveIO.save(file);
+      outputSuccess('Game saved.');
+		}
+	},
+
+	wave: {
+		args: ["wave:number"],
+		description: "Sets the wave number.",
+		level: PermissionsLevel.admin,
+		handler({args, outputSuccess, outputFail}){
+			if(args.wave > 0 && Number.isInteger(args.wave)){
+				Vars.state.wave = args.wave;
+				outputSuccess(`Set wave to ${Vars.state.wave}`);
+			} else {
+				outputFail(`Wave must be a positive integer.`);
+			}
+		}
+	},
+
+	label: {
+		args: ["time:number", "message:string"],
+		description: "Places a label at your position for a specified amount of time.",
+		level: PermissionsLevel.admin,
+		handler({args, sender, outputSuccess, outputFail}){
+			if(args.time <= 0 || args.time > 3600){
+				outputFail(`Time must be a positive number less than 3600.`);
+				return;
+			}
+			let timeRemaining = args.time;
+			const labelx = args.player.player.x;
+			const labely = args.player.player.y;
+			Timer.schedule(() => {
+				if(timeRemaining > 0) {
+					let timeseconds = timeRemaining % 60;
+					let timeminutes = (timeRemaining - timeseconds) / 60;
+					Call.label(
+						`${sender.name}\n\n[white]${args.message}\n\n[acid]${timeminutes}:${timeseconds}`,
+						1, labelx, labely
+					);
+					timeRemaining --;
+				}
+			}, 0, 1, args.time);
+		}
+	},
+
+	member: {
+		args: ["player:player", "value:boolean"],
+		description: "Sets a player's member status.",
+		level: PermissionsLevel.admin,
+		handler({args, outputSuccess}){
+			(args.player as FishPlayer).member = args.value;
+			players.updateName(args.player.player);
+			players.save();
+			outputSuccess(`Set membership status of player "${args.player.name}" to ${args.value}.`);
+		}
+	},
+
+	ipban: {
+		args: [],
+		description: "Bans a player's IP.",
+		level: PermissionsLevel.admin,
+		handler({sender, outputFail, outputSuccess, execServer}){
+			let playerList:mindustryPlayer[] = [];
+			(Groups.player as mindustryPlayer[]).forEach(player => {
+				if(!player.admin) playerList.push(player);
+			});
+			menu(`IP BAN`, "Choose a player to IP ban.", playerList, sender, ({option}) => {
+				if(option.admin){
+					outputFail(`Cannot ip ban an admin.`);
+				} else {
+					execServer(`ban ip ${option.ip()}`);
+					outputSuccess(`IP-banned player ${option.name}.`);
+				}
+			}, true, opt => opt.name);
+		}
+	}
 
 };
