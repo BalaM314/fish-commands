@@ -16,6 +16,7 @@ declare const ServerLoadEvent: any;
 declare const Menus: {
 	registerMenu(listener:MenuListener):number;
 }
+declare const Groups: any;
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 
 interface FishCommandRunner {

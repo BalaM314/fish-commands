@@ -28,6 +28,7 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = exports.canPlayerAccess = exports.PermissionsLevel = void 0;
+var menus_1 = require("../menus");
 var players = require("players");
 /**
  * Misc notes:
@@ -68,12 +69,18 @@ function processArgString(str) {
 function processArgs(args, processedCmdArgs) {
     var e_1, _a;
     var outputArgs = {};
+    var unresolvedArgs = [];
     try {
         for (var _b = __values(processedCmdArgs.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), i = _d[0], cmdArg = _d[1];
             if (!args[i]) {
                 if (cmdArg.isOptional) {
                     outputArgs[cmdArg.name] = null;
+                    continue;
+                }
+                else if (cmdArg.type == "player") {
+                    outputArgs[cmdArg.name] = null;
+                    unresolvedArgs.push(cmdArg);
                     continue;
                 }
                 else {
@@ -84,13 +91,13 @@ function processArgs(args, processedCmdArgs) {
                 case "player":
                     var player = players.getPByName(args[i]);
                     if (player == null)
-                        return "Player \"".concat(args[i], "\" not found.");
+                        return { error: "Player \"".concat(args[i], "\" not found.") };
                     outputArgs[cmdArg.name] = player;
                     break;
                 case "number":
                     var number = parseInt(args[i]);
                     if (isNaN(number))
-                        return "Invalid number \"".concat(args[i], "\"");
+                        return { error: "Invalid number \"".concat(args[i], "\"") };
                     outputArgs[cmdArg.name] = number;
                     break;
                 case "string":
@@ -116,9 +123,7 @@ function processArgs(args, processedCmdArgs) {
                         case "n":
                             outputArgs[cmdArg.name] = true;
                             break;
-                        default:
-                            return "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".");
-                            break;
+                        default: return { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") };
                     }
                     break;
             }
@@ -131,7 +136,7 @@ function processArgs(args, processedCmdArgs) {
         }
         finally { if (e_1) throw e_1.error; }
     }
-    return outputArgs;
+    return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
 //const cause why not?
 /**Determines if a FishPlayer can run a command with a specific permission level. */
@@ -168,7 +173,7 @@ function register(commands, clientCommands, serverCommands, runner) {
         clientCommands.register(name, 
         //Convert the CommandArg[] to the format accepted by Arc CommandHandler
         processedCmdArgs.map(function (arg, index, array) {
-            var brackets = arg.isOptional ? ["[", "]"] : ["<", ">"];
+            var brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
             //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
             return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
         }).join(" "), data.description, runner(function (rawArgs, sender) {
@@ -181,19 +186,21 @@ function register(commands, clientCommands, serverCommands, runner) {
             }
             //closure over processedCmdArgs, should be fine
             var output = processArgs(rawArgs, processedCmdArgs);
-            if (typeof output == "string") {
+            if ("error" in output) {
                 //args are invalid
-                outputFail(output, sender);
+                outputFail(output.error, sender);
                 return;
             }
-            //Run the command handler
-            data.handler({
-                rawArgs: rawArgs,
-                args: output,
-                sender: fishSender,
-                outputFail: function (message) { return outputFail(message, sender); },
-                outputSuccess: function (message) { return outputSuccess(message, sender); },
-                execServer: function (command) { return serverCommands.handleMessage(command); }
+            resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
+                //Run the command handler
+                data.handler({
+                    rawArgs: rawArgs,
+                    args: output,
+                    sender: fishSender,
+                    outputFail: function (message) { return outputFail(message, sender); },
+                    outputSuccess: function (message) { return outputSuccess(message, sender); },
+                    execServer: function (command) { return serverCommands.handleMessage(command); }
+                });
             });
         }));
     };
@@ -212,3 +219,24 @@ function register(commands, clientCommands, serverCommands, runner) {
     }
 }
 exports.register = register;
+function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
+    if (unresolvedArgs.length == 0) {
+        callback(processedArgs);
+    }
+    else {
+        var argToResolve_1 = unresolvedArgs.shift();
+        var optionsList = void 0;
+        //Dubious implementation
+        switch (argToResolve_1.type) {
+            case "player":
+                optionsList = Groups.player.array.items;
+                break;
+            default: throw new Error("Unable to resolve arg of type ".concat(argToResolve_1.type));
+        }
+        (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList, sender, function (_a) {
+            var option = _a.option;
+            processedArgs[argToResolve_1.name] = option;
+            resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
+        }, true, function (player) { return player.name; });
+    }
+}

@@ -1,3 +1,5 @@
+import { menu } from "../menus";
+
 const players = require("players");
 
 /**
@@ -37,12 +39,22 @@ function processArgString(str:string):CommandArg {
 
 
 /**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
-function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string, FishCommandArgType> | string {
+function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
+	processedArgs: Record<string, FishCommandArgType>;
+	unresolvedArgs: CommandArg[];
+} | {
+	error: string;
+}{
 	let outputArgs:Record<string, FishCommandArgType> = {};
+	let unresolvedArgs:CommandArg[] = [];
 	for(const [i, cmdArg] of processedCmdArgs.entries()){
 		if(!args[i]){
 			if(cmdArg.isOptional){
 				outputArgs[cmdArg.name] = null; continue;
+			} else if(cmdArg.type == "player"){
+				outputArgs[cmdArg.name] = null;
+				unresolvedArgs.push(cmdArg);
+				continue;
 			} else {
 				throw new Error("arg parsing failed");
 			}
@@ -50,12 +62,12 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 		switch(cmdArg.type){
 			case "player":
 				const player = players.getPByName(args[i]);
-				if(player == null) return `Player "${args[i]}" not found.`;
+				if(player == null) return {error: `Player "${args[i]}" not found.`};
 				outputArgs[cmdArg.name] = player;
 				break;
 			case "number":
 				const number = parseInt(args[i]);
-				if(isNaN(number)) return `Invalid number "${args[i]}"`;
+				if(isNaN(number)) return {error: `Invalid number "${args[i]}"`};
 				outputArgs[cmdArg.name] = number;
 				break;
 			case "string":
@@ -65,12 +77,12 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):Record<string
 				switch(args[i].toLowerCase()){
 					case "true": case "yes": case "yeah": case "ya": case "ya": case "t": case "y": outputArgs[cmdArg.name] = true; break;
 					case "false": case "no": case "nah": case "nay": case "nope": case "f": case "n": outputArgs[cmdArg.name] = true; break;
-					default: return `Argument ${args[i]} is not a boolean. Try "true" or "false".`; break;
+					default: return {error: `Argument ${args[i]} is not a boolean. Try "true" or "false".`};
 				}
 				break;
 		}
 	}
-	return outputArgs;
+	return {processedArgs: outputArgs, unresolvedArgs};
 }
 
 //const cause why not?
@@ -110,7 +122,7 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 			name,
 			//Convert the CommandArg[] to the format accepted by Arc CommandHandler
 			processedCmdArgs.map((arg, index, array) => {
-				const brackets = arg.isOptional ? ["[", "]"] : ["<", ">"];
+				const brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
 				//if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
 				return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
 			}).join(" "),
@@ -127,23 +139,48 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 				
 				//closure over processedCmdArgs, should be fine
 				const output = processArgs(rawArgs, processedCmdArgs);
-				if(typeof output == "string"){
+				if("error" in output){
 					//args are invalid
-					outputFail(output, sender);
+					outputFail(output.error, sender);
 					return;
 				}
-
-				//Run the command handler
-				data.handler({
-					rawArgs,
-					args: output,
-					sender: fishSender,
-					outputFail: message => outputFail(message, sender),
-					outputSuccess: message => outputSuccess(message, sender),
-					execServer: command => serverCommands.handleMessage(command)
+				
+				resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, () => {
+					//Run the command handler
+					data.handler({
+						rawArgs,
+						args: output,
+						sender: fishSender,
+						outputFail: message => outputFail(message, sender),
+						outputSuccess: message => outputSuccess(message, sender),
+						execServer: command => serverCommands.handleMessage(command)
+					});
 				});
+				
+
+				
 			})
 		);
 	}
+}
+
+function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>, unresolvedArgs:CommandArg[], sender:FishPlayer, callback:(args:Record<string, FishCommandArgType>) => void){
+	if(unresolvedArgs.length == 0){
+		callback(processedArgs);
+	} else {
+		const argToResolve = unresolvedArgs.shift()!;
+		let optionsList:any[];
+		//Dubious implementation
+		switch(argToResolve.type){
+			case "player": optionsList = Groups.player.array.items; break;
+			default: throw new Error(`Unable to resolve arg of type ${argToResolve.type}`);
+		}
+		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, ({option}) => {
+			processedArgs[argToResolve.name] = option;
+			resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
+		}, true, player => player.name)
+
+	}
+
 }
 
