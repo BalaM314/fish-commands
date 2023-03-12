@@ -136,7 +136,7 @@ export const commands:FishCommandsList = {
     description: "Add or remove a player's admin status.",
 		level: PermissionsLevel.admin,
     handler({args, outputSuccess, outputFail, execServer}){
-      
+
 			switch(args["add/remove"]){
 				case "add": case "a": case "give": case "promote":
 					if(args.player.admin == true){

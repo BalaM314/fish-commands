@@ -11,7 +11,6 @@ const config = require('config');
 const ohno = require('ohno');
 const commands = require('commands');
 const staffCommands = require('staffCommands');
-const staffCommands2 = require('staffCommands2');
 const playerCommands = require('playerCommands');
 const whisper = require('whisper');
 const membership = require('membership');
@@ -118,8 +117,7 @@ Events.on(ServerLoadEvent, (e) => {
   // clientCommands.removeCommand('votekick');
   // clientCommands.removeCommand('vote');
 
-  staffCommands.registerCommands(clientCommands, serverCommands, runner);
-  commands.register(staffCommands2.commands, clientCommands, serverCommands, runner);
+  commands.register(staffCommands.commands, clientCommands, serverCommands, runner);
   playerCommands.registerCommands(clientCommands, runner);
   ohno.registerCommands(clientCommands, runner);
   whisper.registerCommands(clientCommands, runner);
