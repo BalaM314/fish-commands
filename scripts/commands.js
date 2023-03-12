@@ -160,6 +160,9 @@ function register(commands, clientCommands, serverCommands, runner) {
     function outputSuccess(message, sender) {
         sender.sendMessage("[#48e076]".concat(message));
     }
+    function outputMessage(message, sender) {
+        sender.sendMessage(message);
+    }
     var _loop_1 = function (name) {
         //Cursed for of loop due to lack of object.entries
         var data = commands[name];
@@ -194,6 +197,7 @@ function register(commands, clientCommands, serverCommands, runner) {
                     sender: fishSender,
                     outputFail: function (message) { return outputFail(message, sender); },
                     outputSuccess: function (message) { return outputSuccess(message, sender); },
+                    output: function (message) { return outputMessage(message, sender); },
                     execServer: function (command) { return serverCommands.handleMessage(command); }
                 });
             });

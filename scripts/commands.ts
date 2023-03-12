@@ -103,6 +103,9 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 	function outputSuccess(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[#48e076]${message}`);
 	}
+	function outputMessage(message:string, sender:mindustryPlayer){
+		sender.sendMessage(message);
+	}
 
 
 	for(const name of Object.keys(commands)){
@@ -147,6 +150,7 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 						sender: fishSender,
 						outputFail: message => outputFail(message, sender),
 						outputSuccess: message => outputSuccess(message, sender),
+						output: message => outputMessage(message, sender),
 						execServer: command => serverCommands.handleMessage(command)
 					});
 				});

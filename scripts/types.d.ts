@@ -31,6 +31,7 @@ interface FishCommandRunner {
 		sender:FishPlayer;
 		outputSuccess:(message:string) => void;
 		outputFail:(message:string) => void;
+		output:(message:string) => void;
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
 	}): void;
