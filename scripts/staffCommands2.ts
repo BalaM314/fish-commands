@@ -147,6 +147,8 @@ export const commands:FishCommandsList = {
       }
 
 			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
+				const fishP = players.getPlayerByInfo(option);
+				fishP.stopped = true;
 				stopped.addStopped(option.id);
 				players.addPlayerHistory(option.id, {
 					action: 'stopped',

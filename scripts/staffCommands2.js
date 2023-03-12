@@ -164,6 +164,8 @@ exports.commands = {
             }
             (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, sender, function (_a) {
                 var option = _a.option, sender = _a.sender;
+                var fishP = players.getPlayerByInfo(option);
+                fishP.stopped = true;
                 stopped.addStopped(option.id);
                 players.addPlayerHistory(option.id, {
                     action: 'stopped',
