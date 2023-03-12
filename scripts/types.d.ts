@@ -19,6 +19,23 @@ declare const Menus: {
 declare const Groups: any;
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
+declare const Core: {
+	settings: {
+		get(key:string, defaultValue?:any):any;
+		put(key:string, value:any):void;
+		manualSave():void;
+	}
+	app: {
+		post(func:() => unknown):void;
+		exit():void;
+	}
+}
+declare const SaveIO: {
+	save(name:string):void;
+}
+declare const Timer: {
+	schedule(func:() => unknown, delaySeconds:number, intervalSeconds?:number, repeatCount?:number);
+}
 interface FishCommandRunner {
 	(_:{
 		/**Raw arguments that were passed to the command. */
@@ -68,7 +85,13 @@ interface FishPlayerData {
 	/*rank: Rank*/
 	pet: string;
 	highlight: string;
-	history: [];
+	history: PlayerHistoryEntry[];
+}
+
+interface PlayerHistoryEntry {
+	action:string;
+	by:string;
+	time:number;
 }
 
 /* mindustry.gen.Player */
