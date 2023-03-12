@@ -19,9 +19,34 @@ export const commands:FishCommandsList = {
 
 	mute: {
 		args: ['player:player'],
-		description: 'Toggles whether a player is muted.',
+		description: 'Stops a player from chatting.',
 		level: PermissionsLevel.mod,
-		handler({args, sender, outputSuccess }){
+		handler({args, sender, outputSuccess, outputFail }){
+			if(args.player.muted){
+				outputFail(`Player "${args.player.name}" is already muted.`);
+				return;
+			}
+			if(args.player.admin){
+				outputFail(`Player "${args.player.name}" is an admin.`);
+				return;
+			}
+			args.player.muted = true;
+			players.updateName(args.player);
+			outputSuccess(`Muted player "${args.player.name}".`);
+			args.player.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
+			players.addPlayerHistory(args.player.player.uuid(), {
+				action: 'unmuted',
+				by: sender.name,
+				time: Date.now(),
+			});
+		}
+	},
+
+	unmute: {
+		args: ['player:player'],
+		description: 'Unmutes a player',
+		level: PermissionsLevel.mod,
+		handler({args, sender, outputSuccess, outputFail }){
 			if(args.player.muted){
 				args.player.muted = false;
 				players.updateName(args.player);
@@ -33,15 +58,7 @@ export const commands:FishCommandsList = {
           time: Date.now(),
         });
 			} else {
-				args.player.muted = true;
-				players.updateName(args.player);
-				outputSuccess(`Muted player "${args.player.name}".`);
-				args.player.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
-				players.addPlayerHistory(args.player.player.uuid(), {
-          action: 'unmuted',
-          by: sender.name,
-          time: Date.now(),
-        });
+				outputFail(`Player "${args.player.name}" is not muted.`);
 			}
 		}
 	},

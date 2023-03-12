@@ -22,10 +22,35 @@ exports.commands = {
     },
     mute: {
         args: ['player:player'],
-        description: 'Toggles whether a player is muted.',
+        description: 'Stops a player from chatting.',
         level: commands_1.PermissionsLevel.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            if (args.player.muted) {
+                outputFail("Player \"".concat(args.player.name, "\" is already muted."));
+                return;
+            }
+            if (args.player.admin) {
+                outputFail("Player \"".concat(args.player.name, "\" is an admin."));
+                return;
+            }
+            args.player.muted = true;
+            players.updateName(args.player);
+            outputSuccess("Muted player \"".concat(args.player.name, "\"."));
+            args.player.player.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
+            players.addPlayerHistory(args.player.player.uuid(), {
+                action: 'unmuted',
+                by: sender.name,
+                time: Date.now(),
+            });
+        }
+    },
+    unmute: {
+        args: ['player:player'],
+        description: 'Unmutes a player',
+        level: commands_1.PermissionsLevel.mod,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.muted) {
                 args.player.muted = false;
                 players.updateName(args.player);
@@ -38,15 +63,7 @@ exports.commands = {
                 });
             }
             else {
-                args.player.muted = true;
-                players.updateName(args.player);
-                outputSuccess("Muted player \"".concat(args.player.name, "\"."));
-                args.player.player.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
-                players.addPlayerHistory(args.player.player.uuid(), {
-                    action: 'unmuted',
-                    by: sender.name,
-                    time: Date.now(),
-                });
+                outputFail("Player \"".concat(args.player.name, "\" is not muted."));
             }
         }
     },
