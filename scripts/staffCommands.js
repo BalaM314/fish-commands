@@ -5,45 +5,6 @@ const config = require('config');
 const ohno = require('ohno');
 
 const registerCommands = (clientCommands, serverCommands, runner) => {
-  // sus
-  clientCommands.register(
-    'sus',
-    '<uwu>',
-    'if you know, you know.',
-    runner((args, realP) => {
-      if (realP.admin) {
-        const targetPlr = utils.plrByName(args[0]);
-
-        if (!targetPlr) {
-          realP.sendMessage('[scarlet]⚠ [yellow]Player not found.');
-          return;
-        }
-
-        const targetP = players.getP(targetPlr);
-
-        if (targetP.fakeAdmin === undefined) {
-          targetP.fakeAdmin = false;
-        }
-
-        targetP.fakeAdmin = !targetP.fakeAdmin;
-
-        if (targetP.fakeAdmin) {
-          targetPlr.sendMessage('[green]You just got promoted to Admin!');
-        }
-
-        realP.sendMessage(
-          `[salmon]Player ` +
-            targetPlr.name +
-            `[salmon]'s fake admin status toggled ` +
-            '[green]' +
-            targetP.fakeAdmin
-        );
-        return;
-      } else {
-        return;
-      }
-    })
-  );
 
   // warn
   clientCommands.register(
@@ -89,10 +50,6 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
     'Toggle whether a player is muted or not.',
     runner((args, realP) => {
       const p = players.getP(realP);
-
-      if (p.fakeAdmin) {
-        return;
-      }
 
       if (!p.mod && !p.admin) {
         realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');
@@ -167,10 +124,6 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
     runner((args, realP) => {
       const p = players.getP(realP);
 
-      if (p.fakeAdmin) {
-        return;
-      }
-
       if (p.admin || p.mod) {
         const typedPlr = args[0];
         const reason = args[1];
@@ -202,10 +155,6 @@ const registerCommands = (clientCommands, serverCommands, runner) => {
     'stop a player.',
     runner((args, realP) => {
       const p = players.getP(realP);
-
-      if (p.fakeAdmin) {
-        return;
-      }
 
       if (!p.mod && !p.admin) {
         realP.sendMessage('[scarlet]⚠ [yellow]You do not have access to this command.');

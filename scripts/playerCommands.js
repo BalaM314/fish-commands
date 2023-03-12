@@ -109,9 +109,6 @@ const registerCommands = (clientCommands, runner) => {
     'commit die.',
     runner((args, realP) => {
       const p = players.getP(realP);
-      if (p.fakeAdmin) {
-        return;
-      }
       realP.unit().kill();
     })
   );

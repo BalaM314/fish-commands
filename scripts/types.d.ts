@@ -68,7 +68,6 @@ interface FishPlayerData {
 	pet: string;
 	highlight: string;
 	history: [];
-	fakeAdmin: false;
 }
 
 /* mindustry.gen.Player */

@@ -16,8 +16,7 @@ const createPlayer = (player) => {
     member: false,
     pet: '',
     highlight: null,
-    history: [],
-    fakeAdmin: false,
+    history: []
   };
   return;
 };
@@ -34,7 +33,6 @@ const getPlayerByInfo = (playerInfo) => {
     pet: '',
     highlight: null,
     history: [],
-    fakeAdmin: false,
   };
 };
 
