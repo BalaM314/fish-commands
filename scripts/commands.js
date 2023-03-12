@@ -195,7 +195,7 @@ function register(commands, clientCommands, serverCommands, runner) {
                 //Run the command handler
                 data.handler({
                     rawArgs: rawArgs,
-                    args: output,
+                    args: output.processedArgs,
                     sender: fishSender,
                     outputFail: function (message) { return outputFail(message, sender); },
                     outputSuccess: function (message) { return outputSuccess(message, sender); },
@@ -225,17 +225,17 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
     }
     else {
         var argToResolve_1 = unresolvedArgs.shift();
-        var optionsList = void 0;
+        var optionsList_1 = [];
         //Dubious implementation
         switch (argToResolve_1.type) {
             case "player":
-                optionsList = Groups.player.array.items;
+                Groups.player.forEach(function (player) { return optionsList_1.push(player); });
                 break;
             default: throw new Error("Unable to resolve arg of type ".concat(argToResolve_1.type));
         }
-        (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList, sender, function (_a) {
+        (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList_1, sender, function (_a) {
             var option = _a.option;
-            processedArgs[argToResolve_1.name] = option;
+            processedArgs[argToResolve_1.name] = players.getP(option);
             resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
         }, true, function (player) { return player.name; });
     }

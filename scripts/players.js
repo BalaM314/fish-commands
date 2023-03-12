@@ -32,6 +32,8 @@ const save = () => {
   Object.keys(players).forEach((pl) => {
     if (players[pl].admin || players[pl].mod || players[pl].member) {
       newPlayers[pl] = players[pl];
+      delete newPlayers[pl].activeMenu;
+      //this is cursed, todo implement proper playerdata handling
     }
     return;
   });
@@ -172,6 +174,10 @@ Events.on(ServerLoadEvent, (e) => {
   const stringified = Core.settings.get('fish', '');
 
   if (stringified) players = JSON.parse(stringified);
+  //Record<uuid, FishPlayerData>
+  for(let key of Object.keys(players)){
+    players[key].activeMenu = {};
+  }
 });
 
 module.exports = {

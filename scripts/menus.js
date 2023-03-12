@@ -59,7 +59,7 @@ function menu(title, description, options, target, callback, includeCancel, opti
         //Set up the 2D array of options, and add cancel
         var arrangedOptions = utils.to2DArray(options.map(optionStringifier), 3);
         if (includeCancel) {
-            arrangedOptions.push("Cancel");
+            arrangedOptions.push(["Cancel"]);
             target.activeMenu.cancelOptionId = options.length;
         }
         else {

@@ -149,7 +149,7 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 					//Run the command handler
 					data.handler({
 						rawArgs,
-						args: output,
+						args: output.processedArgs,
 						sender: fishSender,
 						outputFail: message => outputFail(message, sender),
 						outputSuccess: message => outputSuccess(message, sender),
@@ -169,14 +169,14 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 		callback(processedArgs);
 	} else {
 		const argToResolve = unresolvedArgs.shift()!;
-		let optionsList:any[];
+		let optionsList:any[] = [];
 		//Dubious implementation
 		switch(argToResolve.type){
-			case "player": optionsList = Groups.player.array.items; break;
+			case "player": (Groups.player as mindustryPlayer[]).forEach(player => optionsList.push(player)); break;
 			default: throw new Error(`Unable to resolve arg of type ${argToResolve.type}`);
 		}
 		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, ({option}) => {
-			processedArgs[argToResolve.name] = option;
+			processedArgs[argToResolve.name] = players.getP(option);
 			resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
 		}, true, player => player.name)
 
