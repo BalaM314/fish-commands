@@ -9,10 +9,10 @@ const players = require('players');
 const trails = require('trails');
 const config = require('config');
 const ohno = require('ohno');
-const commands = require('commands/commands');
-const staffCommands = require('commands/staffCommands');
-const staffCommands2 = require('commands/staffCommands2');
-const playerCommands = require('commands/playerCommands');
+const commands = require('commands');
+const staffCommands = require('staffCommands');
+const staffCommands2 = require('staffCommands2');
+const playerCommands = require('playerCommands');
 const whisper = require('whisper');
 const membership = require('membership');
 

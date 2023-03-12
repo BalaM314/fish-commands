@@ -1,4 +1,4 @@
-import { menu } from "../menus";
+import { menu } from "./menus";
 
 const players = require("players");
 

@@ -28,7 +28,7 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = exports.canPlayerAccess = exports.PermissionsLevel = void 0;
-var menus_1 = require("../menus");
+var menus_1 = require("./menus");
 var players = require("players");
 /**
  * Misc notes:

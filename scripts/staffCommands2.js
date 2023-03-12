@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
-var menus_1 = require("../menus");
+var menus_1 = require("./menus");
 var players = require('./players');
 var stopped = require('./stopped');
 var ohno = require('./ohno');

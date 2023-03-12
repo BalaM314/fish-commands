@@ -1,5 +1,5 @@
 import { PermissionsLevel, canPlayerAccess } from "./commands";
-import { menu, listeners } from '../menus';
+import { menu, listeners } from './menus';
 const players = require('./players');
 const stopped = require('./stopped');
 const ohno = require('./ohno');
