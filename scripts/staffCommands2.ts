@@ -10,7 +10,7 @@ export const commands:FishCommandsList = {
 		args: ['player:player', 'reason:string?'],
 		description: 'warn a player.',
 		level: PermissionsLevel.mod,
-		handler({rawArgs, args, sender, outputSuccess, outputFail}){
+		handler({args, outputSuccess }){
 			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
 			menu('Warning', reason, [['accept']], args.player);
 			outputSuccess(`Warned player "${args.player.name}" for "${reason}"`);
@@ -126,7 +126,7 @@ export const commands:FishCommandsList = {
     handler({outputSuccess}){
 			const numOhnos = ohno.totalOhno();
 			ohno.killOhno();
-			outputSuccess(`You massacred [#48e076]' ${numOhnos} '[yellow] helpless ohno crawlers.`);
+			outputSuccess(`You massacred [#48e076] ${numOhnos} [yellow] helpless ohno crawlers.`);
     }
 	},
 

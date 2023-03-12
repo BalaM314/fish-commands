@@ -1,8 +1,6 @@
 const players = require("players");
 const utils = require("utils");
 
-type MenuListener = (player:mindustryPlayer, option:number) => void;
-
 const registeredListeners:{
 	[index:string]: number;
 } = {};

@@ -1,12 +1,6 @@
 import { menu } from "./menus";
-
 const players = require("players");
 
-/**
- * Misc notes:
- * I made a handful of arbitrary choices, you can change them if you want
- * the api i wanted is pretty much complete, we just need to port over the commands and maybe abstract away the "select a player" menu?
- */
 
 /** Represents a permission level that is required to run a specific command. */
 export class PermissionsLevel {

@@ -18,7 +18,7 @@ declare const Menus: {
 }
 declare const Groups: any;
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
-
+type MenuListener = (player:mindustryPlayer, option:number) => void;
 interface FishCommandRunner {
 	(_:{
 		/**Raw arguments that were passed to the command. */

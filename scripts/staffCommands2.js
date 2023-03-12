@@ -14,7 +14,7 @@ exports.commands = {
         level: commands_1.PermissionsLevel.mod,
         handler: function (_a) {
             var _b;
-            var rawArgs = _a.rawArgs, args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var args = _a.args, outputSuccess = _a.outputSuccess;
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
             (0, menus_1.menu)('Warning', reason, [['accept']], args.player);
             outputSuccess("Warned player \"".concat(args.player.name, "\" for \"").concat(reason, "\""));
@@ -142,7 +142,7 @@ exports.commands = {
             var outputSuccess = _a.outputSuccess;
             var numOhnos = ohno.totalOhno();
             ohno.killOhno();
-            outputSuccess("You massacred [#48e076]' ".concat(numOhnos, " '[yellow] helpless ohno crawlers."));
+            outputSuccess("You massacred [#48e076] ".concat(numOhnos, " [yellow] helpless ohno crawlers."));
         }
     },
     stop_offline2: {
