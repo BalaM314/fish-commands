@@ -28,22 +28,15 @@ const registerCommands = (clientCommands, runner) => {
         if (temp) temp.kill();
         p.pet = '';
       }
+      if (utils.nearbyEnemyTile(player.unit(), 6) != null) {
+        player.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
+        return;
+      }
 
       const petname = args[0];
-      const existing = [];
-      Groups.unit.forEach((u) => {
-        if (u.type === UnitTypes.merui) {
-          existing.push(u.id);
-        }
-      });
+      const spawnedUnit = UnitTypes.merui.spawn(player.team(), player.unit().x, player.unit().y);
 
-      UnitTypes.merui.spawn(player.team(), player.unit().x, player.unit().y);
-
-      const spawnedUnit = Groups.unit.find(
-        (u) => u.type === UnitTypes.merui && !existing.includes(u.id)
-      );
-
-      spawnedUnit.apply(StatusEffects.disarmed, 10000);
+      spawnedUnit.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
       p.pet = spawnedUnit.id;
 
       Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
