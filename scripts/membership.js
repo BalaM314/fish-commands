@@ -28,8 +28,8 @@ const registerCommands = (clientCommands, runner) => {
         if (temp) temp.kill();
         p.pet = '';
       }
-      if (utils.nearbyEnemyTile(p.unit(), 6) != null) {
-        p.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
+      if (utils.nearbyEnemyTile(player.unit(), 6) != null) {
+        player.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
         return;
       }
 
