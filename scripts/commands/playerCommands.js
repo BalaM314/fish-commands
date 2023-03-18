@@ -13,7 +13,7 @@ const tp = (plr, p2) => {
 
 const Cleaner = {
   clean(con) {
-    if(Time.millis() - this.lastCleaned < this.cooldown) return false;
+    if (Time.millis() - this.lastCleaned < this.cooldown) return false;
     this.lastCleaned = Time.millis();
     Timer.schedule(
       () => {
@@ -35,7 +35,7 @@ const Cleaner = {
     return true;
   },
   lastCleaned: 0,
-  cooldown: 10000
+  cooldown: 10000,
 };
 
 const messageStaff = (name, msg) => {
@@ -76,10 +76,8 @@ const registerCommands = (clientCommands, runner) => {
         return;
       }
       const playerUnit = realP.unit();
-      if(playerUnit && !playerUnit.spawnedByCore){
-        realP.sendMessage(
-          '[scarlet]⚠ [yellow]Cannot teleport while in a non-core unit.'
-        );
+      if (playerUnit && !playerUnit.spawnedByCore) {
+        realP.sendMessage('[scarlet]⚠ [yellow]Cannot teleport while in a non-core unit.');
         return;
       }
       tp(realP, otherPlr);
@@ -91,14 +89,10 @@ const registerCommands = (clientCommands, runner) => {
     'clean',
     'clear the map of boulders.',
     runner((args, realP) => {
-      if(Cleaner.clean(realP.con)){
-        realP.sendMessage(
-          '[green]✔ Cleared the map of boulders.'
-        );
+      if (Cleaner.clean(realP.con)) {
+        realP.sendMessage('[green]✔ Cleared the map of boulders.');
       } else {
-        realP.sendMessage(
-          '[scarlet]⚠ [yellow]This command was run recently and is on cooldown.'
-        );
+        realP.sendMessage('[scarlet]⚠ [yellow]This command was run recently and is on cooldown.');
       }
     })
   );

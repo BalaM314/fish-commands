@@ -14,7 +14,13 @@ const menuStuff = {
 
 // stop
 const stopListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
+  if (
+    option === -1 ||
+    option === menuStuff.lastOptionIndex ||
+    option > menuStuff.lastOptionIndex + 1 ||
+    option < -1
+  )
+    return;
 
   const fishPlr = players.getP(player);
 
@@ -56,7 +62,13 @@ const stopOfflineListener = (player, option) => {
 
 // free
 const freeListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
+  if (
+    option === -1 ||
+    option === menuStuff.lastOptionIndex ||
+    option > menuStuff.lastOptionIndex + 1 ||
+    option < -1
+  )
+    return;
 
   const fishPlr = players.getP(player);
 
@@ -74,7 +86,13 @@ const freeListener = (player, option) => {
 
 // mute
 const muteListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
+  if (
+    option === -1 ||
+    option === menuStuff.lastOptionIndex ||
+    option > menuStuff.lastOptionIndex + 1 ||
+    option < -1
+  )
+    return;
 
   const fishPlr = players.getP(player);
 
@@ -105,7 +123,13 @@ const muteListener = (player, option) => {
 
 // warn
 const warnListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
+  if (
+    option === -1 ||
+    option === menuStuff.lastOptionIndex ||
+    option > menuStuff.lastOptionIndex + 1 ||
+    option < -1
+  )
+    return;
 
   const fishPlr = players.getP(player);
 
@@ -134,7 +158,13 @@ const warnListener = (player, option) => {
 
 // ip ban
 const ipBanListener = (player, option) => {
-  if (option === -1 || option === menuStuff.lastOptionIndex) return;
+  if (
+    option === -1 ||
+    option === menuStuff.lastOptionIndex ||
+    option > menuStuff.lastOptionIndex + 1 ||
+    option < -1
+  )
+    return;
 
   const fishPlr = players.getP(player);
 
