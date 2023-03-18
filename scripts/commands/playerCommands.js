@@ -53,13 +53,6 @@ const messageStaff = (name, msg) => {
 };
 
 const registerCommands = (clientCommands, runner) => {
-  clientCommands.register(
-    'test',
-    'unpause the game.',
-    runner((args, realP) => {
-      utils.log(realP.usid());
-    })
-  );
   //unpause
   clientCommands.register(
     'unpause',
