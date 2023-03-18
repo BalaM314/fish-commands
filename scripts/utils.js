@@ -106,6 +106,18 @@ const plrByName = (plr) => {
  */
 const plrById = (id) => Groups.player.find((p) => p.uuid() === id);
 
+const nearbyEnemyTile = (unit, dist) => {
+  let x = Math.floor(unit.x / Vars.tilesize);
+  let y = Math.floor(unit.y / Vars.tilesize);
+  for(let i = -dist; i <= dist; i ++){
+    for(let j = -dist; j <= dist; j ++){
+      let build = Vars.world.build(x + i, y + j);
+      if(build && build.team != unit.team) return build;
+    }
+  }
+  return null;
+}
+
 module.exports = {
   log: logg,
   list: list,
@@ -115,4 +127,5 @@ module.exports = {
   plrById: plrById,
   plrByName: plrByName,
   getTimeSinceText: getTimeSinceText,
+  nearbyEnemyTile: nearbyEnemyTile,
 };

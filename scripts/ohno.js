@@ -1,3 +1,5 @@
+const utils = require("utils");
+
 let ohnoSpawnOverride = false;
 let ohnos = [];
 
@@ -18,7 +20,7 @@ const ohno = (p) => {
     p.sendMessage('[scarlet]⚠[yellow]Sorry, the max number of ohno units has been reached.');
     return;
   }
-  if (Vars.indexer.findEnemyTile(p.team(), p.unit().x, p.unit().y, 20 * 8, () => false) != null) {
+  if (utils.nearbyEnemyTile(p.unit(), 6) != null) {
     p.sendMessage('[scarlet]⚠[yellow]Too close to an enemy tile!');
     return;
   }
@@ -40,23 +42,6 @@ const killOhno = () => {
   });
   ohnos = [];
 };
-
-// disable ohnos
-Timer.schedule(
-  () => {
-    if (!ohnos.length) return;
-
-    Groups.unit.forEach((u) => {
-      if (ohnos.includes(u.id)) {
-        u.apply(StatusEffects.disarmed, 10000);
-      }
-    });
-
-    return;
-  },
-  5, // time to wait before first execution in seconds
-  10000 // interval in seconds
-);
 
 const registerCommands = (clientCommands, runner) => {
   // Ohno
