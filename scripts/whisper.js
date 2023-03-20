@@ -1,4 +1,4 @@
-const players = require('players');
+const { FishPlayer } = require('players');
 const utils = require('utils');
 
 let whisper = {};
@@ -10,7 +10,7 @@ const registerCommands = (clientCommands, runner) => {
     '<player> <message...>',
     'send a private message to a player.',
     runner((args, realP) => {
-      const p = players.getP(realP);
+      const p = FishPlayer.get(realP);
       const typedPlr = args[0];
       const targetPlr = utils.plrByName(typedPlr);
       if (!targetPlr) {
@@ -45,7 +45,7 @@ const registerCommands = (clientCommands, runner) => {
     '<message...>',
     'reply to most recent message.',
     runner((args, realP) => {
-      const p = players.getP(realP);
+      const p = FishPlayer.get(realP);
       const pid = realP.uuid();
 
       const dm = args[0];

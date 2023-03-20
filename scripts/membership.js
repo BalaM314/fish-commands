@@ -1,4 +1,4 @@
-const players = require('players');
+const { FishPlayer } = require('players');
 const utils = require('utils');
 const trails = require('trails');
 
@@ -10,7 +10,7 @@ const registerCommands = (clientCommands, runner) => {
     'spawns a cool pet with a displayed name that follows you around.',
 
     runner((args, player) => {
-      const p = players.getP(player);
+      const p = FishPlayer.get(player);
       if (!p.member) {
         player.sendMessage(
           '[scarlet]⚠ [yellow]You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow] !'
@@ -76,7 +76,7 @@ const registerCommands = (clientCommands, runner) => {
     '<color>',
     'make your chat text colored by default.',
     runner((args, realP) => {
-      const p = players.getP(realP);
+      const p = FishPlayer.get(realP);
       if (!p.member) {
         realP.sendMessage(
           '[scarlet]⚠ [yellow]You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow] !'
@@ -101,7 +101,7 @@ const registerCommands = (clientCommands, runner) => {
     'make your name change colors.',
 
     runner((args, player) => {
-      const p = players.getP(player);
+      const p = FishPlayer.get(player);
 
       if (!p.member) {
         player.sendMessage(
@@ -112,7 +112,7 @@ const registerCommands = (clientCommands, runner) => {
       const speed = args[0];
 
       if (!speed) {
-        players.updateName(player);
+        p.updateName();
         p.rainbow = null;
         return;
       }

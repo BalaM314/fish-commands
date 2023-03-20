@@ -1,4 +1,4 @@
-const players = require("players");
+import { FishPlayer } from "./players";
 const utils = require("utils");
 
 const registeredListeners:{
@@ -8,7 +8,7 @@ const listeners = (
 	<T extends Record<string, (player:mindustryPlayer, option:number) => void>>(d:T) => d
 )({ 
 	generic(player, option){
-		const fishSender = players.getP(player) as FishPlayer;
+		const fishSender = FishPlayer.get(player);
 		if (option === -1 || option === fishSender.activeMenu.cancelOptionId) return;
 
 		fishSender.activeMenu.callback?.(fishSender, option);

@@ -16,6 +16,10 @@ declare const ServerLoadEvent: any;
 declare const Menus: {
 	registerMenu(listener:MenuListener):number;
 }
+declare const UnitTypes: {
+	[index:string]: UnitType;
+}
+type UnitType = any;
 declare const Groups: any;
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
@@ -35,6 +39,9 @@ declare const SaveIO: {
 }
 declare const Timer: {
 	schedule(func:() => unknown, delaySeconds:number, intervalSeconds?:number, repeatCount?:number);
+}
+declare const GameState: {
+	State: Record<"playing" | "paused", any>;
 }
 interface FishCommandRunner {
 	(_:{
@@ -66,14 +73,7 @@ interface FishCommandData {
 }
 type FishCommandsList = Record<string, FishCommandData>;
 
-interface FishPlayer extends FishPlayerData {
-	player: mindustryPlayer;
-	watch: boolean;
-	activeMenu: {
-		cancelOptionId: number;
-		callback?: (sender:FishPlayer, option:number) => void;
-	}
-}
+
 
 interface FishPlayerData {
 	name: string;
@@ -83,8 +83,8 @@ interface FishPlayerData {
 	member: boolean;
 	stopped: boolean;
 	/*rank: Rank*/
-	pet: string;
-	highlight: string;
+	//TODO remove
+	highlight: string | null;
 	history: PlayerHistoryEntry[];
 }
 

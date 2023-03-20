@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
 var menus_1 = require("./menus");
-var players = require('./players');
+var players_1 = require("./players");
 var stopped = require('./stopped');
 var ohno = require('./ohno');
 var utils = require('./utils');
@@ -35,14 +35,15 @@ exports.commands = {
                 return;
             }
             args.player.muted = true;
-            players.updateName(args.player);
+            args.player.updateName();
             outputSuccess("Muted player \"".concat(args.player.name, "\"."));
             args.player.player.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
-            players.addPlayerHistory(args.player.player.uuid(), {
+            args.player.addHistoryEntry({
                 action: 'unmuted',
                 by: sender.name,
                 time: Date.now(),
             });
+            players_1.FishPlayer.saveAll();
         }
     },
     unmute: {
@@ -53,10 +54,10 @@ exports.commands = {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.muted) {
                 args.player.muted = false;
-                players.updateName(args.player);
+                args.player.updateName();
                 outputSuccess("Unmuted player \"".concat(args.player.name, "\"."));
                 args.player.player.sendMessage("[green]You have been unmuted.");
-                players.addPlayerHistory(args.player.player.uuid(), {
+                args.player.addHistoryEntry({
                     action: 'unmuted',
                     by: sender.name,
                     time: Date.now(),
@@ -95,7 +96,7 @@ exports.commands = {
                 outputFail("Player \"".concat(args.player.name, "\" is already stopped."));
             }
             else {
-                players.stop(args.player.player, sender, false);
+                args.player.stop(sender);
                 outputSuccess("Player \"".concat(args.player.name, "\" has been stopped."));
             }
         }
@@ -107,7 +108,7 @@ exports.commands = {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.stopped) {
-                players.free(args.player.player, sender, false);
+                args.player.free(sender);
                 outputSuccess("Player \"".concat(args.player.name, "\" has been freed."));
             }
             else {
@@ -134,8 +135,8 @@ exports.commands = {
                         args.player.mod = true;
                         outputSuccess("".concat(args.player.name, " [#48e076] is now ranked Moderator."));
                         args.player.sendMessage('[yellow] Your rank is now [#48e076]Moderator.[yellow] Use [acid]"/help mod"[yellow] to see available commands.');
-                        players.updateName(args.player);
-                        players.save();
+                        args.player.updateName();
+                        players_1.FishPlayer.saveAll();
                     }
                     break;
                 case "remove":
@@ -150,8 +151,8 @@ exports.commands = {
                     }
                     else {
                         args.player.mod = false;
-                        players.updateName(args.player);
-                        players.save();
+                        args.player.updateName();
+                        players_1.FishPlayer.saveAll();
                         if (args.tellPlayer) {
                             args.player.sendMessage('[scarlet] You are now no longer a Moderator.');
                         }
@@ -183,8 +184,8 @@ exports.commands = {
                         execServer("admin add ".concat(args.player.player.uuid()));
                         outputSuccess("".concat(args.player.name, " [#48e076] is now an Admin."));
                         args.player.sendMessage('[yellow] Your rank is now [#48e076]Admin.[yellow] Use [sky]"/help mod"[yellow] to see available commands.');
-                        players.updateName(args.player);
-                        players.save();
+                        args.player.updateName();
+                        players_1.FishPlayer.saveAll();
                     }
                     break;
                 case "remove":
@@ -197,8 +198,8 @@ exports.commands = {
                     else {
                         args.player.admin = false;
                         execServer("admin remove ".concat(args.player.player.uuid()));
-                        players.updateName(args.player);
-                        players.save();
+                        args.player.updateName();
+                        players_1.FishPlayer.saveAll();
                         if (args.tellPlayer) {
                             args.player.sendMessage('[scarlet] You are now no longer an Admin.');
                         }
@@ -223,7 +224,7 @@ exports.commands = {
             outputSuccess("You massacred [#48e076] ".concat(numOhnos, " [yellow] helpless ohno crawlers."));
         }
     },
-    stop_offline2: {
+    stop_offline: {
         args: ["name:string"],
         description: "Stops an offline player.",
         level: commands_1.PermissionsLevel.mod,
@@ -242,10 +243,10 @@ exports.commands = {
             }
             (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, sender, function (_a) {
                 var option = _a.option, sender = _a.sender;
-                var fishP = players.getPlayerByInfo(option);
+                var fishP = players_1.FishPlayer.getFromInfo(option);
                 fishP.stopped = true;
                 stopped.addStopped(option.id);
-                players.addPlayerHistory(option.id, {
+                fishP.addHistoryEntry({
                     action: 'stopped',
                     by: sender.name,
                     time: Date.now(),
@@ -315,7 +316,7 @@ exports.commands = {
         level: commands_1.PermissionsLevel.mod,
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
-            players.save();
+            players_1.FishPlayer.saveAll();
             var file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
             SaveIO.save(file);
             outputSuccess('Game saved.');
@@ -366,8 +367,8 @@ exports.commands = {
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
             args.player.member = args.value;
-            players.updateName(args.player.player);
-            players.save();
+            args.player.updateName();
+            players_1.FishPlayer.saveAll();
             outputSuccess("Set membership status of player \"".concat(args.player.name, "\" to ").concat(args.value, "."));
         }
     },

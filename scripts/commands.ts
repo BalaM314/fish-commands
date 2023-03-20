@@ -1,11 +1,12 @@
 import { menu } from "./menus";
-const players = require("players");
+import { FishPlayer } from "./players";
+
 
 
 /** Represents a permission level that is required to run a specific command. */
 export class PermissionsLevel {
 	static all = new PermissionsLevel("all");
-	static player = new PermissionsLevel("player");
+	static notGriefer = new PermissionsLevel("player");
 	static mod = new PermissionsLevel("mod");
 	static admin = new PermissionsLevel("admin");
 	static member = new PermissionsLevel("member", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
@@ -55,7 +56,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 		}
 		switch(cmdArg.type){
 			case "player":
-				const player = players.getPByName(args[i]);
+				const player = FishPlayer.getByName(args[i]);
 				if(player == null) return {error: `Player "${args[i]}" not found.`};
 				outputArgs[cmdArg.name] = player;
 				break;
@@ -84,7 +85,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 export const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel):boolean {
 	switch(level){
 		case PermissionsLevel.all: return true;
-		case PermissionsLevel.player: return !player.stopped || player.mod || player.admin;
+		case PermissionsLevel.notGriefer: return !player.stopped || player.mod || player.admin;
 		case PermissionsLevel.mod: return player.mod || player.admin;
 		case PermissionsLevel.admin: return player.admin;
 		case PermissionsLevel.member: return player.member;
@@ -125,7 +126,7 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 			}).join(" "),
 			data.description,
 			runner((rawArgs, sender) => {
-				const fishSender = players.getP(sender);
+				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
 				if(!canPlayerAccess(fishSender, data.level)){
@@ -174,7 +175,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 			default: throw new Error(`Unable to resolve arg of type ${argToResolve.type}`);
 		}
 		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, ({option}) => {
-			processedArgs[argToResolve.name] = players.getP(option);
+			processedArgs[argToResolve.name] = FishPlayer.get(option);
 			resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
 		}, true, player => player.name)
 

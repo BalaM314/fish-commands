@@ -1,6 +1,6 @@
 import { PermissionsLevel, canPlayerAccess } from "./commands";
 import { menu, listeners } from './menus';
-const players = require('./players');
+import { FishPlayer } from "./players";
 const stopped = require('./stopped');
 const ohno = require('./ohno');
 const utils = require('./utils');
@@ -31,14 +31,15 @@ export const commands:FishCommandsList = {
 				return;
 			}
 			args.player.muted = true;
-			players.updateName(args.player);
+			args.player.updateName();
 			outputSuccess(`Muted player "${args.player.name}".`);
 			args.player.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
-			players.addPlayerHistory(args.player.player.uuid(), {
+			args.player.addHistoryEntry({
 				action: 'unmuted',
 				by: sender.name,
 				time: Date.now(),
 			});
+			FishPlayer.saveAll();
 		}
 	},
 
@@ -49,10 +50,10 @@ export const commands:FishCommandsList = {
 		handler({args, sender, outputSuccess, outputFail }){
 			if(args.player.muted){
 				args.player.muted = false;
-				players.updateName(args.player);
+				args.player.updateName();
 				outputSuccess(`Unmuted player "${args.player.name}".`);
 				args.player.player.sendMessage(`[green]You have been unmuted.`);
-				players.addPlayerHistory(args.player.player.uuid(), {
+				args.player.addHistoryEntry({
           action: 'unmuted',
           by: sender.name,
           time: Date.now(),
@@ -87,7 +88,7 @@ export const commands:FishCommandsList = {
 			if(args.player.stopped){
 				outputFail(`Player "${args.player.name}" is already stopped.`);
 			} else {
-				players.stop(args.player.player, sender, false);
+				args.player.stop(sender);
 				outputSuccess(`Player "${args.player.name}" has been stopped.`);
 			}
 		}
@@ -99,7 +100,7 @@ export const commands:FishCommandsList = {
 		level: PermissionsLevel.mod,
 		handler({args, sender, outputSuccess, outputFail}) {
 			if(args.player.stopped){
-				players.free(args.player.player, sender, false);
+				args.player.free(sender);
 				outputSuccess(`Player "${args.player.name}" has been freed.`);
 			} else {
 				outputFail(`Player "${args.player.name}" is not stopped.`);;
@@ -122,8 +123,8 @@ export const commands:FishCommandsList = {
 						args.player.sendMessage(
 							'[yellow] Your rank is now [#48e076]Moderator.[yellow] Use [acid]"/help mod"[yellow] to see available commands.'
 						);
-						players.updateName(args.player);
-						players.save();
+						args.player.updateName();
+						FishPlayer.saveAll();
 					}
 					break;
 				case "remove": case "rm": case "r": case "demote":
@@ -133,8 +134,8 @@ export const commands:FishCommandsList = {
 						outputFail(`${args.player.name} is not a Moderator.`);
 					} else {
 						args.player.mod = false;
-						players.updateName(args.player);
-						players.save();
+						args.player.updateName();
+						FishPlayer.saveAll();
 						if(args.tellPlayer){
 							args.player.sendMessage(
 								'[scarlet] You are now no longer a Moderator.'
@@ -165,8 +166,8 @@ export const commands:FishCommandsList = {
 						args.player.sendMessage(
 							'[yellow] Your rank is now [#48e076]Admin.[yellow] Use [sky]"/help mod"[yellow] to see available commands.'
 						);
-						players.updateName(args.player);
-						players.save();
+						args.player.updateName();
+						FishPlayer.saveAll();
 					}
 					break;
 				case "remove": case "rm": case "r": case "demote":
@@ -175,8 +176,8 @@ export const commands:FishCommandsList = {
 					} else {
 						args.player.admin = false;
 						execServer(`admin remove ${args.player.player.uuid()}`);
-						players.updateName(args.player);
-						players.save();
+						args.player.updateName();
+						FishPlayer.saveAll();
 						if(args.tellPlayer){
 							args.player.sendMessage(
 								'[scarlet] You are now no longer an Admin.'
@@ -203,7 +204,7 @@ export const commands:FishCommandsList = {
     }
 	},
 
-	stop_offline2: {
+	stop_offline: {
 		args: ["name:string"],
 		description: "Stops an offline player.",
 		level: PermissionsLevel.mod,
@@ -220,10 +221,10 @@ export const commands:FishCommandsList = {
       }
 
 			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
-				const fishP = players.getPlayerByInfo(option);
+				const fishP = FishPlayer.getFromInfo(option);
 				fishP.stopped = true;
 				stopped.addStopped(option.id);
-				players.addPlayerHistory(option.id, {
+				fishP.addHistoryEntry({
 					action: 'stopped',
 					by: sender.name,
 					time: Date.now(),
@@ -296,7 +297,7 @@ export const commands:FishCommandsList = {
 		description: "Saves the game state.",
 		level: PermissionsLevel.mod,
 		handler({outputSuccess}){
-			players.save();
+			FishPlayer.saveAll();
 			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
       SaveIO.save(file);
       outputSuccess('Game saved.');
@@ -349,8 +350,8 @@ export const commands:FishCommandsList = {
 		level: PermissionsLevel.admin,
 		handler({args, outputSuccess}){
 			(args.player as FishPlayer).member = args.value;
-			players.updateName(args.player.player);
-			players.save();
+			args.player.updateName();
+			FishPlayer.saveAll();
 			outputSuccess(`Set membership status of player "${args.player.name}" to ${args.value}.`);
 		}
 	},

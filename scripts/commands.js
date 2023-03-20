@@ -29,7 +29,7 @@ var __values = (this && this.__values) || function(o) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = exports.canPlayerAccess = exports.PermissionsLevel = void 0;
 var menus_1 = require("./menus");
-var players = require("players");
+var players_1 = require("./players");
 /** Represents a permission level that is required to run a specific command. */
 var PermissionsLevel = /** @class */ (function () {
     function PermissionsLevel(name, customErrorMessage) {
@@ -37,7 +37,7 @@ var PermissionsLevel = /** @class */ (function () {
         this.customErrorMessage = customErrorMessage;
     }
     PermissionsLevel.all = new PermissionsLevel("all");
-    PermissionsLevel.player = new PermissionsLevel("player");
+    PermissionsLevel.notGriefer = new PermissionsLevel("player");
     PermissionsLevel.mod = new PermissionsLevel("mod");
     PermissionsLevel.admin = new PermissionsLevel("admin");
     PermissionsLevel.member = new PermissionsLevel("member", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
@@ -84,7 +84,7 @@ function processArgs(args, processedCmdArgs) {
             }
             switch (cmdArg.type) {
                 case "player":
-                    var player = players.getPByName(args[i]);
+                    var player = players_1.FishPlayer.getByName(args[i]);
                     if (player == null)
                         return { error: "Player \"".concat(args[i], "\" not found.") };
                     outputArgs[cmdArg.name] = player;
@@ -138,7 +138,7 @@ function processArgs(args, processedCmdArgs) {
 var canPlayerAccess = function canPlayerAccess(player, level) {
     switch (level) {
         case PermissionsLevel.all: return true;
-        case PermissionsLevel.player: return !player.stopped || player.mod || player.admin;
+        case PermissionsLevel.notGriefer: return !player.stopped || player.mod || player.admin;
         case PermissionsLevel.mod: return player.mod || player.admin;
         case PermissionsLevel.admin: return player.admin;
         case PermissionsLevel.member: return player.member;
@@ -176,7 +176,7 @@ function register(commands, clientCommands, serverCommands, runner) {
             return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
         }).join(" "), data.description, runner(function (rawArgs, sender) {
             var _a, _b;
-            var fishSender = players.getP(sender);
+            var fishSender = players_1.FishPlayer.get(sender);
             //Verify authorization
             if (!(0, exports.canPlayerAccess)(fishSender, data.level)) {
                 outputFail((_b = (_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.level.customErrorMessage) !== null && _b !== void 0 ? _b : "You do not have the required permission (".concat(data.level, ") to execute this command"), sender);
@@ -234,7 +234,7 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
         }
         (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList_1, sender, function (_a) {
             var option = _a.option;
-            processedArgs[argToResolve_1.name] = players.getP(option);
+            processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(option);
             resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
         }, true, function (player) { return player.name; });
     }

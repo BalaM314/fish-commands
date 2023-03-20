@@ -5,7 +5,7 @@ require('stopped');
 require('menus');
 
 const utils = require('utils');
-const players = require('players');
+const { FishPlayer } = require('players');
 const trails = require('trails');
 const config = require('config');
 const ohno = require('ohno');
@@ -20,6 +20,7 @@ let serverIp;
 let tileHistory = {};
 
 // Check if player is stopped from API
+//TODO remove once api integration is done
 const getStopped = (player) => {
   const req = Http.post(
     `http://` + config.ip + `:5000/api/getStopped`,
@@ -40,11 +41,10 @@ const getStopped = (player) => {
       if (!temp.length) return false;
       // Wrapped in a timer since stopping too soon may not work.
       Timer.schedule(() => {
-        if (JSON.parse(temp).data) {
-          players.stop(player, { name: 'stopped api' }, true);
-          return;
-        }
-        players.free(player, { name: 'stopped api' }, true);
+        if (JSON.parse(temp).data)
+          FishPlayer.get(player).stop("api");
+        else
+          FishPlayer.get(player).free("api");
       }, 2);
     });
   } catch (e) {
@@ -53,8 +53,7 @@ const getStopped = (player) => {
 };
 
 Events.on(PlayerJoin, (e) => {
-  players.nameFilter(e.player);
-  players.updateSavedName(e.player);
+  FishPlayer.onPlayerJoin(e.player);
   getStopped(e.player);
 });
 
@@ -66,16 +65,16 @@ Events.on(ServerLoadEvent, (e) => {
   ).handler;
 
   // Mute muted players
-  Vars.netServer.admins.addChatFilter((realP, text) => {
-    const p = players.getP(realP);
+  Vars.netServer.admins.addChatFilter((player, text) => {
+    const fishPlayer = FishPlayer.get(player);
 
-    if (p.muted) {
-      realP.sendMessage('[scarlet]⚠ [yellow]You are muted.');
+    if (fishPlayer.muted) {
+      player.sendMessage('[scarlet]⚠ [yellow]You are muted.');
       return null;
     }
 
-    if (p.highlight) {
-      return p.highlight + text;
+    if (fishPlayer.highlight) {
+      return fishPlayer.highlight + text;
     }
 
     return config.bannedWords.some((bw) => text.includes(bw))
@@ -85,29 +84,29 @@ Events.on(ServerLoadEvent, (e) => {
 
   // Action filters
   Vars.netServer.admins.addActionFilter((action) => {
-    const realP = action.player;
-    const p = players.getP(realP);
+    const player = action.player;
+    const fishP = FishPlayer.get(player);
 
     //prevent stopped players from doing anything other than deposit items.
-    if (p.stopped) {
+    if (fishP.stopped) {
       if (action.type == ActionType.depositItem) {
         return true;
+      } else {
+        action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
+        return false;
       }
-      action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
-      return false;
-    }
-
-    if (action.type === ActionType.rotate) {
-      const rotateAction = {
-        unit: realP.unit(),
-        tile: action.tile,
-        player: realP,
-        breaking: null,
-      };
-      addToTileHistory(rotateAction, 'rotate');
+    } else {
+      if (action.type === ActionType.rotate) {
+        addToTileHistory({
+          unit: player.unit(),
+          tile: action.tile,
+          player: player,
+          breaking: null,
+        }, 'rotate');
+      }
       return true;
     }
-    return true;
+
   });
 
   const runner = (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method });
@@ -198,7 +197,7 @@ Events.on(BlockBuildBeginEvent, (e) => {
 });
 
 Events.on(TapEvent, (e) => {
-  const p = players.getP(e.player);
+  const p = FishPlayer.get(e.player);
   if (p.tileId) {
     e.player.sendMessage(e.tile.block().id);
     p.tileId = false;
@@ -211,7 +210,7 @@ Events.on(TapEvent, (e) => {
     realP.sendMessage(
       `[yellow]There is no recorded history for the selected tile (` + tile.x + ', ' + tile.y + ').'
     );
-    p.tilelog = null;
+    p.tilelog = false;
     return;
   }
 
@@ -220,7 +219,7 @@ Events.on(TapEvent, (e) => {
   tileHistory[pos].forEach((t) =>
     history.push(t.name + `[yellow] ` + t.action + ' a block ' + utils.getTimeSinceText(t.time))
   );
-  p.tilelog = null;
+  p.tilelog = false;
   realP.sendMessage(history.join('\n'));
   return;
 });

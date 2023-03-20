@@ -12,14 +12,14 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.menu = exports.listeners = void 0;
-var players = require("players");
+var players_1 = require("./players");
 var utils = require("utils");
 var registeredListeners = {};
 exports.listeners = registeredListeners;
 var listeners = (function (d) { return d; })({
     generic: function (player, option) {
         var _a, _b;
-        var fishSender = players.getP(player);
+        var fishSender = players_1.FishPlayer.get(player);
         if (option === -1 || option === fishSender.activeMenu.cancelOptionId)
             return;
         (_b = (_a = fishSender.activeMenu).callback) === null || _b === void 0 ? void 0 : _b.call(_a, fishSender, option);
