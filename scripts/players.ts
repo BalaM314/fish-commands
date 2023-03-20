@@ -19,6 +19,10 @@ export class FishPlayer {
   afk:boolean = false;
   tileId = false;
   tilelog = false;
+  trail: {
+    type: string;
+    color: Color;
+  } | undefined = undefined;
 
   //Stored data
   name: string;
@@ -29,11 +33,14 @@ export class FishPlayer {
 	stopped: boolean;
 	/*rank: Rank*/
 	highlight: string | null;
+  rainbow: {
+    speed: number;
+  } | null;
 	history: PlayerHistoryEntry[];
   constructor({
     name, muted = false, mod = false,
     admin = false, member = false, stopped = false,
-    highlight = null, history = []
+    highlight = null, history = [], rainbow = null
   }:Partial<FishPlayerData>, player:mindustryPlayer | null){
     this.name = name ?? player.name ?? "Unnamed player [ERROR]";
     this.muted = muted;
@@ -44,6 +51,7 @@ export class FishPlayer {
     this.highlight = highlight;
     this.history = history;
     this.player = player;
+    this.rainbow = rainbow;
   }
   static read(fishPlayerData:string, player:mindustryPlayer | null){
     return new this(JSON.parse(fishPlayerData), player);

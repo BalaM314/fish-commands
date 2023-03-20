@@ -33,8 +33,8 @@ var stopped = require('stopped');
 var utils = require('utils');
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.mod, mod = _c === void 0 ? false : _c, _d = _a.admin, admin = _d === void 0 ? false : _d, _e = _a.member, member = _e === void 0 ? false : _e, _f = _a.stopped, stopped = _f === void 0 ? false : _f, _g = _a.highlight, highlight = _g === void 0 ? null : _g, _h = _a.history, history = _h === void 0 ? [] : _h;
-        var _j;
+        var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.mod, mod = _c === void 0 ? false : _c, _d = _a.admin, admin = _d === void 0 ? false : _d, _e = _a.member, member = _e === void 0 ? false : _e, _f = _a.stopped, stopped = _f === void 0 ? false : _f, _g = _a.highlight, highlight = _g === void 0 ? null : _g, _h = _a.history, history = _h === void 0 ? [] : _h, _j = _a.rainbow, rainbow = _j === void 0 ? null : _j;
+        var _k;
         //Transients
         this.player = null;
         this.pet = "";
@@ -43,7 +43,8 @@ var FishPlayer = /** @class */ (function () {
         this.afk = false;
         this.tileId = false;
         this.tilelog = false;
-        this.name = (_j = name !== null && name !== void 0 ? name : player.name) !== null && _j !== void 0 ? _j : "Unnamed player [ERROR]";
+        this.trail = undefined;
+        this.name = (_k = name !== null && name !== void 0 ? name : player.name) !== null && _k !== void 0 ? _k : "Unnamed player [ERROR]";
         this.muted = muted;
         this.mod = mod;
         this.admin = admin;
@@ -52,6 +53,7 @@ var FishPlayer = /** @class */ (function () {
         this.highlight = highlight;
         this.history = history;
         this.player = player;
+        this.rainbow = rainbow;
     }
     FishPlayer.read = function (fishPlayerData, player) {
         return new this(JSON.parse(fishPlayerData), player);

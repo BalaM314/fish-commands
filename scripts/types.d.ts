@@ -32,7 +32,24 @@ declare const Team: {
 	[index:string]: Team;
 }
 type Team = any;
+declare const StatusEffects: {
+	[index:string]: StatusEffect;
+}
+type StatusEffect = any;
+declare const Fx: {
+	[index:string]: Effect;
+}
+type Effect = any;
+declare const Align: {
+	[index:string]: any;
+}
 declare const Groups: any;
+declare class Vec2 {
+	constructor(x:number, y:number);
+}
+declare class Color {
+
+}
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
 declare const Core: {
@@ -101,6 +118,7 @@ interface FishPlayerData {
 	/*rank: Rank*/
 	//TODO remove
 	highlight: string | null;
+	rainbow: { speed:number; } | null;
 	history: PlayerHistoryEntry[];
 }
 
