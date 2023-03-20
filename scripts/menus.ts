@@ -1,4 +1,5 @@
 import { FishPlayer } from "./players";
+import type { mindustryPlayer } from "./types";
 const utils = require("utils");
 
 const registeredListeners:{

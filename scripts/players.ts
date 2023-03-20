@@ -1,3 +1,5 @@
+import type { FishPlayerData, mindustryPlayer, mindustryPlayerData, PlayerHistoryEntry } from "./types";
+
 const config = require('config');
 const stopped = require('stopped');
 const utils = require('utils');

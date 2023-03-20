@@ -1,5 +1,6 @@
 import { PermissionsLevel, canPlayerAccess } from "./commands";
 import { FishPlayer } from "./players";
+import type { mindustryPlayer, FishCommandsList, Tile } from "./types";
 const utils = require('./utils');
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){

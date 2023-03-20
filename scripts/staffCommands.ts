@@ -1,6 +1,7 @@
 import { PermissionsLevel, canPlayerAccess } from "./commands";
 import { menu, listeners } from './menus';
 import { FishPlayer } from "./players";
+import type { FishCommandsList, mindustryPlayer, mindustryPlayerData } from "./types";
 const stopped = require('./stopped');
 const ohno = require('./ohno');
 const utils = require('./utils');
