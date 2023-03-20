@@ -13,7 +13,7 @@ const commands = require('commands');
 const staffCommands = require('staffCommands');
 const playerCommands = require('playerCommands');
 const whisper = require('whisper');
-const membership = require('membership');
+const memberCommands = require('memberCommands');
 
 let serverCommands;
 let serverIp;
@@ -121,7 +121,7 @@ Events.on(ServerLoadEvent, (e) => {
   ohno.registerCommands(clientCommands, runner);
   whisper.registerCommands(clientCommands, runner);
   trails.registerCommands(clientCommands, runner);
-  membership.registerCommands(clientCommands, runner);
+  commands.register(memberCommands.commands, clientCommands, serverCommands, runner);
 
   // stored for limiting /reset frequency
   Core.settings.remove('lastRestart');
