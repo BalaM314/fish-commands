@@ -20,6 +20,18 @@ declare const UnitTypes: {
 	[index:string]: UnitType;
 }
 type UnitType = any;
+declare const Sounds: {
+	[index:string]: Sound;
+}
+type Sound = any;
+declare const Blocks: {
+	[index:string]: Block;
+}
+type Block = any;
+declare const Team: {
+	[index:string]: Team;
+}
+type Team = any;
 declare const Groups: any;
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
@@ -40,6 +52,10 @@ declare const SaveIO: {
 declare const Timer: {
 	schedule(func:() => unknown, delaySeconds:number, intervalSeconds?:number, repeatCount?:number);
 }
+declare const Time: {
+	millis(): number;
+}
+type Tile = any;
 declare const GameState: {
 	State: Record<"playing" | "paused", any>;
 }
