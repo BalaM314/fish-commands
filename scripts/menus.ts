@@ -1,5 +1,4 @@
 import { FishPlayer } from "./players";
-import type { mindustryPlayer } from "./types";
 import { to2DArray } from "./utils";
 
 const registeredListeners:{

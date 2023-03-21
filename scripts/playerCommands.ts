@@ -220,7 +220,7 @@ export const commands:FishCommandsList = {
       const adminCommands:string[] = [];
       const memberCommands:string[] = [];
 
-      Vars.netServer.clientCommands.getCommandList().forEach((c:any) => {
+      Vars.netServer.clientCommands.getCommandList().forEach((c:Command) => {
 				let temp = `/${c.text} ${c.paramText ? `[white]${c.paramText} ` : ""}[lightgrey]- ${c.description}`;
         if(filter.member.includes(c.text)) memberCommands.push('[pink]' + temp);
         else if(filter.mod.includes(c.text)) modCommands.push('[acid]' + temp);

@@ -2,7 +2,7 @@ import { nearbyEnemyTile } from "./utils";
 
 export const Ohnos = {
 	enabled: true,
-	ohnos: new Array<any>(),
+	ohnos: new Array<Unit>(),
 	makeOhno(team:Team, x:number, y:number){
 		const ohno = UnitTypes.atrax.spawn(team, x, y);
 		ohno.type = UnitTypes.alpha;

@@ -9,13 +9,13 @@ export const commands:FishCommandsList = {
     level: PermissionsLevel.member,
     handler({args, sender}){
       if (!args.name) {
-        const pet = Groups.unit.find((u:any) => u.id === sender.pet);
+        const pet = Groups.unit.find((u:Unit) => u.id === sender.pet);
         if(pet) pet.kill();
         sender.pet = "";
         return;
       }
       if (sender.pet !== '') {
-        const pet = Groups.unit.find((u:any) => u.id === sender.pet);
+        const pet = Groups.unit.find((u:Unit) => u.id === sender.pet);
         if(pet) pet.kill();
         sender.pet = '';
       }
@@ -27,7 +27,7 @@ export const commands:FishCommandsList = {
       Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
 
       function controlUnit({pet, fishPlayer, petName}:{
-        petName: string; pet: any; fishPlayer: FishPlayer;
+        petName: string; pet: Unit; fishPlayer: FishPlayer;
       }){
         return Timer.schedule(() => {
           if(pet.id !== fishPlayer.pet || fishPlayer.player.con.hasDisconnected){

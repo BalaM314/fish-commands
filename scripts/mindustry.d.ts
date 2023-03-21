@@ -109,3 +109,10 @@ interface PlayerAction {
 }
 type ActionType = any;
 declare const ActionType:Record<string, ActionType>;
+type Unit = any;
+declare class Command {
+	text:string;
+	paramText:string;
+	description:string;
+	params:any[];
+}

@@ -1,11 +1,11 @@
 
 export function logg(msg:string){ Call.sendMessage(msg); }
-export function list(ar:any[]){ Call.sendMessage(ar.join(' | ')); }
+export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
 export function keys(obj:Record<string, unknown>){ Call.sendMessage(Object.keys(obj).join(' [scarlet]|[white] ')); }
 
 const storedValues:Record<string, {
-  value: any;
-  dep: any[];
+  value: unknown;
+  dep: unknown[];
 }> = {};
 /**
  * Stores the output of a function and returns that value
@@ -16,7 +16,7 @@ const storedValues:Record<string, {
  * @param dep dependency array of values to monitor
  * @param id arbitrary unique id of the function for storage purposes.
  */
-export function memoize<T>(callback: () => T, dep:any[], id:number | string){
+export function memoize<T>(callback: () => T, dep:unknown[], id:number | string):T {
   if(!storedValues[id]){
     storedValues[id] = { value: callback(), dep };
   } else if(dep.some((d, ind) => d !== storedValues[id].dep[ind])){
@@ -24,7 +24,7 @@ export function memoize<T>(callback: () => T, dep:any[], id:number | string){
     storedValues[id].value = callback();
     storedValues[id].dep = dep;
   }
-  return storedValues[id].value;
+  return storedValues[id].value as T;
 }
 
 /**
@@ -79,7 +79,7 @@ export function getColor(input:string):Color | null {
   }
 }
 
-export function nearbyEnemyTile(unit:any, dist:number){
+export function nearbyEnemyTile(unit:Unit, dist:number){
   let x = Math.floor(unit.x / Vars.tilesize);
   let y = Math.floor(unit.y / Vars.tilesize);
   for(let i = -dist; i <= dist; i ++){

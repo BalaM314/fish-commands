@@ -1,6 +1,6 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
-import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, mindustryPlayer } from "./types";
+import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler } from "./types";
 
 
 
@@ -169,7 +169,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 		callback(processedArgs);
 	} else {
 		const argToResolve = unresolvedArgs.shift()!;
-		let optionsList:any[] = [];
+		let optionsList:mindustryPlayer[] = [];
 		//Dubious implementation
 		switch(argToResolve.type){
 			case "player": (Groups.player as mindustryPlayer[]).forEach(player => optionsList.push(player)); break;
