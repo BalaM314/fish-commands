@@ -49,7 +49,13 @@ declare class Vec2 {
 	constructor(x:number, y:number);
 }
 declare class Color {
-
+	static [index:string]: Color;
+	constructor();
+	constructor(rgba8888:number);
+	constructor(r:number, g:number, b:number);
+	constructor(r:number, g:number, b:number, a:number);
+	constructor(color:Color);
+	static valueOf(string:string):Color;
 }
 declare const Core: {
 	settings: {

@@ -55,3 +55,26 @@ export function to2DArray<T>(array:T[], width:number){
   });
   return output;
 }
+
+export function getColor(input:string):Color | null {
+  try {
+    if(input.includes(',')){
+      let formattedColor = input.split(',');
+      const col = {
+        r: Number(formattedColor[0]),
+        g: Number(formattedColor[1]),
+        b: Number(formattedColor[2]),
+        a: 255,
+      };
+      return new Color(col.r, col.g, col.b, col.a);
+    } else if(input.includes('#')) {
+      return Color.valueOf(input);
+    } else if(input in Color) {
+      return Color[input];
+    } else {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+}

@@ -22,7 +22,7 @@ export class FishPlayer {
   trail: {
     type: string;
     color: Color;
-  } | undefined = undefined;
+  } | null = null;
 
   //Stored data
   name: string;
@@ -110,6 +110,11 @@ export class FishPlayer {
     }
     fishPlayer.checkName();
     fishPlayer.updateName();
+  }
+  static forEachPlayer(func:(player:FishPlayer) => unknown){
+    for(const [uuid, player] of Object.entries(this.cachedPlayers)){
+      if(player.player && !player.player.con.hasDisconnected) func(player);
+    }
   }
   write():string {
     return JSON.stringify({

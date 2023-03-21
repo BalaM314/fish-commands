@@ -1,7 +1,7 @@
 import { PermissionsLevel } from "./commands";
 import { FishPlayer } from "./players";
 import type { mindustryPlayer, FishCommandsList, Tile } from "./types";
-import { to2DArray } from "./utils";
+import { getColor, to2DArray } from "./utils";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
   player.unit().set(to.unit().x, to.unit().y);
@@ -278,5 +278,69 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 				outputFail(`It doesn't look like someone has messaged you recently. Try whispering to them with [white]"/msg <player> <message>"`);
 			}
 		}
+	},
+
+	trail: {
+		args: ["type:string?", "color:string?"],
+    description: 'Use command to see options and toggle trail on/off.',
+		level: PermissionsLevel.all,
+    handler({args, sender, output, outputFail, outputSuccess}){
+
+			//overload 1: type not specified
+      if(!args.type){
+        if(sender.trail != null){
+          sender.trail = null;
+					outputSuccess(`Trail turned off.`);
+        } else {
+					const options = [
+						'1 - fluxVapor (flowing smoke, long lasting)',
+						'2 - overclocked (diamonds)',
+						'3 - overdriven (squares)',
+						'4 - shieldBreak (smol)',
+						'5 - upgradeCoreBloom (square, long lasting, only orange)',
+						'6 - electrified (tiny spiratic diamonds, but only green)',
+						'7 - unitDust (same as above but round, and can change colors)',
+						'[white]Usage: [orange]/trail [lightgrey]<type> [color/#hex/r,g,b]',
+					];
+					output(`Available types:[yellow]\n` + options.join('\n'));
+				}
+				return;
+      }
+
+			//overload 2: type specified
+			const trailTypes = {
+				1: 'fluxVapor',
+				2: 'overclocked',
+				3: 'overdriven',
+				4: 'shieldBreak',
+				5: 'upgradeCoreBloom',
+				6: 'electrified',
+				7: 'unitDust',
+			};
+
+			const selectedType = trailTypes[args.type as keyof typeof trailTypes] as string | undefined;
+			if(!selectedType){
+				if(Object.values(trailTypes).includes(args.type))
+					outputFail(`Please use the numeric id to refer to a trail type.`);
+				else 
+					outputFail(`"${args.type}" is not an available type.`);
+				return;
+			}
+
+			const color = args.color ? getColor(args.color) : Color.white;
+			if(color instanceof Color){
+				sender.trail = {
+					type: selectedType,
+					color,
+				};
+			} else {
+				outputFail(
+`[scarlet]Sorry, "${args.color}" is not a valid color.
+[yellow]Color can be in the following formats:
+[pink]pink [white]| [gray]#696969 [white]| 255,0,0.`
+    		);
+			}
+
+    }
 	}
 };

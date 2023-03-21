@@ -42,7 +42,7 @@ var FishPlayer = /** @class */ (function () {
         this.afk = false;
         this.tileId = false;
         this.tilelog = false;
-        this.trail = undefined;
+        this.trail = null;
         this.name = (_k = name !== null && name !== void 0 ? name : player.name) !== null && _k !== void 0 ? _k : "Unnamed player [ERROR]";
         this.muted = muted;
         this.mod = mod;
@@ -116,6 +116,23 @@ var FishPlayer = /** @class */ (function () {
         }
         fishPlayer.checkName();
         fishPlayer.updateName();
+    };
+    FishPlayer.forEachPlayer = function (func) {
+        var e_1, _a;
+        try {
+            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
+                if (player.player && !player.player.con.hasDisconnected)
+                    func(player);
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
     };
     FishPlayer.prototype.write = function () {
         return JSON.stringify({
@@ -201,32 +218,13 @@ var FishPlayer = /** @class */ (function () {
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.checkName = function () {
-        var e_1, _a;
+        var e_2, _a;
         try {
             for (var _b = __values(config.bannedNames), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var bannedName = _c.value;
                 if (this.name.toLowerCase().includes(bannedName)) {
                     this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."));
                 }
-            }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_1) throw e_1.error; }
-        }
-    };
-    FishPlayer.saveAll = function () {
-        var e_2, _a;
-        //Temporary implementation
-        var jsonString = "{";
-        try {
-            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
-                if (player.admin || player.mod || player.member)
-                    jsonString += "\"".concat(uuid, "\":").concat(player.write());
             }
         }
         catch (e_2_1) { e_2 = { error: e_2_1 }; }
@@ -236,12 +234,31 @@ var FishPlayer = /** @class */ (function () {
             }
             finally { if (e_2) throw e_2.error; }
         }
+    };
+    FishPlayer.saveAll = function () {
+        var e_3, _a;
+        //Temporary implementation
+        var jsonString = "{";
+        try {
+            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
+                if (player.admin || player.mod || player.member)
+                    jsonString += "\"".concat(uuid, "\":").concat(player.write());
+            }
+        }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_3) throw e_3.error; }
+        }
         jsonString += "}";
         Core.settings.put('fish', jsonString);
         Core.settings.manualSave();
     };
     FishPlayer.loadAll = function () {
-        var e_3, _a;
+        var e_4, _a;
         //Temporary implementation
         var jsonString = Core.settings.get('fish', '');
         if (jsonString == "")
@@ -252,12 +269,12 @@ var FishPlayer = /** @class */ (function () {
                 this.cachedPlayers[key] = new this(value, null);
             }
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_3) throw e_3.error; }
+            finally { if (e_4) throw e_4.error; }
         }
     };
     FishPlayer.cachedPlayers = {};
@@ -265,7 +282,3 @@ var FishPlayer = /** @class */ (function () {
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;
-// Load saved players
-Events.on(ServerLoadEvent, function (e) {
-    FishPlayer.loadAll();
-});

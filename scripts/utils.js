@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -58,3 +58,30 @@ function to2DArray(array, width) {
     return output;
 }
 exports.to2DArray = to2DArray;
+function getColor(input) {
+    try {
+        if (input.includes(',')) {
+            var formattedColor = input.split(',');
+            var col = {
+                r: Number(formattedColor[0]),
+                g: Number(formattedColor[1]),
+                b: Number(formattedColor[2]),
+                a: 255,
+            };
+            return new Color(col.r, col.g, col.b, col.a);
+        }
+        else if (input.includes('#')) {
+            return Color.valueOf(input);
+        }
+        else if (input in Color) {
+            return Color[input];
+        }
+        else {
+            return null;
+        }
+    }
+    catch (e) {
+        return null;
+    }
+}
+exports.getColor = getColor;
