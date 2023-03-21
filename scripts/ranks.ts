@@ -1,5 +1,5 @@
 
-class Rank {
+export class Rank {
 	static player = new Rank("player", 0, "");
 	static active = new Rank("active", 1, "[black]<[green]\uE800[black]>");
 	static trusted = new Rank("trusted", 2, "[black]<[blue]\uE84D[black]>");
@@ -9,5 +9,15 @@ class Rank {
 	static admin = new Rank("admin", 5, "[black]<[scarlet]A[black]>");
 	static manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>");
 	static fish = new Rank("fish", 999, "[blue]>|||>[]");//Might want to change this to like owner or something
-	constructor(public name:string, /** Used to determine whether a rank outranks another. */ public level:number, public prefix:string){}
+	static ranks:Record<string, Rank> = {};
+	constructor(
+		public name:string,
+		/** Used to determine whether a rank outranks another. */ public level:number, 
+		public prefix:string
+	){
+		Rank.ranks[name] = this;
+	}
+	static getByName(name:string):Rank | null{
+		return this.ranks[name] ?? null;
+	}
 }
