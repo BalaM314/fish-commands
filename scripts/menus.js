@@ -31,16 +31,17 @@ var listeners = (function (d) { return d; })({
 });
 Events.on(ServerLoadEvent, function (e) {
     var e_1, _a;
+    var _b;
     try {
-        for (var _b = __values(Object.keys(listeners)), _c = _b.next(); !_c.done; _c = _b.next()) {
-            var key = _c.value;
-            registeredListeners[key] = Menus.registerMenu(listeners[key]);
+        for (var _c = __values(Object.keys(listeners)), _d = _c.next(); !_d.done; _d = _c.next()) {
+            var key = _d.value;
+            (_b = registeredListeners[key]) !== null && _b !== void 0 ? _b : (registeredListeners[key] = Menus.registerMenu(listeners[key]));
         }
     }
     catch (e_1_1) { e_1 = { error: e_1_1 }; }
     finally {
         try {
-            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
         }
         finally { if (e_1) throw e_1.error; }
     }

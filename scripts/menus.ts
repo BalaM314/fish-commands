@@ -22,7 +22,7 @@ const listeners = (
 
 Events.on(ServerLoadEvent, (e) => {
   for(const key of Object.keys(listeners)){
-		registeredListeners[key] = Menus.registerMenu(listeners[key as keyof typeof listeners]);
+		registeredListeners[key] ??= Menus.registerMenu(listeners[key as keyof typeof listeners]);
 	}
 });
 

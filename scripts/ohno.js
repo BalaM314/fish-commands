@@ -41,23 +41,6 @@ const killOhno = () => {
   ohnos = [];
 };
 
-// disable ohnos
-Timer.schedule(
-  () => {
-    if (!ohnos.length) return;
-
-    Groups.unit.forEach((u) => {
-      if (ohnos.includes(u.id)) {
-        u.apply(StatusEffects.disarmed, 10000);
-      }
-    });
-
-    return;
-  },
-  5, // time to wait before first execution in seconds
-  10000 // interval in seconds
-);
-
 const registerCommands = (clientCommands, runner) => {
   // Ohno
   clientCommands.register(

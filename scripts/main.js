@@ -1,11 +1,11 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
-require('timers');
 require('stopped');
 require('menus');
 
 const utils = require('utils');
 const { FishPlayer } = require('players');
+const timers = require('timers');
 const trails = require('trails');
 const config = require('config');
 const ohno = require('ohno');
@@ -64,6 +64,8 @@ Events.on(ServerLoadEvent, (e) => {
     (l) => l instanceof Packages.mindustry.server.ServerControl
   ).handler;
 
+  FishPlayer.loadAll();
+
   // Mute muted players
   Vars.netServer.admins.addChatFilter((player, text) => {
     const fishPlayer = FishPlayer.get(player);
@@ -107,7 +109,12 @@ Events.on(ServerLoadEvent, (e) => {
       return true;
     }
 
+    
   });
+
+
+  timers.initializeTimers();
+  
 
   const runner = (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method });
   //Is this necessary? Can this function be moved to register()?

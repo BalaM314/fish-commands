@@ -218,8 +218,3 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
     }
   }
 }
-
-// Load saved players
-Events.on(ServerLoadEvent, (e) => {
-  FishPlayer.loadAll();
-});
