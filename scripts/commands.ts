@@ -14,9 +14,9 @@ export class PermissionsLevel {
 	constructor(public name:string, public customErrorMessage?:string){}
 }
 
-
-const commandArgTypes = ["string", "number", "boolean", "player"] as const;
-type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
+//TODO impl exactPlayer for /admin, etc
+const commandArgTypes = ["string", "number", "boolean", "player", /*"exactPlayer",*/ "namedPlayer"] as const;
+export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str:string):CommandArg {
@@ -56,7 +56,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 			}
 		}
 		switch(cmdArg.type){
-			case "player":
+			case "player": case "namedPlayer":
 				const player = FishPlayer.getByName(args[i]);
 				if(player == null) return {error: `Player "${args[i]}" not found.`};
 				outputArgs[cmdArg.name] = player;

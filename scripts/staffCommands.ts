@@ -346,7 +346,7 @@ export const commands:FishCommandsList = {
 	},
 
 	member: {
-		args: ["player:player", "value:boolean"],
+		args: ["value:boolean", "player:player"],
 		description: "Sets a player's member status.",
 		level: PermissionsLevel.admin,
 		handler({args, outputSuccess}){

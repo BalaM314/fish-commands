@@ -253,7 +253,7 @@ exports.commands = {
         }
     },
     msg: {
-        args: ["player:player", "message:string"],
+        args: ["player:namedPlayer", "message:string"],
         description: "Send a message to only one player.",
         level: commands_1.PermissionsLevel.all,
         handler: function (_a) {

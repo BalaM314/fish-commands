@@ -1,4 +1,5 @@
 import type { FishPlayer } from "./players";
+import type { CommandArgType } from "./commands";
 
 
 type FishCommandArgType = string | number | FishPlayer | boolean | null;

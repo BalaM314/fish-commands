@@ -361,7 +361,7 @@ exports.commands = {
         }
     },
     member: {
-        args: ["player:player", "value:boolean"],
+        args: ["value:boolean", "player:player"],
         description: "Sets a player's member status.",
         level: commands_1.PermissionsLevel.admin,
         handler: function (_a) {

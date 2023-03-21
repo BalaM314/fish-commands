@@ -44,7 +44,8 @@ var PermissionsLevel = /** @class */ (function () {
     return PermissionsLevel;
 }());
 exports.PermissionsLevel = PermissionsLevel;
-var commandArgTypes = ["string", "number", "boolean", "player"];
+//TODO impl exactPlayer for /admin, etc
+var commandArgTypes = ["string", "number", "boolean", "player", /*"exactPlayer",*/ "namedPlayer"];
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha
@@ -84,6 +85,7 @@ function processArgs(args, processedCmdArgs) {
             }
             switch (cmdArg.type) {
                 case "player":
+                case "namedPlayer":
                     var player = players_1.FishPlayer.getByName(args[i]);
                     if (player == null)
                         return { error: "Player \"".concat(args[i], "\" not found.") };
