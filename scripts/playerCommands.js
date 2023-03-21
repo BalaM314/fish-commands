@@ -39,6 +39,7 @@ function messageStaff(name, msg) {
     });
 }
 ;
+var recentWhispers = {};
 exports.commands = {
     unpause: {
         args: [],
@@ -247,6 +248,38 @@ exports.commands = {
                     else {
                         outputFail("\"".concat(args.page, "\" is an invalid page number."));
                     }
+            }
+        }
+    },
+    msg: {
+        args: ["player:player", "message:string"],
+        description: "Send a message to only one player.",
+        level: commands_1.PermissionsLevel.all,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, output = _a.output;
+            recentWhispers[args.player.player.uuid()] = sender.player.uuid();
+            args.player.player.sendMessage("".concat(args.player.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
+            output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
+        }
+    },
+    r: {
+        args: ["message:string"],
+        description: "Reply to the most recent message.",
+        level: commands_1.PermissionsLevel.all,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
+            if (recentWhispers[sender.player.uuid()]) {
+                var recipient = players_1.FishPlayer.getById(recentWhispers[sender.player.uuid()]);
+                if (recipient) {
+                    recipient.player.sendMessage("".concat(sender.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
+                    output("[#0ffffff0]Message sent to ".concat(recipient.name, "[#0ffffff0]."));
+                }
+                else {
+                    outputFail("The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]\"/msg <player> <message>\"");
+                }
+            }
+            else {
+                outputFail("It doesn't look like someone has messaged you recently. Try whispering to them with [white]\"/msg <player> <message>\"");
             }
         }
     }

@@ -44,6 +44,8 @@ function messageStaff(name:string, msg:string){
   });
 };
 
+let recentWhispers:Record<string, string> = {};
+
 export const commands:FishCommandsList = {
 
 	unpause: {
@@ -244,6 +246,36 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 					} else {
 						outputFail(`"${args.page}" is an invalid page number.`);
 					}
+			}
+		}
+	},
+
+	msg: {
+		args: ["player:player", "message:string"],
+		description: "Send a message to only one player.",
+		level: PermissionsLevel.all,
+		handler({args, sender, output}){
+			recentWhispers[args.player.player.uuid()] = sender.player.uuid();
+			args.player.player.sendMessage(`${args.player.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
+			output(`[#0ffffff0]Message sent to ${args.player.player.name}[#0ffffff0].`);
+		}
+	},
+
+	r: {
+		args: ["message:string"],
+		description: "Reply to the most recent message.",
+		level: PermissionsLevel.all,
+		handler({args, sender, output, outputFail}){
+			if(recentWhispers[sender.player.uuid()]){
+				const recipient = FishPlayer.getById(recentWhispers[sender.player.uuid()]);
+				if(recipient){
+					recipient.player.sendMessage(`${sender.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
+					output(`[#0ffffff0]Message sent to ${recipient.name}[#0ffffff0].`);
+				} else {
+					outputFail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
+				}
+			} else {
+				outputFail(`It doesn't look like someone has messaged you recently. Try whispering to them with [white]"/msg <player> <message>"`);
 			}
 		}
 	}
