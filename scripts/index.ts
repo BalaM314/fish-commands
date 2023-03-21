@@ -1,5 +1,6 @@
-importPackage(Packages.arc);
-importPackage(Packages.mindustry.type);
+/**
+ * This used to be main.js but was renamed to index.js due to rhino issue
+ */
 
 import { getTimeSinceText } from "./utils";
 import { FishPlayer } from './players';

@@ -1,7 +1,8 @@
 "use strict";
+/**
+ * This used to be main.js but was renamed to index.js due to rhino issue
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-importPackage(Packages.arc);
-importPackage(Packages.mindustry.type);
 var utils_1 = require("./utils");
 var players_1 = require("./players");
 var timers = require("./timers");
