@@ -6,7 +6,10 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
 
-//Polyfill Object.entries
+//Polyfills
 Object.entries = o => Object.keys(o).map(k => [k, o[k]]);
+Array.prototype.at = function(i){
+	return this[i < 0 ? this.length + i : i];
+}
 
 require("index");
