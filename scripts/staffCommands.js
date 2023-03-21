@@ -6,7 +6,7 @@ var menus_1 = require("./menus");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
 var api = require("./api");
-var ohno = require('./ohno');
+var ohno_1 = require("./ohno");
 exports.commands = {
     warn: {
         args: ['player:player', 'reason:string?'],
@@ -219,9 +219,9 @@ exports.commands = {
         customUnauthorizedMessage: "[yellow]You're a [scarlet]monster[].",
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
-            var numOhnos = ohno.totalOhno();
-            ohno.killOhno();
-            outputSuccess("You massacred [#48e076] ".concat(numOhnos, " [yellow] helpless ohno crawlers."));
+            var numOhnos = ohno_1.Ohnos.amount();
+            ohno_1.Ohnos.killAll();
+            outputSuccess("You massacred [#48e076]".concat(numOhnos, " [yellow]helpless ohno crawlers."));
         }
     },
     stop_offline: {

@@ -78,3 +78,15 @@ export function getColor(input:string):Color | null {
     return null;
   }
 }
+
+export function nearbyEnemyTile(unit:any, dist:number){
+  let x = Math.floor(unit.x / Vars.tilesize);
+  let y = Math.floor(unit.y / Vars.tilesize);
+  for(let i = -dist; i <= dist; i ++){
+    for(let j = -dist; j <= dist; j ++){
+      let build = Vars.world.build(x + i, y + j);
+      if(build && build.team != unit.team) return build;
+    }
+  }
+  return null;
+}

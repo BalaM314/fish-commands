@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -85,3 +85,16 @@ function getColor(input) {
     }
 }
 exports.getColor = getColor;
+function nearbyEnemyTile(unit, dist) {
+    var x = Math.floor(unit.x / Vars.tilesize);
+    var y = Math.floor(unit.y / Vars.tilesize);
+    for (var i = -dist; i <= dist; i++) {
+        for (var j = -dist; j <= dist; j++) {
+            var build = Vars.world.build(x + i, y + j);
+            if (build && build.team != unit.team)
+                return build;
+        }
+    }
+    return null;
+}
+exports.nearbyEnemyTile = nearbyEnemyTile;

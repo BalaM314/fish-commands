@@ -1,4 +1,5 @@
 import { PermissionsLevel } from "./commands";
+import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import type { mindustryPlayer, FishCommandsList, Tile } from "./types";
 import { getColor, to2DArray } from "./utils";
@@ -342,5 +343,19 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 			}
 
     }
+	},
+
+	ohno: {
+		args: [],
+		description: "Spawns an ohno.",
+		level: PermissionsLevel.notGriefer,
+		handler({sender, outputFail}){
+			const canSpawn = Ohnos.canSpawn(sender.player);
+			if(canSpawn){
+				Ohnos.makeOhno(sender.player.team, sender.player.x, sender.player.y);
+			} else {
+				outputFail(canSpawn);
+			}
+		}
 	}
 };

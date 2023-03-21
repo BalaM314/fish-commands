@@ -4,7 +4,7 @@ import { FishPlayer } from "./players";
 import type { FishCommandsList, mindustryPlayer, mindustryPlayerData } from "./types";
 import { getTimeSinceText } from "./utils";
 import * as api from "./api";
-const ohno = require('./ohno');
+import { Ohnos } from "./ohno";
 
 export const commands:FishCommandsList = {
 	warn: {
@@ -199,9 +199,9 @@ export const commands:FishCommandsList = {
 		level: PermissionsLevel.mod,
 		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
     handler({outputSuccess}){
-			const numOhnos = ohno.totalOhno();
-			ohno.killOhno();
-			outputSuccess(`You massacred [#48e076] ${numOhnos} [yellow] helpless ohno crawlers.`);
+			const numOhnos = Ohnos.amount();
+			Ohnos.killAll();
+			outputSuccess(`You massacred [#48e076]${numOhnos} [yellow]helpless ohno crawlers.`);
     }
 	},
 

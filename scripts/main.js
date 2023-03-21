@@ -4,13 +4,10 @@ importPackage(Packages.mindustry.type);
 const utils = require('utils');
 const { FishPlayer } = require('players');
 const timers = require('timers');
-const trails = require('trails');
 const config = require('config');
-const ohno = require('ohno');
 const commands = require('commands');
 const staffCommands = require('staffCommands');
 const playerCommands = require('playerCommands');
-const whisper = require('whisper');
 const memberCommands = require('memberCommands');
 
 let serverCommands;
@@ -89,9 +86,6 @@ Events.on(ServerLoadEvent, (e) => {
 
   commands.register(staffCommands.commands, clientCommands, serverCommands, runner);
   commands.register(playerCommands.commands, clientCommands, serverCommands, runner);
-  ohno.registerCommands(clientCommands, runner);
-  whisper.registerCommands(clientCommands, runner);
-  trails.registerCommands(clientCommands, runner);
   commands.register(memberCommands.commands, clientCommands, serverCommands, runner);
 
   // stored for limiting /reset frequency

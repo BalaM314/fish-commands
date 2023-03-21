@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
+var ohno_1 = require("./ohno");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
 function teleportPlayer(player, to) {
@@ -337,6 +338,21 @@ exports.commands = {
             }
             else {
                 outputFail("[scarlet]Sorry, \"".concat(args.color, "\" is not a valid color.\n[yellow]Color can be in the following formats:\n[pink]pink [white]| [gray]#696969 [white]| 255,0,0."));
+            }
+        }
+    },
+    ohno: {
+        args: [],
+        description: "Spawns an ohno.",
+        level: commands_1.PermissionsLevel.notGriefer,
+        handler: function (_a) {
+            var sender = _a.sender, outputFail = _a.outputFail;
+            var canSpawn = ohno_1.Ohnos.canSpawn(sender.player);
+            if (canSpawn) {
+                ohno_1.Ohnos.makeOhno(sender.player.team, sender.player.x, sender.player.y);
+            }
+            else {
+                outputFail(canSpawn);
             }
         }
     }
