@@ -1,5 +1,6 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
+import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, mindustryPlayer } from "./types";
 
 
 
