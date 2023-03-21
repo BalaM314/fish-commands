@@ -1,4 +1,4 @@
-import type { FishPlayerData, mindustryPlayer, mindustryPlayerData, PlayerHistoryEntry } from "./types";
+import type { FishPlayerData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
 import * as api from "./api";
 

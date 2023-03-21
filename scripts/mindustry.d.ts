@@ -11,8 +11,9 @@ declare const Strings: {
 }
 declare const Vars: any;
 declare const Events: {
-	on(event:any, handler:(e:any) => void);
+	on(event:EventType, handler:(e:any) => void);
 }
+declare type Tile = any;
 declare const ServerLoadEvent: any;
 declare const Menus: {
 	registerMenu(listener:MenuListener):number;
@@ -48,6 +49,8 @@ declare const Groups: any;
 declare class Vec2 {
 	constructor(x:number, y:number);
 }
+/* mindustry.gen.Player */
+declare type mindustryPlayer = any;
 declare class Color {
 	static [index:string]: Color;
 	constructor();
@@ -61,11 +64,13 @@ declare const Core: {
 	settings: {
 		get(key:string, defaultValue?:any):any;
 		put(key:string, value:any):void;
+		remove(key:string):void;
 		manualSave():void;
 	}
 	app: {
 		post(func:() => unknown):void;
 		exit():void;
+		listeners: any[];
 	}
 }
 declare const SaveIO: {
@@ -90,4 +95,17 @@ declare class HttpReponse {
 }
 declare const Http: {
 	post(url:string, content:string):HttpRequest;
+	get(url:string):HttpRequest;
 }
+
+declare function importPackage(package:any):void;
+declare const Packages: Record<string, any>;
+declare const EventType: Record<string, EventType>;
+type EventType = any;
+interface PlayerAction {
+	player:mindustryPlayer;
+	type:ActionType;
+	tile:Tile | null;
+}
+type ActionType = any;
+declare const ActionType:Record<string, ActionType>;

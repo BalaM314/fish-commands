@@ -1,4 +1,3 @@
-import { mindustryPlayer } from "./types";
 import { nearbyEnemyTile } from "./utils";
 
 export const Ohnos = {

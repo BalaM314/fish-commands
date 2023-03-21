@@ -1,7 +1,7 @@
 import { PermissionsLevel } from "./commands";
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
-import type { mindustryPlayer, FishCommandsList, Tile } from "./types";
+import type { FishCommandsList } from "./types";
 import { getColor, to2DArray } from "./utils";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){

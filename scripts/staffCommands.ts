@@ -1,7 +1,7 @@
 import { PermissionsLevel } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
-import type { FishCommandsList, mindustryPlayer, mindustryPlayerData } from "./types";
+import type { FishCommandsList, mindustryPlayerData } from "./types";
 import { getTimeSinceText } from "./utils";
 import * as api from "./api";
 import { Ohnos } from "./ohno";

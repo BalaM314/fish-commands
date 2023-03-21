@@ -3,7 +3,7 @@ import type { FishPlayer } from "./players";
 
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
-type Tile = any;
+
 interface FishCommandRunner {
 	(_:{
 		/**Raw arguments that were passed to the command. */
@@ -55,9 +55,6 @@ interface PlayerHistoryEntry {
 	by:string;
 	time:number;
 }
-
-/* mindustry.gen.Player */
-type mindustryPlayer = any;
 interface mindustryPlayerData {
 	/**uuid */
 	id: string;
