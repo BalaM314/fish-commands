@@ -71,6 +71,9 @@ function menu(title, description, options, target, callback, includeCancel, opti
             //and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
             //which already checks permissions.
             //Additionally, the callback is cleared by the generic menu listener after it is executed.
+            //We do need to validate option though, as it can be any number.
+            if (!(option in options))
+                return;
             callback({
                 option: options[option],
                 sender: target,
