@@ -6,4 +6,7 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
 
+//Polyfill Object.entries
+Object.entries = o => Object.keys(o).map(k => [k, o[k]]);
+
 require("index");
