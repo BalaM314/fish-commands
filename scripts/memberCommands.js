@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
-var utils = require('utils');
 var trails = require('trails');
 exports.commands = {
     pet: {

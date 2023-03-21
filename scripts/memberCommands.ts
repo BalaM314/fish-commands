@@ -1,7 +1,6 @@
 import { PermissionsLevel } from "./commands";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
-const utils = require('utils');
 const trails = require('trails');
 
 export const commands:FishCommandsList = {

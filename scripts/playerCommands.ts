@@ -1,7 +1,7 @@
-import { PermissionsLevel, canPlayerAccess } from "./commands";
+import { PermissionsLevel } from "./commands";
 import { FishPlayer } from "./players";
 import type { mindustryPlayer, FishCommandsList, Tile } from "./types";
-const utils = require('./utils');
+import { to2DArray } from "./utils";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
   player.unit().set(to.unit().x, to.unit().y);
@@ -226,7 +226,7 @@ export const commands:FishCommandsList = {
         else if(filter.admin.includes(c.text)) adminCommands.push('[cyan]' + temp);
         else normalCommands.push('[sky]' + temp);
       });
-			const chunkedNormalCommands:string[][] = utils.createChunks(normalCommands, 15);
+			const chunkedNormalCommands:string[][] = to2DArray(normalCommands, 15);
 
 			switch(args.page){
 				case "admin": output('[cyan]--Admin commands--\n' + adminCommands.join('\n')); break;

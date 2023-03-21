@@ -1,6 +1,6 @@
 import { FishPlayer } from "./players";
 import type { mindustryPlayer } from "./types";
-const utils = require("utils");
+import { to2DArray } from "./utils";
 
 const registeredListeners:{
 	[index:string]: number;
@@ -53,7 +53,7 @@ function menu<T>(
 		//overload 2, display a menu with callback
 
 		//Set up the 2D array of options, and add cancel
-		const arrangedOptions = utils.to2DArray(options.map(optionStringifier), 3);
+		const arrangedOptions = to2DArray(options.map(optionStringifier), 3);
 		if(includeCancel){
 			arrangedOptions.push(["Cancel"]);
 			target.activeMenu.cancelOptionId = options.length;

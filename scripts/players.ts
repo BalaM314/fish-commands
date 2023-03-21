@@ -1,8 +1,6 @@
 import type { FishPlayerData, mindustryPlayer, mindustryPlayerData, PlayerHistoryEntry } from "./types";
-
-const config = require('config');
+import * as config from "./config";
 const stopped = require('stopped');
-const utils = require('utils');
 
 type OnlineFishPlayer = FishPlayer & {player: mindustryPlayer};
 
@@ -134,25 +132,14 @@ export class FishPlayer {
   updateName(){
     if(this.player == null) return;//No player, no need to update
     let prefix = '';
-    if (this.stopped) {
-      prefix += config.STOPPED_PREFIX;
-    }
-    if (this.muted) {
-      prefix += config.MUTED_PREFIX;
-    }
-    if (this.afk) {
-      prefix += config.AFK_PREFIX;
-    }
-    if (this.member) {
-      prefix += config.MEMBER_PREFIX;
-    }
+    if(this.stopped) prefix += config.STOPPED_PREFIX;
+    if(this.muted) prefix += config.MUTED_PREFIX;
+    if(this.afk) prefix += config.AFK_PREFIX;
+    if(this.member) prefix += config.MEMBER_PREFIX;
 
-    if (this.admin) {
-      prefix += config.ADMIN_PREFIX;
-    } else if (this.mod) {
-      prefix += config.MOD_PREFIX;
-    }
-    this.player!.name = prefix + this.name;
+    if(this.admin) prefix += config.ADMIN_PREFIX;
+    else if(this.mod) prefix += config.MOD_PREFIX;
+    this.player.name = prefix + this.name;
   }
   /**
    * Record moderation actions taken on a player.

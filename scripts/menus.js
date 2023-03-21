@@ -13,7 +13,7 @@ var __values = (this && this.__values) || function(o) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.menu = exports.listeners = void 0;
 var players_1 = require("./players");
-var utils = require("utils");
+var utils_1 = require("./utils");
 var registeredListeners = {};
 exports.listeners = registeredListeners;
 var listeners = (function (d) { return d; })({
@@ -57,7 +57,7 @@ function menu(title, description, options, target, callback, includeCancel, opti
     else {
         //overload 2, display a menu with callback
         //Set up the 2D array of options, and add cancel
-        var arrangedOptions = utils.to2DArray(options.map(optionStringifier), 3);
+        var arrangedOptions = (0, utils_1.to2DArray)(options.map(optionStringifier), 3);
         if (includeCancel) {
             arrangedOptions.push(["Cancel"]);
             target.activeMenu.cancelOptionId = options.length;

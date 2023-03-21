@@ -28,9 +28,8 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FishPlayer = void 0;
-var config = require('config');
+var config = require("./config");
 var stopped = require('stopped');
-var utils = require('utils');
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.mod, mod = _c === void 0 ? false : _c, _d = _a.admin, admin = _d === void 0 ? false : _d, _e = _a.member, member = _e === void 0 ? false : _e, _f = _a.stopped, stopped = _f === void 0 ? false : _f, _g = _a.highlight, highlight = _g === void 0 ? null : _g, _h = _a.history, history = _h === void 0 ? [] : _h, _j = _a.rainbow, rainbow = _j === void 0 ? null : _j;
@@ -140,24 +139,18 @@ var FishPlayer = /** @class */ (function () {
         if (this.player == null)
             return; //No player, no need to update
         var prefix = '';
-        if (this.stopped) {
+        if (this.stopped)
             prefix += config.STOPPED_PREFIX;
-        }
-        if (this.muted) {
+        if (this.muted)
             prefix += config.MUTED_PREFIX;
-        }
-        if (this.afk) {
+        if (this.afk)
             prefix += config.AFK_PREFIX;
-        }
-        if (this.member) {
+        if (this.member)
             prefix += config.MEMBER_PREFIX;
-        }
-        if (this.admin) {
+        if (this.admin)
             prefix += config.ADMIN_PREFIX;
-        }
-        else if (this.mod) {
+        else if (this.mod)
             prefix += config.MOD_PREFIX;
-        }
         this.player.name = prefix + this.name;
     };
     /**

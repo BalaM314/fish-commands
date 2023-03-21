@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
-var utils = require('./utils');
+var utils_1 = require("./utils");
 function teleportPlayer(player, to) {
     player.unit().set(to.unit().x, to.unit().y);
     Call.setPosition(player.con, to.unit().x, to.unit().y);
@@ -226,7 +226,7 @@ exports.commands = {
                 else
                     normalCommands.push('[sky]' + temp);
             });
-            var chunkedNormalCommands = utils.createChunks(normalCommands, 15);
+            var chunkedNormalCommands = (0, utils_1.to2DArray)(normalCommands, 15);
             switch (args.page) {
                 case "admin":
                     output('[cyan]--Admin commands--\n' + adminCommands.join('\n'));

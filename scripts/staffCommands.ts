@@ -1,10 +1,10 @@
-import { PermissionsLevel, canPlayerAccess } from "./commands";
-import { menu, listeners } from './menus';
+import { PermissionsLevel } from "./commands";
+import { menu } from './menus';
 import { FishPlayer } from "./players";
 import type { FishCommandsList, mindustryPlayer, mindustryPlayerData } from "./types";
+import { getTimeSinceText } from "./utils";
 const stopped = require('./stopped');
 const ohno = require('./ohno');
-const utils = require('./utils');
 
 export const commands:FishCommandsList = {
 	warn: {
@@ -284,7 +284,7 @@ export const commands:FishCommandsList = {
 				output(
 					`[yellow]_______________Player history_______________\n\n` +
 					(args.player as FishPlayer).history.map(e =>
-						`${e.by} [yellow]${e.action} ${args.player.name} [white]${utils.getTimeSinceText(e.time)}`
+						`${e.by} [yellow]${e.action} ${args.player.name} [white]${getTimeSinceText(e.time)}`
 					).join("\n")
 				);
 			} else {

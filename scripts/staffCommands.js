@@ -4,9 +4,9 @@ exports.commands = void 0;
 var commands_1 = require("./commands");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
+var utils_1 = require("./utils");
 var stopped = require('./stopped');
 var ohno = require('./ohno');
-var utils = require('./utils');
 exports.commands = {
     warn: {
         args: ['player:player', 'reason:string?'],
@@ -302,7 +302,7 @@ exports.commands = {
             if (args.player.history && args.player.history.length > 0) {
                 output("[yellow]_______________Player history_______________\n\n" +
                     args.player.history.map(function (e) {
-                        return "".concat(e.by, " [yellow]").concat(e.action, " ").concat(args.player.name, " [white]").concat(utils.getTimeSinceText(e.time));
+                        return "".concat(e.by, " [yellow]").concat(e.action, " ").concat(args.player.name, " [white]").concat((0, utils_1.getTimeSinceText)(e.time));
                     }).join("\n"));
             }
             else {

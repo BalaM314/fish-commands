@@ -1,5 +1,4 @@
-const players = require('./players');
-const utils = require('utils');
+const { FishPlayer } = require('./players');
 
 let trails = [];
 
@@ -12,7 +11,7 @@ const registerCommands = (clientCommands, runner) => {
     '[type] [color/#hex/r,g,b]',
     'Use command to see options and toggle trail on/off.',
     runner((args, realP) => {
-      const p = players.getP(realP);
+      const p = FishPlayer.get(realP);
 
       if (!args[0]) {
         if (trails.includes(realP.uuid())) {
@@ -116,11 +115,8 @@ const registerCommands = (clientCommands, runner) => {
 Timer.schedule(
   () => {
     trails.forEach((id) => {
-      const pl = utils.plrById(id);
-      if (!pl) return;
-      const p = players.getP(pl);
-      if (!p.trail) return;
-      Call.effect(Fx[p.trail.type], pl.x, pl.y, 0, p.trail.color);
+      const p = FishPlayer.getById(id)
+      if(p && p.trail) Call.effect(Fx[p.trail.type], pl.x, pl.y, 0, p.trail.color);
     });
   },
   5,
