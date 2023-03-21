@@ -114,7 +114,7 @@ export const commands:FishCommandsList = {
     description: "Add or remove a player's mod status.",
 		level: PermissionsLevel.admin,
     handler({args, outputSuccess, outputFail}){
-			switch(args["add/remove"]){
+			switch(args.action){
 				case "add": case "a": case "give": case "promote":
 					if(args.player.mod == true){
 						outputFail(`${args.player.name} is already a Moderator.`);
@@ -156,7 +156,7 @@ export const commands:FishCommandsList = {
 		level: PermissionsLevel.admin,
     handler({args, outputSuccess, outputFail, execServer}){
 
-			switch(args["add/remove"]){
+			switch(args.action){
 				case "add": case "a": case "give": case "promote":
 					if(args.player.admin == true){
 						outputFail(`${args.player.name} is already an Admin.`);
@@ -198,10 +198,10 @@ export const commands:FishCommandsList = {
     description: 'Kills all ohno units',
 		level: PermissionsLevel.mod,
 		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
-    handler({outputSuccess}){
+    handler({output}){
 			const numOhnos = Ohnos.amount();
 			Ohnos.killAll();
-			outputSuccess(`You massacred [#48e076]${numOhnos} [yellow]helpless ohno crawlers.`);
+			output(`[orange]You massacred [cyan]${numOhnos}[] helpless ohno crawlers.`);
     }
 	},
 
@@ -329,8 +329,8 @@ export const commands:FishCommandsList = {
 				return;
 			}
 			let timeRemaining = args.time;
-			const labelx = args.player.player.x;
-			const labely = args.player.player.y;
+			const labelx = sender.player.x;
+			const labely = sender.player.y;
 			Timer.schedule(() => {
 				if(timeRemaining > 0) {
 					let timeseconds = timeRemaining % 60;
@@ -342,6 +342,7 @@ export const commands:FishCommandsList = {
 					timeRemaining --;
 				}
 			}, 0, 1, args.time);
+			outputSuccess(`Placed label "${args.message}" for ${args.time} seconds.`);
 		}
 	},
 

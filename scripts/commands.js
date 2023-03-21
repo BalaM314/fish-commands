@@ -118,7 +118,7 @@ function processArgs(args, processedCmdArgs) {
                         case "nope":
                         case "f":
                         case "n":
-                            outputArgs[cmdArg.name] = true;
+                            outputArgs[cmdArg.name] = false;
                             break;
                         default: return { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") };
                     }

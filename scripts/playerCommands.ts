@@ -351,8 +351,8 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 		level: PermissionsLevel.notGriefer,
 		handler({sender, outputFail}){
 			const canSpawn = Ohnos.canSpawn(sender.player);
-			if(canSpawn){
-				Ohnos.makeOhno(sender.player.team, sender.player.x, sender.player.y);
+			if(canSpawn === true){
+				Ohnos.makeOhno(sender.player.team(), sender.player.x, sender.player.y);
 			} else {
 				outputFail(canSpawn);
 			}

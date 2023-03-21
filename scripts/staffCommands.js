@@ -123,7 +123,7 @@ exports.commands = {
         level: commands_1.PermissionsLevel.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            switch (args["add/remove"]) {
+            switch (args.action) {
                 case "add":
                 case "a":
                 case "give":
@@ -171,7 +171,7 @@ exports.commands = {
         level: commands_1.PermissionsLevel.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, execServer = _a.execServer;
-            switch (args["add/remove"]) {
+            switch (args.action) {
                 case "add":
                 case "a":
                 case "give":
@@ -218,10 +218,10 @@ exports.commands = {
         level: commands_1.PermissionsLevel.mod,
         customUnauthorizedMessage: "[yellow]You're a [scarlet]monster[].",
         handler: function (_a) {
-            var outputSuccess = _a.outputSuccess;
+            var output = _a.output;
             var numOhnos = ohno_1.Ohnos.amount();
             ohno_1.Ohnos.killAll();
-            outputSuccess("You massacred [#48e076]".concat(numOhnos, " [yellow]helpless ohno crawlers."));
+            output("[orange]You massacred [cyan]".concat(numOhnos, "[] helpless ohno crawlers."));
         }
     },
     stop_offline: {
@@ -348,8 +348,8 @@ exports.commands = {
                 return;
             }
             var timeRemaining = args.time;
-            var labelx = args.player.player.x;
-            var labely = args.player.player.y;
+            var labelx = sender.player.x;
+            var labely = sender.player.y;
             Timer.schedule(function () {
                 if (timeRemaining > 0) {
                     var timeseconds = timeRemaining % 60;
@@ -358,6 +358,7 @@ exports.commands = {
                     timeRemaining--;
                 }
             }, 0, 1, args.time);
+            outputSuccess("Placed label \"".concat(args.message, "\" for ").concat(args.time, " seconds."));
         }
     },
     member: {

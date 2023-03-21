@@ -72,7 +72,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 			case "boolean":
 				switch(args[i].toLowerCase()){
 					case "true": case "yes": case "yeah": case "ya": case "ya": case "t": case "y": outputArgs[cmdArg.name] = true; break;
-					case "false": case "no": case "nah": case "nay": case "nope": case "f": case "n": outputArgs[cmdArg.name] = true; break;
+					case "false": case "no": case "nah": case "nay": case "nope": case "f": case "n": outputArgs[cmdArg.name] = false; break;
 					default: return {error: `Argument ${args[i]} is not a boolean. Try "true" or "false".`};
 				}
 				break;

@@ -348,8 +348,8 @@ exports.commands = {
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail;
             var canSpawn = ohno_1.Ohnos.canSpawn(sender.player);
-            if (canSpawn) {
-                ohno_1.Ohnos.makeOhno(sender.player.team, sender.player.x, sender.player.y);
+            if (canSpawn === true) {
+                ohno_1.Ohnos.makeOhno(sender.player.team(), sender.player.x, sender.player.y);
             }
             else {
                 outputFail(canSpawn);
