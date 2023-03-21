@@ -1,7 +1,6 @@
 import { PermissionsLevel } from "./commands";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
-const trails = require('trails');
 
 export const commands:FishCommandsList = {
   pet: {
@@ -42,7 +41,7 @@ export const commands:FishCommandsList = {
             pet.approach(new Vec2(distX, distY));
           }
           Call.label(petName, 0.07, pet.x, pet.y + 5);
-          if(trails.getTrails().includes(fishPlayer.player.uuid()) && fishPlayer.trail){
+          if(fishPlayer.trail){
             Call.effect(Fx[fishPlayer.trail.type], pet.x, pet.y, 0, fishPlayer.trail.color);
           }
           controlUnit({ petName, pet, fishPlayer });

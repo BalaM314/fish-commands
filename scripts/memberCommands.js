@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
-var trails = require('trails');
 exports.commands = {
     pet: {
         args: ["name:string?"],
@@ -40,7 +39,7 @@ exports.commands = {
                         pet.approach(new Vec2(distX, distY));
                     }
                     Call.label(petName, 0.07, pet.x, pet.y + 5);
-                    if (trails.getTrails().includes(fishPlayer.player.uuid()) && fishPlayer.trail) {
+                    if (fishPlayer.trail) {
                         Call.effect(Fx[fishPlayer.trail.type], pet.x, pet.y, 0, fishPlayer.trail.color);
                     }
                     controlUnit({ petName: petName, pet: pet, fishPlayer: fishPlayer });
