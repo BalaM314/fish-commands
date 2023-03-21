@@ -1,130 +1,60 @@
-const old = {};
-
-const logg = (msg) => Call.sendMessage(msg);
-const list = (ar) => Call.sendMessage(ar.join(' | '));
-const keys = (obj) => Call.sendMessage(Object.keys(obj).join(' [scarlet]|[white] '));
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+function logg(msg) { Call.sendMessage(msg); }
+exports.logg = logg;
+function list(ar) { Call.sendMessage(ar.join(' | ')); }
+exports.list = list;
+function keys(obj) { Call.sendMessage(Object.keys(obj).join(' [scarlet]|[white] ')); }
+exports.keys = keys;
+var storedValues = {};
 /**
  * Stores the output of a function and returns that value
  * instead of running the function again unless any
  * dependencies have changed to improve performance with
  * functions that have expensive computation.
- * @param {function} callback function to run if a dependancy has changed
- * @param {array} dep dependency array of values to monitor
- * @param {number | string} id arbitrary unique id of the function for storage purposes.
+ * @param callback function to run if a dependancy has changed
+ * @param dep dependency array of values to monitor
+ * @param id arbitrary unique id of the function for storage purposes.
  */
-const memoize = (callback, dep, id) => {
-  if (!old[id]) {
-    old[id] = { value: callback(), dep: dep };
-    return old[id].value;
-  }
-
-  let valueHasChanged = false;
-
-  dep.forEach((d, ind) => {
-    if (d !== old[id].dep[ind]) {
-      valueHasChanged = true;
+function memoize(callback, dep, id) {
+    if (!storedValues[id]) {
+        storedValues[id] = { value: callback(), dep: dep };
     }
-  });
-
-  if (valueHasChanged) {
-    const newVal = callback();
-    old[id].value = newVal;
-    old[id].dep = dep;
-    return callback();
-  } else {
-    return old[id].value;
-  }
-};
-
-/**
- * Splits an array into a multidimensional array with equal sizes.
- * @param {array} arr the array to split
- * @param {number} chunkSize the item limit each "inner" array should contain
- * @example
- * const myArr = ['item1', 'item2', 'item3', 'item4', 'item5'];
- *
- * const splitArr = createChunks(myArr, 2); // [['item1', 'item2'], ['item3', 'item4'], ['item5']]
- */
-const createChunks = (arr, chunkSize) => {
-  const copyArr = [];
-  arr.forEach((i) => copyArr.push(i));
-  const newArr = [];
-  while (copyArr.length > 0) {
-    newArr.push(copyArr.splice(0, chunkSize));
-  }
-  return newArr;
-};
-
-/**
- * Returns the amount of time passed since the old time in a readable format
- * @param {number} old
- */
-const getTimeSinceText = (old) => {
-  const now = Date.now();
-  const timeLeft = now - old;
-
-  const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor(timeLeft / 60000);
-  const seconds = Math.floor((timeLeft % 60000) / 1000);
-
-  let timeSince = '';
-
-  if (hours) {
-    timeSince += '[green]' + hours + ' [lightgray]hrs, ';
-  }
-
-  if (minutes) {
-    timeSince += '[green]' + minutes + ' [lightgray]mins, ';
-  }
-
-  timeSince += '[green]' + seconds + ' [lightgray]secs ago.';
-
-  return timeSince;
-};
-
-/**
- * Get an online player by name. May return null.
- * @param {string} plr
- */
-const plrByName = (plr) => {
-  const newPlr = plr.toLowerCase();
-  const realPlayer = Groups.player.find((p) => {
-    if (p.name === newPlr) return true;
-    if (p.name.includes(newPlr)) return true;
-    if (p.name.toLowerCase().includes(newPlr)) return true;
-    if (Strings.stripColors(p.name).toLowerCase() === newPlr) return true;
-    if (Strings.stripColors(p.name).toLowerCase().includes(newPlr)) return true;
-    return false;
-  });
-  return realPlayer;
-};
-
-/**
- * Get an online player by uuid.
- * @param {string} plr
- */
-const plrById = (id) => Groups.player.find((p) => p.uuid() === id);
-
-function to2DArray(array, width){
-  let output = [[]];
-  array.forEach(el => {
-    if(output[output.length - 1].length >= width){
-      output.push([]);
+    else if (dep.some(function (d, ind) { return d !== storedValues[id].dep[ind]; })) {
+        //If the value changed
+        storedValues[id].value = callback();
+        storedValues[id].dep = dep;
     }
-    output[output.length - 1].push(el);
-  });
-  return output;
+    return storedValues[id].value;
 }
-
-module.exports = {
-  log: logg,
-  list: list,
-  keys: keys,
-  memoize: memoize,
-  createChunks: createChunks,
-  plrById: plrById,
-  plrByName: plrByName,
-  getTimeSinceText: getTimeSinceText,
-  to2DArray: to2DArray,
-};
+exports.memoize = memoize;
+/**
+ * Returns the amount of time passed since the old time in a readable format.
+ */
+function getTimeSinceText(old) {
+    var timePassed = Date.now() - old;
+    var hours = Math.floor((timePassed / (1000 * 60 * 60)) % 24);
+    var minutes = Math.floor(timePassed / 60000);
+    var seconds = Math.floor((timePassed % 60000) / 1000);
+    var timeSince = '';
+    if (hours)
+        timeSince += "[green]".concat(hours, " [lightgray]hrs, ");
+    if (minutes)
+        timeSince += "[green]".concat(minutes, " [lightgray]mins, ");
+    timeSince += "[green]".concat(seconds, " [lightgray]secs ago.");
+    return timeSince;
+}
+exports.getTimeSinceText = getTimeSinceText;
+;
+function to2DArray(array, width) {
+    var output = [[]];
+    array.forEach(function (el) {
+        if (output.at(-1).length >= width) {
+            output.push([]);
+        }
+        output.at(-1).push(el);
+    });
+    return output;
+}
+exports.to2DArray = to2DArray;
