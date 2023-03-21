@@ -80,3 +80,14 @@ declare const Time: {
 declare const GameState: {
 	State: Record<"playing" | "paused", any>;
 }
+declare class HttpRequest {
+	submit(func:(response:HttpResponse, exception:any) => void):void;
+	header(name:string, value:string):HttpRequest;
+	timeout: number;
+}
+declare class HttpReponse {
+	getResultAsString():string;
+}
+declare const Http: {
+	post(url:string, content:string):HttpRequest;
+}

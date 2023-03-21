@@ -1,7 +1,5 @@
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
-require('stopped');
-require('menus');
 
 const utils = require('utils');
 const { FishPlayer } = require('players');
@@ -19,42 +17,8 @@ let serverCommands;
 let serverIp;
 let tileHistory = {};
 
-// Check if player is stopped from API
-//TODO remove once api integration is done
-const getStopped = (player) => {
-  const req = Http.post(
-    `http://` + config.ip + `:5000/api/getStopped`,
-    JSON.stringify({ id: player.uuid() })
-  )
-    .header('Content-Type', 'application/json')
-    .header('Accept', '*/*');
-  req.timeout = 10000;
-
-  try {
-    req.submit((response, exception) => {
-      if (exception || !response) {
-        Log.info(
-          '\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n'
-        );
-      }
-      let temp = response.getResultAsString();
-      if (!temp.length) return false;
-      // Wrapped in a timer since stopping too soon may not work.
-      Timer.schedule(() => {
-        if (JSON.parse(temp).data)
-          FishPlayer.get(player).stop("api");
-        else
-          FishPlayer.get(player).free("api");
-      }, 2);
-    });
-  } catch (e) {
-    Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
-  }
-};
-
 Events.on(PlayerJoin, (e) => {
   FishPlayer.onPlayerJoin(e.player);
-  getStopped(e.player);
 });
 
 Events.on(ServerLoadEvent, (e) => {

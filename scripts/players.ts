@@ -1,6 +1,6 @@
 import type { FishPlayerData, mindustryPlayer, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
-const stopped = require('stopped');
+import * as api from "./api";
 
 type OnlineFishPlayer = FishPlayer & {player: mindustryPlayer};
 
@@ -110,6 +110,10 @@ export class FishPlayer {
     }
     fishPlayer.checkName();
     fishPlayer.updateName();
+    api.getStopped(player.uuid(), (stopped) => {
+      if(fishPlayer.stopped && !stopped) fishPlayer.free("api");
+      if(stopped) fishPlayer.stop("api");
+    });
   }
   static forEachPlayer(func:(player:FishPlayer) => unknown){
     for(const [uuid, player] of Object.entries(this.cachedPlayers)){
@@ -165,13 +169,13 @@ export class FishPlayer {
     this.player.unit().type = UnitTypes.stell;
     this.updateName();
     this.player.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
-    if(typeof by == "object"){
+    if(by instanceof FishPlayer){
       this.addHistoryEntry({
         action: 'stopped',
         by: by.name,
         time: Date.now(),
       });
-      stopped.addStopped(this.player.uuid());
+      api.addStopped(this.player.uuid());
     }
     FishPlayer.saveAll();
   }
@@ -180,14 +184,14 @@ export class FishPlayer {
     this.stopped = false;
     this.player.unit().type = UnitTypes.alpha;
     this.updateName();
-    this.player.sendMessage('[yellow]Looks like someone had mercy on you.');
-    if(typeof by == "object"){
+    if(by instanceof FishPlayer){
+      this.player.sendMessage('[yellow]Looks like someone had mercy on you.');
       this.addHistoryEntry({
         action: 'freed',
         by: by.name,
         time: Date.now(),
       });
-      stopped.free(this.player.uuid());
+      api.free(this.player.uuid());
     }
     FishPlayer.saveAll();
   }

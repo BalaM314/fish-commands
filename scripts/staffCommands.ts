@@ -3,7 +3,7 @@ import { menu } from './menus';
 import { FishPlayer } from "./players";
 import type { FishCommandsList, mindustryPlayer, mindustryPlayerData } from "./types";
 import { getTimeSinceText } from "./utils";
-const stopped = require('./stopped');
+import * as api from "./api";
 const ohno = require('./ohno');
 
 export const commands:FishCommandsList = {
@@ -224,7 +224,7 @@ export const commands:FishCommandsList = {
 			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
 				const fishP = FishPlayer.getFromInfo(option);
 				fishP.stopped = true;
-				stopped.addStopped(option.id);
+				api.addStopped(option.id);
 				fishP.addHistoryEntry({
 					action: 'stopped',
 					by: sender.name,

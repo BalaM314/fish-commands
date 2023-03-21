@@ -29,7 +29,7 @@ var __read = (this && this.__read) || function (o, n) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FishPlayer = void 0;
 var config = require("./config");
-var stopped = require('stopped');
+var api = require("./api");
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.mod, mod = _c === void 0 ? false : _c, _d = _a.admin, admin = _d === void 0 ? false : _d, _e = _a.member, member = _e === void 0 ? false : _e, _f = _a.stopped, stopped = _f === void 0 ? false : _f, _g = _a.highlight, highlight = _g === void 0 ? null : _g, _h = _a.history, history = _h === void 0 ? [] : _h, _j = _a.rainbow, rainbow = _j === void 0 ? null : _j;
@@ -116,6 +116,12 @@ var FishPlayer = /** @class */ (function () {
         }
         fishPlayer.checkName();
         fishPlayer.updateName();
+        api.getStopped(player.uuid(), function (stopped) {
+            if (fishPlayer.stopped && !stopped)
+                fishPlayer.free("api");
+            if (stopped)
+                fishPlayer.stop("api");
+        });
     };
     FishPlayer.forEachPlayer = function (func) {
         var e_1, _a;
@@ -190,13 +196,13 @@ var FishPlayer = /** @class */ (function () {
         this.player.unit().type = UnitTypes.stell;
         this.updateName();
         this.player.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
-        if (typeof by == "object") {
+        if (by instanceof FishPlayer) {
             this.addHistoryEntry({
                 action: 'stopped',
                 by: by.name,
                 time: Date.now(),
             });
-            stopped.addStopped(this.player.uuid());
+            api.addStopped(this.player.uuid());
         }
         FishPlayer.saveAll();
     };
@@ -206,14 +212,14 @@ var FishPlayer = /** @class */ (function () {
         this.stopped = false;
         this.player.unit().type = UnitTypes.alpha;
         this.updateName();
-        this.player.sendMessage('[yellow]Looks like someone had mercy on you.');
-        if (typeof by == "object") {
+        if (by instanceof FishPlayer) {
+            this.player.sendMessage('[yellow]Looks like someone had mercy on you.');
             this.addHistoryEntry({
                 action: 'freed',
                 by: by.name,
                 time: Date.now(),
             });
-            stopped.free(this.player.uuid());
+            api.free(this.player.uuid());
         }
         FishPlayer.saveAll();
     };

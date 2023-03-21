@@ -5,7 +5,7 @@ var commands_1 = require("./commands");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
-var stopped = require('./stopped');
+var api = require("./api");
 var ohno = require('./ohno');
 exports.commands = {
     warn: {
@@ -245,7 +245,7 @@ exports.commands = {
                 var option = _a.option, sender = _a.sender;
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 fishP.stopped = true;
-                stopped.addStopped(option.id);
+                api.addStopped(option.id);
                 fishP.addHistoryEntry({
                     action: 'stopped',
                     by: sender.name,
