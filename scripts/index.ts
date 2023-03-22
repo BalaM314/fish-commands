@@ -25,7 +25,13 @@ Events.on(EventType.PlayerJoin, (e) => {
   FishPlayer.onPlayerJoin(e.player);
 });
 
-Events.on(ServerLoadEvent, (e) => {
+Events.on(EventType.ContentInitEvent, () => {
+  //Unhide latum and renale
+  UnitTypes.latum.hidden = false;
+  UnitTypes.renale.hidden = false;
+});
+
+Events.on(EventType.ServerLoadEvent, (e) => {
   const ActionType = Packages.mindustry.net.Administration.ActionType;
   const clientCommands = Vars.netServer.clientCommands;
   serverCommands = Core.app.listeners.find(
@@ -33,6 +39,7 @@ Events.on(ServerLoadEvent, (e) => {
   ).handler;
 
   FishPlayer.loadAll();
+  timers.initializeTimers();
 
   // Mute muted players
   Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
@@ -81,7 +88,6 @@ Events.on(ServerLoadEvent, (e) => {
   });
 
 
-  timers.initializeTimers();
   
 
   const runner = (method:any) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method });

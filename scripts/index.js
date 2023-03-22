@@ -17,11 +17,17 @@ var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
-Events.on(ServerLoadEvent, function (e) {
+Events.on(EventType.ContentInitEvent, function () {
+    //Unhide latum and renale
+    UnitTypes.latum.hidden = false;
+    UnitTypes.renale.hidden = false;
+});
+Events.on(EventType.ServerLoadEvent, function (e) {
     var ActionType = Packages.mindustry.net.Administration.ActionType;
     var clientCommands = Vars.netServer.clientCommands;
     serverCommands = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
     players_1.FishPlayer.loadAll();
+    timers.initializeTimers();
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
@@ -62,7 +68,6 @@ Events.on(ServerLoadEvent, function (e) {
             return true;
         }
     });
-    timers.initializeTimers();
     var runner = function (method) { return new Packages.arc.util.CommandHandler.CommandRunner({ accept: method }); };
     //TODO Is this necessary? Can this function be moved to register()?
     clientCommands.removeCommand('help');
