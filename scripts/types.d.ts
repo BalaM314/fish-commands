@@ -5,6 +5,19 @@ import type { CommandArgType } from "./commands";
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
 
+type Cursed<Args extends Record<
+	string, {type: CommandArgType, isOptional?:boolean}
+>> = {
+	[K in keyof Args]: (
+		T extends "string" ? string :
+		T extends "boolean" ? boolean :
+		T extends "number" ? number :
+		T extends "player" ? FishPlayer : 
+		T extends "namedPlayer" ? FishPlayer :
+		never
+	) | (Args[K]["isOptional"] extends true ? null : never);
+};
+
 interface FishCommandRunner {
 	(_:{
 		/**Raw arguments that were passed to the command. */
@@ -83,6 +96,13 @@ interface ClientCommandHandler {
 interface ServerCommandHandler {
 	/**Executes a server console command. */
 	handleMessage(command:string):void;
+}
+
+interface PreprocessedCommandArg {
+	/**Type of the argument */
+	t: CommandArgType;
+	/**Whether the argument is optional (and may be null) */
+	o?: boolean;
 }
 
 interface CommandArg {
