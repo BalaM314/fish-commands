@@ -1,4 +1,31 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
@@ -30,6 +57,11 @@ var Cleaner = {
         return true;
     },
 };
+var FishServers = {
+    attack: { ip: "162.248.100.98", port: "6567" },
+    survival: { ip: "170.187.144.235", port: "6567" },
+    pvp: { ip: "162.248.100.133", port: "6567" },
+};
 function messageStaff(name, msg) {
     var message = "[gray]<[cyan]staff[gray]>[white]".concat(name, "[green]: [cyan]").concat(msg);
     Groups.player.forEach(function (pl) {
@@ -41,16 +73,14 @@ function messageStaff(name, msg) {
 }
 ;
 var recentWhispers = {};
-exports.commands = {
-    unpause: {
+exports.commands = __assign(__assign({ unpause: {
         args: [],
         description: "Unpauses the game.",
         level: commands_1.PermissionsLevel.notGriefer,
         handler: function () {
             Core.app.post(function () { return Vars.state.set(GameState.State.playing); });
         }
-    },
-    tp: {
+    }, tp: {
         args: ["player:player"],
         description: "Teleport to another player.",
         level: commands_1.PermissionsLevel.notGriefer,
@@ -64,8 +94,7 @@ exports.commands = {
                 outputFail("Can only teleport while in a core unit.");
             }
         }
-    },
-    clean: {
+    }, clean: {
         args: [],
         description: "Removes all boulders from the map.",
         level: commands_1.PermissionsLevel.notGriefer,
@@ -78,8 +107,7 @@ exports.commands = {
                 outputFail("This command was run recently and is on cooldown.");
             }
         }
-    },
-    kill: {
+    }, kill: {
         args: [],
         description: "Commits die.",
         level: commands_1.PermissionsLevel.notGriefer,
@@ -88,8 +116,7 @@ exports.commands = {
             var sender = _a.sender;
             (_b = sender.player.unit()) === null || _b === void 0 ? void 0 : _b.kill();
         }
-    },
-    discord: {
+    }, discord: {
         args: [],
         description: "Takes you to our discord.",
         level: commands_1.PermissionsLevel.all,
@@ -97,8 +124,7 @@ exports.commands = {
             var sender = _a.sender;
             Call.openURI(sender.player.con, 'https://discord.gg/VpzcYSQ33Y');
         }
-    },
-    tilelog: {
+    }, tilelog: {
         args: [],
         description: "Checks the history of a tile.",
         level: commands_1.PermissionsLevel.all,
@@ -107,8 +133,7 @@ exports.commands = {
             sender.tilelog = true;
             output("\n \n \n===>[yellow]Click on a tile to check its recent history...\n \n \n ");
         }
-    },
-    afk: {
+    }, afk: {
         args: [],
         description: "Toggles your afk status.",
         level: commands_1.PermissionsLevel.all,
@@ -123,8 +148,7 @@ exports.commands = {
                 outputSuccess("You are no longer marked as AFK.");
             }
         }
-    },
-    tileid: {
+    }, tileid: {
         args: [],
         description: "Checks id of a tile.",
         level: commands_1.PermissionsLevel.all,
@@ -133,28 +157,19 @@ exports.commands = {
             sender.tileId = true;
             outputSuccess("Click a tile to see its id.");
         }
-    },
-    attack: {
-        args: [],
-        description: "Switches to the attack server.",
-        level: commands_1.PermissionsLevel.all,
-        handler: function (_a) {
-            var sender = _a.sender;
-            Call.sendMessage("".concat(sender.name, "[magenta] has gone to the attack server. Use [cyan]/attack [magenta]to join them!"));
-            Call.connect(sender.player.con, '162.248.100.98', '6567');
-        }
-    },
-    survival: {
-        args: [],
-        description: "Switches to the survival server.",
-        level: commands_1.PermissionsLevel.all,
-        handler: function (_a) {
-            var sender = _a.sender;
-            Call.sendMessage("".concat(sender.name, "[magenta] has gone to the survival server. Use [cyan]/survival [magenta]to join them!"));
-            Call.connect(sender.player.con, '170.187.144.235', '6567');
-        }
-    },
-    s: {
+    } }, Object.fromEntries(Object.entries(FishServers).map(function (_a) {
+    var _b = __read(_a, 2), name = _b[0], data = _b[1];
+    return [name, {
+            args: [],
+            description: "Switches to the ".concat(name, " server."),
+            level: commands_1.PermissionsLevel.all,
+            handler: function (_a) {
+                var sender = _a.sender;
+                Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(name, " server. Use [cyan]/").concat(name, " [magenta]to join them!"));
+                Call.connect(sender.player.con, data.ip, data.port);
+            }
+        }];
+}))), { s: {
         args: ["message:string"],
         description: "Sends a message to staff only.",
         level: commands_1.PermissionsLevel.all,
@@ -162,7 +177,7 @@ exports.commands = {
             var sender = _a.sender, args = _a.args;
             messageStaff(sender.name, args.message);
         }
-    },
+    }, 
     /**
      * This command is mostly for mobile (or players without foos).
      *
@@ -199,8 +214,7 @@ exports.commands = {
             ;
             watch();
         }
-    },
-    help: {
+    }, help: {
         args: ["page:string?"],
         description: "Displays a list of all commands.",
         level: commands_1.PermissionsLevel.all,
@@ -251,8 +265,7 @@ exports.commands = {
                     }
             }
         }
-    },
-    msg: {
+    }, msg: {
         args: ["player:namedPlayer", "message:string"],
         description: "Send a message to only one player.",
         level: commands_1.PermissionsLevel.all,
@@ -262,8 +275,7 @@ exports.commands = {
             args.player.player.sendMessage("".concat(args.player.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
             output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
         }
-    },
-    r: {
+    }, r: {
         args: ["message:string"],
         description: "Reply to the most recent message.",
         level: commands_1.PermissionsLevel.all,
@@ -283,8 +295,7 @@ exports.commands = {
                 outputFail("It doesn't look like someone has messaged you recently. Try whispering to them with [white]\"/msg <player> <message>\"");
             }
         }
-    },
-    trail: {
+    }, trail: {
         args: ["type:string?", "color:string?"],
         description: 'Use command to see options and toggle trail on/off.',
         level: commands_1.PermissionsLevel.all,
@@ -340,8 +351,7 @@ exports.commands = {
                 outputFail("[scarlet]Sorry, \"".concat(args.color, "\" is not a valid color.\n[yellow]Color can be in the following formats:\n[pink]pink [white]| [gray]#696969 [white]| 255,0,0."));
             }
         }
-    },
-    ohno: {
+    }, ohno: {
         args: [],
         description: "Spawns an ohno.",
         level: commands_1.PermissionsLevel.notGriefer,
@@ -355,5 +365,4 @@ exports.commands = {
                 outputFail(canSpawn);
             }
         }
-    }
-};
+    } });

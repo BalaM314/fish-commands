@@ -1,7 +1,7 @@
 import { PermissionsLevel } from "./commands";
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
-import type { FishCommandsList } from "./types";
+import type { FishCommandData, FishCommandsList } from "./types";
 import { getColor, to2DArray } from "./utils";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
@@ -33,6 +33,12 @@ const Cleaner = {
     });
     return true;
   },
+};
+
+const FishServers = {
+	attack: { ip: "162.248.100.98", port: "6567" },
+	survival: { ip: "170.187.144.235", port: "6567" },
+	pvp: { ip: "162.248.100.133", port: "6567" },
 };
 
 function messageStaff(name:string, msg:string){
@@ -137,25 +143,15 @@ export const commands:FishCommandsList = {
 		}
 	},
 
-	attack: {
+	...Object.fromEntries(Object.entries(FishServers).map(([name, data]) => [name, {
 		args: [],
-		description: "Switches to the attack server.",
+		description: `Switches to the ${name} server.`,
 		level: PermissionsLevel.all,
 		handler({sender}){
-			Call.sendMessage(`${sender.name}[magenta] has gone to the attack server. Use [cyan]/attack [magenta]to join them!`);
-			Call.connect(sender.player.con, '162.248.100.98', '6567');
+			Call.sendMessage(`${sender.name}[magenta] has gone to the ${name} server. Use [cyan]/${name} [magenta]to join them!`);
+			Call.connect(sender.player.con, data.ip, data.port);
 		}
-	},
-
-	survival: {
-		args: [],
-		description: "Switches to the survival server.",
-		level: PermissionsLevel.all,
-		handler({sender}){
-			Call.sendMessage(`${sender.name}[magenta] has gone to the survival server. Use [cyan]/survival [magenta]to join them!`);
-			Call.connect(sender.player.con, '170.187.144.235', '6567');
-		}
-	},
+	}])),
 	
 	s: {
 		args: ["message:string"],
