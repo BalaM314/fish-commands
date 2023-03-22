@@ -11,8 +11,6 @@ var commands = require("./commands");
 var staffCommands = require("./staffCommands");
 var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
-var serverCommands;
-var serverIp;
 var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
@@ -25,7 +23,7 @@ Events.on(EventType.ContentInitEvent, function () {
 Events.on(EventType.ServerLoadEvent, function (e) {
     var ActionType = Packages.mindustry.net.Administration.ActionType;
     var clientCommands = Vars.netServer.clientCommands;
-    serverCommands = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
+    var serverCommands = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
     // Mute muted players
@@ -78,10 +76,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(memberCommands.commands, clientCommands, serverCommands, runner);
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
-    var getIp = Http.get('https://api.ipify.org?format=js');
-    getIp.submit(function (r) {
-        serverIp = r.getResultAsString();
-    });
+    //const getIp = Http.get('https://api.ipify.org?format=js');
+    //getIp.submit((r) => {
+    //  //serverIp = r.getResultAsString();
+    //});
 });
 /**
  * Keeps track of any action performed on a tile for use in /tilelog

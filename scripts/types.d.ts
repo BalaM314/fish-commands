@@ -35,6 +35,12 @@ interface FishCommandData {
 }
 type FishCommandsList = Record<string, FishCommandData>;
 
+interface TileHistoryEntry {
+  name:string;
+  action:string;
+  type:string;
+  time:number;
+}
 
 
 interface FishPlayerData {

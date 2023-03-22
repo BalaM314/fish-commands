@@ -10,15 +10,9 @@ import * as commands from './commands';
 import * as staffCommands from './staffCommands';
 import * as playerCommands from './playerCommands';
 import * as memberCommands from './memberCommands';
+import type { TileHistoryEntry } from "./types";
 
-let serverCommands;
-let serverIp;
-interface TileHistoryEntry {
-  name:string;
-  action:string;
-  type:string;
-  time:number;
-}
+
 let tileHistory:Record<string, TileHistoryEntry[]> = {};
 
 Events.on(EventType.PlayerJoin, (e) => {
@@ -34,7 +28,7 @@ Events.on(EventType.ContentInitEvent, () => {
 Events.on(EventType.ServerLoadEvent, (e) => {
   const ActionType = Packages.mindustry.net.Administration.ActionType;
   const clientCommands = Vars.netServer.clientCommands;
-  serverCommands = Core.app.listeners.find(
+  const serverCommands = Core.app.listeners.find(
     (l) => l instanceof Packages.mindustry.server.ServerControl
   ).handler;
 
@@ -104,10 +98,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
   // stored for limiting /reset frequency
   Core.settings.remove('lastRestart');
 
-  const getIp = Http.get('https://api.ipify.org?format=js');
-  getIp.submit((r) => {
-    serverIp = r.getResultAsString();
-  });
+  //const getIp = Http.get('https://api.ipify.org?format=js');
+  //getIp.submit((r) => {
+  //  //serverIp = r.getResultAsString();
+  //});
 });
 
 /**
