@@ -127,7 +127,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.onUnitChange = function (player, unit) {
         //if(unit.spawnedByCore)
         /**
-         * unit.spawnedByCore is not set correctly in the UnitChangeEvent unit.
+         * unit.spawnedByCore is not set correctly in UnitChangeEvent.
          * This is because the function that fires it(unit.controller(player);)
          * does not seem to run any code, but it actually runs player.unit(unit)
          * which fires the event.
