@@ -1,21 +1,19 @@
 import type { FishPlayer } from "./players";
-import type { CommandArgType } from "./commands";
+import type { CommandArgType, PermissionsLevel } from "./commands";
 
 
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
 
-type Cursed<Args extends Record<
-	string, {type: CommandArgType, isOptional?:boolean}
->> = {
+type ArgsFromArgData<Args extends PreprocessedCommandArgs> = {
 	[K in keyof Args]: (
-		T extends "string" ? string :
-		T extends "boolean" ? boolean :
-		T extends "number" ? number :
-		T extends "player" ? FishPlayer : 
-		T extends "namedPlayer" ? FishPlayer :
+		Args[K]["type"] extends "string" ? string :
+		Args[K]["type"] extends "boolean" ? boolean :
+		Args[K]["type"] extends "number" ? number :
+		Args[K]["type"] extends "player" ? FishPlayer : 
+		Args[K]["type"] extends "namedPlayer" ? FishPlayer :
 		never
-	) | (Args[K]["isOptional"] extends true ? null : never);
+	) | (Args[K]["optional"] extends true ? null : never);
 };
 
 interface FishCommandRunner {
@@ -99,11 +97,12 @@ interface ServerCommandHandler {
 }
 
 interface PreprocessedCommandArg {
-	/**Type of the argument */
-	t: CommandArgType;
+	type: CommandArgType;
 	/**Whether the argument is optional (and may be null) */
-	o?: boolean;
+	optional?: boolean;
 }
+
+type PreprocessedCommandArgs = Record<string, PreprocessedCommandArg>;
 
 interface CommandArg {
 	name: string;
