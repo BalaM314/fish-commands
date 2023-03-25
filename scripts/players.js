@@ -30,6 +30,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FishPlayer = void 0;
 var config = require("./config");
 var api = require("./api");
+var utils_1 = require("./utils");
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.mod, mod = _c === void 0 ? false : _c, _d = _a.admin, admin = _d === void 0 ? false : _d, _e = _a.member, member = _e === void 0 ? false : _e, _f = _a.stopped, stopped = _f === void 0 ? false : _f, _g = _a.highlight, highlight = _g === void 0 ? null : _g, _h = _a.history, history = _h === void 0 ? [] : _h, _j = _a.rainbow, rainbow = _j === void 0 ? null : _j;
@@ -123,6 +124,23 @@ var FishPlayer = /** @class */ (function () {
                 fishPlayer.stop("api");
         });
     };
+    FishPlayer.onUnitChange = function (player, unit) {
+        //if(unit.spawnedByCore)
+        /**
+         * unit.spawnedByCore is not set correctly in the UnitChangeEvent unit.
+         * This is because the function that fires it(unit.controller(player);)
+         * does not seem to run any code, but it actually runs player.unit(unit)
+         * which fires the event.
+         * This bug should be fixed after v142.
+         */
+        if ((0, utils_1.isCoreUnitType)(unit.type))
+            this.onRespawn(player);
+    };
+    FishPlayer.onRespawn = function (player) {
+        var fishP = this.get(player);
+        if (fishP === null || fishP === void 0 ? void 0 : fishP.stopped)
+            fishP.stopUnit();
+    };
     FishPlayer.forEachPlayer = function (func) {
         var e_1, _a;
         try {
@@ -193,7 +211,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.stop = function (by) {
         this.stopped = true;
-        this.player.unit().type = UnitTypes.stell;
+        this.stopUnit();
         this.updateName();
         this.player.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
         if (by instanceof FishPlayer) {
@@ -205,6 +223,20 @@ var FishPlayer = /** @class */ (function () {
             api.addStopped(this.player.uuid());
         }
         FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.stopUnit = function () {
+        if ((0, utils_1.isCoreUnitType)(this.player.unit().type)) {
+            this.player.unit().type = UnitTypes.stell;
+            this.player.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+        }
+        else {
+            this.forceRespawn();
+            //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+        }
+    };
+    FishPlayer.prototype.forceRespawn = function () {
+        this.player.clearUnit();
+        this.player.checkSpawn();
     };
     FishPlayer.prototype.free = function (by) {
         if (!this.stopped)

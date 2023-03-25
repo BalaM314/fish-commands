@@ -15,6 +15,9 @@ var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
+Events.on(EventType.UnitChangeEvent, function (e) {
+    players_1.FishPlayer.onUnitChange(e.player, e.unit);
+});
 Events.on(EventType.ContentInitEvent, function () {
     //Unhide latum and renale
     UnitTypes.latum.hidden = false;

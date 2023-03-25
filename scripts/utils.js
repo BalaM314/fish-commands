@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -98,3 +98,11 @@ function nearbyEnemyTile(unit, dist) {
     return null;
 }
 exports.nearbyEnemyTile = nearbyEnemyTile;
+/**
+ * This function is necessary due to a bug with UnitChangeEvent. It can be removed in the next release after v142.
+ * @deprecated
+ * */
+function isCoreUnitType(type) {
+    return [UnitTypes.alpha, UnitTypes.beta, UnitTypes.gamma, UnitTypes.evoke, UnitTypes.incite, UnitTypes.emanate].includes(type);
+}
+exports.isCoreUnitType = isCoreUnitType;

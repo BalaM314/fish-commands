@@ -18,7 +18,9 @@ let tileHistory:Record<string, TileHistoryEntry[]> = {};
 Events.on(EventType.PlayerJoin, (e) => {
   FishPlayer.onPlayerJoin(e.player);
 });
-
+Events.on(EventType.UnitChangeEvent, (e) => {
+  FishPlayer.onUnitChange(e.player, e.unit);
+});
 Events.on(EventType.ContentInitEvent, () => {
   //Unhide latum and renale
   UnitTypes.latum.hidden = false;

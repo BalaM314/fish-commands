@@ -116,3 +116,5 @@ declare class Command {
 	description:string;
 	params:any[];
 }
+
+declare function print(message:string):void;

@@ -1,6 +1,7 @@
 import type { FishPlayerData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
 import * as api from "./api";
+import { isCoreUnitType } from "./utils";
 
 type OnlineFishPlayer = FishPlayer & {player: mindustryPlayer};
 
@@ -115,6 +116,23 @@ export class FishPlayer {
       if(stopped) fishPlayer.stop("api");
     });
   }
+  
+  static onUnitChange(player:mindustryPlayer, unit:Unit){
+    //if(unit.spawnedByCore)
+    /**
+     * unit.spawnedByCore is not set correctly in the UnitChangeEvent unit.
+     * This is because the function that fires it(unit.controller(player);)
+     * does not seem to run any code, but it actually runs player.unit(unit)
+     * which fires the event.
+     * This bug should be fixed after v142.
+     */
+    if(isCoreUnitType(unit.type))
+      this.onRespawn(player);
+  }
+  static onRespawn(player:mindustryPlayer){
+    const fishP = this.get(player);
+    if(fishP?.stopped) fishP.stopUnit();
+  }
   static forEachPlayer(func:(player:FishPlayer) => unknown){
     for(const [uuid, player] of Object.entries(this.cachedPlayers)){
       if(player.player && !player.player.con.hasDisconnected) func(player);
@@ -166,7 +184,7 @@ export class FishPlayer {
   }
   stop(by:FishPlayer | "api"){
     this.stopped = true;
-    this.player.unit().type = UnitTypes.stell;
+    this.stopUnit();
     this.updateName();
     this.player.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
     if(by instanceof FishPlayer){
@@ -178,6 +196,19 @@ export class FishPlayer {
       api.addStopped(this.player.uuid());
     }
     FishPlayer.saveAll();
+  }
+  stopUnit(){
+    if(isCoreUnitType(this.player.unit().type)){
+      this.player.unit().type = UnitTypes.stell;
+      this.player.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+    } else {
+      this.forceRespawn();
+      //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+    }
+  }
+  forceRespawn(){
+    this.player.clearUnit();
+    this.player.checkSpawn();
   }
   free(by:FishPlayer | "api"){
     if(!this.stopped) return;
