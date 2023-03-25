@@ -242,8 +242,8 @@ var FishPlayer = /** @class */ (function () {
         if (!this.stopped)
             return;
         this.stopped = false;
-        this.player.unit().type = UnitTypes.alpha;
         this.updateName();
+        this.forceRespawn();
         if (by instanceof FishPlayer) {
             this.player.sendMessage('[yellow]Looks like someone had mercy on you.');
             this.addHistoryEntry({
