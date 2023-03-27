@@ -11,7 +11,7 @@ exports.commands = {
     warn: {
         args: ['player:player', 'reason:string?'],
         description: 'Warn a player.',
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
             var args = _a.args, outputSuccess = _a.outputSuccess;
@@ -23,7 +23,7 @@ exports.commands = {
     mute: {
         args: ['player:player'],
         description: 'Stops a player from chatting.',
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.muted) {
@@ -49,7 +49,7 @@ exports.commands = {
     unmute: {
         args: ['player:player'],
         description: 'Unmutes a player',
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.muted) {
@@ -71,7 +71,7 @@ exports.commands = {
     kick: {
         args: ['player:player', 'reason:string?'],
         description: 'Kick a player with optional reason.',
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
@@ -89,7 +89,7 @@ exports.commands = {
     stop: {
         args: ['player:player'],
         description: 'Stops a player.',
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.stopped) {
@@ -104,7 +104,7 @@ exports.commands = {
     free: {
         args: ['player:player'],
         description: 'Frees a player.',
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.stopped) {
@@ -120,7 +120,7 @@ exports.commands = {
     mod: {
         args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
         description: "Add or remove a player's mod status.",
-        level: commands_1.PermissionsLevel.admin,
+        level: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             switch (args.action) {
@@ -168,7 +168,7 @@ exports.commands = {
     admin: {
         args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
         description: "Add or remove a player's admin status.",
-        level: commands_1.PermissionsLevel.admin,
+        level: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, execServer = _a.execServer;
             switch (args.action) {
@@ -215,7 +215,7 @@ exports.commands = {
     murder: {
         args: [],
         description: 'Kills all ohno units',
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         customUnauthorizedMessage: "[yellow]You're a [scarlet]monster[].",
         handler: function (_a) {
             var output = _a.output;
@@ -227,7 +227,7 @@ exports.commands = {
     stop_offline: {
         args: ["name:string"],
         description: "Stops an offline player.",
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             var admins = Vars.netServer.admins;
@@ -258,7 +258,7 @@ exports.commands = {
     restart: {
         args: [],
         description: "Stops and restarts the server. Do not run when the player count is high.",
-        level: commands_1.PermissionsLevel.admin,
+        level: commands_1.Perm.admin,
         handler: function (_a) {
             var outputFail = _a.outputFail;
             var now = Date.now();
@@ -296,7 +296,7 @@ exports.commands = {
     history: {
         args: ["player:player"],
         description: "Shows moderation history for a player.",
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, output = _a.output;
             if (args.player.history && args.player.history.length > 0) {
@@ -313,7 +313,7 @@ exports.commands = {
     save: {
         args: [],
         description: "Saves the game state.",
-        level: commands_1.PermissionsLevel.mod,
+        level: commands_1.Perm.mod,
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
             players_1.FishPlayer.saveAll();
@@ -325,7 +325,7 @@ exports.commands = {
     wave: {
         args: ["wave:number"],
         description: "Sets the wave number.",
-        level: commands_1.PermissionsLevel.admin,
+        level: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.wave > 0 && Number.isInteger(args.wave)) {
@@ -340,7 +340,7 @@ exports.commands = {
     label: {
         args: ["time:number", "message:string"],
         description: "Places a label at your position for a specified amount of time.",
-        level: commands_1.PermissionsLevel.admin,
+        level: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.time <= 0 || args.time > 3600) {
@@ -364,7 +364,7 @@ exports.commands = {
     member: {
         args: ["value:boolean", "player:player"],
         description: "Sets a player's member status.",
-        level: commands_1.PermissionsLevel.admin,
+        level: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
             args.player.member = args.value;
@@ -376,7 +376,7 @@ exports.commands = {
     ipban: {
         args: [],
         description: "Bans a player's IP.",
-        level: commands_1.PermissionsLevel.admin,
+        level: commands_1.Perm.admin,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, execServer = _a.execServer;
             var playerList = [];

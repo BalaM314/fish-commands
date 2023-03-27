@@ -27,23 +27,25 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = exports.canPlayerAccess = exports.PermissionsLevel = void 0;
+exports.register = exports.Perm = void 0;
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 /** Represents a permission level that is required to run a specific command. */
-var PermissionsLevel = /** @class */ (function () {
-    function PermissionsLevel(name, customErrorMessage) {
+var Perm = /** @class */ (function () {
+    function Perm(name, check, unauthorizedMessage) {
+        if (unauthorizedMessage === void 0) { unauthorizedMessage = "You do not have the required permission (".concat(name, ") to execute this command"); }
         this.name = name;
-        this.customErrorMessage = customErrorMessage;
+        this.check = check;
+        this.unauthorizedMessage = unauthorizedMessage;
     }
-    PermissionsLevel.all = new PermissionsLevel("all");
-    PermissionsLevel.notGriefer = new PermissionsLevel("player");
-    PermissionsLevel.mod = new PermissionsLevel("mod");
-    PermissionsLevel.admin = new PermissionsLevel("admin");
-    PermissionsLevel.member = new PermissionsLevel("member", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
-    return PermissionsLevel;
+    Perm.all = new Perm("all", function (fishP) { return true; });
+    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || fishP.mod || fishP.admin; });
+    Perm.mod = new Perm("mod", function (fishP) { return fishP.mod || fishP.admin; });
+    Perm.admin = new Perm("admin", function (fishP) { return fishP.admin; });
+    Perm.member = new Perm("member", function (fishP) { return fishP.member || !fishP.stopped; }, "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
+    return Perm;
 }());
-exports.PermissionsLevel = PermissionsLevel;
+exports.Perm = Perm;
 //TODO impl exactPlayer for /admin, etc
 var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"];
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
@@ -143,21 +145,6 @@ function processArgs(args, processedCmdArgs) {
     }
     return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
-//const cause why not?
-/**Determines if a FishPlayer can run a command with a specific permission level. */
-var canPlayerAccess = function canPlayerAccess(player, level) {
-    switch (level) {
-        case PermissionsLevel.all: return true;
-        case PermissionsLevel.notGriefer: return !player.stopped || player.mod || player.admin;
-        case PermissionsLevel.mod: return player.mod || player.admin;
-        case PermissionsLevel.admin: return player.admin;
-        case PermissionsLevel.member: return player.member;
-        default:
-            Log.err("ERROR!: canPlayerAccess called with invalid permissions level ".concat(level));
-            return false;
-    }
-};
-exports.canPlayerAccess = canPlayerAccess;
 /**
  * Registers all commands in a list to a client command handler.
  * @argument runner (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method })
@@ -185,11 +172,11 @@ function register(commands, clientCommands, serverCommands, runner) {
             //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
             return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
         }).join(" "), data.description, runner(function (rawArgs, sender) {
-            var _a, _b;
+            var _a;
             var fishSender = players_1.FishPlayer.get(sender);
             //Verify authorization
-            if (!(0, exports.canPlayerAccess)(fishSender, data.level)) {
-                outputFail((_b = (_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.level.customErrorMessage) !== null && _b !== void 0 ? _b : "You do not have the required permission (".concat(data.level, ") to execute this command"), sender);
+            if (!data.level.check(fishSender)) {
+                outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.level.unauthorizedMessage, sender);
                 return;
             }
             //closure over processedCmdArgs, should be fine
@@ -199,6 +186,7 @@ function register(commands, clientCommands, serverCommands, runner) {
                 outputFail(output.error, sender);
                 return;
             }
+            //Recursively resolve unresolved args (such as players that need to be determined through a menu)
             resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
                 //Run the command handler
                 data.handler({
@@ -235,7 +223,7 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
     else {
         var argToResolve_1 = unresolvedArgs.shift();
         var optionsList_1 = [];
-        //Dubious implementation
+        //TODO Dubious implementation
         switch (argToResolve_1.type) {
             case "player":
                 Groups.player.forEach(function (player) { return optionsList_1.push(player); });

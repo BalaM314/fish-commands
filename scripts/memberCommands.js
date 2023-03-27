@@ -6,7 +6,7 @@ exports.commands = {
     pet: {
         args: ["name:string?"],
         description: 'Spawns a cool pet with a displayed name that follows you around.',
-        level: commands_1.PermissionsLevel.member,
+        level: commands_1.Perm.member,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender;
             if (!args.name) {
@@ -52,7 +52,7 @@ exports.commands = {
     highlight: {
         args: ['color:string'],
         description: 'Makes your chat text colored by default.',
-        level: commands_1.PermissionsLevel.member,
+        level: commands_1.Perm.member,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if (Strings.stripColors(args.color) == "") {
@@ -69,7 +69,7 @@ exports.commands = {
     rainbow: {
         args: ["speed:number?"],
         description: 'make your name change colors.',
-        level: commands_1.PermissionsLevel.member,
+        level: commands_1.Perm.member,
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;

@@ -1,4 +1,4 @@
-import { PermissionsLevel } from "./commands";
+import { Perm } from "./commands";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
 
@@ -6,7 +6,7 @@ export const commands:FishCommandsList = {
   pet: {
     args: ["name:string?"],
     description: 'Spawns a cool pet with a displayed name that follows you around.',
-    level: PermissionsLevel.member,
+    level: Perm.member,
     handler({args, sender}){
       if (!args.name) {
         const pet = Groups.unit.find((u:Unit) => u.id === sender.pet);
@@ -54,7 +54,7 @@ export const commands:FishCommandsList = {
   highlight: {
     args: ['color:string'],
     description: 'Makes your chat text colored by default.',
-    level: PermissionsLevel.member,
+    level: Perm.member,
     handler({args, sender, outputFail}){
       if(Strings.stripColors(args.color) == ""){
         sender.highlight = args[0];
@@ -69,7 +69,7 @@ export const commands:FishCommandsList = {
   rainbow: {
     args: ["speed:number?"],
     description: 'make your name change colors.',
-    level: PermissionsLevel.member,
+    level: Perm.member,
     handler({args, sender, outputFail}){
 
       if(!args.speed) {

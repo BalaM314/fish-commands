@@ -1,4 +1,4 @@
-import { PermissionsLevel } from "./commands";
+import { Perm } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import type { FishCommandsList, mindustryPlayerData } from "./types";
@@ -10,7 +10,7 @@ export const commands:FishCommandsList = {
 	warn: {
 		args: ['player:player', 'reason:string?'],
 		description: 'Warn a player.',
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, outputSuccess }){
 			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
 			menu('Warning', reason, [['accept']], args.player);
@@ -21,7 +21,7 @@ export const commands:FishCommandsList = {
 	mute: {
 		args: ['player:player'],
 		description: 'Stops a player from chatting.',
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail }){
 			if(args.player.muted){
 				outputFail(`Player "${args.player.name}" is already muted.`);
@@ -47,7 +47,7 @@ export const commands:FishCommandsList = {
 	unmute: {
 		args: ['player:player'],
 		description: 'Unmutes a player',
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail }){
 			if(args.player.muted){
 				args.player.muted = false;
@@ -68,7 +68,7 @@ export const commands:FishCommandsList = {
 	kick: {
 		args: ['player:player', 'reason:string?'],
 		description: 'Kick a player with optional reason.',
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, outputSuccess, outputFail }) {
 			if (args.player.admin || args.player.mod) {
 			//if(args.player.rank.level >= sender.rank.level)
@@ -84,7 +84,7 @@ export const commands:FishCommandsList = {
 	stop: {
 		args: ['player:player'],
 		description: 'Stops a player.',
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail}) {
 			if(args.player.stopped){
 				outputFail(`Player "${args.player.name}" is already stopped.`);
@@ -98,7 +98,7 @@ export const commands:FishCommandsList = {
 	free: {
 		args: ['player:player'],
 		description: 'Frees a player.',
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail}) {
 			if(args.player.stopped){
 				args.player.free(sender);
@@ -112,7 +112,7 @@ export const commands:FishCommandsList = {
 	mod: {
     args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
     description: "Add or remove a player's mod status.",
-		level: PermissionsLevel.admin,
+		level: Perm.admin,
     handler({args, outputSuccess, outputFail}){
 			switch(args.action){
 				case "add": case "a": case "give": case "promote":
@@ -153,7 +153,7 @@ export const commands:FishCommandsList = {
 	admin: {
     args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
     description: "Add or remove a player's admin status.",
-		level: PermissionsLevel.admin,
+		level: Perm.admin,
     handler({args, outputSuccess, outputFail, execServer}){
 
 			switch(args.action){
@@ -196,7 +196,7 @@ export const commands:FishCommandsList = {
 	murder: {
     args: [],
     description: 'Kills all ohno units',
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
     handler({output}){
 			const numOhnos = Ohnos.amount();
@@ -208,7 +208,7 @@ export const commands:FishCommandsList = {
 	stop_offline: {
 		args: ["name:string"],
 		description: "Stops an offline player.",
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess}){
 			const admins = Vars.netServer.admins;
 			let possiblePlayers:mindustryPlayerData[] = admins.searchNames(args.name).toSeq().items;
@@ -238,7 +238,7 @@ export const commands:FishCommandsList = {
 	restart: {
 		args: [],
 		description: "Stops and restarts the server. Do not run when the player count is high.",
-		level: PermissionsLevel.admin,
+		level: Perm.admin,
 		handler({outputFail}){
 			const now = Date.now();
 			const lastRestart = Core.settings.get("lastRestart", "");
@@ -278,7 +278,7 @@ export const commands:FishCommandsList = {
 	history: {
 		args: ["player:player"],
 		description: "Shows moderation history for a player.",
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({args, output}){
 			if(args.player.history && args.player.history.length > 0){
 				output(
@@ -296,7 +296,7 @@ export const commands:FishCommandsList = {
 	save: {
 		args: [],
 		description: "Saves the game state.",
-		level: PermissionsLevel.mod,
+		level: Perm.mod,
 		handler({outputSuccess}){
 			FishPlayer.saveAll();
 			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
@@ -308,7 +308,7 @@ export const commands:FishCommandsList = {
 	wave: {
 		args: ["wave:number"],
 		description: "Sets the wave number.",
-		level: PermissionsLevel.admin,
+		level: Perm.admin,
 		handler({args, outputSuccess, outputFail}){
 			if(args.wave > 0 && Number.isInteger(args.wave)){
 				Vars.state.wave = args.wave;
@@ -322,7 +322,7 @@ export const commands:FishCommandsList = {
 	label: {
 		args: ["time:number", "message:string"],
 		description: "Places a label at your position for a specified amount of time.",
-		level: PermissionsLevel.admin,
+		level: Perm.admin,
 		handler({args, sender, outputSuccess, outputFail}){
 			if(args.time <= 0 || args.time > 3600){
 				outputFail(`Time must be a positive number less than 3600.`);
@@ -349,7 +349,7 @@ export const commands:FishCommandsList = {
 	member: {
 		args: ["value:boolean", "player:player"],
 		description: "Sets a player's member status.",
-		level: PermissionsLevel.admin,
+		level: Perm.admin,
 		handler({args, outputSuccess}){
 			(args.player as FishPlayer).member = args.value;
 			args.player.updateName();
@@ -361,7 +361,7 @@ export const commands:FishCommandsList = {
 	ipban: {
 		args: [],
 		description: "Bans a player's IP.",
-		level: PermissionsLevel.admin,
+		level: Perm.admin,
 		handler({sender, outputFail, outputSuccess, execServer}){
 			let playerList:mindustryPlayer[] = [];
 			(Groups.player as mindustryPlayer[]).forEach(player => {

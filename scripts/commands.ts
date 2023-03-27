@@ -1,17 +1,21 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
+import type { Rank } from "./ranks";
 import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler } from "./types";
 
 
 
 /** Represents a permission level that is required to run a specific command. */
-export class PermissionsLevel {
-	static all = new PermissionsLevel("all");
-	static notGriefer = new PermissionsLevel("player");
-	static mod = new PermissionsLevel("mod");
-	static admin = new PermissionsLevel("admin");
-	static member = new PermissionsLevel("member", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
-	constructor(public name:string, public customErrorMessage?:string){}
+export class Perm {
+	static all = new Perm("all", fishP => true);
+	static notGriefer = new Perm("player", fishP => !fishP.stopped || fishP.mod || fishP.admin);
+	static mod = new Perm("mod", fishP => fishP.mod || fishP.admin);
+	static admin = new Perm("admin", fishP => fishP.admin);
+	static member = new Perm("member", fishP => fishP.member || !fishP.stopped, `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
+	// static fromRank(rank:Rank){
+	// 	return new Perm(rank.name, fishP => fishP.rank.level >= rank.level);
+	// }
 }
 
 //TODO impl exactPlayer for /admin, etc
@@ -87,18 +91,6 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 	return {processedArgs: outputArgs, unresolvedArgs};
 }
 
-//const cause why not?
-/**Determines if a FishPlayer can run a command with a specific permission level. */
-export const canPlayerAccess = function canPlayerAccess(player:FishPlayer, level:PermissionsLevel):boolean {
-	switch(level){
-		case PermissionsLevel.all: return true;
-		case PermissionsLevel.notGriefer: return !player.stopped || player.mod || player.admin;
-		case PermissionsLevel.mod: return player.mod || player.admin;
-		case PermissionsLevel.admin: return player.admin;
-		case PermissionsLevel.member: return player.member;
-		default: Log.err(`ERROR!: canPlayerAccess called with invalid permissions level ${level}`); return false;
-	}
-}
 
 /**
  * Registers all commands in a list to a client command handler.
@@ -136,8 +128,8 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
-				if(!canPlayerAccess(fishSender, data.level)){
-					outputFail(data.customUnauthorizedMessage ?? data.level.customErrorMessage ?? `You do not have the required permission (${data.level}) to execute this command`, sender);
+				if(!data.level.check(fishSender)){
+					outputFail(data.customUnauthorizedMessage ?? data.level.unauthorizedMessage, sender);
 					return;
 				}
 
@@ -150,6 +142,7 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 					return;
 				}
 				
+				//Recursively resolve unresolved args (such as players that need to be determined through a menu)
 				resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, () => {
 					//Run the command handler
 					data.handler({
@@ -176,7 +169,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 	} else {
 		const argToResolve = unresolvedArgs.shift()!;
 		let optionsList:mindustryPlayer[] = [];
-		//Dubious implementation
+		//TODO Dubious implementation
 		switch(argToResolve.type){
 			case "player": (Groups.player as mindustryPlayer[]).forEach(player => optionsList.push(player)); break;
 			default: throw new Error(`Unable to resolve arg of type ${argToResolve.type}`);

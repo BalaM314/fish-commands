@@ -1,5 +1,5 @@
 import type { FishPlayer } from "./players";
-import type { CommandArgType, PermissionsLevel } from "./commands";
+import type { CommandArgType, Perm } from "./commands";
 
 
 type FishCommandArgType = string | number | FishPlayer | boolean | null;
@@ -39,7 +39,7 @@ interface FishCommandData {
 	args: string[];
 	description: string;
 	/**Permission level required for players to run this command. If the player does not have this permission, the handler is not run and an error message is printed. */
-	level: PermissionsLevel;
+	level: Perm;
 	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
 	handler: FishCommandRunner;
