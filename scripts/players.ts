@@ -24,6 +24,7 @@ export class FishPlayer {
     type: string;
     color: Color;
   } | null = null;
+  cleanedName:string;
 
   //Stored data
   name: string;
@@ -53,6 +54,7 @@ export class FishPlayer {
     this.history = history;
     this.player = player;
     this.rainbow = rainbow;
+    this.cleanedName = Strings.stripColors(this.name);
   }
   static read(fishPlayerData:string, player:mindustryPlayer | null){
     return new this(JSON.parse(fishPlayerData), player);
@@ -90,7 +92,7 @@ export class FishPlayer {
   static getById(id:string):FishPlayer | null {
     return this.cachedPlayers[id] ?? null;
   }
-  static getByName(name:string):FishPlayer {
+  static getByName(name:string):FishPlayer | null {
     const realPlayer = Groups.player.find((p:mindustryPlayer) => {
       return p.name === name ||
         p.name.includes(name) ||
@@ -99,8 +101,17 @@ export class FishPlayer {
         Strings.stripColors(p.name).toLowerCase().includes(name.toLowerCase()) ||
         false;
     });
-    return this.get(realPlayer);
+    return realPlayer ? this.get(realPlayer) : null;
   };
+  static getAllByName(name:string):FishPlayer[] {
+    let players:FishPlayer[] = [];
+    //Groups.player doesn't support filter
+    Groups.player.each((p:mindustryPlayer) => {
+      const fishP = FishPlayer.get(p);
+      if(fishP.cleanedName.includes(name)) players.push(fishP);
+    });
+    return players;
+  }
   static onPlayerJoin(player:mindustryPlayer){
     let fishPlayer:FishPlayer;
     if(this.cachedPlayers[player.uuid()]){
@@ -154,7 +165,7 @@ export class FishPlayer {
   updateSavedInfoFromPlayer(player:mindustryPlayer){
     this.player = player;
     this.name = player.name;
-    //this.cleanedName = Strings.stripColors(player.name);
+    this.cleanedName = Strings.stripColors(player.name);
   }
   updateName(){
     if(this.player == null) return;//No player, no need to update

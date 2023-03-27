@@ -54,6 +54,7 @@ var FishPlayer = /** @class */ (function () {
         this.history = history;
         this.player = player;
         this.rainbow = rainbow;
+        this.cleanedName = Strings.stripColors(this.name);
     }
     FishPlayer.read = function (fishPlayerData, player) {
         return new this(JSON.parse(fishPlayerData), player);
@@ -103,9 +104,19 @@ var FishPlayer = /** @class */ (function () {
                 Strings.stripColors(p.name).toLowerCase().includes(name.toLowerCase()) ||
                 false;
         });
-        return this.get(realPlayer);
+        return realPlayer ? this.get(realPlayer) : null;
     };
     ;
+    FishPlayer.getAllByName = function (name) {
+        var players = [];
+        //Groups.player doesn't support filter
+        Groups.player.each(function (p) {
+            var fishP = FishPlayer.get(p);
+            if (fishP.cleanedName.includes(name))
+                players.push(fishP);
+        });
+        return players;
+    };
     FishPlayer.onPlayerJoin = function (player) {
         var fishPlayer;
         if (this.cachedPlayers[player.uuid()]) {
@@ -174,7 +185,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
         this.player = player;
         this.name = player.name;
-        //this.cleanedName = Strings.stripColors(player.name);
+        this.cleanedName = Strings.stripColors(player.name);
     };
     FishPlayer.prototype.updateName = function () {
         if (this.player == null)

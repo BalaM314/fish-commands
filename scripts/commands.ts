@@ -15,7 +15,7 @@ export class PermissionsLevel {
 }
 
 //TODO impl exactPlayer for /admin, etc
-const commandArgTypes = ["string", "number", "boolean", "player", /*"exactPlayer",*/ "namedPlayer"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
@@ -60,6 +60,12 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 				const player = FishPlayer.getByName(args[i]);
 				if(player == null) return {error: `Player "${args[i]}" not found.`};
 				outputArgs[cmdArg.name] = player;
+				break;
+			case "exactPlayer":
+				const players = FishPlayer.getAllByName(args[i]);
+				if(players.length === 0) return {error: `Player "${args[i]}" not found. You must specify the name exactly without colors.`};
+				else if(players.length > 1) return {error: `Name "${args[i]}" could refer to more than one player.`};
+				outputArgs[cmdArg.name] = players[0];
 				break;
 			case "number":
 				const number = parseInt(args[i]);

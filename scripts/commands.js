@@ -45,7 +45,7 @@ var PermissionsLevel = /** @class */ (function () {
 }());
 exports.PermissionsLevel = PermissionsLevel;
 //TODO impl exactPlayer for /admin, etc
-var commandArgTypes = ["string", "number", "boolean", "player", /*"exactPlayer",*/ "namedPlayer"];
+var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"];
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha
@@ -90,6 +90,14 @@ function processArgs(args, processedCmdArgs) {
                     if (player == null)
                         return { error: "Player \"".concat(args[i], "\" not found.") };
                     outputArgs[cmdArg.name] = player;
+                    break;
+                case "exactPlayer":
+                    var players = players_1.FishPlayer.getAllByName(args[i]);
+                    if (players.length === 0)
+                        return { error: "Player \"".concat(args[i], "\" not found. You must specify the name exactly without colors.") };
+                    else if (players.length > 1)
+                        return { error: "Name \"".concat(args[i], "\" could refer to more than one player.") };
+                    outputArgs[cmdArg.name] = players[0];
                     break;
                 case "number":
                     var number = parseInt(args[i]);
