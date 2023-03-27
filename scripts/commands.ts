@@ -18,7 +18,6 @@ export class Perm {
 	// }
 }
 
-//TODO impl exactPlayer for /admin, etc
 const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
@@ -94,9 +93,8 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 
 /**
  * Registers all commands in a list to a client command handler.
- * @argument runner (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method })
- * */
-export function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, serverCommands:ServerCommandHandler, runner:(func:(args:string[], player:mindustryPlayer) => void) => (args:string[], player:mindustryPlayer) => void){
+ **/
+export function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, serverCommands:ServerCommandHandler){
 	function outputFail(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 	}
@@ -124,7 +122,7 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 				return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
 			}).join(" "),
 			data.description,
-			runner((rawArgs, sender) => {
+			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[], sender:mindustryPlayer) => {
 				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
@@ -152,13 +150,13 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 						outputFail: message => outputFail(message, sender),
 						outputSuccess: message => outputSuccess(message, sender),
 						output: message => outputMessage(message, sender),
-						execServer: command => serverCommands.handleMessage(command)
+						execServer: command => serverCommands.handleMessage(command),
 					});
 				});
 				
 
 				
-			})
+			}})
 		);
 	}
 }

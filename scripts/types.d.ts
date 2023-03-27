@@ -31,7 +31,7 @@ interface FishCommandRunner {
 		output:(message:string) => void;
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
-	}): void;
+	}): unknown;
 }
 
 interface FishCommandData {
@@ -88,7 +88,7 @@ interface mindustryPlayerData {
 }
 
 interface ClientCommandHandler {
-	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => void):void;
+	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => unknown):void;
 }
 
 interface ServerCommandHandler {

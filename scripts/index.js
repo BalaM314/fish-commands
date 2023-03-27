@@ -69,14 +69,13 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             return true;
         }
     });
-    var runner = function (method) { return new Packages.arc.util.CommandHandler.CommandRunner({ accept: method }); };
-    //TODO Is this necessary? Can this function be moved to register()?
+    //TODO run this in commands.register on /help registered
     clientCommands.removeCommand('help');
     // clientCommands.removeCommand('votekick');
     // clientCommands.removeCommand('vote');
-    commands.register(staffCommands.commands, clientCommands, serverCommands, runner);
-    commands.register(playerCommands.commands, clientCommands, serverCommands, runner);
-    commands.register(memberCommands.commands, clientCommands, serverCommands, runner);
+    commands.register(staffCommands.commands, clientCommands, serverCommands);
+    commands.register(playerCommands.commands, clientCommands, serverCommands);
+    commands.register(memberCommands.commands, clientCommands, serverCommands);
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');

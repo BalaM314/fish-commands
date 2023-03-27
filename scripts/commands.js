@@ -46,7 +46,6 @@ var Perm = /** @class */ (function () {
     return Perm;
 }());
 exports.Perm = Perm;
-//TODO impl exactPlayer for /admin, etc
 var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"];
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
@@ -147,9 +146,8 @@ function processArgs(args, processedCmdArgs) {
 }
 /**
  * Registers all commands in a list to a client command handler.
- * @argument runner (method) => new Packages.arc.util.CommandHandler.CommandRunner({ accept: method })
- * */
-function register(commands, clientCommands, serverCommands, runner) {
+ **/
+function register(commands, clientCommands, serverCommands) {
     var e_2, _a;
     function outputFail(message, sender) {
         sender.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
@@ -171,35 +169,35 @@ function register(commands, clientCommands, serverCommands, runner) {
             var brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
             //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
             return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
-        }).join(" "), data.description, runner(function (rawArgs, sender) {
-            var _a;
-            var fishSender = players_1.FishPlayer.get(sender);
-            //Verify authorization
-            if (!data.level.check(fishSender)) {
-                outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.level.unauthorizedMessage, sender);
-                return;
-            }
-            //closure over processedCmdArgs, should be fine
-            var output = processArgs(rawArgs, processedCmdArgs);
-            if ("error" in output) {
-                //args are invalid
-                outputFail(output.error, sender);
-                return;
-            }
-            //Recursively resolve unresolved args (such as players that need to be determined through a menu)
-            resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
-                //Run the command handler
-                data.handler({
-                    rawArgs: rawArgs,
-                    args: output.processedArgs,
-                    sender: fishSender,
-                    outputFail: function (message) { return outputFail(message, sender); },
-                    outputSuccess: function (message) { return outputSuccess(message, sender); },
-                    output: function (message) { return outputMessage(message, sender); },
-                    execServer: function (command) { return serverCommands.handleMessage(command); }
+        }).join(" "), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs, sender) {
+                var _a;
+                var fishSender = players_1.FishPlayer.get(sender);
+                //Verify authorization
+                if (!data.level.check(fishSender)) {
+                    outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.level.unauthorizedMessage, sender);
+                    return;
+                }
+                //closure over processedCmdArgs, should be fine
+                var output = processArgs(rawArgs, processedCmdArgs);
+                if ("error" in output) {
+                    //args are invalid
+                    outputFail(output.error, sender);
+                    return;
+                }
+                //Recursively resolve unresolved args (such as players that need to be determined through a menu)
+                resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
+                    //Run the command handler
+                    data.handler({
+                        rawArgs: rawArgs,
+                        args: output.processedArgs,
+                        sender: fishSender,
+                        outputFail: function (message) { return outputFail(message, sender); },
+                        outputSuccess: function (message) { return outputSuccess(message, sender); },
+                        output: function (message) { return outputMessage(message, sender); },
+                        execServer: function (command) { return serverCommands.handleMessage(command); },
+                    });
                 });
-            });
-        }));
+            } }));
     };
     try {
         for (var _b = __values(Object.keys(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
