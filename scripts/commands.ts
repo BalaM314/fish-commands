@@ -112,7 +112,7 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 
 		//Process the args
 		const processedCmdArgs = data.args.map(processArgString);
-
+		clientCommands.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
 		clientCommands.register(
 			name,
 			//Convert the CommandArg[] to the format accepted by Arc CommandHandler

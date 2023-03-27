@@ -89,6 +89,7 @@ interface mindustryPlayerData {
 
 interface ClientCommandHandler {
 	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => unknown):void;
+	removeCommand(name:string):void;
 }
 
 interface ServerCommandHandler {

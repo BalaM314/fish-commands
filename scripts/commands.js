@@ -163,6 +163,7 @@ function register(commands, clientCommands, serverCommands) {
         var data = commands[name];
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
+        clientCommands.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
         clientCommands.register(name, 
         //Convert the CommandArg[] to the format accepted by Arc CommandHandler
         processedCmdArgs.map(function (arg, index, array) {

@@ -84,11 +84,6 @@ Events.on(EventType.ServerLoadEvent, (e) => {
   });
 
 
-  //TODO run this in commands.register on /help registered
-  clientCommands.removeCommand('help');
-  // clientCommands.removeCommand('votekick');
-  // clientCommands.removeCommand('vote');
-
   commands.register(staffCommands.commands, clientCommands, serverCommands);
   commands.register(playerCommands.commands, clientCommands, serverCommands);
   commands.register(memberCommands.commands, clientCommands, serverCommands);
