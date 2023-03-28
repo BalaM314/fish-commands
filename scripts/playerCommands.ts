@@ -65,7 +65,7 @@ export const commands:FishCommandsList = {
 		perm: Perm.notGriefer,
 		handler({args, sender, outputFail}){
 			if(sender.player.unit()?.spawnedByCore){
-				teleportPlayer(sender, args.player);
+				teleportPlayer(sender.player, args.player.player);
 			} else {
 				outputFail(`Can only teleport while in a core unit.`);
 			}
@@ -173,24 +173,25 @@ export const commands:FishCommandsList = {
 			if(sender.watch){
 				outputSuccess(`No longer watching a player.`);
 				sender.watch = false;
+			} else {
+				sender.watch = true;
+				const stayX = sender.player.unit().x;
+				const stayY = sender.player.unit().y;
+				const target = args.player.player;
+				const watch = () => {
+					if (sender.watch) {
+						// Self.X+(172.5-Self.X)/10
+						Call.setCameraPosition(sender.player.con, target.unit().x, target.unit().y);
+						sender.player.unit().set(stayX, stayY);
+						Timer.schedule(() => watch(), 0.1, 0.1, 0);
+					} else {
+						Call.setCameraPosition(sender.player.con, stayX, stayY);
+					}
+				};
+	
+				watch();
 			}
 
-			sender.watch = true;
-			const stayX = sender.player.unit().x;
-      const stayY = sender.player.unit().y;
-			const target = args.player.player;
-			function watch(){
-        if (sender.watch) {
-          // Self.X+(172.5-Self.X)/10
-          Call.setCameraPosition(sender.player.con, target.unit().x, target.unit().y);
-          sender.player.unit().set(stayX, stayY);
-          Timer.schedule(() => watch(), 0.1, 0.1, 0);
-        } else {
-          Call.setCameraPosition(sender.player.con, stayX, stayY);
-        }
-      };
-
-      watch();
 		}
 	},
 
@@ -202,7 +203,7 @@ export const commands:FishCommandsList = {
 			//TODO: genericify
 			const filter = {
         member: ['pet', 'highlight', 'rainbow', 'bc'],
-        mod: ['warn', 'mute', 'kick', 'stop', 'free', 'murder', 'unmuteall', 'history', 'save'],
+        mod: ['warn', 'mute', 'unmute', 'setrank', 'kick', 'stop', 'free', 'murder', 'unmuteall', 'history', 'save', 'stop_offline'],
         admin: ['sus', 'admin', 'mod', 'wave', 'restart', 'forcertv', 'spawn', 'exterminate', 'label', 'member', 'ipban'],
       };
 

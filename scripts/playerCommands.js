@@ -84,7 +84,7 @@ exports.commands = __assign(__assign({ unpause: {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if ((_b = sender.player.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore) {
-                teleportPlayer(sender, args.player);
+                teleportPlayer(sender.player, args.player.player);
             }
             else {
                 outputFail("Can only teleport while in a core unit.");
@@ -192,23 +192,24 @@ exports.commands = __assign(__assign({ unpause: {
                 outputSuccess("No longer watching a player.");
                 sender.watch = false;
             }
-            sender.watch = true;
-            var stayX = sender.player.unit().x;
-            var stayY = sender.player.unit().y;
-            var target = args.player.player;
-            function watch() {
-                if (sender.watch) {
-                    // Self.X+(172.5-Self.X)/10
-                    Call.setCameraPosition(sender.player.con, target.unit().x, target.unit().y);
-                    sender.player.unit().set(stayX, stayY);
-                    Timer.schedule(function () { return watch(); }, 0.1, 0.1, 0);
-                }
-                else {
-                    Call.setCameraPosition(sender.player.con, stayX, stayY);
-                }
+            else {
+                sender.watch = true;
+                var stayX_1 = sender.player.unit().x;
+                var stayY_1 = sender.player.unit().y;
+                var target_1 = args.player.player;
+                var watch_1 = function () {
+                    if (sender.watch) {
+                        // Self.X+(172.5-Self.X)/10
+                        Call.setCameraPosition(sender.player.con, target_1.unit().x, target_1.unit().y);
+                        sender.player.unit().set(stayX_1, stayY_1);
+                        Timer.schedule(function () { return watch_1(); }, 0.1, 0.1, 0);
+                    }
+                    else {
+                        Call.setCameraPosition(sender.player.con, stayX_1, stayY_1);
+                    }
+                };
+                watch_1();
             }
-            ;
-            watch();
         }
     }, help: {
         args: ["page:string?"],
@@ -219,7 +220,7 @@ exports.commands = __assign(__assign({ unpause: {
             //TODO: genericify
             var filter = {
                 member: ['pet', 'highlight', 'rainbow', 'bc'],
-                mod: ['warn', 'mute', 'kick', 'stop', 'free', 'murder', 'unmuteall', 'history', 'save'],
+                mod: ['warn', 'mute', 'unmute', 'setrank', 'kick', 'stop', 'free', 'murder', 'unmuteall', 'history', 'save', 'stop_offline'],
                 admin: ['sus', 'admin', 'mod', 'wave', 'restart', 'forcertv', 'spawn', 'exterminate', 'label', 'member', 'ipban'],
             };
             var normalCommands = [];
