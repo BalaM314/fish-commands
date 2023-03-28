@@ -31,10 +31,11 @@ exports.FishPlayer = void 0;
 var config = require("./config");
 var api = require("./api");
 var utils_1 = require("./utils");
+var ranks_1 = require("./ranks");
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.mod, mod = _c === void 0 ? false : _c, _d = _a.admin, admin = _d === void 0 ? false : _d, _e = _a.member, member = _e === void 0 ? false : _e, _f = _a.stopped, stopped = _f === void 0 ? false : _f, _g = _a.highlight, highlight = _g === void 0 ? null : _g, _h = _a.history, history = _h === void 0 ? [] : _h, _j = _a.rainbow, rainbow = _j === void 0 ? null : _j;
-        var _k;
+        var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h;
+        var _j, _k;
         //Transients
         this.player = null;
         this.pet = "";
@@ -44,10 +45,8 @@ var FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = false;
         this.trail = null;
-        this.name = (_k = name !== null && name !== void 0 ? name : player.name) !== null && _k !== void 0 ? _k : "Unnamed player [ERROR]";
+        this.name = (_j = name !== null && name !== void 0 ? name : player.name) !== null && _j !== void 0 ? _j : "Unnamed player [ERROR]";
         this.muted = muted;
-        this.mod = mod;
-        this.admin = admin;
         this.member = member;
         this.stopped = stopped;
         this.highlight = highlight;
@@ -55,6 +54,7 @@ var FishPlayer = /** @class */ (function () {
         this.player = player;
         this.rainbow = rainbow;
         this.cleanedName = Strings.stripColors(this.name);
+        this.rank = (_k = ranks_1.Rank.getByName(rank)) !== null && _k !== void 0 ? _k : ranks_1.Rank.player;
     }
     FishPlayer.read = function (fishPlayerData, player) {
         return new this(JSON.parse(fishPlayerData), player);
@@ -63,20 +63,16 @@ var FishPlayer = /** @class */ (function () {
         return new this({
             name: player.name,
             muted: false,
-            mod: false,
-            admin: false,
             member: false,
             stopped: false,
             highlight: null,
-            history: []
+            history: [],
         }, player);
     };
     FishPlayer.createFromInfo = function (playerInfo) {
         return new this({
             name: playerInfo.lastName,
             muted: false,
-            mod: false,
-            admin: false,
             member: false,
             stopped: false,
             highlight: null,
@@ -173,12 +169,12 @@ var FishPlayer = /** @class */ (function () {
         return JSON.stringify({
             name: this.name,
             muted: this.muted,
-            mod: this.mod,
-            admin: this.admin,
             member: this.member,
             stopped: this.stopped,
             highlight: this.highlight,
-            history: this.history
+            history: this.history,
+            rainbow: this.rainbow,
+            rank: this.rank.name,
         });
     };
     /**Must be called at player join, before updateName(). */
@@ -199,10 +195,7 @@ var FishPlayer = /** @class */ (function () {
             prefix += config.AFK_PREFIX;
         if (this.member)
             prefix += config.MEMBER_PREFIX;
-        if (this.admin)
-            prefix += config.ADMIN_PREFIX;
-        else if (this.mod)
-            prefix += config.MOD_PREFIX;
+        prefix += this.rank.prefix;
         this.player.name = prefix + this.name;
     };
     /**
@@ -291,7 +284,7 @@ var FishPlayer = /** @class */ (function () {
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
-                if (player.admin || player.mod || player.member)
+                if ((player.rank != ranks_1.Rank.player) || player.member)
                     jsonString += "\"".concat(uuid, "\":").concat(player.write());
             }
         }

@@ -1,6 +1,6 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
-import type { Rank } from "./ranks";
+import { Rank } from "./ranks";
 import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler } from "./types";
 
 
@@ -8,14 +8,14 @@ import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHan
 /** Represents a permission level that is required to run a specific command. */
 export class Perm {
 	static all = new Perm("all", fishP => true);
-	static notGriefer = new Perm("player", fishP => !fishP.stopped || fishP.mod || fishP.admin);
-	static mod = new Perm("mod", fishP => fishP.mod || fishP.admin);
-	static admin = new Perm("admin", fishP => fishP.admin);
+	static notGriefer = new Perm("player", fishP => !fishP.stopped || Perm.mod.check(fishP));
+	static mod = Perm.fromRank(Rank.mod);
+	static admin = Perm.fromRank(Rank.admin);
 	static member = new Perm("member", fishP => fishP.member || !fishP.stopped, `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
 	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
-	// static fromRank(rank:Rank){
-	// 	return new Perm(rank.name, fishP => fishP.rank.level >= rank.level);
-	// }
+	static fromRank(rank:Rank){
+		return new Perm(rank.name, fishP => fishP.rank.level >= rank.level);
+	}
 }
 
 const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"] as const;

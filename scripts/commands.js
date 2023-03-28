@@ -30,6 +30,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = exports.Perm = void 0;
 var menus_1 = require("./menus");
 var players_1 = require("./players");
+var ranks_1 = require("./ranks");
 /** Represents a permission level that is required to run a specific command. */
 var Perm = /** @class */ (function () {
     function Perm(name, check, unauthorizedMessage) {
@@ -38,10 +39,13 @@ var Perm = /** @class */ (function () {
         this.check = check;
         this.unauthorizedMessage = unauthorizedMessage;
     }
+    Perm.fromRank = function (rank) {
+        return new Perm(rank.name, function (fishP) { return fishP.rank.level >= rank.level; });
+    };
     Perm.all = new Perm("all", function (fishP) { return true; });
-    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || fishP.mod || fishP.admin; });
-    Perm.mod = new Perm("mod", function (fishP) { return fishP.mod || fishP.admin; });
-    Perm.admin = new Perm("admin", function (fishP) { return fishP.admin; });
+    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || Perm.mod.check(fishP); });
+    Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
+    Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
     Perm.member = new Perm("member", function (fishP) { return fishP.member || !fishP.stopped; }, "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
     return Perm;
 }());

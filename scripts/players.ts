@@ -2,6 +2,7 @@ import type { FishPlayerData, mindustryPlayerData, PlayerHistoryEntry } from "./
 import * as config from "./config";
 import * as api from "./api";
 import { isCoreUnitType } from "./utils";
+import { Rank } from "./ranks";
 
 type OnlineFishPlayer = FishPlayer & {player: mindustryPlayer};
 
@@ -29,25 +30,20 @@ export class FishPlayer {
   //Stored data
   name: string;
 	muted: boolean;
-	mod: boolean;
-	admin: boolean;
 	member: boolean;
 	stopped: boolean;
-	/*rank: Rank*/
+	rank: Rank;
 	highlight: string | null;
   rainbow: {
     speed: number;
   } | null;
 	history: PlayerHistoryEntry[];
   constructor({
-    name, muted = false, mod = false,
-    admin = false, member = false, stopped = false,
-    highlight = null, history = [], rainbow = null
+    name, muted = false, member = false, stopped = false,
+    highlight = null, history = [], rainbow = null, rank = "player"
   }:Partial<FishPlayerData>, player:mindustryPlayer | null){
     this.name = name ?? player.name ?? "Unnamed player [ERROR]";
     this.muted = muted;
-    this.mod = mod;
-    this.admin = admin;
     this.member = member;
     this.stopped = stopped;
     this.highlight = highlight;
@@ -55,6 +51,7 @@ export class FishPlayer {
     this.player = player;
     this.rainbow = rainbow;
     this.cleanedName = Strings.stripColors(this.name);
+    this.rank = Rank.getByName(rank) ?? Rank.player;
   }
   static read(fishPlayerData:string, player:mindustryPlayer | null){
     return new this(JSON.parse(fishPlayerData), player);
@@ -63,20 +60,16 @@ export class FishPlayer {
     return new this({
       name: player.name,
       muted: false,
-      mod: false,
-      admin: false,
       member: false,
       stopped: false,
       highlight: null,
-      history: []
+      history: [],
     }, player);
   }
   static createFromInfo(playerInfo:mindustryPlayerData){
     return new this({
       name: playerInfo.lastName,
       muted: false,
-      mod: false,
-      admin: false,
       member: false,
       stopped: false,
       highlight: null,
@@ -153,12 +146,12 @@ export class FishPlayer {
     return JSON.stringify({
       name: this.name,
       muted: this.muted,
-      mod: this.mod,
-      admin: this.admin,
       member: this.member,
       stopped: this.stopped,
       highlight: this.highlight,
-      history: this.history
+      history: this.history,
+      rainbow: this.rainbow,
+      rank: this.rank.name,
     });
   }
   /**Must be called at player join, before updateName(). */
@@ -175,8 +168,7 @@ export class FishPlayer {
     if(this.afk) prefix += config.AFK_PREFIX;
     if(this.member) prefix += config.MEMBER_PREFIX;
 
-    if(this.admin) prefix += config.ADMIN_PREFIX;
-    else if(this.mod) prefix += config.MOD_PREFIX;
+    prefix += this.rank.prefix;
     this.player.name = prefix + this.name;
   }
   /**
@@ -252,7 +244,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
     //Temporary implementation
     let jsonString = `{`;
     for(const [uuid, player] of Object.entries(this.cachedPlayers)){
-      if(player.admin || player.mod || player.member)
+      if((player.rank != Rank.player) || player.member)
         jsonString += `"${uuid}":${player.write()}`;
     }
     jsonString += `}`;

@@ -66,7 +66,7 @@ function messageStaff(name, msg) {
     var message = "[gray]<[cyan]staff[gray]>[white]".concat(name, "[green]: [cyan]").concat(msg);
     Groups.player.forEach(function (pl) {
         var fishP = players_1.FishPlayer.get(pl);
-        if (fishP.admin || fishP.mod) {
+        if (commands_1.Perm.mod.check(fishP)) {
             pl.sendMessage(message);
         }
     });

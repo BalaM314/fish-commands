@@ -1,7 +1,7 @@
 import { Perm } from "./commands";
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
-import type { FishCommandData, FishCommandsList } from "./types";
+import type { FishCommandsList } from "./types";
 import { getColor, to2DArray } from "./utils";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
@@ -45,7 +45,7 @@ function messageStaff(name:string, msg:string){
   const message = `[gray]<[cyan]staff[gray]>[white]${name}[green]: [cyan]${msg}`;
   Groups.player.forEach((pl:mindustryPlayer) => {
 		const fishP = FishPlayer.get(pl);
-    if(fishP.admin || fishP.mod) {
+    if(Perm.mod.check(fishP)) {
       pl.sendMessage(message);
     }
   });

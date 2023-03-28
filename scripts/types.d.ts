@@ -57,12 +57,9 @@ interface TileHistoryEntry {
 interface FishPlayerData {
 	name: string;
 	muted: boolean;
-	mod: boolean;
-	admin: boolean;
 	member: boolean;
 	stopped: boolean;
-	/*rank: Rank*/
-	//TODO remove
+	rank: string;
 	highlight: string | null;
 	rainbow: { speed:number; } | null;
 	history: PlayerHistoryEntry[];
