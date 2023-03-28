@@ -3,6 +3,7 @@ import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
 import { getColor, to2DArray } from "./utils";
+import { FishServers } from "./config";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
   player.unit().set(to.unit().x, to.unit().y);
@@ -35,12 +36,6 @@ const Cleaner = {
   },
 };
 
-const FishServers = {
-	attack: { ip: "162.248.100.98", port: "6567" },
-	survival: { ip: "170.187.144.235", port: "6567" },
-	pvp: { ip: "162.248.100.133", port: "6567" },
-};
-
 function messageStaff(name:string, msg:string){
   const message = `[gray]<[cyan]staff[gray]>[white]${name}[green]: [cyan]${msg}`;
   Groups.player.forEach((pl:mindustryPlayer) => {
@@ -58,7 +53,7 @@ export const commands:FishCommandsList = {
 	unpause: {
 		args: [],
 		description: "Unpauses the game.",
-		level: Perm.notGriefer,
+		perm: Perm.notGriefer,
 		handler(){
 			Core.app.post(() => Vars.state.set(GameState.State.playing));
 		}
@@ -67,7 +62,7 @@ export const commands:FishCommandsList = {
 	tp: {
 		args: ["player:player"],
 		description: "Teleport to another player.",
-		level: Perm.notGriefer,
+		perm: Perm.notGriefer,
 		handler({args, sender, outputFail}){
 			if(sender.player.unit()?.spawnedByCore){
 				teleportPlayer(sender, args.player);
@@ -80,7 +75,7 @@ export const commands:FishCommandsList = {
 	clean: {
 		args: [],
 		description: "Removes all boulders from the map.",
-		level: Perm.notGriefer,
+		perm: Perm.notGriefer,
 		handler({sender, outputSuccess, outputFail}){
 			if(Cleaner.clean(sender.player)){
         outputSuccess(`\u2714 Cleared the map of boulders.`);
@@ -93,7 +88,7 @@ export const commands:FishCommandsList = {
 	kill: {
 		args: [],
 		description: "Commits die.",
-		level: Perm.notGriefer,
+		perm: Perm.notGriefer,
 		handler({sender}){
 			sender.player.unit()?.kill();
 		}
@@ -102,7 +97,7 @@ export const commands:FishCommandsList = {
 	discord: {
 		args: [],
 		description: "Takes you to our discord.",
-		level: Perm.all,
+		perm: Perm.all,
 		handler({sender}){
 			Call.openURI(sender.player.con, 'https://discord.gg/VpzcYSQ33Y');
 		}
@@ -111,7 +106,7 @@ export const commands:FishCommandsList = {
 	tilelog: {
 		args: [],
 		description: "Checks the history of a tile.",
-		level: Perm.all,
+		perm: Perm.all,
 		handler({sender, output}){
 			sender.tilelog = true;
 			output(`\n \n \n===>[yellow]Click on a tile to check its recent history...\n \n \n `);
@@ -121,7 +116,7 @@ export const commands:FishCommandsList = {
 	afk: {
 		args: [],
 		description: "Toggles your afk status.",
-		level: Perm.all,
+		perm: Perm.all,
 		handler({sender, outputSuccess}){
 			sender.afk = !sender.afk;
 			sender.updateName();
@@ -136,7 +131,7 @@ export const commands:FishCommandsList = {
 	tileid: {
 		args: [],
 		description: "Checks id of a tile.",
-		level: Perm.all,
+		perm: Perm.all,
 		handler({sender, outputSuccess}){
 			sender.tileId = true;
 			outputSuccess(`Click a tile to see its id.`);
@@ -156,7 +151,7 @@ export const commands:FishCommandsList = {
 	s: {
 		args: ["message:string"],
 		description: `Sends a message to staff only.`,
-		level: Perm.all,
+		perm: Perm.all,
 		handler({sender, args}){
 			messageStaff(sender.name, args.message);
 		}
@@ -173,7 +168,7 @@ export const commands:FishCommandsList = {
 	watch: {
 		args: ["player:player?"],
 		description: `Watch/unwatch a player.`,
-		level: Perm.all,
+		perm: Perm.all,
 		handler({args, sender, outputSuccess}){
 			if(sender.watch){
 				outputSuccess(`No longer watching a player.`);
@@ -202,7 +197,7 @@ export const commands:FishCommandsList = {
 	help: {
 		args: ["page:string?"],
 		description: "Displays a list of all commands.",
-		level: Perm.all,
+		perm: Perm.all,
 		handler({args, output, outputFail}){
 			//TODO: genericify
 			const filter = {
@@ -250,7 +245,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 	msg: {
 		args: ["player:namedPlayer", "message:string"],
 		description: "Send a message to only one player.",
-		level: Perm.all,
+		perm: Perm.all,
 		handler({args, sender, output}){
 			recentWhispers[args.player.player.uuid()] = sender.player.uuid();
 			args.player.player.sendMessage(`${args.player.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
@@ -261,7 +256,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 	r: {
 		args: ["message:string"],
 		description: "Reply to the most recent message.",
-		level: Perm.all,
+		perm: Perm.all,
 		handler({args, sender, output, outputFail}){
 			if(recentWhispers[sender.player.uuid()]){
 				const recipient = FishPlayer.getById(recentWhispers[sender.player.uuid()]);
@@ -280,7 +275,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 	trail: {
 		args: ["type:string?", "color:string?"],
     description: 'Use command to see options and toggle trail on/off.',
-		level: Perm.all,
+		perm: Perm.all,
     handler({args, sender, output, outputFail, outputSuccess}){
 
 			//overload 1: type not specified
@@ -344,7 +339,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 	ohno: {
 		args: [],
 		description: "Spawns an ohno.",
-		level: Perm.notGriefer,
+		perm: Perm.notGriefer,
 		handler({sender, outputFail}){
 			const canSpawn = Ohnos.canSpawn(sender.player);
 			if(canSpawn === true){

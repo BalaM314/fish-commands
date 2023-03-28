@@ -91,20 +91,20 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 }
 
 
+function outputFail(message:string, sender:mindustryPlayer){
+	sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
+}
+function outputSuccess(message:string, sender:mindustryPlayer){
+	sender.sendMessage(`[#48e076]${message}`);
+}
+function outputMessage(message:string, sender:mindustryPlayer){
+	sender.sendMessage(message);
+}
+
 /**
  * Registers all commands in a list to a client command handler.
  **/
 export function register(commands:FishCommandsList, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
-	function outputFail(message:string, sender:mindustryPlayer){
-		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
-	}
-	function outputSuccess(message:string, sender:mindustryPlayer){
-		sender.sendMessage(`[#48e076]${message}`);
-	}
-	function outputMessage(message:string, sender:mindustryPlayer){
-		sender.sendMessage(message);
-	}
-
 
 	for(const name of Object.keys(commands)){
 		//Cursed for of loop due to lack of object.entries
@@ -126,8 +126,8 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
-				if(!data.level.check(fishSender)){
-					outputFail(data.customUnauthorizedMessage ?? data.level.unauthorizedMessage, sender);
+				if(!data.perm.check(fishSender)){
+					outputFail(data.customUnauthorizedMessage ?? data.perm.unauthorizedMessage, sender);
 					return;
 				}
 

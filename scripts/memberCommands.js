@@ -6,7 +6,7 @@ exports.commands = {
     pet: {
         args: ["name:string?"],
         description: 'Spawns a cool pet with a displayed name that follows you around.',
-        level: commands_1.Perm.member,
+        perm: commands_1.Perm.member,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender;
             if (!args.name) {
@@ -29,7 +29,7 @@ exports.commands = {
             function controlUnit(_a) {
                 var pet = _a.pet, fishPlayer = _a.fishPlayer, petName = _a.petName;
                 return Timer.schedule(function () {
-                    if (pet.id !== fishPlayer.pet || fishPlayer.player.con.hasDisconnected) {
+                    if (pet.id !== fishPlayer.pet || !fishPlayer.connected()) {
                         pet.kill();
                         return;
                     }
@@ -52,7 +52,7 @@ exports.commands = {
     highlight: {
         args: ['color:string'],
         description: 'Makes your chat text colored by default.',
-        level: commands_1.Perm.member,
+        perm: commands_1.Perm.member,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if (Strings.stripColors(args.color) == "") {
@@ -69,32 +69,33 @@ exports.commands = {
     rainbow: {
         args: ["speed:number?"],
         description: 'make your name change colors.',
-        level: commands_1.Perm.member,
+        perm: commands_1.Perm.member,
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if (!args.speed) {
                 sender.updateName();
                 sender.rainbow = null;
-                return;
             }
-            if (args.speed > 10 || args.speed <= 0) {
-                outputFail('Speed must be a number between 0 and 10.');
-                return;
+            else {
+                if (args.speed > 10 || args.speed <= 0) {
+                    outputFail('Speed must be a number between 0 and 10.');
+                    return;
+                }
+                (_b = sender.rainbow) !== null && _b !== void 0 ? _b : (sender.rainbow = {
+                    speed: args.speed,
+                });
+                var colors_1 = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
+                var rainbowLoop_1 = function (index, fishP) {
+                    Timer.schedule(function () {
+                        if (!fishP.rainbow)
+                            return;
+                        sender.player.name = colors_1[index % colors_1.length] + Strings.stripColors(sender.name);
+                        rainbowLoop_1(index + 1, fishP);
+                    }, args.speed / 5);
+                };
+                rainbowLoop_1(0, sender);
             }
-            (_b = sender.rainbow) !== null && _b !== void 0 ? _b : (sender.rainbow = {
-                speed: args.speed,
-            });
-            var colors = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
-            function rainbowLoop(index, fishP) {
-                Timer.schedule(function () {
-                    if (!fishP.rainbow)
-                        return;
-                    sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.name);
-                    rainbowLoop(index + 1, fishP);
-                }, args.speed / 5);
-            }
-            rainbowLoop(0, sender);
         }
     }
 };

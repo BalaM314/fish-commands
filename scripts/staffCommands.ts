@@ -11,30 +11,30 @@ export const commands:FishCommandsList = {
 	warn: {
 		args: ['player:player', 'reason:string?'],
 		description: 'Warn a player.',
-		level: Perm.mod,
-		handler({args, outputSuccess }){
+		perm: Perm.mod,
+		handler({args, outputSuccess}){
 			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
 			menu('Warning', reason, [['accept']], args.player);
-			outputSuccess(`Warned player "${args.player.name}" for "${reason}"`);
+			outputSuccess(`Warned player "${args.player.cleanedName}" for "${reason}"`);
 		}
 	},
 
 	mute: {
 		args: ['player:player'],
 		description: 'Stops a player from chatting.',
-		level: Perm.mod,
-		handler({args, sender, outputSuccess, outputFail }){
+		perm: Perm.mod,
+		handler({args, sender, outputSuccess, outputFail}){
 			if(args.player.muted){
-				outputFail(`Player "${args.player.name}" is already muted.`);
+				outputFail(`Player "${args.player.cleanedName}" is already muted.`);
 				return;
 			}
-			if(args.player.admin){
-				outputFail(`Player "${args.player.name}" is an admin.`);
+			if(!sender.canModerate(args.player, false)){
+				outputFail(`You do not have permission to mute this player.`);
 				return;
 			}
 			args.player.muted = true;
 			args.player.updateName();
-			outputSuccess(`Muted player "${args.player.name}".`);
+			outputSuccess(`Muted player "${args.player.cleanedName}".`);
 			args.player.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
 			args.player.addHistoryEntry({
 				action: 'unmuted',
@@ -48,12 +48,12 @@ export const commands:FishCommandsList = {
 	unmute: {
 		args: ['player:player'],
 		description: 'Unmutes a player',
-		level: Perm.mod,
+		perm: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail }){
 			if(args.player.muted){
 				args.player.muted = false;
 				args.player.updateName();
-				outputSuccess(`Unmuted player "${args.player.name}".`);
+				outputSuccess(`Unmuted player "${args.player.cleanedName}".`);
 				args.player.player.sendMessage(`[green]You have been unmuted.`);
 				args.player.addHistoryEntry({
           action: 'unmuted',
@@ -61,7 +61,7 @@ export const commands:FishCommandsList = {
           time: Date.now(),
         });
 			} else {
-				outputFail(`Player "${args.player.name}" is not muted.`);
+				outputFail(`Player "${args.player.cleanedName}" is not muted.`);
 			}
 		}
 	},
@@ -69,15 +69,14 @@ export const commands:FishCommandsList = {
 	kick: {
 		args: ['player:player', 'reason:string?'],
 		description: 'Kick a player with optional reason.',
-		level: Perm.mod,
-		handler({args, outputSuccess, outputFail }) {
-			if (args.player.admin || args.player.mod) {
-			//if(args.player.rank.level >= sender.rank.level)
-				outputFail('You do not have permission to kick this player.');
-			} else {
+		perm: Perm.mod,
+		handler({args, outputSuccess, outputFail, sender}){
+			if(sender.canModerate(args.player)){
 				const reason = args.reason ?? 'A staff member did not like your actions.';
 				args.player.player.kick(reason);
-				outputSuccess(`Kicked player "${args.player.name}" for "${reason}"`);
+				outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}"`);
+			} else {
+				outputFail('You do not have permission to kick this player.');
 			}
 		}
 	},
@@ -85,13 +84,17 @@ export const commands:FishCommandsList = {
 	stop: {
 		args: ['player:player'],
 		description: 'Stops a player.',
-		level: Perm.mod,
+		perm: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail}) {
 			if(args.player.stopped){
 				outputFail(`Player "${args.player.name}" is already stopped.`);
-			} else {
+				return;
+			}
+			if(sender.canModerate(args.player, false)){
 				args.player.stop(sender);
 				outputSuccess(`Player "${args.player.name}" has been stopped.`);
+			} else {
+				outputFail('You do not have permission to stop this player.');
 			}
 		}
 	},
@@ -99,7 +102,7 @@ export const commands:FishCommandsList = {
 	free: {
 		args: ['player:player'],
 		description: 'Frees a player.',
-		level: Perm.mod,
+		perm: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail}) {
 			if(args.player.stopped){
 				args.player.free(sender);
@@ -113,7 +116,7 @@ export const commands:FishCommandsList = {
 	setrank: {
 		args: ["player:exactPlayer", "rank:string"],
 		description: "Set a player's rank.",
-		level: Perm.mod,
+		perm: Perm.mod,
 		handler({args, outputFail, outputSuccess, sender}){
 			const rank = Rank.getByName(args.rank);
 			if(rank == null){
@@ -138,7 +141,7 @@ export const commands:FishCommandsList = {
 	murder: {
     args: [],
     description: 'Kills all ohno units',
-		level: Perm.mod,
+		perm: Perm.mod,
 		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
     handler({output}){
 			const numOhnos = Ohnos.amount();
@@ -150,7 +153,7 @@ export const commands:FishCommandsList = {
 	stop_offline: {
 		args: ["name:string"],
 		description: "Stops an offline player.",
-		level: Perm.mod,
+		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess}){
 			const admins = Vars.netServer.admins;
 			let possiblePlayers:mindustryPlayerData[] = admins.searchNames(args.name).toSeq().items;
@@ -165,14 +168,18 @@ export const commands:FishCommandsList = {
 
 			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
 				const fishP = FishPlayer.getFromInfo(option);
-				fishP.stopped = true;
-				api.addStopped(option.id);
-				fishP.addHistoryEntry({
-					action: 'stopped',
-					by: sender.name,
-					time: Date.now(),
-				});
-				outputSuccess(`Player ${option.lastName} was stopped.`);
+				if(sender.canModerate(fishP, false)){
+					fishP.stopped = true;
+					api.addStopped(option.id);
+					fishP.addHistoryEntry({
+						action: 'stopped',
+						by: sender.name,
+						time: Date.now(),
+					});
+					outputSuccess(`Player ${option.lastName} was stopped.`);
+				} else {
+					outputFail(`You do not have permission to stop this player.`);
+				}
 			}, true, p => p.lastName);
 		}
 	},
@@ -180,7 +187,7 @@ export const commands:FishCommandsList = {
 	restart: {
 		args: [],
 		description: "Stops and restarts the server. Do not run when the player count is high.",
-		level: Perm.admin,
+		perm: Perm.admin,
 		handler({outputFail}){
 			const now = Date.now();
 			const lastRestart = Core.settings.get("lastRestart", "");
@@ -220,7 +227,7 @@ export const commands:FishCommandsList = {
 	history: {
 		args: ["player:player"],
 		description: "Shows moderation history for a player.",
-		level: Perm.mod,
+		perm: Perm.mod,
 		handler({args, output}){
 			if(args.player.history && args.player.history.length > 0){
 				output(
@@ -238,7 +245,7 @@ export const commands:FishCommandsList = {
 	save: {
 		args: [],
 		description: "Saves the game state.",
-		level: Perm.mod,
+		perm: Perm.mod,
 		handler({outputSuccess}){
 			FishPlayer.saveAll();
 			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
@@ -250,7 +257,7 @@ export const commands:FishCommandsList = {
 	wave: {
 		args: ["wave:number"],
 		description: "Sets the wave number.",
-		level: Perm.admin,
+		perm: Perm.admin,
 		handler({args, outputSuccess, outputFail}){
 			if(args.wave > 0 && Number.isInteger(args.wave)){
 				Vars.state.wave = args.wave;
@@ -264,7 +271,7 @@ export const commands:FishCommandsList = {
 	label: {
 		args: ["time:number", "message:string"],
 		description: "Places a label at your position for a specified amount of time.",
-		level: Perm.admin,
+		perm: Perm.admin,
 		handler({args, sender, outputSuccess, outputFail}){
 			if(args.time <= 0 || args.time > 3600){
 				outputFail(`Time must be a positive number less than 3600.`);
@@ -291,7 +298,7 @@ export const commands:FishCommandsList = {
 	member: {
 		args: ["value:boolean", "player:player"],
 		description: "Sets a player's member status.",
-		level: Perm.admin,
+		perm: Perm.admin,
 		handler({args, outputSuccess}){
 			(args.player as FishPlayer).member = args.value;
 			args.player.updateName();
@@ -303,7 +310,7 @@ export const commands:FishCommandsList = {
 	ipban: {
 		args: [],
 		description: "Bans a player's IP.",
-		level: Perm.admin,
+		perm: Perm.admin,
 		handler({sender, outputFail, outputSuccess, execServer}){
 			let playerList:mindustryPlayer[] = [];
 			(Groups.player as mindustryPlayer[]).forEach(player => {

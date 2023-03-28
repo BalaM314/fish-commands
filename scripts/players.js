@@ -153,7 +153,7 @@ var FishPlayer = /** @class */ (function () {
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
-                if (player.player && !player.player.con.hasDisconnected)
+                if (player.connected())
                     func(player);
             }
         }
@@ -177,14 +177,21 @@ var FishPlayer = /** @class */ (function () {
             rank: this.rank.name,
         });
     };
+    FishPlayer.prototype.connected = function () {
+        return this.player && !this.player.con.hasDisconnected;
+    };
     FishPlayer.prototype.setRank = function (rank) {
         this.rank = rank;
         this.updateName();
         this.updateAdminStatus();
         FishPlayer.saveAll();
     };
-    FishPlayer.prototype.canModerate = function (player) {
-        return this.rank.level > player.rank.level;
+    FishPlayer.prototype.canModerate = function (player, strict) {
+        if (strict === void 0) { strict = true; }
+        if (strict)
+            return this.rank.level > player.rank.level || player == this;
+        else
+            return this.rank.level >= player.rank.level || player == this;
     };
     /**Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {

@@ -55,7 +55,7 @@ interface FishCommandData {
 	args: string[];
 	description: string;
 	/**Permission level required for players to run this command. If the player does not have this permission, the handler is not run and an error message is printed. */
-	level: Perm;
+	perm: Perm;
 	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
 	handler: FishCommandRunner;

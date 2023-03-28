@@ -6,7 +6,7 @@ export const commands:FishCommandsList = {
   pet: {
     args: ["name:string?"],
     description: 'Spawns a cool pet with a displayed name that follows you around.',
-    level: Perm.member,
+    perm: Perm.member,
     handler({args, sender}){
       if (!args.name) {
         const pet = Groups.unit.find((u:Unit) => u.id === sender.pet);
@@ -30,7 +30,7 @@ export const commands:FishCommandsList = {
         petName: string; pet: Unit; fishPlayer: FishPlayer;
       }){
         return Timer.schedule(() => {
-          if(pet.id !== fishPlayer.pet || fishPlayer.player.con.hasDisconnected){
+          if(pet.id !== fishPlayer.pet || !fishPlayer.connected()){
             pet.kill();
             return;
           }
@@ -54,7 +54,7 @@ export const commands:FishCommandsList = {
   highlight: {
     args: ['color:string'],
     description: 'Makes your chat text colored by default.',
-    level: Perm.member,
+    perm: Perm.member,
     handler({args, sender, outputFail}){
       if(Strings.stripColors(args.color) == ""){
         sender.highlight = args[0];
@@ -69,33 +69,32 @@ export const commands:FishCommandsList = {
   rainbow: {
     args: ["speed:number?"],
     description: 'make your name change colors.',
-    level: Perm.member,
+    perm: Perm.member,
     handler({args, sender, outputFail}){
 
       if(!args.speed) {
         sender.updateName();
         sender.rainbow = null;
-        return;
+      } else {
+        if(args.speed > 10 || args.speed <= 0){
+          outputFail('Speed must be a number between 0 and 10.');
+          return;
+        }
+  
+        sender.rainbow ??= {
+          speed: args.speed,
+        };
+        const colors = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
+        const rainbowLoop = function(index:number, fishP:FishPlayer){
+          Timer.schedule(() => {
+            if (!fishP.rainbow) return;
+            sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.name);
+            rainbowLoop(index + 1, fishP);
+          }, args.speed / 5);
+        }
+        rainbowLoop(0, sender);
       }
 
-      if(args.speed > 10 || args.speed <= 0){
-        outputFail('Speed must be a number between 0 and 10.');
-        return;
-      }
-
-      sender.rainbow ??= {
-        speed: args.speed,
-      };
-
-      const colors = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
-      function rainbowLoop(index:number, fishP:FishPlayer){
-        Timer.schedule(() => {
-          if (!fishP.rainbow) return;
-          sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.name);
-          rainbowLoop(index + 1, fishP);
-        }, args.speed / 5);
-      }
-      rainbowLoop(0, sender);
     }
   }
 };

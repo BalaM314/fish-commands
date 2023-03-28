@@ -32,6 +32,7 @@ var commands_1 = require("./commands");
 var ohno_1 = require("./ohno");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
+var config_1 = require("./config");
 function teleportPlayer(player, to) {
     player.unit().set(to.unit().x, to.unit().y);
     Call.setPosition(player.con, to.unit().x, to.unit().y);
@@ -57,11 +58,6 @@ var Cleaner = {
         return true;
     },
 };
-var FishServers = {
-    attack: { ip: "162.248.100.98", port: "6567" },
-    survival: { ip: "170.187.144.235", port: "6567" },
-    pvp: { ip: "162.248.100.133", port: "6567" },
-};
 function messageStaff(name, msg) {
     var message = "[gray]<[cyan]staff[gray]>[white]".concat(name, "[green]: [cyan]").concat(msg);
     Groups.player.forEach(function (pl) {
@@ -76,14 +72,14 @@ var recentWhispers = {};
 exports.commands = __assign(__assign({ unpause: {
         args: [],
         description: "Unpauses the game.",
-        level: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.notGriefer,
         handler: function () {
             Core.app.post(function () { return Vars.state.set(GameState.State.playing); });
         }
     }, tp: {
         args: ["player:player"],
         description: "Teleport to another player.",
-        level: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
@@ -97,7 +93,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, clean: {
         args: [],
         description: "Removes all boulders from the map.",
-        level: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (Cleaner.clean(sender.player)) {
@@ -110,7 +106,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, kill: {
         args: [],
         description: "Commits die.",
-        level: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var _b;
             var sender = _a.sender;
@@ -119,7 +115,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, discord: {
         args: [],
         description: "Takes you to our discord.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var sender = _a.sender;
             Call.openURI(sender.player.con, 'https://discord.gg/VpzcYSQ33Y');
@@ -127,7 +123,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, tilelog: {
         args: [],
         description: "Checks the history of a tile.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var sender = _a.sender, output = _a.output;
             sender.tilelog = true;
@@ -136,7 +132,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, afk: {
         args: [],
         description: "Toggles your afk status.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
             sender.afk = !sender.afk;
@@ -151,13 +147,13 @@ exports.commands = __assign(__assign({ unpause: {
     }, tileid: {
         args: [],
         description: "Checks id of a tile.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
             sender.tileId = true;
             outputSuccess("Click a tile to see its id.");
         }
-    } }, Object.fromEntries(Object.entries(FishServers).map(function (_a) {
+    } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
     var _b = __read(_a, 2), name = _b[0], data = _b[1];
     return [name, {
             args: [],
@@ -172,7 +168,7 @@ exports.commands = __assign(__assign({ unpause: {
 }))), { s: {
         args: ["message:string"],
         description: "Sends a message to staff only.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args;
             messageStaff(sender.name, args.message);
@@ -189,7 +185,7 @@ exports.commands = __assign(__assign({ unpause: {
     watch: {
         args: ["player:player?"],
         description: "Watch/unwatch a player.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (sender.watch) {
@@ -217,7 +213,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, help: {
         args: ["page:string?"],
         description: "Displays a list of all commands.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputFail = _a.outputFail;
             //TODO: genericify
@@ -268,7 +264,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, msg: {
         args: ["player:namedPlayer", "message:string"],
         description: "Send a message to only one player.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
             recentWhispers[args.player.player.uuid()] = sender.player.uuid();
@@ -278,7 +274,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, r: {
         args: ["message:string"],
         description: "Reply to the most recent message.",
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
             if (recentWhispers[sender.player.uuid()]) {
@@ -298,7 +294,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, trail: {
         args: ["type:string?", "color:string?"],
         description: 'Use command to see options and toggle trail on/off.',
-        level: commands_1.Perm.all,
+        perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             //overload 1: type not specified
@@ -354,7 +350,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, ohno: {
         args: [],
         description: "Spawns an ohno.",
-        level: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail;
             var canSpawn = ohno_1.Ohnos.canSpawn(sender.player);

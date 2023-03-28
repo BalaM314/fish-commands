@@ -12,32 +12,32 @@ exports.commands = {
     warn: {
         args: ['player:player', 'reason:string?'],
         description: 'Warn a player.',
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
             var args = _a.args, outputSuccess = _a.outputSuccess;
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
             (0, menus_1.menu)('Warning', reason, [['accept']], args.player);
-            outputSuccess("Warned player \"".concat(args.player.name, "\" for \"").concat(reason, "\""));
+            outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
     },
     mute: {
         args: ['player:player'],
         description: 'Stops a player from chatting.',
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.muted) {
-                outputFail("Player \"".concat(args.player.name, "\" is already muted."));
+                outputFail("Player \"".concat(args.player.cleanedName, "\" is already muted."));
                 return;
             }
-            if (args.player.admin) {
-                outputFail("Player \"".concat(args.player.name, "\" is an admin."));
+            if (!sender.canModerate(args.player, false)) {
+                outputFail("You do not have permission to mute this player.");
                 return;
             }
             args.player.muted = true;
             args.player.updateName();
-            outputSuccess("Muted player \"".concat(args.player.name, "\"."));
+            outputSuccess("Muted player \"".concat(args.player.cleanedName, "\"."));
             args.player.player.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
             args.player.addHistoryEntry({
                 action: 'unmuted',
@@ -50,13 +50,13 @@ exports.commands = {
     unmute: {
         args: ['player:player'],
         description: 'Unmutes a player',
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.muted) {
                 args.player.muted = false;
                 args.player.updateName();
-                outputSuccess("Unmuted player \"".concat(args.player.name, "\"."));
+                outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
                 args.player.player.sendMessage("[green]You have been unmuted.");
                 args.player.addHistoryEntry({
                     action: 'unmuted',
@@ -65,47 +65,50 @@ exports.commands = {
                 });
             }
             else {
-                outputFail("Player \"".concat(args.player.name, "\" is not muted."));
+                outputFail("Player \"".concat(args.player.cleanedName, "\" is not muted."));
             }
         }
     },
     kick: {
         args: ['player:player', 'reason:string?'],
         description: 'Kick a player with optional reason.',
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
-            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (args.player.admin || args.player.mod) {
-                //if(args.player.rank.level >= sender.rank.level)
-                outputFail('You do not have permission to kick this player.');
-            }
-            else {
+            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, sender = _a.sender;
+            if (sender.canModerate(args.player)) {
                 var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
                 args.player.player.kick(reason);
-                outputSuccess("Kicked player \"".concat(args.player.name, "\" for \"").concat(reason, "\""));
+                outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
+            }
+            else {
+                outputFail('You do not have permission to kick this player.');
             }
         }
     },
     stop: {
         args: ['player:player'],
         description: 'Stops a player.',
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.stopped) {
                 outputFail("Player \"".concat(args.player.name, "\" is already stopped."));
+                return;
             }
-            else {
+            if (sender.canModerate(args.player, false)) {
                 args.player.stop(sender);
                 outputSuccess("Player \"".concat(args.player.name, "\" has been stopped."));
+            }
+            else {
+                outputFail('You do not have permission to stop this player.');
             }
         }
     },
     free: {
         args: ['player:player'],
         description: 'Frees a player.',
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.stopped) {
@@ -121,7 +124,7 @@ exports.commands = {
     setrank: {
         args: ["player:exactPlayer", "rank:string"],
         description: "Set a player's rank.",
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, sender = _a.sender;
             var rank = ranks_1.Rank.getByName(args.rank);
@@ -144,7 +147,7 @@ exports.commands = {
     murder: {
         args: [],
         description: 'Kills all ohno units',
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         customUnauthorizedMessage: "[yellow]You're a [scarlet]monster[].",
         handler: function (_a) {
             var output = _a.output;
@@ -156,7 +159,7 @@ exports.commands = {
     stop_offline: {
         args: ["name:string"],
         description: "Stops an offline player.",
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             var admins = Vars.netServer.admins;
@@ -173,21 +176,26 @@ exports.commands = {
             (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, sender, function (_a) {
                 var option = _a.option, sender = _a.sender;
                 var fishP = players_1.FishPlayer.getFromInfo(option);
-                fishP.stopped = true;
-                api.addStopped(option.id);
-                fishP.addHistoryEntry({
-                    action: 'stopped',
-                    by: sender.name,
-                    time: Date.now(),
-                });
-                outputSuccess("Player ".concat(option.lastName, " was stopped."));
+                if (sender.canModerate(fishP, false)) {
+                    fishP.stopped = true;
+                    api.addStopped(option.id);
+                    fishP.addHistoryEntry({
+                        action: 'stopped',
+                        by: sender.name,
+                        time: Date.now(),
+                    });
+                    outputSuccess("Player ".concat(option.lastName, " was stopped."));
+                }
+                else {
+                    outputFail("You do not have permission to stop this player.");
+                }
             }, true, function (p) { return p.lastName; });
         }
     },
     restart: {
         args: [],
         description: "Stops and restarts the server. Do not run when the player count is high.",
-        level: commands_1.Perm.admin,
+        perm: commands_1.Perm.admin,
         handler: function (_a) {
             var outputFail = _a.outputFail;
             var now = Date.now();
@@ -225,7 +233,7 @@ exports.commands = {
     history: {
         args: ["player:player"],
         description: "Shows moderation history for a player.",
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, output = _a.output;
             if (args.player.history && args.player.history.length > 0) {
@@ -242,7 +250,7 @@ exports.commands = {
     save: {
         args: [],
         description: "Saves the game state.",
-        level: commands_1.Perm.mod,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
             players_1.FishPlayer.saveAll();
@@ -254,7 +262,7 @@ exports.commands = {
     wave: {
         args: ["wave:number"],
         description: "Sets the wave number.",
-        level: commands_1.Perm.admin,
+        perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.wave > 0 && Number.isInteger(args.wave)) {
@@ -269,7 +277,7 @@ exports.commands = {
     label: {
         args: ["time:number", "message:string"],
         description: "Places a label at your position for a specified amount of time.",
-        level: commands_1.Perm.admin,
+        perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.time <= 0 || args.time > 3600) {
@@ -293,7 +301,7 @@ exports.commands = {
     member: {
         args: ["value:boolean", "player:player"],
         description: "Sets a player's member status.",
-        level: commands_1.Perm.admin,
+        perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
             args.player.member = args.value;
@@ -305,7 +313,7 @@ exports.commands = {
     ipban: {
         args: [],
         description: "Bans a player's IP.",
-        level: commands_1.Perm.admin,
+        perm: commands_1.Perm.admin,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, execServer = _a.execServer;
             var playerList = [];

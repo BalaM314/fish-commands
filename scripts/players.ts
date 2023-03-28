@@ -139,7 +139,7 @@ export class FishPlayer {
   }
   static forEachPlayer(func:(player:FishPlayer) => unknown){
     for(const [uuid, player] of Object.entries(this.cachedPlayers)){
-      if(player.player && !player.player.con.hasDisconnected) func(player);
+      if(player.connected()) func(player);
     }
   }
   write():string {
@@ -154,14 +154,20 @@ export class FishPlayer {
       rank: this.rank.name,
     });
   }
+  connected(){
+    return this.player && !this.player.con.hasDisconnected;
+  }
   setRank(rank:Rank){
     this.rank = rank;
     this.updateName();
     this.updateAdminStatus();
     FishPlayer.saveAll();
   }
-  canModerate(player:FishPlayer){
-    return this.rank.level > player.rank.level;
+  canModerate(player:FishPlayer, strict:boolean = true){
+    if(strict)
+      return this.rank.level > player.rank.level || player == this;
+    else
+      return this.rank.level >= player.rank.level || player == this;
   }
   /**Must be called at player join, before updateName(). */
   updateSavedInfoFromPlayer(player:mindustryPlayer){

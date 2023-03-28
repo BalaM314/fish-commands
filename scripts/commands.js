@@ -149,20 +149,20 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     }
     return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
+function outputFail(message, sender) {
+    sender.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
+}
+function outputSuccess(message, sender) {
+    sender.sendMessage("[#48e076]".concat(message));
+}
+function outputMessage(message, sender) {
+    sender.sendMessage(message);
+}
 /**
  * Registers all commands in a list to a client command handler.
  **/
 function register(commands, clientHandler, serverHandler) {
     var e_2, _a;
-    function outputFail(message, sender) {
-        sender.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
-    }
-    function outputSuccess(message, sender) {
-        sender.sendMessage("[#48e076]".concat(message));
-    }
-    function outputMessage(message, sender) {
-        sender.sendMessage(message);
-    }
     var _loop_1 = function (name) {
         //Cursed for of loop due to lack of object.entries
         var data = commands[name];
@@ -179,8 +179,8 @@ function register(commands, clientHandler, serverHandler) {
                 var _a;
                 var fishSender = players_1.FishPlayer.get(sender);
                 //Verify authorization
-                if (!data.level.check(fishSender)) {
-                    outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.level.unauthorizedMessage, sender);
+                if (!data.perm.check(fishSender)) {
+                    outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.perm.unauthorizedMessage, sender);
                     return;
                 }
                 //closure over processedCmdArgs, should be fine
