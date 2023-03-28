@@ -116,12 +116,12 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.onPlayerJoin = function (player) {
         var fishPlayer;
         if (this.cachedPlayers[player.uuid()]) {
-            fishPlayer = this.cachedPlayers[player.uuid()];
-            fishPlayer.updateSavedInfoFromPlayer(player);
+            this.cachedPlayers[player.uuid()].updateSavedInfoFromPlayer(player);
         }
         else {
-            fishPlayer = this.createFromPlayer(player);
+            this.cachedPlayers[player.uuid()] = this.createFromPlayer(player);
         }
+        fishPlayer = this.cachedPlayers[player.uuid()];
         fishPlayer.checkName();
         fishPlayer.updateName();
         api.getStopped(player.uuid(), function (stopped) {
@@ -211,7 +211,7 @@ var FishPlayer = /** @class */ (function () {
         if (this.rank.level >= ranks_1.Rank.admin.level)
             Vars.netServer.admins.adminPlayer(this.player.uuid(), this.player.usid());
         else
-            Vars.netServer.admins.unadminPlayer(this.player.uuid());
+            Vars.netServer.admins.unAdminPlayer(this.player.uuid());
     };
     /**
      * Record moderation actions taken on a player.
@@ -295,12 +295,12 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.saveAll = function () {
         var e_3, _a;
         //Temporary implementation
-        var jsonString = "{";
+        var playerDatas = [];
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
                 if ((player.rank != ranks_1.Rank.player) || player.member)
-                    jsonString += "\"".concat(uuid, "\":").concat(player.write());
+                    playerDatas.push("\"".concat(uuid, "\":").concat(player.write()));
             }
         }
         catch (e_3_1) { e_3 = { error: e_3_1 }; }
@@ -310,8 +310,7 @@ var FishPlayer = /** @class */ (function () {
             }
             finally { if (e_3) throw e_3.error; }
         }
-        jsonString += "}";
-        Core.settings.put('fish', jsonString);
+        Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
         Core.settings.manualSave();
     };
     FishPlayer.loadAll = function () {

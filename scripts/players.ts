@@ -108,11 +108,11 @@ export class FishPlayer {
   static onPlayerJoin(player:mindustryPlayer){
     let fishPlayer:FishPlayer;
     if(this.cachedPlayers[player.uuid()]){
-      fishPlayer = this.cachedPlayers[player.uuid()];
-      fishPlayer.updateSavedInfoFromPlayer(player);
+      this.cachedPlayers[player.uuid()].updateSavedInfoFromPlayer(player);
     } else {
-      fishPlayer = this.createFromPlayer(player);
+      this.cachedPlayers[player.uuid()] = this.createFromPlayer(player);
     }
+    fishPlayer = this.cachedPlayers[player.uuid()];
     fishPlayer.checkName();
     fishPlayer.updateName();
     api.getStopped(player.uuid(), (stopped) => {
@@ -184,7 +184,7 @@ export class FishPlayer {
     if(this.rank.level >= Rank.admin.level)
       Vars.netServer.admins.adminPlayer(this.player.uuid(), this.player.usid());
     else
-      Vars.netServer.admins.unadminPlayer(this.player.uuid());
+      Vars.netServer.admins.unAdminPlayer(this.player.uuid());
   }
   /**
    * Record moderation actions taken on a player.
@@ -257,13 +257,12 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
   }
   static saveAll(){
     //Temporary implementation
-    let jsonString = `{`;
+    let playerDatas:string[] = [];
     for(const [uuid, player] of Object.entries(this.cachedPlayers)){
       if((player.rank != Rank.player) || player.member)
-        jsonString += `"${uuid}":${player.write()}`;
+        playerDatas.push(`"${uuid}":${player.write()}`);
     }
-    jsonString += `}`;
-    Core.settings.put('fish', jsonString);
+    Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
     Core.settings.manualSave();
   }
   static loadAll(){

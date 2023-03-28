@@ -13,6 +13,7 @@ var Rank = /** @class */ (function () {
         var _a;
         return (_a = this.ranks[name]) !== null && _a !== void 0 ? _a : null;
     };
+    Rank.ranks = {};
     Rank.player = new Rank("player", 0, "");
     Rank.active = new Rank("active", 1, "[black]<[green]\uE800[black]>");
     Rank.trusted = new Rank("trusted", 2, "[black]<[blue]\uE84D[black]>");
@@ -22,7 +23,6 @@ var Rank = /** @class */ (function () {
     Rank.developer = new Rank("developer", 5, "[black]<[yellow]\uE80F[black]>"); //i want wrench rank
     Rank.manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>");
     Rank.fish = new Rank("fish", 999, "[blue]>|||>[] "); //Might want to change this to like owner or something
-    Rank.ranks = {};
     return Rank;
 }());
 exports.Rank = Rank;
