@@ -34,6 +34,22 @@ interface FishCommandRunner {
 	}): unknown;
 }
 
+interface FishConsoleCommandRunner {
+	(_:{
+		/**Raw arguments that were passed to the command. */
+		rawArgs:(string | undefined)[];
+		/**Formatted and parsed args. Access an argument by name, like python's keyword args. Example: `args.player.mod = true`. An argument can only be null if it was optional, otherwise the command will error before the handler runs. */
+		args:Record<string, any>;//TODO maybe get this with an abominable conditional type?
+		//having to manually cast the args is super annoying
+		//but if I leave it as any it causes bugs
+		outputSuccess:(message:string) => void;
+		outputFail:(message:string) => void;
+		output:(message:string) => void;
+		/**Executes a server console command. Do not commit recursion as that will cause a crash.*/
+		execServer:(message:string) => void;
+	}): unknown;
+}
+
 interface FishCommandData {
 	/**Args for this command, like ["player:player", "reason:string?"] */
 	args: string[];
@@ -44,7 +60,14 @@ interface FishCommandData {
 	customUnauthorizedMessage?: string;
 	handler: FishCommandRunner;
 }
+interface FishConsoleCommandData {
+	/**Args for this command, like ["player:player", "reason:string?"] */
+	args: string[];
+	description: string;
+	handler: FishConsoleCommandRunner;
+}
 type FishCommandsList = Record<string, FishCommandData>;
+type FishConsoleCommandsList = Record<string, FishConsoleCommandData>;
 
 interface TileHistoryEntry {
   name:string;
@@ -92,6 +115,8 @@ interface ClientCommandHandler {
 interface ServerCommandHandler {
 	/**Executes a server console command. */
 	handleMessage(command:string):void;
+	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => unknown):void;
+	removeCommand(name:string):void;
 }
 
 interface PreprocessedCommandArg {

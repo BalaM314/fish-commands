@@ -10,6 +10,7 @@ import * as commands from './commands';
 import * as staffCommands from './staffCommands';
 import * as playerCommands from './playerCommands';
 import * as memberCommands from './memberCommands';
+import * as consoleCommands from "./consoleCommands";
 import type { TileHistoryEntry } from "./types";
 
 
@@ -29,8 +30,8 @@ Events.on(EventType.ContentInitEvent, () => {
 
 Events.on(EventType.ServerLoadEvent, (e) => {
   const ActionType = Packages.mindustry.net.Administration.ActionType;
-  const clientCommands = Vars.netServer.clientCommands;
-  const serverCommands = Core.app.listeners.find(
+  const clientHandler = Vars.netServer.clientCommands;
+  const serverHandler = Core.app.listeners.find(
     (l) => l instanceof Packages.mindustry.server.ServerControl
   ).handler;
 
@@ -84,9 +85,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
   });
 
 
-  commands.register(staffCommands.commands, clientCommands, serverCommands);
-  commands.register(playerCommands.commands, clientCommands, serverCommands);
-  commands.register(memberCommands.commands, clientCommands, serverCommands);
+  commands.register(staffCommands.commands, clientHandler, serverHandler);
+  commands.register(playerCommands.commands, clientHandler, serverHandler);
+  commands.register(memberCommands.commands, clientHandler, serverHandler);
+  commands.registerConsole(consoleCommands.commands, serverHandler);
 
   // stored for limiting /reset frequency
   Core.settings.remove('lastRestart');

@@ -27,7 +27,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = exports.Perm = void 0;
+exports.registerConsole = exports.register = exports.Perm = void 0;
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
@@ -67,8 +67,9 @@ function processArgString(str) {
     }
 }
 /**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
-function processArgs(args, processedCmdArgs) {
+function processArgs(args, processedCmdArgs, allowMenus) {
     var e_1, _a;
+    if (allowMenus === void 0) { allowMenus = true; }
     var outputArgs = {};
     var unresolvedArgs = [];
     try {
@@ -79,7 +80,7 @@ function processArgs(args, processedCmdArgs) {
                     outputArgs[cmdArg.name] = null;
                     continue;
                 }
-                else if (cmdArg.type == "player") {
+                else if (cmdArg.type == "player" && allowMenus) {
                     outputArgs[cmdArg.name] = null;
                     unresolvedArgs.push(cmdArg);
                     continue;
@@ -151,7 +152,7 @@ function processArgs(args, processedCmdArgs) {
 /**
  * Registers all commands in a list to a client command handler.
  **/
-function register(commands, clientCommands, serverCommands) {
+function register(commands, clientHandler, serverHandler) {
     var e_2, _a;
     function outputFail(message, sender) {
         sender.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
@@ -167,8 +168,8 @@ function register(commands, clientCommands, serverCommands) {
         var data = commands[name];
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
-        clientCommands.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
-        clientCommands.register(name, 
+        clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
+        clientHandler.register(name, 
         //Convert the CommandArg[] to the format accepted by Arc CommandHandler
         processedCmdArgs.map(function (arg, index, array) {
             var brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
@@ -199,7 +200,7 @@ function register(commands, clientCommands, serverCommands) {
                         outputFail: function (message) { return outputFail(message, sender); },
                         outputSuccess: function (message) { return outputSuccess(message, sender); },
                         output: function (message) { return outputMessage(message, sender); },
-                        execServer: function (command) { return serverCommands.handleMessage(command); },
+                        execServer: function (command) { return serverHandler.handleMessage(command); },
                     });
                 });
             } }));
@@ -219,6 +220,53 @@ function register(commands, clientCommands, serverCommands) {
     }
 }
 exports.register = register;
+function registerConsole(commands, serverHandler) {
+    var e_3, _a;
+    var _loop_2 = function (name) {
+        //Cursed for of loop due to lack of object.entries
+        var data = commands[name];
+        //Process the args
+        var processedCmdArgs = data.args.map(processArgString);
+        serverHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
+        serverHandler.register(name, 
+        //Convert the CommandArg[] to the format accepted by Arc CommandHandler
+        processedCmdArgs.map(function (arg, index, array) {
+            var brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
+            //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
+            return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
+        }).join(" "), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs) {
+                //closure over processedCmdArgs, should be fine
+                var output = processArgs(rawArgs, processedCmdArgs, false);
+                if ("error" in output) {
+                    //args are invalid
+                    Log.warn(output.error);
+                    return;
+                }
+                data.handler({
+                    rawArgs: rawArgs,
+                    args: output.processedArgs,
+                    outputFail: function (message) { return Log.warn("\u26A0 ".concat(message)); },
+                    outputSuccess: function (message) { return Log.info("\u2714 ".concat(message)); },
+                    output: function (message) { return Log.info(message); },
+                    execServer: function (command) { return serverHandler.handleMessage(command); },
+                });
+            } }));
+    };
+    try {
+        for (var _b = __values(Object.keys(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var name = _c.value;
+            _loop_2(name);
+        }
+    }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+    finally {
+        try {
+            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+        }
+        finally { if (e_3) throw e_3.error; }
+    }
+}
+exports.registerConsole = registerConsole;
 function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
     if (unresolvedArgs.length == 0) {
         callback(processedArgs);

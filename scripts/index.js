@@ -11,6 +11,7 @@ var commands = require("./commands");
 var staffCommands = require("./staffCommands");
 var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
+var consoleCommands = require("./consoleCommands");
 var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
@@ -25,8 +26,8 @@ Events.on(EventType.ContentInitEvent, function () {
 });
 Events.on(EventType.ServerLoadEvent, function (e) {
     var ActionType = Packages.mindustry.net.Administration.ActionType;
-    var clientCommands = Vars.netServer.clientCommands;
-    var serverCommands = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
+    var clientHandler = Vars.netServer.clientCommands;
+    var serverHandler = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
     // Mute muted players
@@ -69,9 +70,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             return true;
         }
     });
-    commands.register(staffCommands.commands, clientCommands, serverCommands);
-    commands.register(playerCommands.commands, clientCommands, serverCommands);
-    commands.register(memberCommands.commands, clientCommands, serverCommands);
+    commands.register(staffCommands.commands, clientHandler, serverHandler);
+    commands.register(playerCommands.commands, clientHandler, serverHandler);
+    commands.register(memberCommands.commands, clientHandler, serverHandler);
+    commands.registerConsole(consoleCommands.commands, serverHandler);
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');

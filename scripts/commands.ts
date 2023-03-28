@@ -1,7 +1,7 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler } from "./types";
+import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, FishConsoleCommandsList } from "./types";
 
 
 
@@ -38,7 +38,7 @@ function processArgString(str:string):CommandArg {
 
 
 /**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
-function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
+function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:boolean = true):{
 	processedArgs: Record<string, FishCommandArgType>;
 	unresolvedArgs: CommandArg[];
 } | {
@@ -50,7 +50,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 		if(!args[i]){
 			if(cmdArg.isOptional){
 				outputArgs[cmdArg.name] = null; continue;
-			} else if(cmdArg.type == "player"){
+			} else if(cmdArg.type == "player" && allowMenus){
 				outputArgs[cmdArg.name] = null;
 				unresolvedArgs.push(cmdArg);
 				continue;
@@ -94,7 +94,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[]):{
 /**
  * Registers all commands in a list to a client command handler.
  **/
-export function register(commands:FishCommandsList, clientCommands:ClientCommandHandler, serverCommands:ServerCommandHandler){
+export function register(commands:FishCommandsList, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
 	function outputFail(message:string, sender:mindustryPlayer){
 		sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 	}
@@ -112,8 +112,8 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 
 		//Process the args
 		const processedCmdArgs = data.args.map(processArgString);
-		clientCommands.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
-		clientCommands.register(
+		clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
+		clientHandler.register(
 			name,
 			//Convert the CommandArg[] to the format accepted by Arc CommandHandler
 			processedCmdArgs.map((arg, index, array) => {
@@ -150,12 +150,53 @@ export function register(commands:FishCommandsList, clientCommands:ClientCommand
 						outputFail: message => outputFail(message, sender),
 						outputSuccess: message => outputSuccess(message, sender),
 						output: message => outputMessage(message, sender),
-						execServer: command => serverCommands.handleMessage(command),
+						execServer: command => serverHandler.handleMessage(command),
 					});
 				});
 				
 
 				
+			}})
+		);
+	}
+}
+
+export function registerConsole(commands:FishConsoleCommandsList, serverHandler:ServerCommandHandler){
+
+	for(const name of Object.keys(commands)){
+		//Cursed for of loop due to lack of object.entries
+		const data = commands[name];
+
+		//Process the args
+		const processedCmdArgs = data.args.map(processArgString);
+		serverHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
+		serverHandler.register(
+			name,
+			//Convert the CommandArg[] to the format accepted by Arc CommandHandler
+			processedCmdArgs.map((arg, index, array) => {
+				const brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
+				//if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
+				return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
+			}).join(" "),
+			data.description,
+			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[]) => {
+				
+				//closure over processedCmdArgs, should be fine
+				const output = processArgs(rawArgs, processedCmdArgs, false);
+				if("error" in output){
+					//args are invalid
+					Log.warn(output.error);
+					return;
+				}
+				
+				data.handler({
+					rawArgs,
+					args: output.processedArgs,
+					outputFail: message => Log.warn(`⚠ ${message}`),
+					outputSuccess: message => Log.info(`✔ ${message}`),
+					output: message => Log.info(message),
+					execServer: command => serverHandler.handleMessage(command),
+				});	
 			}})
 		);
 	}
