@@ -7,6 +7,7 @@ var players_1 = require("./players");
 var utils_1 = require("./utils");
 var api = require("./api");
 var ohno_1 = require("./ohno");
+var ranks_1 = require("./ranks");
 exports.commands = {
     warn: {
         args: ['player:player', 'reason:string?'],
@@ -117,99 +118,27 @@ exports.commands = {
             }
         }
     },
-    mod: {
-        args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
-        description: "Add or remove a player's mod status.",
-        level: commands_1.Perm.admin,
+    setrank: {
+        args: ["player:exactPlayer", "rank:string"],
+        description: "Set a player's rank.",
+        level: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            switch (args.action) {
-                case "add":
-                case "a":
-                case "give":
-                case "promote":
-                    if (args.player.mod == true) {
-                        outputFail("".concat(args.player.name, " is already a Moderator."));
-                    }
-                    else {
-                        args.player.mod = true;
-                        outputSuccess("".concat(args.player.name, " [#48e076] is now ranked Moderator."));
-                        args.player.sendMessage('[yellow] Your rank is now [#48e076]Moderator.[yellow] Use [acid]"/help mod"[yellow] to see available commands.');
-                        args.player.updateName();
-                        players_1.FishPlayer.saveAll();
-                    }
-                    break;
-                case "remove":
-                case "rm":
-                case "r":
-                case "demote":
-                    if (args.player.admin) {
-                        outputFail("".concat(args.player.name, " is an Admin."));
-                    }
-                    else if (!args.player.mod) {
-                        outputFail("".concat(args.player.name, " is not a Moderator."));
-                    }
-                    else {
-                        args.player.mod = false;
-                        args.player.updateName();
-                        players_1.FishPlayer.saveAll();
-                        if (args.tellPlayer) {
-                            args.player.sendMessage('[scarlet] You are now no longer a Moderator.');
-                        }
-                        outputSuccess("".concat(args.player.name, " [#48e076]is no longer a moderator."));
-                    }
-                    break;
-                default:
-                    outputFail("Invalid argument. [yellow]Usage: \"/mod <add|remove> <player>\"");
-                    return;
+            var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, sender = _a.sender;
+            var rank = ranks_1.Rank.getByName(args.rank);
+            if (rank == null) {
+                outputFail("Unknown rank ".concat(args.rank));
+                return;
             }
-        }
-    },
-    admin: {
-        args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
-        description: "Add or remove a player's admin status.",
-        level: commands_1.Perm.admin,
-        handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, execServer = _a.execServer;
-            switch (args.action) {
-                case "add":
-                case "a":
-                case "give":
-                case "promote":
-                    if (args.player.admin == true) {
-                        outputFail("".concat(args.player.name, " is already an Admin."));
-                    }
-                    else {
-                        args.player.admin = true;
-                        execServer("admin add ".concat(args.player.player.uuid()));
-                        outputSuccess("".concat(args.player.name, " [#48e076] is now an Admin."));
-                        args.player.sendMessage('[yellow] Your rank is now [#48e076]Admin.[yellow] Use [sky]"/help mod"[yellow] to see available commands.');
-                        args.player.updateName();
-                        players_1.FishPlayer.saveAll();
-                    }
-                    break;
-                case "remove":
-                case "rm":
-                case "r":
-                case "demote":
-                    if (!args.player.admin) {
-                        outputFail("".concat(args.player.name, " is not an Admin."));
-                    }
-                    else {
-                        args.player.admin = false;
-                        execServer("admin remove ".concat(args.player.player.uuid()));
-                        args.player.updateName();
-                        players_1.FishPlayer.saveAll();
-                        if (args.tellPlayer) {
-                            args.player.sendMessage('[scarlet] You are now no longer an Admin.');
-                        }
-                        outputSuccess("".concat(args.player.name, " [#48e076]is no longer an admin."));
-                    }
-                    break;
-                default:
-                    outputFail("Invalid argument. [yellow]Usage: \"/admin <add|remove> <player>\"");
-                    return;
+            if (sender.rank.level <= rank.level) {
+                outputFail("You do not have permission to promote players to rank \"".concat(rank.name, "\", because your current rank is \"").concat(sender.rank.name, "\""));
+                return;
             }
+            if (!sender.canModerate(args.player)) {
+                outputFail("You do not have permission to modify the rank of player \"".concat(args.player.name, "\""));
+                return;
+            }
+            args.player.setRank(rank);
+            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
         }
     },
     murder: {

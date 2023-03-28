@@ -177,6 +177,15 @@ var FishPlayer = /** @class */ (function () {
             rank: this.rank.name,
         });
     };
+    FishPlayer.prototype.setRank = function (rank) {
+        this.rank = rank;
+        this.updateName();
+        this.updateAdminStatus();
+        FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.canModerate = function (player) {
+        return this.rank.level > player.rank.level;
+    };
     /**Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
         this.player = player;
@@ -197,6 +206,12 @@ var FishPlayer = /** @class */ (function () {
             prefix += config.MEMBER_PREFIX;
         prefix += this.rank.prefix;
         this.player.name = prefix + this.name;
+    };
+    FishPlayer.prototype.updateAdminStatus = function () {
+        if (this.rank.level >= ranks_1.Rank.admin.level)
+            Vars.netServer.admins.adminPlayer(this.player.uuid(), this.player.usid());
+        else
+            Vars.netServer.admins.unadminPlayer(this.player.uuid());
     };
     /**
      * Record moderation actions taken on a player.

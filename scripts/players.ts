@@ -154,6 +154,15 @@ export class FishPlayer {
       rank: this.rank.name,
     });
   }
+  setRank(rank:Rank){
+    this.rank = rank;
+    this.updateName();
+    this.updateAdminStatus();
+    FishPlayer.saveAll();
+  }
+  canModerate(player:FishPlayer){
+    return this.rank.level > player.rank.level;
+  }
   /**Must be called at player join, before updateName(). */
   updateSavedInfoFromPlayer(player:mindustryPlayer){
     this.player = player;
@@ -170,6 +179,12 @@ export class FishPlayer {
 
     prefix += this.rank.prefix;
     this.player.name = prefix + this.name;
+  }
+  updateAdminStatus(){
+    if(this.rank.level >= Rank.admin.level)
+      Vars.netServer.admins.adminPlayer(this.player.uuid(), this.player.usid());
+    else
+      Vars.netServer.admins.unadminPlayer(this.player.uuid());
   }
   /**
    * Record moderation actions taken on a player.

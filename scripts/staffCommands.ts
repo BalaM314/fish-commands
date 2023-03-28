@@ -5,6 +5,7 @@ import type { FishCommandsList, mindustryPlayerData } from "./types";
 import { getTimeSinceText } from "./utils";
 import * as api from "./api";
 import { Ohnos } from "./ohno";
+import { Rank } from "./ranks";
 
 export const commands:FishCommandsList = {
 	warn: {
@@ -109,88 +110,29 @@ export const commands:FishCommandsList = {
 		}
 	},
 
-	mod: {
-    args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
-    description: "Add or remove a player's mod status.",
-		level: Perm.admin,
-    handler({args, outputSuccess, outputFail}){
-			switch(args.action){
-				case "add": case "a": case "give": case "promote":
-					if(args.player.mod == true){
-						outputFail(`${args.player.name} is already a Moderator.`);
-					} else {
-						args.player.mod = true;
-						outputSuccess(`${args.player.name} [#48e076] is now ranked Moderator.`);
-						args.player.sendMessage(
-							'[yellow] Your rank is now [#48e076]Moderator.[yellow] Use [acid]"/help mod"[yellow] to see available commands.'
-						);
-						args.player.updateName();
-						FishPlayer.saveAll();
-					}
-					break;
-				case "remove": case "rm": case "r": case "demote":
-					if(args.player.admin){
-						outputFail(`${args.player.name} is an Admin.`);
-					} else if(!args.player.mod){
-						outputFail(`${args.player.name} is not a Moderator.`);
-					} else {
-						args.player.mod = false;
-						args.player.updateName();
-						FishPlayer.saveAll();
-						if(args.tellPlayer){
-							args.player.sendMessage(
-								'[scarlet] You are now no longer a Moderator.'
-							);
-						}
-						outputSuccess(`${args.player.name} [#48e076]is no longer a moderator.`);
-					}
-					break;
-				default: outputFail(`Invalid argument. [yellow]Usage: "/mod <add|remove> <player>"`); return;
+	setrank: {
+		args: ["player:exactPlayer", "rank:string"],
+		description: "Set a player's rank.",
+		level: Perm.mod,
+		handler({args, outputFail, outputSuccess, sender}){
+			const rank = Rank.getByName(args.rank);
+			if(rank == null){
+				outputFail(`Unknown rank ${args.rank}`);
+				return;
 			}
-    }
-	},
-
-	admin: {
-    args: ['action:string', 'player:player', 'tellPlayer:boolean?'],
-    description: "Add or remove a player's admin status.",
-		level: Perm.admin,
-    handler({args, outputSuccess, outputFail, execServer}){
-
-			switch(args.action){
-				case "add": case "a": case "give": case "promote":
-					if(args.player.admin == true){
-						outputFail(`${args.player.name} is already an Admin.`);
-					} else {
-						args.player.admin = true;
-						execServer(`admin add ${args.player.player.uuid()}`);
-						outputSuccess(`${args.player.name} [#48e076] is now an Admin.`);
-						args.player.sendMessage(
-							'[yellow] Your rank is now [#48e076]Admin.[yellow] Use [sky]"/help mod"[yellow] to see available commands.'
-						);
-						args.player.updateName();
-						FishPlayer.saveAll();
-					}
-					break;
-				case "remove": case "rm": case "r": case "demote":
-					if(!args.player.admin){
-						outputFail(`${args.player.name} is not an Admin.`);
-					} else {
-						args.player.admin = false;
-						execServer(`admin remove ${args.player.player.uuid()}`);
-						args.player.updateName();
-						FishPlayer.saveAll();
-						if(args.tellPlayer){
-							args.player.sendMessage(
-								'[scarlet] You are now no longer an Admin.'
-							);
-						}
-						outputSuccess(`${args.player.name} [#48e076]is no longer an admin.`);
-					}
-					break;
-				default: outputFail(`Invalid argument. [yellow]Usage: "/admin <add|remove> <player>"`); return;
+			if(sender.rank.level <= rank.level){
+				outputFail(`You do not have permission to promote players to rank "${rank.name}", because your current rank is "${sender.rank.name}"`);
+				return;
+			}
+			if(!sender.canModerate(args.player)){
+				outputFail(`You do not have permission to modify the rank of player "${args.player.name}"`);
+				return;
 			}
 
-    }
+			args.player.setRank(rank);
+			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
+
+		}
 	},
 
 	murder: {
