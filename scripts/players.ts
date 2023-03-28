@@ -280,7 +280,15 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
     if(jsonString == "") return;
 
     for(let [key, value] of Object.entries(JSON.parse(jsonString))){
-      this.cachedPlayers[key] = new this(value as Partial<FishPlayerData>, null);
+      if(value instanceof Object){
+        let rank = "player";
+        if("mod" in value) rank = "mod";
+        if("admin" in value) rank = "admin";
+        this.cachedPlayers[key] = new this({
+          rank,
+          ...value as Partial<FishPlayerData>
+        }, null);
+      }
     }
   }
 }
