@@ -14,7 +14,7 @@ export class Perm {
 	static member = new Perm("member", fishP => fishP.member || !fishP.stopped, `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
 	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
 	static fromRank(rank:Rank){
-		return new Perm(rank.name, fishP => fishP.rank.level >= rank.level);
+		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank));
 	}
 }
 
@@ -143,15 +143,20 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 				//Recursively resolve unresolved args (such as players that need to be determined through a menu)
 				resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, () => {
 					//Run the command handler
-					data.handler({
-						rawArgs,
-						args: output.processedArgs,
-						sender: fishSender,
-						outputFail: message => outputFail(message, sender),
-						outputSuccess: message => outputSuccess(message, sender),
-						output: message => outputMessage(message, sender),
-						execServer: command => serverHandler.handleMessage(command),
-					});
+					try {
+						data.handler({
+							rawArgs,
+							args: output.processedArgs,
+							sender: fishSender,
+							outputFail: message => outputFail(message, sender),
+							outputSuccess: message => outputSuccess(message, sender),
+							output: message => outputMessage(message, sender),
+							execServer: command => serverHandler.handleMessage(command),
+						});
+					} catch(err){
+						sender.sendMessage(`[scarlet]❌ An error occurred while executing the command.`);
+						if(fishSender.ranksAtLeast(Rank.admin)) sender.sendMessage((<any>err).toString());
+					}
 				});
 				
 

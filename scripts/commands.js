@@ -40,7 +40,7 @@ var Perm = /** @class */ (function () {
         this.unauthorizedMessage = unauthorizedMessage;
     }
     Perm.fromRank = function (rank) {
-        return new Perm(rank.name, function (fishP) { return fishP.rank.level >= rank.level; });
+        return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); });
     };
     Perm.all = new Perm("all", function (fishP) { return true; });
     Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || Perm.mod.check(fishP); });
@@ -193,15 +193,22 @@ function register(commands, clientHandler, serverHandler) {
                 //Recursively resolve unresolved args (such as players that need to be determined through a menu)
                 resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
                     //Run the command handler
-                    data.handler({
-                        rawArgs: rawArgs,
-                        args: output.processedArgs,
-                        sender: fishSender,
-                        outputFail: function (message) { return outputFail(message, sender); },
-                        outputSuccess: function (message) { return outputSuccess(message, sender); },
-                        output: function (message) { return outputMessage(message, sender); },
-                        execServer: function (command) { return serverHandler.handleMessage(command); },
-                    });
+                    try {
+                        data.handler({
+                            rawArgs: rawArgs,
+                            args: output.processedArgs,
+                            sender: fishSender,
+                            outputFail: function (message) { return outputFail(message, sender); },
+                            outputSuccess: function (message) { return outputSuccess(message, sender); },
+                            output: function (message) { return outputMessage(message, sender); },
+                            execServer: function (command) { return serverHandler.handleMessage(command); },
+                        });
+                    }
+                    catch (err) {
+                        sender.sendMessage("[scarlet]\u274C An error occurred while executing the command.");
+                        if (fishSender.ranksAtLeast(ranks_1.Rank.admin))
+                            sender.sendMessage(err.toString());
+                    }
                 });
             } }));
     };

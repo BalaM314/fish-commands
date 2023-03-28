@@ -193,6 +193,9 @@ var FishPlayer = /** @class */ (function () {
         else
             return this.rank.level >= player.rank.level || player == this;
     };
+    FishPlayer.prototype.ranksAtLeast = function (rank) {
+        return this.rank.level >= rank.level;
+    };
     /**Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
         this.player = player;
@@ -215,7 +218,7 @@ var FishPlayer = /** @class */ (function () {
         this.player.name = prefix + this.name;
     };
     FishPlayer.prototype.updateAdminStatus = function () {
-        if (this.rank.level >= ranks_1.Rank.admin.level)
+        if (this.ranksAtLeast(ranks_1.Rank.admin))
             Vars.netServer.admins.adminPlayer(this.player.uuid(), this.player.usid());
         else
             Vars.netServer.admins.unAdminPlayer(this.player.uuid());

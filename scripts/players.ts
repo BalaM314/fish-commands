@@ -169,6 +169,9 @@ export class FishPlayer {
     else
       return this.rank.level >= player.rank.level || player == this;
   }
+  ranksAtLeast(rank:Rank){
+    return this.rank.level >= rank.level;
+  }
   /**Must be called at player join, before updateName(). */
   updateSavedInfoFromPlayer(player:mindustryPlayer){
     this.player = player;
@@ -187,7 +190,7 @@ export class FishPlayer {
     this.player.name = prefix + this.name;
   }
   updateAdminStatus(){
-    if(this.rank.level >= Rank.admin.level)
+    if(this.ranksAtLeast(Rank.admin))
       Vars.netServer.admins.adminPlayer(this.player.uuid(), this.player.usid());
     else
       Vars.netServer.admins.unAdminPlayer(this.player.uuid());
