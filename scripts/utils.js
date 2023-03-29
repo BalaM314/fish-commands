@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -106,3 +106,9 @@ function isCoreUnitType(type) {
     return [UnitTypes.alpha, UnitTypes.beta, UnitTypes.gamma, UnitTypes.evoke, UnitTypes.incite, UnitTypes.emanate].includes(type);
 }
 exports.isCoreUnitType = isCoreUnitType;
+function setToArray(set) {
+    var array = [];
+    set.each(function (item) { return array.push(item); });
+    return array;
+}
+exports.setToArray = setToArray;

@@ -98,3 +98,9 @@ export function nearbyEnemyTile(unit:Unit, dist:number){
 export function isCoreUnitType(type:UnitType){
   return [UnitTypes.alpha, UnitTypes.beta, UnitTypes.gamma, UnitTypes.evoke, UnitTypes.incite, UnitTypes.emanate].includes(type);
 }
+
+export function setToArray<T>(set:ObjectSet<T>):T[] {
+  const array:T[] = [];
+  set.each(item => array.push(item));
+  return array;
+}

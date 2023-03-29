@@ -97,6 +97,9 @@ declare const Http: {
 	post(url:string, content:string):HttpRequest;
 	get(url:string):HttpRequest;
 }
+declare class ObjectSet<T> {
+	each(func:(item:T) => unknown);
+}
 
 declare function importPackage(package:any):void;
 declare const Packages: Record<string, any>;

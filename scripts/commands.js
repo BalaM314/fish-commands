@@ -249,14 +249,20 @@ function registerConsole(commands, serverHandler) {
                     Log.warn(output.error);
                     return;
                 }
-                data.handler({
-                    rawArgs: rawArgs,
-                    args: output.processedArgs,
-                    outputFail: function (message) { return Log.warn("\u26A0 ".concat(message)); },
-                    outputSuccess: function (message) { return Log.info("".concat(message)); },
-                    output: function (message) { return Log.info(message); },
-                    execServer: function (command) { return serverHandler.handleMessage(command); },
-                });
+                try {
+                    data.handler({
+                        rawArgs: rawArgs,
+                        args: output.processedArgs,
+                        outputFail: function (message) { return Log.warn("\u26A0 ".concat(message)); },
+                        outputSuccess: function (message) { return Log.info("".concat(message)); },
+                        output: function (message) { return Log.info(message); },
+                        execServer: function (command) { return serverHandler.handleMessage(command); },
+                    });
+                }
+                catch (err) {
+                    Log.err("&lrAn error occured while executing the command!");
+                    Log.err(err);
+                }
             } }));
     };
     try {

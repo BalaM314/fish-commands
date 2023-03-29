@@ -109,14 +109,23 @@ var FishPlayer = /** @class */ (function () {
         return realPlayer ? this.get(realPlayer) : null;
     };
     ;
-    FishPlayer.getAllByName = function (name) {
+    FishPlayer.getAllByName = function (name, strict) {
+        if (strict === void 0) { strict = true; }
         var players = [];
         //Groups.player doesn't support filter
         Groups.player.each(function (p) {
             var fishP = FishPlayer.get(p);
             if (fishP.cleanedName.includes(name))
                 players.push(fishP);
+            else if (!strict && fishP.cleanedName.toLowerCase().includes(name))
+                players.push(fishP);
         });
+        return players;
+    };
+    //This method exists only because there is no easy way to turn an entitygroup into an array
+    FishPlayer.getAllOnline = function () {
+        var players = [];
+        Groups.player.each(function (p) { return players.push(FishPlayer.get(p)); });
         return players;
     };
     FishPlayer.onPlayerJoin = function (player) {

@@ -194,14 +194,19 @@ export function registerConsole(commands:FishConsoleCommandsList, serverHandler:
 					return;
 				}
 				
-				data.handler({
-					rawArgs,
-					args: output.processedArgs,
-					outputFail: message => Log.warn(`⚠ ${message}`),
-					outputSuccess: message => Log.info(`${message}`),
-					output: message => Log.info(message),
-					execServer: command => serverHandler.handleMessage(command),
-				});	
+				try {
+					data.handler({
+						rawArgs,
+						args: output.processedArgs,
+						outputFail: message => Log.warn(`⚠ ${message}`),
+						outputSuccess: message => Log.info(`${message}`),
+						output: message => Log.info(message),
+						execServer: command => serverHandler.handleMessage(command),
+					});
+				} catch(err){
+					Log.err("&lrAn error occured while executing the command!");
+					Log.err(err as any);
+				}
 			}})
 		);
 	}

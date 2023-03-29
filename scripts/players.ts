@@ -89,13 +89,20 @@ export class FishPlayer {
     });
     return realPlayer ? this.get(realPlayer) : null;
   };
-  static getAllByName(name:string):FishPlayer[] {
+  static getAllByName(name:string, strict = true):FishPlayer[] {
     let players:FishPlayer[] = [];
     //Groups.player doesn't support filter
     Groups.player.each((p:mindustryPlayer) => {
       const fishP = FishPlayer.get(p);
       if(fishP.cleanedName.includes(name)) players.push(fishP);
+      else if(!strict && fishP.cleanedName.toLowerCase().includes(name)) players.push(fishP);
     });
+    return players;
+  }
+  //This method exists only because there is no easy way to turn an entitygroup into an array
+  static getAllOnline(){
+    let players:FishPlayer[] = [];
+    Groups.player.each((p:mindustryPlayer) => players.push(FishPlayer.get(p)));
     return players;
   }
   static onPlayerJoin(player:mindustryPlayer){
