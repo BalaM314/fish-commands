@@ -92,7 +92,7 @@ export const commands:FishCommandsList = {
 			}
 			if(sender.canModerate(args.player, false)){
 				args.player.stop(sender);
-				outputSuccess(`Player "${args.player.name}" has been stopped.`);
+				Call.sendMessage(`Player "${args.player.name}" has been stopped.`);
 			} else {
 				outputFail('You do not have permission to stop this player.');
 			}
@@ -176,7 +176,7 @@ export const commands:FishCommandsList = {
 						by: sender.name,
 						time: Date.now(),
 					});
-					outputSuccess(`Player ${option.lastName} was stopped.`);
+					outputSuccess(`Player "${option.lastName}" was stopped.`);
 				} else {
 					outputFail(`You do not have permission to stop this player.`);
 				}

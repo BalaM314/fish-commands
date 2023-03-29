@@ -98,7 +98,7 @@ exports.commands = {
             }
             if (sender.canModerate(args.player, false)) {
                 args.player.stop(sender);
-                outputSuccess("Player \"".concat(args.player.name, "\" has been stopped."));
+                Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped."));
             }
             else {
                 outputFail('You do not have permission to stop this player.');
@@ -184,7 +184,7 @@ exports.commands = {
                         by: sender.name,
                         time: Date.now(),
                     });
-                    outputSuccess("Player ".concat(option.lastName, " was stopped."));
+                    outputSuccess("Player \"".concat(option.lastName, "\" was stopped."));
                 }
                 else {
                     outputFail("You do not have permission to stop this player.");
