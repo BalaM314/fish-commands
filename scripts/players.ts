@@ -77,10 +77,10 @@ export class FishPlayer {
     }, null);
   }
   static getFromInfo(playerInfo:mindustryPlayerData){
-    return this.cachedPlayers[playerInfo.id] ?? this.createFromInfo(playerInfo);
+    return this.cachedPlayers[playerInfo.id] ??= this.createFromInfo(playerInfo);
   }
   static get(player:mindustryPlayer){
-    return this.cachedPlayers[player.uuid()] ?? this.createFromPlayer(player);
+    return this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
   }
   static getById(id:string):FishPlayer | null {
     return this.cachedPlayers[id] ?? null;
@@ -106,14 +106,9 @@ export class FishPlayer {
     return players;
   }
   static onPlayerJoin(player:mindustryPlayer){
-    let fishPlayer:FishPlayer;
-    if(this.cachedPlayers[player.uuid()]){
-      this.cachedPlayers[player.uuid()].updateSavedInfoFromPlayer(player);
-    } else {
-      this.cachedPlayers[player.uuid()] = this.createFromPlayer(player);
-    }
-    fishPlayer = this.cachedPlayers[player.uuid()];
+    let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
     fishPlayer.checkName();
+    fishPlayer.updateSavedInfoFromPlayer(player);
     fishPlayer.updateName();
     api.getStopped(player.uuid(), (stopped) => {
       if(fishPlayer.stopped && !stopped) fishPlayer.free("api");

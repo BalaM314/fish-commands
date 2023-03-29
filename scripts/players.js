@@ -92,11 +92,13 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.getFromInfo = function (playerInfo) {
         var _a;
-        return (_a = this.cachedPlayers[playerInfo.id]) !== null && _a !== void 0 ? _a : this.createFromInfo(playerInfo);
+        var _b, _c;
+        return (_a = (_b = this.cachedPlayers)[_c = playerInfo.id]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromInfo(playerInfo));
     };
     FishPlayer.get = function (player) {
         var _a;
-        return (_a = this.cachedPlayers[player.uuid()]) !== null && _a !== void 0 ? _a : this.createFromPlayer(player);
+        var _b, _c;
+        return (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
     };
     FishPlayer.getById = function (id) {
         var _a;
@@ -125,15 +127,11 @@ var FishPlayer = /** @class */ (function () {
         return players;
     };
     FishPlayer.onPlayerJoin = function (player) {
-        var fishPlayer;
-        if (this.cachedPlayers[player.uuid()]) {
-            this.cachedPlayers[player.uuid()].updateSavedInfoFromPlayer(player);
-        }
-        else {
-            this.cachedPlayers[player.uuid()] = this.createFromPlayer(player);
-        }
-        fishPlayer = this.cachedPlayers[player.uuid()];
+        var _a;
+        var _b, _c;
+        var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
         fishPlayer.checkName();
+        fishPlayer.updateSavedInfoFromPlayer(player);
         fishPlayer.updateName();
         api.getStopped(player.uuid(), function (stopped) {
             if (fishPlayer.stopped && !stopped)
