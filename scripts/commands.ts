@@ -95,7 +95,7 @@ function outputFail(message:string, sender:mindustryPlayer){
 	sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 }
 function outputSuccess(message:string, sender:mindustryPlayer){
-	sender.sendMessage(`[#48e076]${message}`);
+	sender.sendMessage(`[#48e076]✔ ${message}`);
 }
 function outputMessage(message:string, sender:mindustryPlayer){
 	sender.sendMessage(message);
@@ -198,7 +198,7 @@ export function registerConsole(commands:FishConsoleCommandsList, serverHandler:
 					rawArgs,
 					args: output.processedArgs,
 					outputFail: message => Log.warn(`⚠ ${message}`),
-					outputSuccess: message => Log.info(`✔ ${message}`),
+					outputSuccess: message => Log.info(`${message}`),
 					output: message => Log.info(message),
 					execServer: command => serverHandler.handleMessage(command),
 				});	

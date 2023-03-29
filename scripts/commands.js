@@ -153,7 +153,7 @@ function outputFail(message, sender) {
     sender.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
 }
 function outputSuccess(message, sender) {
-    sender.sendMessage("[#48e076]".concat(message));
+    sender.sendMessage("[#48e076]\u2714 ".concat(message));
 }
 function outputMessage(message, sender) {
     sender.sendMessage(message);
@@ -253,7 +253,7 @@ function registerConsole(commands, serverHandler) {
                     rawArgs: rawArgs,
                     args: output.processedArgs,
                     outputFail: function (message) { return Log.warn("\u26A0 ".concat(message)); },
-                    outputSuccess: function (message) { return Log.info("\u2714 ".concat(message)); },
+                    outputSuccess: function (message) { return Log.info("".concat(message)); },
                     output: function (message) { return Log.info(message); },
                     execServer: function (command) { return serverHandler.handleMessage(command); },
                 });

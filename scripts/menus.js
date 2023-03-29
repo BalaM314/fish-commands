@@ -82,7 +82,7 @@ function menu(title, description, options, target, callback, includeCancel, opti
                     target.player.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
                 },
                 outputSuccess: function (message) {
-                    target.player.sendMessage("[#48e076]".concat(message));
+                    target.player.sendMessage("[#48e076]\u2714 ".concat(message));
                 }
             });
         };

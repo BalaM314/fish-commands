@@ -78,7 +78,7 @@ export const commands:FishCommandsList = {
 		perm: Perm.notGriefer,
 		handler({sender, outputSuccess, outputFail}){
 			if(Cleaner.clean(sender.player)){
-        outputSuccess(`\u2714 Cleared the map of boulders.`);
+        outputSuccess(`Cleared the map of boulders.`);
       } else {
         outputFail(`This command was run recently and is on cooldown.`);
       }
@@ -121,7 +121,7 @@ export const commands:FishCommandsList = {
 			sender.afk = !sender.afk;
 			sender.updateName();
 			if(sender.afk){
-				outputSuccess(`You are marked as AFK.`);
+				outputSuccess(`You are now marked as AFK.`);
 			} else {
 				outputSuccess(`You are no longer marked as AFK.`);
 			}
@@ -132,9 +132,9 @@ export const commands:FishCommandsList = {
 		args: [],
 		description: "Checks id of a tile.",
 		perm: Perm.all,
-		handler({sender, outputSuccess}){
+		handler({sender, output}){
 			sender.tileId = true;
-			outputSuccess(`Click a tile to see its id.`);
+			output(`Click a tile to see its id...`);
 		}
 	},
 

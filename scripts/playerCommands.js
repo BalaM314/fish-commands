@@ -97,7 +97,7 @@ exports.commands = __assign(__assign({ unpause: {
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (Cleaner.clean(sender.player)) {
-                outputSuccess("\u2714 Cleared the map of boulders.");
+                outputSuccess("Cleared the map of boulders.");
             }
             else {
                 outputFail("This command was run recently and is on cooldown.");
@@ -138,7 +138,7 @@ exports.commands = __assign(__assign({ unpause: {
             sender.afk = !sender.afk;
             sender.updateName();
             if (sender.afk) {
-                outputSuccess("You are marked as AFK.");
+                outputSuccess("You are now marked as AFK.");
             }
             else {
                 outputSuccess("You are no longer marked as AFK.");
@@ -149,9 +149,9 @@ exports.commands = __assign(__assign({ unpause: {
         description: "Checks id of a tile.",
         perm: commands_1.Perm.all,
         handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var sender = _a.sender, output = _a.output;
             sender.tileId = true;
-            outputSuccess("Click a tile to see its id.");
+            output("Click a tile to see its id...");
         }
     } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
     var _b = __read(_a, 2), name = _b[0], data = _b[1];

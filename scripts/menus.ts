@@ -76,7 +76,7 @@ function menu<T>(
 					target.player.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 				},
 				outputSuccess(message:string){
-					target.player.sendMessage(`[#48e076]${message}`);
+					target.player.sendMessage(`[#48e076]✔ ${message}`);
 				}
 			});
 		};
