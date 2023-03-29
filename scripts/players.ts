@@ -107,8 +107,8 @@ export class FishPlayer {
   }
   static onPlayerJoin(player:mindustryPlayer){
     let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
+    fishPlayer.updateSavedInfoFromPlayer(player);
     if(fishPlayer.validate()){
-      fishPlayer.updateSavedInfoFromPlayer(player);
       fishPlayer.updateName();
       api.getStopped(player.uuid(), (stopped) => {
         if(fishPlayer.stopped && !stopped) fishPlayer.free("api");
@@ -148,6 +148,7 @@ export class FishPlayer {
       history: this.history,
       rainbow: this.rainbow,
       rank: this.rank.name,
+      usid: this.usid,
     });
   }
   connected(){
@@ -268,6 +269,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
   }
   checkUsid(){
     if(this.usid != null && this.player.usid() != this.usid){
+      Log.info(`&rUSID mismatch for player &cy"${this.cleanedName}"&r: stored usid is &cy${this.usid}&r, but they tried to connect with usid &cy${this.player.usid()}&r, kicking`);
       this.player.kick(`Authorization failure!`);
       return false;
     }

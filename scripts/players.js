@@ -132,8 +132,8 @@ var FishPlayer = /** @class */ (function () {
         var _a;
         var _b, _c;
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
+        fishPlayer.updateSavedInfoFromPlayer(player);
         if (fishPlayer.validate()) {
-            fishPlayer.updateSavedInfoFromPlayer(player);
             fishPlayer.updateName();
             api.getStopped(player.uuid(), function (stopped) {
                 if (fishPlayer.stopped && !stopped)
@@ -187,6 +187,7 @@ var FishPlayer = /** @class */ (function () {
             history: this.history,
             rainbow: this.rainbow,
             rank: this.rank.name,
+            usid: this.usid,
         });
     };
     FishPlayer.prototype.connected = function () {
@@ -323,6 +324,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.checkUsid = function () {
         if (this.usid != null && this.player.usid() != this.usid) {
+            Log.info("&rUSID mismatch for player &cy\"".concat(this.cleanedName, "\"&r: stored usid is &cy").concat(this.usid, "&r, but they tried to connect with usid &cy").concat(this.player.usid(), "&r, kicking"));
             this.player.kick("Authorization failure!");
             return false;
         }
