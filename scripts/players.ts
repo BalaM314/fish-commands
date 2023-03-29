@@ -38,11 +38,12 @@ export class FishPlayer {
     speed: number;
   } | null;
 	history: PlayerHistoryEntry[];
+  usid: string | null;
   constructor({
     name, muted = false, member = false, stopped = false,
-    highlight = null, history = [], rainbow = null, rank = "player"
+    highlight = null, history = [], rainbow = null, rank = "player", usid
   }:Partial<FishPlayerData>, player:mindustryPlayer | null){
-    this.name = name ?? player.name ?? "Unnamed player [ERROR]";
+    this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
     this.muted = muted;
     this.member = member;
     this.stopped = stopped;
@@ -52,28 +53,20 @@ export class FishPlayer {
     this.rainbow = rainbow;
     this.cleanedName = Strings.stripColors(this.name);
     this.rank = Rank.getByName(rank) ?? Rank.player;
+    this.usid = usid ?? player?.usid() ?? null;
   }
   static read(fishPlayerData:string, player:mindustryPlayer | null){
     return new this(JSON.parse(fishPlayerData), player);
   }
   static createFromPlayer(player:mindustryPlayer){
     return new this({
-      name: player.name,
-      muted: false,
-      member: false,
-      stopped: false,
-      highlight: null,
-      history: [],
+      name: player.name
     }, player);
   }
   static createFromInfo(playerInfo:mindustryPlayerData){
     return new this({
       name: playerInfo.lastName,
-      muted: false,
-      member: false,
-      stopped: false,
-      highlight: null,
-      history: []
+      usid: playerInfo.adminUsid ?? null
     }, null);
   }
   static getFromInfo(playerInfo:mindustryPlayerData){
@@ -107,13 +100,14 @@ export class FishPlayer {
   }
   static onPlayerJoin(player:mindustryPlayer){
     let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
-    fishPlayer.checkName();
-    fishPlayer.updateSavedInfoFromPlayer(player);
-    fishPlayer.updateName();
-    api.getStopped(player.uuid(), (stopped) => {
-      if(fishPlayer.stopped && !stopped) fishPlayer.free("api");
-      if(stopped) fishPlayer.stop("api");
-    });
+    if(fishPlayer.validate()){
+      fishPlayer.updateSavedInfoFromPlayer(player);
+      fishPlayer.updateName();
+      api.getStopped(player.uuid(), (stopped) => {
+        if(fishPlayer.stopped && !stopped) fishPlayer.free("api");
+        if(stopped) fishPlayer.stop("api");
+      });
+    }
   }
   
   static onUnitChange(player:mindustryPlayer, unit:Unit){
@@ -171,6 +165,7 @@ export class FishPlayer {
   updateSavedInfoFromPlayer(player:mindustryPlayer){
     this.player = player;
     this.name = player.name;
+    this.usid ??= player.usid();
     this.cleanedName = Strings.stripColors(player.name);
   }
   updateName(){
@@ -248,6 +243,9 @@ export class FishPlayer {
     }
     FishPlayer.saveAll();
   }
+  validate(){
+    return this.checkName() && this.checkUsid();
+  }
   checkName(){
     for(const bannedName of config.bannedNames){
       if(this.name.toLowerCase().includes(bannedName)) {
@@ -256,8 +254,17 @@ export class FishPlayer {
 
 If you are unable to change it, please download Mindustry from Steam or itch.io.`
         );
+        return false;
       }
     }
+    return true;
+  }
+  checkUsid(){
+    if(this.usid != null && this.player.usid() != this.usid){
+      this.player.kick(`Authorization failure!`);
+      return false;
+    }
+    return true;
   }
   static saveAll(){
     //Temporary implementation

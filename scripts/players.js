@@ -45,8 +45,8 @@ var utils_1 = require("./utils");
 var ranks_1 = require("./ranks");
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h;
-        var _j, _k;
+        var name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, usid = _a.usid;
+        var _j, _k, _l;
         //Transients
         this.player = null;
         this.pet = "";
@@ -56,7 +56,7 @@ var FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = false;
         this.trail = null;
-        this.name = (_j = name !== null && name !== void 0 ? name : player.name) !== null && _j !== void 0 ? _j : "Unnamed player [ERROR]";
+        this.name = (_j = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _j !== void 0 ? _j : "Unnamed player [ERROR]";
         this.muted = muted;
         this.member = member;
         this.stopped = stopped;
@@ -66,28 +66,21 @@ var FishPlayer = /** @class */ (function () {
         this.rainbow = rainbow;
         this.cleanedName = Strings.stripColors(this.name);
         this.rank = (_k = ranks_1.Rank.getByName(rank)) !== null && _k !== void 0 ? _k : ranks_1.Rank.player;
+        this.usid = (_l = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _l !== void 0 ? _l : null;
     }
     FishPlayer.read = function (fishPlayerData, player) {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.createFromPlayer = function (player) {
         return new this({
-            name: player.name,
-            muted: false,
-            member: false,
-            stopped: false,
-            highlight: null,
-            history: [],
+            name: player.name
         }, player);
     };
     FishPlayer.createFromInfo = function (playerInfo) {
+        var _a;
         return new this({
             name: playerInfo.lastName,
-            muted: false,
-            member: false,
-            stopped: false,
-            highlight: null,
-            history: []
+            usid: (_a = playerInfo.adminUsid) !== null && _a !== void 0 ? _a : null
         }, null);
     };
     FishPlayer.getFromInfo = function (playerInfo) {
@@ -130,15 +123,16 @@ var FishPlayer = /** @class */ (function () {
         var _a;
         var _b, _c;
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
-        fishPlayer.checkName();
-        fishPlayer.updateSavedInfoFromPlayer(player);
-        fishPlayer.updateName();
-        api.getStopped(player.uuid(), function (stopped) {
-            if (fishPlayer.stopped && !stopped)
-                fishPlayer.free("api");
-            if (stopped)
-                fishPlayer.stop("api");
-        });
+        if (fishPlayer.validate()) {
+            fishPlayer.updateSavedInfoFromPlayer(player);
+            fishPlayer.updateName();
+            api.getStopped(player.uuid(), function (stopped) {
+                if (fishPlayer.stopped && !stopped)
+                    fishPlayer.free("api");
+                if (stopped)
+                    fishPlayer.stop("api");
+            });
+        }
     };
     FishPlayer.onUnitChange = function (player, unit) {
         //if(unit.spawnedByCore)
@@ -207,8 +201,10 @@ var FishPlayer = /** @class */ (function () {
     };
     /**Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
+        var _a;
         this.player = player;
         this.name = player.name;
+        (_a = this.usid) !== null && _a !== void 0 ? _a : (this.usid = player.usid());
         this.cleanedName = Strings.stripColors(player.name);
     };
     FishPlayer.prototype.updateName = function () {
@@ -293,6 +289,9 @@ var FishPlayer = /** @class */ (function () {
         }
         FishPlayer.saveAll();
     };
+    FishPlayer.prototype.validate = function () {
+        return this.checkName() && this.checkUsid();
+    };
     FishPlayer.prototype.checkName = function () {
         var e_2, _a;
         try {
@@ -300,6 +299,7 @@ var FishPlayer = /** @class */ (function () {
                 var bannedName = _c.value;
                 if (this.name.toLowerCase().includes(bannedName)) {
                     this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."));
+                    return false;
                 }
             }
         }
@@ -310,6 +310,14 @@ var FishPlayer = /** @class */ (function () {
             }
             finally { if (e_2) throw e_2.error; }
         }
+        return true;
+    };
+    FishPlayer.prototype.checkUsid = function () {
+        if (this.usid != null && this.player.usid() != this.usid) {
+            this.player.kick("Authorization failure!");
+            return false;
+        }
+        return true;
     };
     FishPlayer.saveAll = function () {
         var e_3, _a;
