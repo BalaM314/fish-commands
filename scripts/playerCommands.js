@@ -280,7 +280,7 @@ exports.commands = __assign(__assign({ unpause: {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
             if (recentWhispers[sender.player.uuid()]) {
                 var recipient = players_1.FishPlayer.getById(recentWhispers[sender.player.uuid()]);
-                if (recipient) {
+                if (recipient === null || recipient === void 0 ? void 0 : recipient.connected()) {
                     recipient.player.sendMessage("".concat(sender.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
                     output("[#0ffffff0]Message sent to ".concat(recipient.name, "[#0ffffff0]."));
                 }

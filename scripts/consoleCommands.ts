@@ -2,18 +2,16 @@ import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { FishConsoleCommandsList, mindustryPlayerData } from "./types";
 import { setToArray } from "./utils";
+import { fail } from "./commands";
 
 
 export const commands:FishConsoleCommandsList = {
 	setrank: {
 		args: ["player:exactPlayer", "rank:string"],
 		description: "Set a player's rank.",
-		handler({args, outputFail, outputSuccess}){
+		handler({args, outputSuccess}){
 			const rank = Rank.getByName(args.rank);
-			if(rank == null){
-				outputFail(`Unknown rank ${args.rank}`);
-				return;
-			}
+			if(rank == null) fail(`Unknown rank ${args.rank}`);
 
 			args.player.setRank(rank);
 			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
@@ -29,12 +27,9 @@ export const commands:FishConsoleCommandsList = {
 	info: {
 		args: ["player:string"],
 		description: "Find player info(s). Displays all names and ips of a player.",
-		handler({args, outputFail, output}){
+		handler({args, output}){
 			const infoList = setToArray(Vars.netServer.admins.findByName(args.player) as ObjectSet<mindustryPlayerData>);
-			if(infoList.length == 0){
-				outputFail(`Nobody with that name could be found.`);
-				return;
-			}
+			if(infoList.length == 0) fail(`Nobody with that name could be found.`);
 			let outputString:string[] = [""];
 			for(const playerInfo of infoList){
 				const fishP = FishPlayer.getById(playerInfo.id);
@@ -52,12 +47,9 @@ export const commands:FishConsoleCommandsList = {
 	infoOnline: {
 		args: ["player:string"],
 		description: "Display information about an online player.",
-		handler({args, outputFail, output}){
+		handler({args, output}){
 			const infoList = args.player == "*" ? FishPlayer.getAllOnline() : FishPlayer.getAllByName(args.player, false);
-			if(infoList.length == 0){
-				outputFail(`Nobody with that name could be found.`);
-				return;
-			}
+			if(infoList.length == 0) fail(`Nobody with that name could be found.`);
 			let outputString:string[] = [""];
 			for(const player of infoList){
 				const playerInfo = Vars.netServer.admins.getInfo(player.player.uuid());

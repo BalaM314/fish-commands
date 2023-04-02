@@ -26,15 +26,11 @@ exports.commands = {
         description: 'Stops a player from chatting.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (args.player.muted) {
-                outputFail("Player \"".concat(args.player.cleanedName, "\" is already muted."));
-                return;
-            }
-            if (!sender.canModerate(args.player, false)) {
-                outputFail("You do not have permission to mute this player.");
-                return;
-            }
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (args.player.muted)
+                (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is already muted."));
+            if (!sender.canModerate(args.player))
+                (0, commands_1.fail)("You do not have permission to mute this player.");
             args.player.muted = true;
             args.player.updateName();
             outputSuccess("Muted player \"".concat(args.player.cleanedName, "\"."));
@@ -76,14 +72,11 @@ exports.commands = {
         handler: function (_a) {
             var _b;
             var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, sender = _a.sender;
-            if (sender.canModerate(args.player)) {
-                var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
-                args.player.player.kick(reason);
-                outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
-            }
-            else {
-                outputFail('You do not have permission to kick this player.');
-            }
+            if (!sender.canModerate(args.player))
+                (0, commands_1.fail)("You do not have permission to kick this player.");
+            var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
+            args.player.player.kick(reason);
+            outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
     },
     stop: {
@@ -91,18 +84,13 @@ exports.commands = {
         description: 'Stops a player.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (args.player.stopped) {
-                outputFail("Player \"".concat(args.player.name, "\" is already stopped."));
-                return;
-            }
-            if (sender.canModerate(args.player, false)) {
-                args.player.stop(sender);
-                Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped."));
-            }
-            else {
-                outputFail('You do not have permission to stop this player.');
-            }
+            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
+            if (args.player.stopped)
+                (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already stopped."));
+            if (!sender.canModerate(args.player, false))
+                (0, commands_1.fail)("You do not have permission to kick this player.");
+            args.player.stop(sender);
+            Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped."));
         }
     },
     free: {
@@ -128,18 +116,12 @@ exports.commands = {
         handler: function (_a) {
             var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, sender = _a.sender;
             var rank = ranks_1.Rank.getByName(args.rank);
-            if (rank == null) {
-                outputFail("Unknown rank ".concat(args.rank));
-                return;
-            }
-            if (sender.rank.level <= rank.level) {
-                outputFail("You do not have permission to promote players to rank \"".concat(rank.name, "\", because your current rank is \"").concat(sender.rank.name, "\""));
-                return;
-            }
-            if (!sender.canModerate(args.player)) {
-                outputFail("You do not have permission to modify the rank of player \"".concat(args.player.name, "\""));
-                return;
-            }
+            if (rank == null)
+                (0, commands_1.fail)("Unknown rank ".concat(args.rank));
+            if (rank.level >= sender.rank.level)
+                (0, commands_1.fail)("You do not have permission to promote players to rank \"".concat(rank.name, "\", because your current rank is \"").concat(sender.rank.name, "\""));
+            if (!sender.canModerate(args.player))
+                (0, commands_1.fail)("You do not have permission to modify the rank of player \"".concat(args.player.name, "\""));
             args.player.setRank(rank);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
         }
@@ -202,10 +184,8 @@ exports.commands = {
             var lastRestart = Core.settings.get("lastRestart", "");
             if (lastRestart != "") {
                 var numOld = Number(lastRestart);
-                if (now - numOld < 600000) {
-                    outputFail("You need to wait at least 10 minutes between restarts.");
-                    return;
-                }
+                if (now - numOld < 600000)
+                    (0, commands_1.fail)("You need to wait at least 10 minutes between restarts.");
             }
             Core.settings.put("lastRestart", String(now));
             Core.settings.manualSave();
@@ -280,10 +260,8 @@ exports.commands = {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (args.time <= 0 || args.time > 3600) {
-                outputFail("Time must be a positive number less than 3600.");
-                return;
-            }
+            if (args.time <= 0 || args.time > 3600)
+                (0, commands_1.fail)("Time must be a positive number less than 3600.");
             var timeRemaining = args.time;
             var labelx = sender.player.x;
             var labely = sender.player.y;

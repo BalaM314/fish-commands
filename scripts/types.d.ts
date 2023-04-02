@@ -1,5 +1,5 @@
 import type { FishPlayer } from "./players";
-import type { CommandArgType, Perm } from "./commands";
+import type { CommandArgType, Perm, fail } from "./commands";
 
 
 type FishCommandArgType = string | number | FishPlayer | boolean | null;

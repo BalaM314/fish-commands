@@ -261,7 +261,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 		handler({args, sender, output, outputFail}){
 			if(recentWhispers[sender.player.uuid()]){
 				const recipient = FishPlayer.getById(recentWhispers[sender.player.uuid()]);
-				if(recipient){
+				if(recipient?.connected()){
 					recipient.player.sendMessage(`${sender.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
 					output(`[#0ffffff0]Message sent to ${recipient.name}[#0ffffff0].`);
 				} else {

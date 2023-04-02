@@ -15,17 +15,16 @@ exports.commands = void 0;
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
+var commands_1 = require("./commands");
 exports.commands = {
     setrank: {
         args: ["player:exactPlayer", "rank:string"],
         description: "Set a player's rank.",
         handler: function (_a) {
-            var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            var args = _a.args, outputSuccess = _a.outputSuccess;
             var rank = ranks_1.Rank.getByName(args.rank);
-            if (rank == null) {
-                outputFail("Unknown rank ".concat(args.rank));
-                return;
-            }
+            if (rank == null)
+                (0, commands_1.fail)("Unknown rank ".concat(args.rank));
             args.player.setRank(rank);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
         }
@@ -42,12 +41,10 @@ exports.commands = {
         description: "Find player info(s). Displays all names and ips of a player.",
         handler: function (_a) {
             var e_1, _b;
-            var args = _a.args, outputFail = _a.outputFail, output = _a.output;
+            var args = _a.args, output = _a.output;
             var infoList = (0, utils_1.setToArray)(Vars.netServer.admins.findByName(args.player));
-            if (infoList.length == 0) {
-                outputFail("Nobody with that name could be found.");
-                return;
-            }
+            if (infoList.length == 0)
+                (0, commands_1.fail)("Nobody with that name could be found.");
             var outputString = [""];
             var _loop_1 = function (playerInfo) {
                 var fishP = players_1.FishPlayer.getById(playerInfo.id);
@@ -74,12 +71,10 @@ exports.commands = {
         description: "Display information about an online player.",
         handler: function (_a) {
             var e_2, _b;
-            var args = _a.args, outputFail = _a.outputFail, output = _a.output;
+            var args = _a.args, output = _a.output;
             var infoList = args.player == "*" ? players_1.FishPlayer.getAllOnline() : players_1.FishPlayer.getAllByName(args.player, false);
-            if (infoList.length == 0) {
-                outputFail("Nobody with that name could be found.");
-                return;
-            }
+            if (infoList.length == 0)
+                (0, commands_1.fail)("Nobody with that name could be found.");
             var outputString = [""];
             var _loop_2 = function (player) {
                 var playerInfo = Vars.netServer.admins.getInfo(player.player.uuid());

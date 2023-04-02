@@ -8,12 +8,13 @@ exports.commands = {
         description: 'Spawns a cool pet with a displayed name that follows you around.',
         perm: commands_1.Perm.member,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (!args.name) {
                 var pet_1 = Groups.unit.find(function (u) { return u.id === sender.pet; });
                 if (pet_1)
                     pet_1.kill();
                 sender.pet = "";
+                outputSuccess("Your pet has been removed.");
                 return;
             }
             if (sender.pet !== '') {
@@ -26,6 +27,7 @@ exports.commands = {
             pet.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
             sender.pet = pet.id;
             Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
+            outputSuccess("Spawned a pet.");
             function controlUnit(_a) {
                 var pet = _a.pet, fishPlayer = _a.fishPlayer, petName = _a.petName;
                 return Timer.schedule(function () {
@@ -72,15 +74,14 @@ exports.commands = {
         perm: commands_1.Perm.member,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
+            var args = _a.args, sender = _a.sender;
             if (!args.speed) {
                 sender.updateName();
                 sender.rainbow = null;
             }
             else {
                 if (args.speed > 10 || args.speed <= 0) {
-                    outputFail('Speed must be a number between 0 and 10.');
-                    return;
+                    (0, commands_1.fail)('Speed must be a number between 0 and 10.');
                 }
                 (_b = sender.rainbow) !== null && _b !== void 0 ? _b : (sender.rainbow = {
                     speed: args.speed,

@@ -1,4 +1,4 @@
-import { Perm } from "./commands";
+import { Perm, fail } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import type { FishCommandsList, mindustryPlayerData } from "./types";
@@ -23,15 +23,9 @@ export const commands:FishCommandsList = {
 		args: ['player:player'],
 		description: 'Stops a player from chatting.',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, outputFail}){
-			if(args.player.muted){
-				outputFail(`Player "${args.player.cleanedName}" is already muted.`);
-				return;
-			}
-			if(!sender.canModerate(args.player, false)){
-				outputFail(`You do not have permission to mute this player.`);
-				return;
-			}
+		handler({args, sender, outputSuccess}){
+			if(args.player.muted) fail(`Player "${args.player.cleanedName}" is already muted.`);
+			if(!sender.canModerate(args.player)) fail(`You do not have permission to mute this player.`);
 			args.player.muted = true;
 			args.player.updateName();
 			outputSuccess(`Muted player "${args.player.cleanedName}".`);
@@ -71,13 +65,10 @@ export const commands:FishCommandsList = {
 		description: 'Kick a player with optional reason.',
 		perm: Perm.mod,
 		handler({args, outputSuccess, outputFail, sender}){
-			if(sender.canModerate(args.player)){
-				const reason = args.reason ?? 'A staff member did not like your actions.';
-				args.player.player.kick(reason);
-				outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}"`);
-			} else {
-				outputFail('You do not have permission to kick this player.');
-			}
+			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
+			const reason = args.reason ?? 'A staff member did not like your actions.';
+			args.player.player.kick(reason);
+			outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}"`);
 		}
 	},
 
@@ -85,17 +76,11 @@ export const commands:FishCommandsList = {
 		args: ['player:player'],
 		description: 'Stops a player.',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, outputFail}) {
-			if(args.player.stopped){
-				outputFail(`Player "${args.player.name}" is already stopped.`);
-				return;
-			}
-			if(sender.canModerate(args.player, false)){
-				args.player.stop(sender);
-				Call.sendMessage(`Player "${args.player.name}" has been stopped.`);
-			} else {
-				outputFail('You do not have permission to stop this player.');
-			}
+		handler({args, sender, outputFail}) {
+			if(args.player.stopped) fail(`Player "${args.player.name}" is already stopped.`);
+			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to kick this player.`);
+			args.player.stop(sender);
+			Call.sendMessage(`Player "${args.player.name}" has been stopped.`);
 		}
 	},
 
@@ -119,22 +104,14 @@ export const commands:FishCommandsList = {
 		perm: Perm.mod,
 		handler({args, outputFail, outputSuccess, sender}){
 			const rank = Rank.getByName(args.rank);
-			if(rank == null){
-				outputFail(`Unknown rank ${args.rank}`);
-				return;
-			}
-			if(sender.rank.level <= rank.level){
-				outputFail(`You do not have permission to promote players to rank "${rank.name}", because your current rank is "${sender.rank.name}"`);
-				return;
-			}
-			if(!sender.canModerate(args.player)){
-				outputFail(`You do not have permission to modify the rank of player "${args.player.name}"`);
-				return;
-			}
+			if(rank == null) fail(`Unknown rank ${args.rank}`);
+			if(rank.level >= sender.rank.level)
+				fail(`You do not have permission to promote players to rank "${rank.name}", because your current rank is "${sender.rank.name}"`);
+			if(!sender.canModerate(args.player))
+				fail(`You do not have permission to modify the rank of player "${args.player.name}"`);
 
 			args.player.setRank(rank);
 			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
-
 		}
 	},
 
@@ -193,10 +170,7 @@ export const commands:FishCommandsList = {
 			const lastRestart = Core.settings.get("lastRestart", "");
 			if(lastRestart != ""){
 				const numOld = Number(lastRestart);
-				if (now - numOld < 600000) {
-          outputFail(`You need to wait at least 10 minutes between restarts.`);
-          return;
-        }
+				if(now - numOld < 600000) fail(`You need to wait at least 10 minutes between restarts.`);
 			}
 			Core.settings.put("lastRestart", String(now));
 			Core.settings.manualSave();
@@ -273,10 +247,7 @@ export const commands:FishCommandsList = {
 		description: "Places a label at your position for a specified amount of time.",
 		perm: Perm.admin,
 		handler({args, sender, outputSuccess, outputFail}){
-			if(args.time <= 0 || args.time > 3600){
-				outputFail(`Time must be a positive number less than 3600.`);
-				return;
-			}
+			if(args.time <= 0 || args.time > 3600) fail(`Time must be a positive number less than 3600.`);
 			let timeRemaining = args.time;
 			const labelx = sender.player.x;
 			const labely = sender.player.y;

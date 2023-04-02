@@ -1,4 +1,4 @@
-import { Perm } from "./commands";
+import { Perm, fail } from "./commands";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
 
@@ -7,11 +7,12 @@ export const commands:FishCommandsList = {
     args: ["name:string?"],
     description: 'Spawns a cool pet with a displayed name that follows you around.',
     perm: Perm.member,
-    handler({args, sender}){
+    handler({args, sender, outputSuccess}){
       if (!args.name) {
         const pet = Groups.unit.find((u:Unit) => u.id === sender.pet);
         if(pet) pet.kill();
         sender.pet = "";
+        outputSuccess("Your pet has been removed.");
         return;
       }
       if (sender.pet !== '') {
@@ -25,6 +26,7 @@ export const commands:FishCommandsList = {
       sender.pet = pet.id;
 
       Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
+      outputSuccess(`Spawned a pet.`);
 
       function controlUnit({pet, fishPlayer, petName}:{
         petName: string; pet: Unit; fishPlayer: FishPlayer;
@@ -70,15 +72,14 @@ export const commands:FishCommandsList = {
     args: ["speed:number?"],
     description: 'make your name change colors.',
     perm: Perm.member,
-    handler({args, sender, outputFail}){
+    handler({args, sender}){
 
       if(!args.speed) {
         sender.updateName();
         sender.rainbow = null;
       } else {
         if(args.speed > 10 || args.speed <= 0){
-          outputFail('Speed must be a number between 0 and 10.');
-          return;
+          fail('Speed must be a number between 0 and 10.');
         }
   
         sender.rainbow ??= {
