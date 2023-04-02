@@ -100,6 +100,10 @@ function outputSuccess(message:string, sender:mindustryPlayer){
 function outputMessage(message:string, sender:mindustryPlayer){
 	sender.sendMessage(message);
 }
+class CommandError extends Error {}
+export function fail(message:string):never {
+	throw new CommandError(message);
+}
 
 /**
  * Registers all commands in a list to a client command handler.
@@ -154,8 +158,13 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 							execServer: command => serverHandler.handleMessage(command),
 						});
 					} catch(err){
-						sender.sendMessage(`[scarlet]❌ An error occurred while executing the command.`);
-						if(fishSender.ranksAtLeast(Rank.admin)) sender.sendMessage((<any>err).toString());
+						if(err instanceof CommandError){
+							//If the error is a command error, then just outputFail
+							outputFail(err.message, sender);
+						} else {
+							sender.sendMessage(`[scarlet]❌ An error occurred while executing the command.`);
+							if(fishSender.ranksAtLeast(Rank.admin)) sender.sendMessage((<any>err).toString());
+						}
 					}
 				});
 				
@@ -204,8 +213,12 @@ export function registerConsole(commands:FishConsoleCommandsList, serverHandler:
 						execServer: command => serverHandler.handleMessage(command),
 					});
 				} catch(err){
-					Log.err("&lrAn error occured while executing the command!");
-					Log.err(err as any);
+					if(err instanceof CommandError){
+						Log.warn(`⚠ ${err.message}`);
+					} else {
+						Log.err("&lrAn error occured while executing the command!&fr");
+						Log.err(err as any);
+					}
 				}
 			}})
 		);

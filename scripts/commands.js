@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -27,7 +42,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerConsole = exports.register = exports.Perm = void 0;
+exports.registerConsole = exports.register = exports.fail = exports.Perm = void 0;
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
@@ -158,6 +173,17 @@ function outputSuccess(message, sender) {
 function outputMessage(message, sender) {
     sender.sendMessage(message);
 }
+var CommandError = /** @class */ (function (_super) {
+    __extends(CommandError, _super);
+    function CommandError() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return CommandError;
+}(Error));
+function fail(message) {
+    throw new CommandError(message);
+}
+exports.fail = fail;
 /**
  * Registers all commands in a list to a client command handler.
  **/
@@ -205,9 +231,15 @@ function register(commands, clientHandler, serverHandler) {
                         });
                     }
                     catch (err) {
-                        sender.sendMessage("[scarlet]\u274C An error occurred while executing the command.");
-                        if (fishSender.ranksAtLeast(ranks_1.Rank.admin))
-                            sender.sendMessage(err.toString());
+                        if (err instanceof CommandError) {
+                            //If the error is a command error, then just outputFail
+                            outputFail(err.message, sender);
+                        }
+                        else {
+                            sender.sendMessage("[scarlet]\u274C An error occurred while executing the command.");
+                            if (fishSender.ranksAtLeast(ranks_1.Rank.admin))
+                                sender.sendMessage(err.toString());
+                        }
                     }
                 });
             } }));
@@ -260,8 +292,13 @@ function registerConsole(commands, serverHandler) {
                     });
                 }
                 catch (err) {
-                    Log.err("&lrAn error occured while executing the command!");
-                    Log.err(err);
+                    if (err instanceof CommandError) {
+                        Log.warn("\u26A0 ".concat(err.message));
+                    }
+                    else {
+                        Log.err("&lrAn error occured while executing the command!&fr");
+                        Log.err(err);
+                    }
                 }
             } }));
     };
