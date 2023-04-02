@@ -78,7 +78,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');
     //getIp.submit((r) => {
-    //  //serverIp = r.getResultAsString();
+    //	//serverIp = r.getResultAsString();
     //});
 });
 /**

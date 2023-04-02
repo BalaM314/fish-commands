@@ -6,10 +6,10 @@ const registeredListeners:{
 } = {};
 const listeners = (
 	<T extends Record<string, (player:mindustryPlayer, option:number) => void>>(d:T) => d
-)({ 
+)({
 	generic(player, option){
 		const fishSender = FishPlayer.get(player);
-		if (option === -1 || option === fishSender.activeMenu.cancelOptionId) return;
+		if(option === -1 || option === fishSender.activeMenu.cancelOptionId) return;
 
 		fishSender.activeMenu.callback?.(fishSender, option);
 		fishSender.activeMenu.callback = undefined;
@@ -20,7 +20,7 @@ const listeners = (
 });
 
 Events.on(ServerLoadEvent, (e) => {
-  for(const key of Object.keys(listeners)){
+	for(const key of Object.keys(listeners)){
 		registeredListeners[key] ??= Menus.registerMenu(listeners[key as keyof typeof listeners]);
 	}
 });

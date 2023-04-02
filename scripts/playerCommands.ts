@@ -6,44 +6,44 @@ import { getColor, to2DArray } from "./utils";
 import { FishServers } from "./config";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
-  player.unit().set(to.unit().x, to.unit().y);
-  Call.setPosition(player.con, to.unit().x, to.unit().y)
-  Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
+	player.unit().set(to.unit().x, to.unit().y);
+	Call.setPosition(player.con, to.unit().x, to.unit().y)
+	Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
 }
 
 const Cleaner = {
 	lastCleaned: 0,
 	cooldown: 10000,
-  clean(user:FishPlayer){
-    if(Time.millis() - this.lastCleaned < this.cooldown) return false;
-    this.lastCleaned = Time.millis();
-    Timer.schedule(
-      () => {
-        Call.sound(user.con, Sounds.rockBreak, 1, 1, 0);
-      },
-      0,
-      0.05,
-      10
-    );
-    Vars.world.tiles.eachTile((t:Tile) => {
-      if([
+	clean(user:FishPlayer){
+		if(Time.millis() - this.lastCleaned < this.cooldown) return false;
+		this.lastCleaned = Time.millis();
+		Timer.schedule(
+			() => {
+				Call.sound(user.con, Sounds.rockBreak, 1, 1, 0);
+			},
+			0,
+			0.05,
+			10
+		);
+		Vars.world.tiles.eachTile((t:Tile) => {
+			if([
 				107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114, 122, 123,
 			].includes(t.block().id)){
-        t.setNet(Blocks.air, Team.sharded, 0);
-      }
-    });
-    return true;
-  },
+				t.setNet(Blocks.air, Team.sharded, 0);
+			}
+		});
+		return true;
+	},
 };
 
 function messageStaff(name:string, msg:string){
-  const message = `[gray]<[cyan]staff[gray]>[white]${name}[green]: [cyan]${msg}`;
-  Groups.player.forEach((pl:mindustryPlayer) => {
+	const message = `[gray]<[cyan]staff[gray]>[white]${name}[green]: [cyan]${msg}`;
+	Groups.player.forEach((pl:mindustryPlayer) => {
 		const fishP = FishPlayer.get(pl);
-    if(Perm.mod.check(fishP)) {
-      pl.sendMessage(message);
-    }
-  });
+		if(Perm.mod.check(fishP)){
+			pl.sendMessage(message);
+		}
+	});
 };
 
 let recentWhispers:Record<string, string> = {};
@@ -78,10 +78,10 @@ export const commands:FishCommandsList = {
 		perm: Perm.notGriefer,
 		handler({sender, outputSuccess, outputFail}){
 			if(Cleaner.clean(sender)){
-        outputSuccess(`Cleared the map of boulders.`);
-      } else {
-        outputFail(`This command was run recently and is on cooldown.`);
-      }
+				outputSuccess(`Cleared the map of boulders.`);
+			} else {
+				outputFail(`This command was run recently and is on cooldown.`);
+			}
 		}
 	},
 
@@ -179,7 +179,7 @@ export const commands:FishCommandsList = {
 				const stayY = sender.unit().y;
 				const target = args.player.player;
 				const watch = () => {
-					if (sender.watch) {
+					if(sender.watch){
 						// Self.X+(172.5-Self.X)/10
 						Call.setCameraPosition(sender.con, target.unit().x, target.unit().y);
 						sender.unit().set(stayX, stayY);
@@ -202,23 +202,23 @@ export const commands:FishCommandsList = {
 		handler({args, output, outputFail}){
 			//TODO: genericify
 			const filter = {
-        member: ['pet', 'highlight', 'rainbow', 'bc'],
-        mod: ['warn', 'mute', 'unmute', 'setrank', 'kick', 'stop', 'free', 'murder', 'unmuteall', 'history', 'save', 'stop_offline'],
-        admin: ['sus', 'admin', 'mod', 'wave', 'restart', 'forcertv', 'spawn', 'exterminate', 'label', 'member', 'ipban'],
-      };
+				member: ['pet', 'highlight', 'rainbow', 'bc'],
+				mod: ['warn', 'mute', 'unmute', 'setrank', 'kick', 'stop', 'free', 'murder', 'unmuteall', 'history', 'save', 'stop_offline'],
+				admin: ['sus', 'admin', 'mod', 'wave', 'restart', 'forcertv', 'spawn', 'exterminate', 'label', 'member', 'ipban'],
+			};
 
-      const normalCommands:string[] = [];
-      const modCommands:string[] = [];
-      const adminCommands:string[] = [];
-      const memberCommands:string[] = [];
+			const normalCommands:string[] = [];
+			const modCommands:string[] = [];
+			const adminCommands:string[] = [];
+			const memberCommands:string[] = [];
 
-      Vars.netServer.clientCommands.getCommandList().forEach((c:Command) => {
+			Vars.netServer.clientCommands.getCommandList().forEach((c:Command) => {
 				let temp = `/${c.text} ${c.paramText ? `[white]${c.paramText} ` : ""}[lightgrey]- ${c.description}`;
-        if(filter.member.includes(c.text)) memberCommands.push('[pink]' + temp);
-        else if(filter.mod.includes(c.text)) modCommands.push('[acid]' + temp);
-        else if(filter.admin.includes(c.text)) adminCommands.push('[cyan]' + temp);
-        else normalCommands.push('[sky]' + temp);
-      });
+				if(filter.member.includes(c.text)) memberCommands.push('[pink]' + temp);
+				else if(filter.mod.includes(c.text)) modCommands.push('[acid]' + temp);
+				else if(filter.admin.includes(c.text)) adminCommands.push('[cyan]' + temp);
+				else normalCommands.push('[sky]' + temp);
+			});
 			const chunkedNormalCommands:string[][] = to2DArray(normalCommands, 15);
 
 			switch(args.page){
@@ -228,7 +228,7 @@ export const commands:FishCommandsList = {
 				case null: output(
 `[sky]--Commands page [lightgrey]1/${chunkedNormalCommands.length} [sky]--
 ${chunkedNormalCommands[0].join('\n')}`
-        ); break;
+				); break;
 				default:
 					const pageNumber = Number(args.page);
 					if(chunkedNormalCommands[pageNumber - 1]){
@@ -275,16 +275,16 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 
 	trail: {
 		args: ["type:string?", "color:string?"],
-    description: 'Use command to see options and toggle trail on/off.',
+		description: 'Use command to see options and toggle trail on/off.',
 		perm: Perm.all,
-    handler({args, sender, output, outputFail, outputSuccess}){
+		handler({args, sender, output, outputFail, outputSuccess}){
 
 			//overload 1: type not specified
-      if(!args.type){
-        if(sender.trail != null){
-          sender.trail = null;
+			if(!args.type){
+				if(sender.trail != null){
+					sender.trail = null;
 					outputSuccess(`Trail turned off.`);
-        } else {
+				} else {
 					const options = [
 						'1 - fluxVapor (flowing smoke, long lasting)',
 						'2 - overclocked (diamonds)',
@@ -298,7 +298,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 					output(`Available types:[yellow]\n` + options.join('\n'));
 				}
 				return;
-      }
+			}
 
 			//overload 2: type specified
 			const trailTypes = {
@@ -315,7 +315,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 			if(!selectedType){
 				if(Object.values(trailTypes).includes(args.type))
 					outputFail(`Please use the numeric id to refer to a trail type.`);
-				else 
+				else
 					outputFail(`"${args.type}" is not an available type.`);
 				return;
 			}
@@ -331,10 +331,10 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 `[scarlet]Sorry, "${args.color}" is not a valid color.
 [yellow]Color can be in the following formats:
 [pink]pink [white]| [gray]#696969 [white]| 255,0,0.`
-    		);
+				);
 			}
 
-    }
+		}
 	},
 
 	ohno: {

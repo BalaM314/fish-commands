@@ -13,7 +13,7 @@ export class Rank {
 	static fish = new Rank("fish", 999, "[blue]>|||>[] ");//Might want to change this to like owner or something
 	constructor(
 		public name:string,
-		/** Used to determine whether a rank outranks another. */ public level:number, 
+		/** Used to determine whether a rank outranks another. */ public level:number,
 		public prefix:string
 	){
 		Rank.ranks[name] = this;

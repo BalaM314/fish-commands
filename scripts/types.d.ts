@@ -10,7 +10,7 @@ type ArgsFromArgData<Args extends PreprocessedCommandArgs> = {
 		Args[K]["type"] extends "string" ? string :
 		Args[K]["type"] extends "boolean" ? boolean :
 		Args[K]["type"] extends "number" ? number :
-		Args[K]["type"] extends "player" ? FishPlayer : 
+		Args[K]["type"] extends "player" ? FishPlayer :
 		Args[K]["type"] extends "namedPlayer" ? FishPlayer :
 		never
 	) | (Args[K]["optional"] extends true ? null : never);
@@ -70,10 +70,10 @@ type FishCommandsList = Record<string, FishCommandData>;
 type FishConsoleCommandsList = Record<string, FishConsoleCommandData>;
 
 interface TileHistoryEntry {
-  name:string;
-  action:string;
-  type:string;
-  time:number;
+	name:string;
+	action:string;
+	type:string;
+	time:number;
 }
 
 

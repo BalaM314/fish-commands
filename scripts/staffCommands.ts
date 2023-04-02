@@ -50,10 +50,10 @@ export const commands:FishCommandsList = {
 				outputSuccess(`Unmuted player "${args.player.cleanedName}".`);
 				args.player.sendMessage(`[green]You have been unmuted.`);
 				args.player.addHistoryEntry({
-          action: 'unmuted',
-          by: sender.name,
-          time: Date.now(),
-        });
+					action: 'unmuted',
+					by: sender.name,
+					time: Date.now(),
+				});
 			} else {
 				outputFail(`Player "${args.player.cleanedName}" is not muted.`);
 			}
@@ -76,7 +76,7 @@ export const commands:FishCommandsList = {
 		args: ['player:player'],
 		description: 'Stops a player.',
 		perm: Perm.mod,
-		handler({args, sender, outputFail}) {
+		handler({args, sender, outputFail}){
 			if(args.player.stopped) fail(`Player "${args.player.name}" is already stopped.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to kick this player.`);
 			args.player.stop(sender);
@@ -88,7 +88,7 @@ export const commands:FishCommandsList = {
 		args: ['player:player'],
 		description: 'Frees a player.',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, outputFail}) {
+		handler({args, sender, outputSuccess, outputFail}){
 			if(args.player.stopped){
 				args.player.free(sender);
 				outputSuccess(`Player "${args.player.name}" has been freed.`);
@@ -116,15 +116,15 @@ export const commands:FishCommandsList = {
 	},
 
 	murder: {
-    args: [],
-    description: 'Kills all ohno units',
+		args: [],
+		description: 'Kills all ohno units',
 		perm: Perm.mod,
 		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
-    handler({output}){
+		handler({output}){
 			const numOhnos = Ohnos.amount();
 			Ohnos.killAll();
 			output(`[orange]You massacred [cyan]${numOhnos}[] helpless ohno crawlers.`);
-    }
+		}
 	},
 
 	stop_offline: {
@@ -134,14 +134,14 @@ export const commands:FishCommandsList = {
 		handler({args, sender, outputFail, outputSuccess}){
 			const admins = Vars.netServer.admins;
 			let possiblePlayers:mindustryPlayerData[] = admins.searchNames(args.name).toSeq().items;
-      if(possiblePlayers.length > 20){
-        let exactPlayers = admins.findByName(args.name).toSeq().items;
-        if(exactPlayers.size > 0){
-          possiblePlayers = exactPlayers;
-        } else {
-          outputFail('Too many players with that name.');
-        }
-      }
+			if(possiblePlayers.length > 20){
+				let exactPlayers = admins.findByName(args.name).toSeq().items;
+				if(exactPlayers.size > 0){
+					possiblePlayers = exactPlayers;
+				} else {
+					outputFail('Too many players with that name.');
+				}
+			}
 
 			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
 				const fishP = FishPlayer.getFromInfo(option);
@@ -176,13 +176,13 @@ export const commands:FishCommandsList = {
 			Core.settings.manualSave();
 			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
 			const restartLoop = (sec:number) => {
-				if (sec === 5) {
+				if(sec === 5){
 					Call.sendMessage('[green]Game saved. [scarlet]Server restarting in:');
 				}
 
 				Call.sendMessage('[scarlet]' + String(sec));
 
-				if (sec <= 0) {
+				if(sec <= 0){
 					Core.app.post(() => {
 						SaveIO.save(file);
 						Core.app.exit();
@@ -223,8 +223,8 @@ export const commands:FishCommandsList = {
 		handler({outputSuccess}){
 			FishPlayer.saveAll();
 			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-      SaveIO.save(file);
-      outputSuccess('Game saved.');
+			SaveIO.save(file);
+			outputSuccess('Game saved.');
 		}
 	},
 
@@ -252,7 +252,7 @@ export const commands:FishCommandsList = {
 			const labelx = sender.unit().x;
 			const labely = sender.unit().y;
 			Timer.schedule(() => {
-				if(timeRemaining > 0) {
+				if(timeRemaining > 0){
 					let timeseconds = timeRemaining % 60;
 					let timeminutes = (timeRemaining - timeseconds) / 60;
 					Call.label(
