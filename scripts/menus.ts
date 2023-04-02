@@ -47,12 +47,12 @@ function menu<T>(
 
 	if(!callback){
 		//overload 1, just display a menu with no callback
-		Call.menu(target.con, registeredListeners.none, title, description, options);
+		Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [["<no options>"]] : to2DArray(options.map(optionStringifier), 3));
 	} else {
 		//overload 2, display a menu with callback
 
 		//Set up the 2D array of options, and add cancel
-		const arrangedOptions = to2DArray(options.map(optionStringifier), 3);
+		const arrangedOptions = (options.length == 0 && !includeCancel) ? [["<no options>"]] : to2DArray(options.map(optionStringifier), 3);
 		if(includeCancel){
 			arrangedOptions.push(["Cancel"]);
 			target.activeMenu.cancelOptionId = options.length;

@@ -46,6 +46,7 @@ export function getTimeSinceText(old:number){
 };
 
 export function to2DArray<T>(array:T[], width:number){
+  if(array.length == 0) return [];
   let output:T[][] = [[]];
   array.forEach(el => {
     if(output.at(-1)!.length >= width){

@@ -100,9 +100,15 @@ function outputSuccess(message:string, sender:mindustryPlayer){
 function outputMessage(message:string, sender:mindustryPlayer){
 	sender.sendMessage(message);
 }
-class CommandError extends Error {}
+
+
+const CommandError = (function(){}) as typeof Error;
+Object.setPrototypeOf(CommandError.prototype, Error.prototype);
+//Shenanigans necessary due to odd behavior of Typescript's compiled error subclass
 export function fail(message:string):never {
-	throw new CommandError(message);
+	let err = new Error(message);
+	Object.setPrototypeOf(err, CommandError.prototype);
+	throw err;
 }
 
 /**
@@ -162,7 +168,7 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 							//If the error is a command error, then just outputFail
 							outputFail(err.message, sender);
 						} else {
-							sender.sendMessage(`[scarlet]❌ An error occurred while executing the command.`);
+							sender.sendMessage(`[scarlet]❌ An error occurred while executing the command!`);
 							if(fishSender.ranksAtLeast(Rank.admin)) sender.sendMessage((<any>err).toString());
 						}
 					}

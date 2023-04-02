@@ -20,6 +20,7 @@ export const Ohnos = {
 	},
 	killAll(){
 		this.ohnos.forEach(ohno => ohno?.kill?.());
+		this.ohnos = [];
 	},
 	amount(){
 		return this.ohnos.length;

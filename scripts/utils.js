@@ -48,6 +48,8 @@ function getTimeSinceText(old) {
 exports.getTimeSinceText = getTimeSinceText;
 ;
 function to2DArray(array, width) {
+    if (array.length == 0)
+        return [];
     var output = [[]];
     array.forEach(function (el) {
         if (output.at(-1).length >= width) {

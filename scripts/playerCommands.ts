@@ -141,7 +141,7 @@ export const commands:FishCommandsList = {
 	...Object.fromEntries(Object.entries(FishServers).map(([name, data]) => [name, {
 		args: [],
 		description: `Switches to the ${name} server.`,
-		level: Perm.all,
+		perm: Perm.all,
 		handler({sender}){
 			Call.sendMessage(`${sender.name}[magenta] has gone to the ${name} server. Use [cyan]/${name} [magenta]to join them!`);
 			Call.connect(sender.con, data.ip, data.port);

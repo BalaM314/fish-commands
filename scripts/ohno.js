@@ -24,6 +24,7 @@ exports.Ohnos = {
     },
     killAll: function () {
         this.ohnos.forEach(function (ohno) { var _a; return (_a = ohno === null || ohno === void 0 ? void 0 : ohno.kill) === null || _a === void 0 ? void 0 : _a.call(ohno); });
+        this.ohnos = [];
     },
     amount: function () {
         return this.ohnos.length;

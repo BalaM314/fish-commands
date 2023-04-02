@@ -53,12 +53,12 @@ function menu(title, description, options, target, callback, includeCancel, opti
     if (optionStringifier === void 0) { optionStringifier = function (t) { return t; }; }
     if (!callback) {
         //overload 1, just display a menu with no callback
-        Call.menu(target.con, registeredListeners.none, title, description, options);
+        Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [["<no options>"]] : (0, utils_1.to2DArray)(options.map(optionStringifier), 3));
     }
     else {
         //overload 2, display a menu with callback
         //Set up the 2D array of options, and add cancel
-        var arrangedOptions = (0, utils_1.to2DArray)(options.map(optionStringifier), 3);
+        var arrangedOptions = (options.length == 0 && !includeCancel) ? [["<no options>"]] : (0, utils_1.to2DArray)(options.map(optionStringifier), 3);
         if (includeCancel) {
             arrangedOptions.push(["Cancel"]);
             target.activeMenu.cancelOptionId = options.length;

@@ -135,6 +135,7 @@ var FishPlayer = /** @class */ (function () {
         fishPlayer.updateSavedInfoFromPlayer(player);
         if (fishPlayer.validate()) {
             fishPlayer.updateName();
+            fishPlayer.updateAdminStatus();
             api.getStopped(player.uuid(), function (stopped) {
                 if (fishPlayer.stopped && !stopped)
                     fishPlayer.free("api");
@@ -233,10 +234,16 @@ var FishPlayer = /** @class */ (function () {
         this.player.name = prefix + this.name;
     };
     FishPlayer.prototype.updateAdminStatus = function () {
-        if (this.ranksAtLeast(ranks_1.Rank.admin))
+        Log.info("Updating admin status of player ".concat(this.name));
+        Log.info("Rank: ".concat(this.rank.name, ", is admin: ").concat(this.ranksAtLeast(ranks_1.Rank.admin)));
+        if (this.ranksAtLeast(ranks_1.Rank.admin)) {
             Vars.netServer.admins.adminPlayer(this.uuid(), this.player.usid());
-        else
+            this.player.admin = true;
+        }
+        else {
             Vars.netServer.admins.unAdminPlayer(this.uuid());
+            this.player.admin = false;
+        }
     };
     /**
      * Record moderation actions taken on a player.
@@ -343,7 +350,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.checkUsid = function () {
         if (this.usid != null && this.player.usid() != this.usid) {
-            Log.info("&rUSID mismatch for player &cy\"".concat(this.cleanedName, "\"&r: stored usid is &cy").concat(this.usid, "&r, but they tried to connect with usid &cy").concat(this.player.usid(), "&r, kicking"));
+            Log.info("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r, kicking"));
             this.player.kick("Authorization failure!");
             return false;
         }

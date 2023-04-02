@@ -110,6 +110,7 @@ export class FishPlayer {
     fishPlayer.updateSavedInfoFromPlayer(player);
     if(fishPlayer.validate()){
       fishPlayer.updateName();
+      fishPlayer.updateAdminStatus();
       api.getStopped(player.uuid(), (stopped) => {
         if(fishPlayer.stopped && !stopped) fishPlayer.free("api");
         if(stopped) fishPlayer.stop("api");
@@ -188,10 +189,15 @@ export class FishPlayer {
     this.player.name = prefix + this.name;
   }
   updateAdminStatus(){
-    if(this.ranksAtLeast(Rank.admin))
+    Log.info(`Updating admin status of player ${this.name}`);
+    Log.info(`Rank: ${this.rank.name}, is admin: ${this.ranksAtLeast(Rank.admin)}`);
+    if(this.ranksAtLeast(Rank.admin)){
       Vars.netServer.admins.adminPlayer(this.uuid(), this.player.usid());
-    else
+      this.player.admin = true;
+    } else {
       Vars.netServer.admins.unAdminPlayer(this.uuid());
+      this.player.admin = false;
+    }
   }
   /**
    * Record moderation actions taken on a player.
@@ -284,7 +290,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
   }
   checkUsid(){
     if(this.usid != null && this.player.usid() != this.usid){
-      Log.info(`&rUSID mismatch for player &cy"${this.cleanedName}"&r: stored usid is &cy${this.usid}&r, but they tried to connect with usid &cy${this.player.usid()}&r, kicking`);
+      Log.info(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r, kicking`);
       this.player.kick(`Authorization failure!`);
       return false;
     }
