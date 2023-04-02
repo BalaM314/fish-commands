@@ -350,8 +350,10 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.checkUsid = function () {
         if (this.usid != null && this.player.usid() != this.usid) {
-            Log.info("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r, kicking"));
-            this.player.kick("Authorization failure!");
+            Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r, kicking"));
+            if (this.ranksAtLeast(ranks_1.Rank.trusted)) {
+                this.player.kick("Authorization failure!");
+            }
             return false;
         }
         return true;
