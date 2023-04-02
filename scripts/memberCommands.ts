@@ -21,7 +21,7 @@ export const commands:FishCommandsList = {
         sender.pet = '';
       }
 
-      const pet = UnitTypes.merui.spawn(sender.player.team(), sender.player.unit().x, sender.player.unit().y);
+      const pet = UnitTypes.merui.spawn(sender.team(), sender.unit().x, sender.unit().y);
       pet.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
       sender.pet = pet.id;
 
@@ -37,8 +37,8 @@ export const commands:FishCommandsList = {
             return;
           }
 
-          const distX = fishPlayer.player.unit().x - pet.x;
-          const distY = fishPlayer.player.unit().y - pet.y;
+          const distX = fishPlayer.unit().x - pet.x;
+          const distY = fishPlayer.unit().y - pet.y;
           if(distX >= 50 || distX <= -50 || distY >= 50 || distY <= -50){
             pet.approach(new Vec2(distX, distY));
           }

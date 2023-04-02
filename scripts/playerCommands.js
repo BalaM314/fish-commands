@@ -83,7 +83,7 @@ exports.commands = __assign(__assign({ unpause: {
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
-            if ((_b = sender.player.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore) {
+            if ((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore) {
                 teleportPlayer(sender.player, args.player.player);
             }
             else {
@@ -96,7 +96,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (Cleaner.clean(sender.player)) {
+            if (Cleaner.clean(sender)) {
                 outputSuccess("Cleared the map of boulders.");
             }
             else {
@@ -110,7 +110,7 @@ exports.commands = __assign(__assign({ unpause: {
         handler: function (_a) {
             var _b;
             var sender = _a.sender;
-            (_b = sender.player.unit()) === null || _b === void 0 ? void 0 : _b.kill();
+            (_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.kill();
         }
     }, discord: {
         args: [],
@@ -118,7 +118,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.all,
         handler: function (_a) {
             var sender = _a.sender;
-            Call.openURI(sender.player.con, 'https://discord.gg/VpzcYSQ33Y');
+            Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
         }
     }, tilelog: {
         args: [],
@@ -162,7 +162,7 @@ exports.commands = __assign(__assign({ unpause: {
             handler: function (_a) {
                 var sender = _a.sender;
                 Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(name, " server. Use [cyan]/").concat(name, " [magenta]to join them!"));
-                Call.connect(sender.player.con, data.ip, data.port);
+                Call.connect(sender.con, data.ip, data.port);
             }
         }];
 }))), { s: {
@@ -194,18 +194,18 @@ exports.commands = __assign(__assign({ unpause: {
             }
             else {
                 sender.watch = true;
-                var stayX_1 = sender.player.unit().x;
-                var stayY_1 = sender.player.unit().y;
+                var stayX_1 = sender.unit().x;
+                var stayY_1 = sender.unit().y;
                 var target_1 = args.player.player;
                 var watch_1 = function () {
                     if (sender.watch) {
                         // Self.X+(172.5-Self.X)/10
-                        Call.setCameraPosition(sender.player.con, target_1.unit().x, target_1.unit().y);
-                        sender.player.unit().set(stayX_1, stayY_1);
+                        Call.setCameraPosition(sender.con, target_1.unit().x, target_1.unit().y);
+                        sender.unit().set(stayX_1, stayY_1);
                         Timer.schedule(function () { return watch_1(); }, 0.1, 0.1, 0);
                     }
                     else {
-                        Call.setCameraPosition(sender.player.con, stayX_1, stayY_1);
+                        Call.setCameraPosition(sender.con, stayX_1, stayY_1);
                     }
                 };
                 watch_1();
@@ -268,8 +268,8 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
-            recentWhispers[args.player.player.uuid()] = sender.player.uuid();
-            args.player.player.sendMessage("".concat(args.player.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
+            recentWhispers[args.player.uuid()] = sender.uuid();
+            args.player.sendMessage("".concat(args.player.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
             output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
         }
     }, r: {
@@ -278,10 +278,10 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
-            if (recentWhispers[sender.player.uuid()]) {
-                var recipient = players_1.FishPlayer.getById(recentWhispers[sender.player.uuid()]);
+            if (recentWhispers[sender.uuid()]) {
+                var recipient = players_1.FishPlayer.getById(recentWhispers[sender.uuid()]);
                 if (recipient === null || recipient === void 0 ? void 0 : recipient.connected()) {
-                    recipient.player.sendMessage("".concat(sender.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
+                    recipient.sendMessage("".concat(sender.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
                     output("[#0ffffff0]Message sent to ".concat(recipient.name, "[#0ffffff0]."));
                 }
                 else {
@@ -354,9 +354,9 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail;
-            var canSpawn = ohno_1.Ohnos.canSpawn(sender.player);
+            var canSpawn = ohno_1.Ohnos.canSpawn(sender);
             if (canSpawn === true) {
-                ohno_1.Ohnos.makeOhno(sender.player.team(), sender.player.x, sender.player.y);
+                ohno_1.Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
             }
             else {
                 outputFail(canSpawn);

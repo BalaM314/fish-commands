@@ -113,6 +113,7 @@ interface PlayerAction {
 type ActionType = any;
 declare const ActionType:Record<string, ActionType>;
 type Unit = any;
+type NetConnection = any;
 declare class Command {
 	text:string;
 	paramText:string;

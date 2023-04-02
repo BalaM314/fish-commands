@@ -14,7 +14,7 @@ function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
 const Cleaner = {
 	lastCleaned: 0,
 	cooldown: 10000,
-  clean(user:mindustryPlayer){
+  clean(user:FishPlayer){
     if(Time.millis() - this.lastCleaned < this.cooldown) return false;
     this.lastCleaned = Time.millis();
     Timer.schedule(
@@ -64,7 +64,7 @@ export const commands:FishCommandsList = {
 		description: "Teleport to another player.",
 		perm: Perm.notGriefer,
 		handler({args, sender, outputFail}){
-			if(sender.player.unit()?.spawnedByCore){
+			if(sender.unit()?.spawnedByCore){
 				teleportPlayer(sender.player, args.player.player);
 			} else {
 				outputFail(`Can only teleport while in a core unit.`);
@@ -77,7 +77,7 @@ export const commands:FishCommandsList = {
 		description: "Removes all boulders from the map.",
 		perm: Perm.notGriefer,
 		handler({sender, outputSuccess, outputFail}){
-			if(Cleaner.clean(sender.player)){
+			if(Cleaner.clean(sender)){
         outputSuccess(`Cleared the map of boulders.`);
       } else {
         outputFail(`This command was run recently and is on cooldown.`);
@@ -90,7 +90,7 @@ export const commands:FishCommandsList = {
 		description: "Commits die.",
 		perm: Perm.notGriefer,
 		handler({sender}){
-			sender.player.unit()?.kill();
+			sender.unit()?.kill();
 		}
 	},
 
@@ -99,7 +99,7 @@ export const commands:FishCommandsList = {
 		description: "Takes you to our discord.",
 		perm: Perm.all,
 		handler({sender}){
-			Call.openURI(sender.player.con, 'https://discord.gg/VpzcYSQ33Y');
+			Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
 		}
 	},
 
@@ -144,7 +144,7 @@ export const commands:FishCommandsList = {
 		level: Perm.all,
 		handler({sender}){
 			Call.sendMessage(`${sender.name}[magenta] has gone to the ${name} server. Use [cyan]/${name} [magenta]to join them!`);
-			Call.connect(sender.player.con, data.ip, data.port);
+			Call.connect(sender.con, data.ip, data.port);
 		}
 	}])),
 	
@@ -175,17 +175,17 @@ export const commands:FishCommandsList = {
 				sender.watch = false;
 			} else {
 				sender.watch = true;
-				const stayX = sender.player.unit().x;
-				const stayY = sender.player.unit().y;
+				const stayX = sender.unit().x;
+				const stayY = sender.unit().y;
 				const target = args.player.player;
 				const watch = () => {
 					if (sender.watch) {
 						// Self.X+(172.5-Self.X)/10
-						Call.setCameraPosition(sender.player.con, target.unit().x, target.unit().y);
-						sender.player.unit().set(stayX, stayY);
+						Call.setCameraPosition(sender.con, target.unit().x, target.unit().y);
+						sender.unit().set(stayX, stayY);
 						Timer.schedule(() => watch(), 0.1, 0.1, 0);
 					} else {
-						Call.setCameraPosition(sender.player.con, stayX, stayY);
+						Call.setCameraPosition(sender.con, stayX, stayY);
 					}
 				};
 	
@@ -248,8 +248,8 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 		description: "Send a message to only one player.",
 		perm: Perm.all,
 		handler({args, sender, output}){
-			recentWhispers[args.player.player.uuid()] = sender.player.uuid();
-			args.player.player.sendMessage(`${args.player.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
+			recentWhispers[args.player.uuid()] = sender.uuid();
+			args.player.sendMessage(`${args.player.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
 			output(`[#0ffffff0]Message sent to ${args.player.player.name}[#0ffffff0].`);
 		}
 	},
@@ -259,10 +259,10 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 		description: "Reply to the most recent message.",
 		perm: Perm.all,
 		handler({args, sender, output, outputFail}){
-			if(recentWhispers[sender.player.uuid()]){
-				const recipient = FishPlayer.getById(recentWhispers[sender.player.uuid()]);
+			if(recentWhispers[sender.uuid()]){
+				const recipient = FishPlayer.getById(recentWhispers[sender.uuid()]);
 				if(recipient?.connected()){
-					recipient.player.sendMessage(`${sender.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
+					recipient.sendMessage(`${sender.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
 					output(`[#0ffffff0]Message sent to ${recipient.name}[#0ffffff0].`);
 				} else {
 					outputFail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
@@ -342,9 +342,9 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 		description: "Spawns an ohno.",
 		perm: Perm.notGriefer,
 		handler({sender, outputFail}){
-			const canSpawn = Ohnos.canSpawn(sender.player);
+			const canSpawn = Ohnos.canSpawn(sender);
 			if(canSpawn === true){
-				Ohnos.makeOhno(sender.player.team(), sender.player.x, sender.player.y);
+				Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
 			} else {
 				outputFail(canSpawn);
 			}

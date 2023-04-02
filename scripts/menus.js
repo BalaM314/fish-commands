@@ -53,7 +53,7 @@ function menu(title, description, options, target, callback, includeCancel, opti
     if (optionStringifier === void 0) { optionStringifier = function (t) { return t; }; }
     if (!callback) {
         //overload 1, just display a menu with no callback
-        Call.menu(target.player.con, registeredListeners.none, title, description, options);
+        Call.menu(target.con, registeredListeners.none, title, description, options);
     }
     else {
         //overload 2, display a menu with callback
@@ -79,14 +79,14 @@ function menu(title, description, options, target, callback, includeCancel, opti
                 option: options[option],
                 sender: target,
                 outputFail: function (message) {
-                    target.player.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
+                    target.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
                 },
                 outputSuccess: function (message) {
-                    target.player.sendMessage("[#48e076]\u2714 ".concat(message));
+                    target.sendMessage("[#48e076]\u2714 ".concat(message));
                 }
             });
         };
-        Call.menu(target.player.con, registeredListeners.generic, title, description, arrangedOptions);
+        Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
     }
 }
 exports.menu = menu;

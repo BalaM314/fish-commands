@@ -47,7 +47,7 @@ function menu<T>(
 
 	if(!callback){
 		//overload 1, just display a menu with no callback
-		Call.menu(target.player.con, registeredListeners.none, title, description, options);
+		Call.menu(target.con, registeredListeners.none, title, description, options);
 	} else {
 		//overload 2, display a menu with callback
 
@@ -73,15 +73,15 @@ function menu<T>(
 				option: options[option],
 				sender: target,
 				outputFail(message:string){
-					target.player.sendMessage(`[scarlet]⚠ [yellow]${message}`);
+					target.sendMessage(`[scarlet]⚠ [yellow]${message}`);
 				},
 				outputSuccess(message:string){
-					target.player.sendMessage(`[#48e076]✔ ${message}`);
+					target.sendMessage(`[#48e076]✔ ${message}`);
 				}
 			});
 		};
 	
-		Call.menu(target.player.con, registeredListeners.generic, title, description, arrangedOptions);
+		Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
 	}
 
 }

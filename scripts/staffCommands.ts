@@ -29,7 +29,7 @@ export const commands:FishCommandsList = {
 			args.player.muted = true;
 			args.player.updateName();
 			outputSuccess(`Muted player "${args.player.cleanedName}".`);
-			args.player.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
+			args.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
 			args.player.addHistoryEntry({
 				action: 'unmuted',
 				by: sender.name,
@@ -48,7 +48,7 @@ export const commands:FishCommandsList = {
 				args.player.muted = false;
 				args.player.updateName();
 				outputSuccess(`Unmuted player "${args.player.cleanedName}".`);
-				args.player.player.sendMessage(`[green]You have been unmuted.`);
+				args.player.sendMessage(`[green]You have been unmuted.`);
 				args.player.addHistoryEntry({
           action: 'unmuted',
           by: sender.name,
@@ -249,8 +249,8 @@ export const commands:FishCommandsList = {
 		handler({args, sender, outputSuccess, outputFail}){
 			if(args.time <= 0 || args.time > 3600) fail(`Time must be a positive number less than 3600.`);
 			let timeRemaining = args.time;
-			const labelx = sender.player.x;
-			const labely = sender.player.y;
+			const labelx = sender.unit().x;
+			const labely = sender.unit().y;
 			Timer.schedule(() => {
 				if(timeRemaining > 0) {
 					let timeseconds = timeRemaining % 60;

@@ -23,7 +23,7 @@ exports.commands = {
                     pet_2.kill();
                 sender.pet = '';
             }
-            var pet = UnitTypes.merui.spawn(sender.player.team(), sender.player.unit().x, sender.player.unit().y);
+            var pet = UnitTypes.merui.spawn(sender.team(), sender.unit().x, sender.unit().y);
             pet.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
             sender.pet = pet.id;
             Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
@@ -35,8 +35,8 @@ exports.commands = {
                         pet.kill();
                         return;
                     }
-                    var distX = fishPlayer.player.unit().x - pet.x;
-                    var distY = fishPlayer.player.unit().y - pet.y;
+                    var distX = fishPlayer.unit().x - pet.x;
+                    var distY = fishPlayer.unit().y - pet.y;
                     if (distX >= 50 || distX <= -50 || distY >= 50 || distY <= -50) {
                         pet.approach(new Vec2(distX, distY));
                     }

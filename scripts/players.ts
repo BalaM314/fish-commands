@@ -152,7 +152,7 @@ export class FishPlayer {
     });
   }
   connected(){
-    return this.player && !this.player.con.hasDisconnected;
+    return this.player && !this.con.hasDisconnected;
   }
   setRank(rank:Rank){
     this.rank = rank;
@@ -189,9 +189,9 @@ export class FishPlayer {
   }
   updateAdminStatus(){
     if(this.ranksAtLeast(Rank.admin))
-      Vars.netServer.admins.adminPlayer(this.player.uuid(), this.player.usid());
+      Vars.netServer.admins.adminPlayer(this.uuid(), this.player.usid());
     else
-      Vars.netServer.admins.unAdminPlayer(this.player.uuid());
+      Vars.netServer.admins.unAdminPlayer(this.uuid());
   }
   /**
    * Record moderation actions taken on a player.
@@ -211,21 +211,21 @@ export class FishPlayer {
     this.stopped = true;
     this.stopUnit();
     this.updateName();
-    this.player.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+    this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
     if(by instanceof FishPlayer){
       this.addHistoryEntry({
         action: 'stopped',
         by: by.name,
         time: Date.now(),
       });
-      api.addStopped(this.player.uuid());
+      api.addStopped(this.uuid());
     }
     FishPlayer.saveAll();
   }
   stopUnit(){
-    if(isCoreUnitType(this.player.unit().type)){
-      this.player.unit().type = UnitTypes.stell;
-      this.player.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+    if(isCoreUnitType(this.unit().type)){
+      this.unit().type = UnitTypes.stell;
+      this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
     } else {
       this.forceRespawn();
       //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
@@ -235,19 +235,34 @@ export class FishPlayer {
     this.player.clearUnit();
     this.player.checkSpawn();
   }
+  uuid():string {
+    return this.player.uuid();
+  }
+  unit():Unit {
+    return this.player.unit();
+  }
+  team():Team {
+    return this.player.team();
+  }
+  get con():NetConnection {
+    return this.player.con;
+  }
+  sendMessage(message:string){
+    return this.player.sendMessage(message);
+  }
   free(by:FishPlayer | "api"){
     if(!this.stopped) return;
     this.stopped = false;
     this.updateName();
     this.forceRespawn();
     if(by instanceof FishPlayer){
-      this.player.sendMessage('[yellow]Looks like someone had mercy on you.');
+      this.sendMessage('[yellow]Looks like someone had mercy on you.');
       this.addHistoryEntry({
         action: 'freed',
         by: by.name,
         time: Date.now(),
       });
-      api.free(this.player.uuid());
+      api.free(this.uuid());
     }
     FishPlayer.saveAll();
   }

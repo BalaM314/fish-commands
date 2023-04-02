@@ -34,7 +34,7 @@ exports.commands = {
             args.player.muted = true;
             args.player.updateName();
             outputSuccess("Muted player \"".concat(args.player.cleanedName, "\"."));
-            args.player.player.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
+            args.player.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
             args.player.addHistoryEntry({
                 action: 'unmuted',
                 by: sender.name,
@@ -53,7 +53,7 @@ exports.commands = {
                 args.player.muted = false;
                 args.player.updateName();
                 outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
-                args.player.player.sendMessage("[green]You have been unmuted.");
+                args.player.sendMessage("[green]You have been unmuted.");
                 args.player.addHistoryEntry({
                     action: 'unmuted',
                     by: sender.name,
@@ -263,8 +263,8 @@ exports.commands = {
             if (args.time <= 0 || args.time > 3600)
                 (0, commands_1.fail)("Time must be a positive number less than 3600.");
             var timeRemaining = args.time;
-            var labelx = sender.player.x;
-            var labely = sender.player.y;
+            var labelx = sender.unit().x;
+            var labely = sender.unit().y;
             Timer.schedule(function () {
                 if (timeRemaining > 0) {
                     var timeseconds = timeRemaining % 60;
