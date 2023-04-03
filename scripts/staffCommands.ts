@@ -26,16 +26,8 @@ export const commands:FishCommandsList = {
 		handler({args, sender, outputSuccess}){
 			if(args.player.muted) fail(`Player "${args.player.cleanedName}" is already muted.`);
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to mute this player.`);
-			args.player.muted = true;
-			args.player.updateName();
+			args.player.mute(sender);
 			outputSuccess(`Muted player "${args.player.cleanedName}".`);
-			args.player.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
-			args.player.addHistoryEntry({
-				action: 'unmuted',
-				by: sender.name,
-				time: Date.now(),
-			});
-			FishPlayer.saveAll();
 		}
 	},
 
@@ -43,20 +35,10 @@ export const commands:FishCommandsList = {
 		args: ['player:player'],
 		description: 'Unmutes a player',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, outputFail }){
-			if(args.player.muted){
-				args.player.muted = false;
-				args.player.updateName();
-				outputSuccess(`Unmuted player "${args.player.cleanedName}".`);
-				args.player.sendMessage(`[green]You have been unmuted.`);
-				args.player.addHistoryEntry({
-					action: 'unmuted',
-					by: sender.name,
-					time: Date.now(),
-				});
-			} else {
-				outputFail(`Player "${args.player.cleanedName}" is not muted.`);
-			}
+		handler({args, sender, outputSuccess}){
+			if(!args.player.muted) fail(`Player "${args.player.cleanedName}" is not muted.`);
+			args.player.unmute(sender);
+			outputSuccess(`Unmuted player "${args.player.cleanedName}".`);
 		}
 	},
 
@@ -64,7 +46,7 @@ export const commands:FishCommandsList = {
 		args: ['player:player', 'reason:string?'],
 		description: 'Kick a player with optional reason.',
 		perm: Perm.mod,
-		handler({args, outputSuccess, outputFail, sender}){
+		handler({args, outputSuccess, sender}){
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
 			const reason = args.reason ?? 'A staff member did not like your actions.';
 			args.player.player.kick(reason);
@@ -76,7 +58,7 @@ export const commands:FishCommandsList = {
 		args: ['player:player'],
 		description: 'Stops a player.',
 		perm: Perm.mod,
-		handler({args, sender, outputFail}){
+		handler({args, sender}){
 			if(args.player.stopped) fail(`Player "${args.player.name}" is already stopped.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to kick this player.`);
 			args.player.stop(sender);
@@ -102,7 +84,7 @@ export const commands:FishCommandsList = {
 		args: ["player:exactPlayer", "rank:string"],
 		description: "Set a player's rank.",
 		perm: Perm.mod,
-		handler({args, outputFail, outputSuccess, sender}){
+		handler({args, outputSuccess, sender}){
 			const rank = Rank.getByName(args.rank);
 			if(rank == null) fail(`Unknown rank ${args.rank}`);
 			if(rank.level >= sender.rank.level)
@@ -161,7 +143,7 @@ export const commands:FishCommandsList = {
 		args: [],
 		description: "Stops and restarts the server. Do not run when the player count is high.",
 		perm: Perm.admin,
-		handler({outputFail}){
+		handler(){
 			const now = Date.now();
 			const lastRestart = Core.settings.get("lastRestart", "");
 			if(lastRestart != ""){
@@ -242,7 +224,7 @@ export const commands:FishCommandsList = {
 		args: ["time:number", "message:string"],
 		description: "Places a label at your position for a specified amount of time.",
 		perm: Perm.admin,
-		handler({args, sender, outputSuccess, outputFail}){
+		handler({args, sender, outputSuccess}){
 			if(args.time <= 0 || args.time > 3600) fail(`Time must be a positive number less than 3600.`);
 			let timeRemaining = args.time;
 			const labelx = sender.unit().x;

@@ -421,6 +421,36 @@ var FishPlayer = /** @class */ (function () {
         }
         FishPlayer.saveAll();
     };
+    FishPlayer.prototype.mute = function (by) {
+        if (this.muted)
+            return;
+        this.muted = true;
+        this.updateName();
+        this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
+        if (by instanceof FishPlayer) {
+            this.addHistoryEntry({
+                action: 'muted',
+                by: by.name,
+                time: Date.now(),
+            });
+        }
+        FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.unmute = function (by) {
+        if (!this.muted)
+            return;
+        this.muted = false;
+        this.updateName();
+        this.sendMessage("[green]You have been unmuted.");
+        if (by instanceof FishPlayer) {
+            this.addHistoryEntry({
+                action: 'unmuted',
+                by: by.name,
+                time: Date.now(),
+            });
+        }
+        FishPlayer.saveAll();
+    };
     FishPlayer.prototype.stopUnit = function () {
         if (this.connected() && this.unit()) {
             if ((0, utils_1.isCoreUnitType)(this.unit().type)) {

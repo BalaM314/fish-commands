@@ -347,6 +347,34 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		}
 		FishPlayer.saveAll();
 	}
+	mute(by:FishPlayer | "api"){
+		if(this.muted) return;
+		this.muted = true;
+		this.updateName();
+		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
+		if(by instanceof FishPlayer){
+			this.addHistoryEntry({
+				action: 'muted',
+				by: by.name,
+				time: Date.now(),
+			});
+		}
+		FishPlayer.saveAll();
+	}
+	unmute(by:FishPlayer | "api"){
+		if(!this.muted) return;
+		this.muted = false;
+		this.updateName();
+		this.sendMessage(`[green]You have been unmuted.`);
+		if(by instanceof FishPlayer){
+			this.addHistoryEntry({
+				action: 'unmuted',
+				by: by.name,
+				time: Date.now(),
+			});
+		}
+		FishPlayer.saveAll();
+	}
 
 	stopUnit(){
 		if(this.connected() && this.unit()){

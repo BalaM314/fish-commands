@@ -30,16 +30,8 @@ exports.commands = {
                 (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is already muted."));
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to mute this player.");
-            args.player.muted = true;
-            args.player.updateName();
+            args.player.mute(sender);
             outputSuccess("Muted player \"".concat(args.player.cleanedName, "\"."));
-            args.player.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
-            args.player.addHistoryEntry({
-                action: 'unmuted',
-                by: sender.name,
-                time: Date.now(),
-            });
-            players_1.FishPlayer.saveAll();
         }
     },
     unmute: {
@@ -47,21 +39,11 @@ exports.commands = {
         description: 'Unmutes a player',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (args.player.muted) {
-                args.player.muted = false;
-                args.player.updateName();
-                outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
-                args.player.sendMessage("[green]You have been unmuted.");
-                args.player.addHistoryEntry({
-                    action: 'unmuted',
-                    by: sender.name,
-                    time: Date.now(),
-                });
-            }
-            else {
-                outputFail("Player \"".concat(args.player.cleanedName, "\" is not muted."));
-            }
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (!args.player.muted)
+                (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is not muted."));
+            args.player.unmute(sender);
+            outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
         }
     },
     kick: {
@@ -70,7 +52,7 @@ exports.commands = {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
-            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, sender = _a.sender;
+            var args = _a.args, outputSuccess = _a.outputSuccess, sender = _a.sender;
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to kick this player.");
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
@@ -83,7 +65,7 @@ exports.commands = {
         description: 'Stops a player.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
+            var args = _a.args, sender = _a.sender;
             if (args.player.stopped)
                 (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already stopped."));
             if (!sender.canModerate(args.player, false))
@@ -113,7 +95,7 @@ exports.commands = {
         description: "Set a player's rank.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, sender = _a.sender;
+            var args = _a.args, outputSuccess = _a.outputSuccess, sender = _a.sender;
             var rank = ranks_1.Rank.getByName(args.rank);
             if (rank == null)
                 (0, commands_1.fail)("Unknown rank ".concat(args.rank));
@@ -174,8 +156,7 @@ exports.commands = {
         args: [],
         description: "Stops and restarts the server. Do not run when the player count is high.",
         perm: commands_1.Perm.admin,
-        handler: function (_a) {
-            var outputFail = _a.outputFail;
+        handler: function () {
             var now = Date.now();
             var lastRestart = Core.settings.get("lastRestart", "");
             if (lastRestart != "") {
@@ -255,7 +236,7 @@ exports.commands = {
         description: "Places a label at your position for a specified amount of time.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (args.time <= 0 || args.time > 3600)
                 (0, commands_1.fail)("Time must be a positive number less than 3600.");
             var timeRemaining = args.time;
