@@ -255,6 +255,10 @@ var FishPlayer = /** @class */ (function () {
         }
         return true;
     };
+    FishPlayer.prototype.displayTrail = function () {
+        if (this.trail)
+            Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+    };
     //#endregion
     //#region I/O
     FishPlayer.read = function (fishPlayerData, player) {

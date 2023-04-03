@@ -8,6 +8,7 @@ export function initializeTimers(){
 			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
 			Core.app.post(() => {
 				SaveIO.save(file);
+				FishPlayer.saveAll();
 				Call.sendMessage('[#4fff8f9f]Game saved.');
 			});
 		},
@@ -16,9 +17,7 @@ export function initializeTimers(){
 	);
 	//Trails
 	Timer.schedule(
-		() => FishPlayer.forEachPlayer(p => {
-			if(p.trail) Call.effect(Fx[p.trail.type], p.player.x, p.player.y, 0, p.trail.color);
-		}),
+		() => FishPlayer.forEachPlayer(p => p.displayTrail()),
 		5,
 		0.15
 	);

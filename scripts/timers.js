@@ -8,13 +8,11 @@ function initializeTimers() {
         var file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
         Core.app.post(function () {
             SaveIO.save(file);
+            players_1.FishPlayer.saveAll();
             Call.sendMessage('[#4fff8f9f]Game saved.');
         });
     }, 10, 300);
     //Trails
-    Timer.schedule(function () { return players_1.FishPlayer.forEachPlayer(function (p) {
-        if (p.trail)
-            Call.effect(Fx[p.trail.type], p.player.x, p.player.y, 0, p.trail.color);
-    }); }, 5, 0.15);
+    Timer.schedule(function () { return players_1.FishPlayer.forEachPlayer(function (p) { return p.displayTrail(); }); }, 5, 0.15);
 }
 exports.initializeTimers = initializeTimers;
