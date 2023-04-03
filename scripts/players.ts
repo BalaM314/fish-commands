@@ -178,7 +178,7 @@ export class FishPlayer {
 		this.cleanedName = Strings.stripColors(player.name);
 	}
 	updateName(){
-		if(this.player == null) return;//No player, no need to update
+		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
 		if(this.stopped) prefix += config.STOPPED_PREFIX;
 		if(this.muted) prefix += config.MUTED_PREFIX;
@@ -229,12 +229,14 @@ export class FishPlayer {
 		FishPlayer.saveAll();
 	}
 	stopUnit(){
-		if(isCoreUnitType(this.unit().type)){
-			this.unit().type = UnitTypes.stell;
-			this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
-		} else {
-			this.forceRespawn();
-			//This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+		if(this.connected() && this.unit()){
+			if(isCoreUnitType(this.unit().type)){
+				this.unit().type = UnitTypes.stell;
+				this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+			} else {
+				this.forceRespawn();
+				//This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+			}
 		}
 	}
 	forceRespawn(){
@@ -254,7 +256,7 @@ export class FishPlayer {
 		return this.player.con;
 	}
 	sendMessage(message:string){
-		return this.player.sendMessage(message);
+		return this.player?.sendMessage(message);
 	}
 	free(by:FishPlayer | "api"){
 		if(!this.stopped) return;

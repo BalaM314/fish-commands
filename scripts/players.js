@@ -219,7 +219,7 @@ var FishPlayer = /** @class */ (function () {
         this.cleanedName = Strings.stripColors(player.name);
     };
     FishPlayer.prototype.updateName = function () {
-        if (this.player == null)
+        if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
         if (this.stopped)
@@ -276,13 +276,15 @@ var FishPlayer = /** @class */ (function () {
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.stopUnit = function () {
-        if ((0, utils_1.isCoreUnitType)(this.unit().type)) {
-            this.unit().type = UnitTypes.stell;
-            this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
-        }
-        else {
-            this.forceRespawn();
-            //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+        if (this.connected() && this.unit()) {
+            if ((0, utils_1.isCoreUnitType)(this.unit().type)) {
+                this.unit().type = UnitTypes.stell;
+                this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+            }
+            else {
+                this.forceRespawn();
+                //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+            }
         }
     };
     FishPlayer.prototype.forceRespawn = function () {
@@ -306,7 +308,8 @@ var FishPlayer = /** @class */ (function () {
         configurable: true
     });
     FishPlayer.prototype.sendMessage = function (message) {
-        return this.player.sendMessage(message);
+        var _a;
+        return (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);
     };
     FishPlayer.prototype.free = function (by) {
         if (!this.stopped)

@@ -139,20 +139,16 @@ export const commands:FishCommandsList = {
 				if(exactPlayers.size > 0){
 					possiblePlayers = exactPlayers;
 				} else {
-					outputFail('Too many players with that name.');
+					fail('Too many players with that name.');
 				}
+			} else if(possiblePlayers.length == 0){
+				fail("No players with that name were found.");
 			}
 
 			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
 				const fishP = FishPlayer.getFromInfo(option);
-				if(sender.canModerate(fishP, false)){
-					fishP.stopped = true;
-					api.addStopped(option.id);
-					fishP.addHistoryEntry({
-						action: 'stopped',
-						by: sender.name,
-						time: Date.now(),
-					});
+				if(sender.canModerate(fishP, true)){
+					fishP.stop(sender);
 					outputSuccess(`Player "${option.lastName}" was stopped.`);
 				} else {
 					outputFail(`You do not have permission to stop this player.`);

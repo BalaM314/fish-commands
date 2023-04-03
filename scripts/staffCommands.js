@@ -5,7 +5,6 @@ var commands_1 = require("./commands");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
-var api = require("./api");
 var ohno_1 = require("./ohno");
 var ranks_1 = require("./ranks");
 exports.commands = {
@@ -152,20 +151,17 @@ exports.commands = {
                     possiblePlayers = exactPlayers;
                 }
                 else {
-                    outputFail('Too many players with that name.');
+                    (0, commands_1.fail)('Too many players with that name.');
                 }
+            }
+            else if (possiblePlayers.length == 0) {
+                (0, commands_1.fail)("No players with that name were found.");
             }
             (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, sender, function (_a) {
                 var option = _a.option, sender = _a.sender;
                 var fishP = players_1.FishPlayer.getFromInfo(option);
-                if (sender.canModerate(fishP, false)) {
-                    fishP.stopped = true;
-                    api.addStopped(option.id);
-                    fishP.addHistoryEntry({
-                        action: 'stopped',
-                        by: sender.name,
-                        time: Date.now(),
-                    });
+                if (sender.canModerate(fishP, true)) {
+                    fishP.stop(sender);
                     outputSuccess("Player \"".concat(option.lastName, "\" was stopped."));
                 }
                 else {
