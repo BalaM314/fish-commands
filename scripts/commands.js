@@ -50,7 +50,7 @@ var Perm = /** @class */ (function () {
     return Perm;
 }());
 exports.Perm = Perm;
-var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"];
+var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"];
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha
@@ -91,7 +91,6 @@ function processArgs(args, processedCmdArgs, allowMenus) {
             //Deserialize the arg
             switch (cmdArg.type) {
                 case "player":
-                case "namedPlayer":
                     var player = players_1.FishPlayer.getByName(args[i]);
                     if (player == null)
                         return { error: "Player \"".concat(args[i], "\" not found.") };
@@ -167,6 +166,15 @@ function fail(message) {
     throw err;
 }
 exports.fail = fail;
+/**Converts the CommandArg[] to the format accepted by Arc CommandHandler */
+function convertArgs(processedCmdArgs, allowMenus) {
+    return processedCmdArgs.map(function (arg, index, array) {
+        var isOptional = arg.isOptional || (arg.type == "player" && allowMenus && !array.slice(index + 1).some(function (c) { return !c.isOptional; }));
+        var brackets = isOptional ? ["[", "]"] : ["<", ">"];
+        //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
+        return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
+    }).join(" ");
+}
 /**
  * Registers all commands in a list to a client command handler.
  **/
@@ -176,17 +184,11 @@ function register(commands, clientHandler, serverHandler) {
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
-        clientHandler.register(name, 
-        //Convert the CommandArg[] to the format accepted by Arc CommandHandler
-        processedCmdArgs.map(function (arg, index, array) {
-            var brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
-            //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
-            return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
-        }).join(" "), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs, sender) {
+        clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs, sender) {
                 var _a;
                 var fishSender = players_1.FishPlayer.get(sender);
                 //Verify authorization
-                //This crashes if data.perm is undefined as it should
+                //as a bonus, this crashes if data.perm is undefined
                 if (!data.perm.check(fishSender)) {
                     outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.perm.unauthorizedMessage, sender);
                     return;
@@ -249,13 +251,7 @@ function registerConsole(commands, serverHandler) {
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         serverHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
-        serverHandler.register(name, 
-        //Convert the CommandArg[] to the format accepted by Arc CommandHandler
-        processedCmdArgs.map(function (arg, index, array) {
-            var brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
-            //if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
-            return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
-        }).join(" "), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs) {
+        serverHandler.register(name, convertArgs(processedCmdArgs, false), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs) {
                 //closure over processedCmdArgs, should be fine
                 //Process the args
                 var output = processArgs(rawArgs, processedCmdArgs, false);

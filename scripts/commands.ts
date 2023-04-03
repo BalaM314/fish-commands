@@ -18,7 +18,7 @@ export class Perm {
 	}
 }
 
-const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer", "namedPlayer"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
@@ -60,7 +60,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 
 		//Deserialize the arg
 		switch(cmdArg.type){
-			case "player": case "namedPlayer":
+			case "player":
 				const player = FishPlayer.getByName(args[i]);
 				if(player == null) return {error: `Player "${args[i]}" not found.`};
 				outputArgs[cmdArg.name] = player;
@@ -112,6 +112,16 @@ export function fail(message:string):never {
 	throw err;
 }
 
+/**Converts the CommandArg[] to the format accepted by Arc CommandHandler */
+function convertArgs(processedCmdArgs:CommandArg[], allowMenus:boolean):string {
+	return processedCmdArgs.map((arg, index, array) => {
+		const isOptional = arg.isOptional || (arg.type == "player" && allowMenus && !array.slice(index + 1).some(c => !c.isOptional));
+		const brackets = isOptional ? ["[", "]"] : ["<", ">"];
+		//if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
+		return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
+	}).join(" ");
+}
+
 /**
  * Registers all commands in a list to a client command handler.
  **/
@@ -124,18 +134,13 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 		clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
 		clientHandler.register(
 			name,
-			//Convert the CommandArg[] to the format accepted by Arc CommandHandler
-			processedCmdArgs.map((arg, index, array) => {
-				const brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
-				//if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
-				return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
-			}).join(" "),
+			convertArgs(processedCmdArgs, true),
 			data.description,
 			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[], sender:mindustryPlayer) => {
 				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
-				//This crashes if data.perm is undefined as it should
+				//as a bonus, this crashes if data.perm is undefined
 				if(!data.perm.check(fishSender)){
 					outputFail(data.customUnauthorizedMessage ?? data.perm.unauthorizedMessage, sender);
 					return;
@@ -191,12 +196,7 @@ export function registerConsole(commands:FishConsoleCommandsList, serverHandler:
 		serverHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
 		serverHandler.register(
 			name,
-			//Convert the CommandArg[] to the format accepted by Arc CommandHandler
-			processedCmdArgs.map((arg, index, array) => {
-				const brackets = (arg.isOptional || arg.type == "player") ? ["[", "]"] : ["<", ">"];
-				//if the arg is a string and last argument, make it a spread type (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
-				return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
-			}).join(" "),
+			convertArgs(processedCmdArgs, false),
 			data.description,
 			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[]) => {
 				

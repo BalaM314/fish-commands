@@ -263,7 +263,7 @@ exports.commands = __assign(__assign({ unpause: {
             }
         }
     }, msg: {
-        args: ["player:namedPlayer", "message:string"],
+        args: ["player:player", "message:string"],
         description: "Send a message to only one player.",
         perm: commands_1.Perm.all,
         handler: function (_a) {

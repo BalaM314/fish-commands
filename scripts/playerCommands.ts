@@ -244,7 +244,7 @@ ${chunkedNormalCommands[pageNumber - 1].join("\n")}`
 	},
 
 	msg: {
-		args: ["player:namedPlayer", "message:string"],
+		args: ["player:player", "message:string"],
 		description: "Send a message to only one player.",
 		perm: Perm.all,
 		handler({args, sender, output}){
