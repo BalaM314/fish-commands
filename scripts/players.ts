@@ -39,6 +39,7 @@ export class FishPlayer {
 	} | null;
 	history: PlayerHistoryEntry[];
 	usid: string | null;
+
 	constructor({
 		name, muted = false, member = false, stopped = false,
 		highlight = null, history = [], rainbow = null, rank = "player", usid
@@ -55,9 +56,8 @@ export class FishPlayer {
 		this.rank = Rank.getByName(rank) ?? Rank.player;
 		this.usid = usid ?? player?.usid() ?? null;
 	}
-	static read(fishPlayerData:string, player:mindustryPlayer | null){
-		return new this(JSON.parse(fishPlayerData), player);
-	}
+
+	//#region getplayer
 	static createFromPlayer(player:mindustryPlayer){
 		return new this({
 			name: player.name
@@ -89,6 +89,7 @@ export class FishPlayer {
 		});
 		return realPlayer ? this.get(realPlayer) : null;
 	};
+	
 	static getAllByName(name:string, strict = true):FishPlayer[] {
 		let players:FishPlayer[] = [];
 		//Groups.player doesn't support filter
@@ -105,6 +106,9 @@ export class FishPlayer {
 		Groups.player.each((p:mindustryPlayer) => players.push(FishPlayer.get(p)));
 		return players;
 	}
+	//#endregion
+
+	//#region eventhandling
 	static onPlayerJoin(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
 		fishPlayer.updateSavedInfoFromPlayer(player);
@@ -117,7 +121,6 @@ export class FishPlayer {
 			});
 		}
 	}
-	
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
 		//if(unit.spawnedByCore)
 		/**
@@ -139,37 +142,6 @@ export class FishPlayer {
 			if(player.connected()) func(player);
 		}
 	}
-	write():string {
-		return JSON.stringify({
-			name: this.name,
-			muted: this.muted,
-			member: this.member,
-			stopped: this.stopped,
-			highlight: this.highlight,
-			history: this.history,
-			rainbow: this.rainbow,
-			rank: this.rank.name,
-			usid: this.usid,
-		});
-	}
-	connected(){
-		return this.player && !this.con.hasDisconnected;
-	}
-	setRank(rank:Rank){
-		this.rank = rank;
-		this.updateName();
-		this.updateAdminStatus();
-		FishPlayer.saveAll();
-	}
-	canModerate(player:FishPlayer, strict:boolean = true){
-		if(strict)
-			return this.rank.level > player.rank.level || player == this;
-		else
-			return this.rank.level >= player.rank.level || player == this;
-	}
-	ranksAtLeast(rank:Rank){
-		return this.rank.level >= rank.level;
-	}
 	/**Must be called at player join, before updateName(). */
 	updateSavedInfoFromPlayer(player:mindustryPlayer){
 		this.player = player;
@@ -177,6 +149,7 @@ export class FishPlayer {
 		this.usid ??= player.usid();
 		this.cleanedName = Strings.stripColors(player.name);
 	}
+
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
@@ -198,81 +171,6 @@ export class FishPlayer {
 			Vars.netServer.admins.unAdminPlayer(this.uuid());
 			this.player.admin = false;
 		}
-	}
-	/**
-	 * Record moderation actions taken on a player.
-	 * @param id uuid of the player
-	 * @param entry description of action taken
-	 */
-	addHistoryEntry(entry:PlayerHistoryEntry){
-		if(this.history.length > FishPlayer.maxHistoryLength){
-			this.history.shift();
-		}
-		this.history.push(entry);
-	}
-	static addPlayerHistory(id:string, entry:PlayerHistoryEntry){
-		this.getById(id)?.addHistoryEntry(entry);
-	}
-	stop(by:FishPlayer | "api"){
-		this.stopped = true;
-		this.stopUnit();
-		this.updateName();
-		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
-		if(by instanceof FishPlayer){
-			this.addHistoryEntry({
-				action: 'stopped',
-				by: by.name,
-				time: Date.now(),
-			});
-			api.addStopped(this.uuid());
-		}
-		FishPlayer.saveAll();
-	}
-	stopUnit(){
-		if(this.connected() && this.unit()){
-			if(isCoreUnitType(this.unit().type)){
-				this.unit().type = UnitTypes.stell;
-				this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
-			} else {
-				this.forceRespawn();
-				//This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
-			}
-		}
-	}
-	forceRespawn(){
-		this.player.clearUnit();
-		this.player.checkSpawn();
-	}
-	uuid():string {
-		return this.player.uuid();
-	}
-	unit():Unit {
-		return this.player.unit();
-	}
-	team():Team {
-		return this.player.team();
-	}
-	get con():NetConnection {
-		return this.player.con;
-	}
-	sendMessage(message:string){
-		return this.player?.sendMessage(message);
-	}
-	free(by:FishPlayer | "api"){
-		if(!this.stopped) return;
-		this.stopped = false;
-		this.updateName();
-		this.forceRespawn();
-		if(by instanceof FishPlayer){
-			this.sendMessage('[yellow]Looks like someone had mercy on you.');
-			this.addHistoryEntry({
-				action: 'freed',
-				by: by.name,
-				time: Date.now(),
-			});
-			api.free(this.uuid());
-		}
-		FishPlayer.saveAll();
 	}
 	validate(){
 		return this.checkName() && this.checkUsid();
@@ -299,6 +197,25 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 			return false;
 		}
 		return true;
+	}
+	//#endregion
+
+	//#region I/O
+	static read(fishPlayerData:string, player:mindustryPlayer | null){
+		return new this(JSON.parse(fishPlayerData), player);
+	}
+	write():string {
+		return JSON.stringify({
+			name: this.name,
+			muted: this.muted,
+			member: this.member,
+			stopped: this.stopped,
+			highlight: this.highlight,
+			history: this.history,
+			rainbow: this.rainbow,
+			rank: this.rank.name,
+			usid: this.usid,
+		});
 	}
 	static saveAll(){
 		//Temporary implementation
@@ -327,4 +244,108 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 			}
 		}
 	}
+	//#endregion
+	
+	//#region util
+	connected(){
+		return this.player && !this.con.hasDisconnected;
+	}
+	canModerate(player:FishPlayer, strict:boolean = true){
+		if(strict)
+			return this.rank.level > player.rank.level || player == this;
+		else
+			return this.rank.level >= player.rank.level || player == this;
+	}
+	ranksAtLeast(rank:Rank){
+		return this.rank.level >= rank.level;
+	}
+	uuid():string {
+		return this.player.uuid();
+	}
+	unit():Unit {
+		return this.player.unit();
+	}
+	team():Team {
+		return this.player.team();
+	}
+	get con():NetConnection {
+		return this.player.con;
+	}
+	sendMessage(message:string){
+		return this.player?.sendMessage(message);
+	}
+
+	setRank(rank:Rank){
+		this.rank = rank;
+		this.updateName();
+		this.updateAdminStatus();
+		FishPlayer.saveAll();
+	}
+	forceRespawn(){
+		this.player.clearUnit();
+		this.player.checkSpawn();
+	}
+	//#endregion
+
+	//#region moderation
+	/**
+	 * Record moderation actions taken on a player.
+	 * @param id uuid of the player
+	 * @param entry description of action taken
+	 */
+	addHistoryEntry(entry:PlayerHistoryEntry){
+		if(this.history.length > FishPlayer.maxHistoryLength){
+			this.history.shift();
+		}
+		this.history.push(entry);
+	}
+	static addPlayerHistory(id:string, entry:PlayerHistoryEntry){
+		this.getById(id)?.addHistoryEntry(entry);
+	}
+
+	stop(by:FishPlayer | "api"){
+		this.stopped = true;
+		this.stopUnit();
+		this.updateName();
+		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+		if(by instanceof FishPlayer){
+			this.addHistoryEntry({
+				action: 'stopped',
+				by: by.name,
+				time: Date.now(),
+			});
+			api.addStopped(this.uuid());
+		}
+		FishPlayer.saveAll();
+	}
+	free(by:FishPlayer | "api"){
+		if(!this.stopped) return;
+		this.stopped = false;
+		this.updateName();
+		this.forceRespawn();
+		if(by instanceof FishPlayer){
+			this.sendMessage('[yellow]Looks like someone had mercy on you.');
+			this.addHistoryEntry({
+				action: 'freed',
+				by: by.name,
+				time: Date.now(),
+			});
+			api.free(this.uuid());
+		}
+		FishPlayer.saveAll();
+	}
+
+	stopUnit(){
+		if(this.connected() && this.unit()){
+			if(isCoreUnitType(this.unit().type)){
+				this.unit().type = UnitTypes.stell;
+				this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+			} else {
+				this.forceRespawn();
+				//This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+			}
+		}
+	}
+	//#endregion
+
 }

@@ -68,9 +68,7 @@ var FishPlayer = /** @class */ (function () {
         this.rank = (_k = ranks_1.Rank.getByName(rank)) !== null && _k !== void 0 ? _k : ranks_1.Rank.player;
         this.usid = (_l = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _l !== void 0 ? _l : null;
     }
-    FishPlayer.read = function (fishPlayerData, player) {
-        return new this(JSON.parse(fishPlayerData), player);
-    };
+    //#region getplayer
     FishPlayer.createFromPlayer = function (player) {
         return new this({
             name: player.name
@@ -128,6 +126,8 @@ var FishPlayer = /** @class */ (function () {
         Groups.player.each(function (p) { return players.push(FishPlayer.get(p)); });
         return players;
     };
+    //#endregion
+    //#region eventhandling
     FishPlayer.onPlayerJoin = function (player) {
         var _a;
         var _b, _c;
@@ -178,38 +178,6 @@ var FishPlayer = /** @class */ (function () {
             finally { if (e_1) throw e_1.error; }
         }
     };
-    FishPlayer.prototype.write = function () {
-        return JSON.stringify({
-            name: this.name,
-            muted: this.muted,
-            member: this.member,
-            stopped: this.stopped,
-            highlight: this.highlight,
-            history: this.history,
-            rainbow: this.rainbow,
-            rank: this.rank.name,
-            usid: this.usid,
-        });
-    };
-    FishPlayer.prototype.connected = function () {
-        return this.player && !this.con.hasDisconnected;
-    };
-    FishPlayer.prototype.setRank = function (rank) {
-        this.rank = rank;
-        this.updateName();
-        this.updateAdminStatus();
-        FishPlayer.saveAll();
-    };
-    FishPlayer.prototype.canModerate = function (player, strict) {
-        if (strict === void 0) { strict = true; }
-        if (strict)
-            return this.rank.level > player.rank.level || player == this;
-        else
-            return this.rank.level >= player.rank.level || player == this;
-    };
-    FishPlayer.prototype.ranksAtLeast = function (rank) {
-        return this.rank.level >= rank.level;
-    };
     /**Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
         var _a;
@@ -245,89 +213,6 @@ var FishPlayer = /** @class */ (function () {
             this.player.admin = false;
         }
     };
-    /**
-     * Record moderation actions taken on a player.
-     * @param id uuid of the player
-     * @param entry description of action taken
-     */
-    FishPlayer.prototype.addHistoryEntry = function (entry) {
-        if (this.history.length > FishPlayer.maxHistoryLength) {
-            this.history.shift();
-        }
-        this.history.push(entry);
-    };
-    FishPlayer.addPlayerHistory = function (id, entry) {
-        var _a;
-        (_a = this.getById(id)) === null || _a === void 0 ? void 0 : _a.addHistoryEntry(entry);
-    };
-    FishPlayer.prototype.stop = function (by) {
-        this.stopped = true;
-        this.stopUnit();
-        this.updateName();
-        this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
-        if (by instanceof FishPlayer) {
-            this.addHistoryEntry({
-                action: 'stopped',
-                by: by.name,
-                time: Date.now(),
-            });
-            api.addStopped(this.uuid());
-        }
-        FishPlayer.saveAll();
-    };
-    FishPlayer.prototype.stopUnit = function () {
-        if (this.connected() && this.unit()) {
-            if ((0, utils_1.isCoreUnitType)(this.unit().type)) {
-                this.unit().type = UnitTypes.stell;
-                this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
-            }
-            else {
-                this.forceRespawn();
-                //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
-            }
-        }
-    };
-    FishPlayer.prototype.forceRespawn = function () {
-        this.player.clearUnit();
-        this.player.checkSpawn();
-    };
-    FishPlayer.prototype.uuid = function () {
-        return this.player.uuid();
-    };
-    FishPlayer.prototype.unit = function () {
-        return this.player.unit();
-    };
-    FishPlayer.prototype.team = function () {
-        return this.player.team();
-    };
-    Object.defineProperty(FishPlayer.prototype, "con", {
-        get: function () {
-            return this.player.con;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    FishPlayer.prototype.sendMessage = function (message) {
-        var _a;
-        return (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);
-    };
-    FishPlayer.prototype.free = function (by) {
-        if (!this.stopped)
-            return;
-        this.stopped = false;
-        this.updateName();
-        this.forceRespawn();
-        if (by instanceof FishPlayer) {
-            this.sendMessage('[yellow]Looks like someone had mercy on you.');
-            this.addHistoryEntry({
-                action: 'freed',
-                by: by.name,
-                time: Date.now(),
-            });
-            api.free(this.uuid());
-        }
-        FishPlayer.saveAll();
-    };
     FishPlayer.prototype.validate = function () {
         return this.checkName() && this.checkUsid();
     };
@@ -360,6 +245,24 @@ var FishPlayer = /** @class */ (function () {
             return false;
         }
         return true;
+    };
+    //#endregion
+    //#region I/O
+    FishPlayer.read = function (fishPlayerData, player) {
+        return new this(JSON.parse(fishPlayerData), player);
+    };
+    FishPlayer.prototype.write = function () {
+        return JSON.stringify({
+            name: this.name,
+            muted: this.muted,
+            member: this.member,
+            stopped: this.stopped,
+            highlight: this.highlight,
+            history: this.history,
+            rainbow: this.rainbow,
+            rank: this.rank.name,
+            usid: this.usid,
+        });
     };
     FishPlayer.saveAll = function () {
         var e_3, _a;
@@ -407,6 +310,112 @@ var FishPlayer = /** @class */ (function () {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
             finally { if (e_4) throw e_4.error; }
+        }
+    };
+    //#endregion
+    //#region util
+    FishPlayer.prototype.connected = function () {
+        return this.player && !this.con.hasDisconnected;
+    };
+    FishPlayer.prototype.canModerate = function (player, strict) {
+        if (strict === void 0) { strict = true; }
+        if (strict)
+            return this.rank.level > player.rank.level || player == this;
+        else
+            return this.rank.level >= player.rank.level || player == this;
+    };
+    FishPlayer.prototype.ranksAtLeast = function (rank) {
+        return this.rank.level >= rank.level;
+    };
+    FishPlayer.prototype.uuid = function () {
+        return this.player.uuid();
+    };
+    FishPlayer.prototype.unit = function () {
+        return this.player.unit();
+    };
+    FishPlayer.prototype.team = function () {
+        return this.player.team();
+    };
+    Object.defineProperty(FishPlayer.prototype, "con", {
+        get: function () {
+            return this.player.con;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    FishPlayer.prototype.sendMessage = function (message) {
+        var _a;
+        return (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);
+    };
+    FishPlayer.prototype.setRank = function (rank) {
+        this.rank = rank;
+        this.updateName();
+        this.updateAdminStatus();
+        FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.forceRespawn = function () {
+        this.player.clearUnit();
+        this.player.checkSpawn();
+    };
+    //#endregion
+    //#region moderation
+    /**
+     * Record moderation actions taken on a player.
+     * @param id uuid of the player
+     * @param entry description of action taken
+     */
+    FishPlayer.prototype.addHistoryEntry = function (entry) {
+        if (this.history.length > FishPlayer.maxHistoryLength) {
+            this.history.shift();
+        }
+        this.history.push(entry);
+    };
+    FishPlayer.addPlayerHistory = function (id, entry) {
+        var _a;
+        (_a = this.getById(id)) === null || _a === void 0 ? void 0 : _a.addHistoryEntry(entry);
+    };
+    FishPlayer.prototype.stop = function (by) {
+        this.stopped = true;
+        this.stopUnit();
+        this.updateName();
+        this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+        if (by instanceof FishPlayer) {
+            this.addHistoryEntry({
+                action: 'stopped',
+                by: by.name,
+                time: Date.now(),
+            });
+            api.addStopped(this.uuid());
+        }
+        FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.free = function (by) {
+        if (!this.stopped)
+            return;
+        this.stopped = false;
+        this.updateName();
+        this.forceRespawn();
+        if (by instanceof FishPlayer) {
+            this.sendMessage('[yellow]Looks like someone had mercy on you.');
+            this.addHistoryEntry({
+                action: 'freed',
+                by: by.name,
+                time: Date.now(),
+            });
+            api.free(this.uuid());
+        }
+        FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.stopUnit = function () {
+        if (this.connected() && this.unit()) {
+            if ((0, utils_1.isCoreUnitType)(this.unit().type)) {
+                this.unit().type = UnitTypes.stell;
+                this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+            }
+            else {
+                this.forceRespawn();
+                //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
+            }
         }
     };
     FishPlayer.cachedPlayers = {};
