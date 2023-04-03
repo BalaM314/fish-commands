@@ -69,6 +69,7 @@ var FishPlayer = /** @class */ (function () {
         this.usid = (_l = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _l !== void 0 ? _l : null;
     }
     //#region getplayer
+    //Contains methods used to get FishPlayer instances.
     FishPlayer.createFromPlayer = function (player) {
         return new this({
             name: player.name
@@ -95,6 +96,7 @@ var FishPlayer = /** @class */ (function () {
         var _a;
         return (_a = this.cachedPlayers[id]) !== null && _a !== void 0 ? _a : null;
     };
+    /**Returns the FishPlayer representing the first online player matching a given name. */
     FishPlayer.getByName = function (name) {
         var realPlayer = Groups.player.find(function (p) {
             return p.name === name ||
@@ -107,6 +109,7 @@ var FishPlayer = /** @class */ (function () {
         return realPlayer ? this.get(realPlayer) : null;
     };
     ;
+    /**Returns the FishPlayers representing all online players matching a given name. */
     FishPlayer.getAllByName = function (name, strict) {
         if (strict === void 0) { strict = true; }
         var players = [];
@@ -128,6 +131,8 @@ var FishPlayer = /** @class */ (function () {
     };
     //#endregion
     //#region eventhandling
+    //Contains methods that handle an event and must be called by other code (usually through Events.on).
+    /**Must be run on PlayerJoinEvent. */
     FishPlayer.onPlayerJoin = function (player) {
         var _a;
         var _b, _c;
@@ -144,6 +149,7 @@ var FishPlayer = /** @class */ (function () {
             });
         }
     };
+    /**Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
         //if(unit.spawnedByCore)
         /**
@@ -186,6 +192,7 @@ var FishPlayer = /** @class */ (function () {
         (_a = this.usid) !== null && _a !== void 0 ? _a : (this.usid = player.usid());
         this.cleanedName = Strings.stripColors(player.name);
     };
+    /**Updates the mindustry player's name, using the prefixes of the current rank and  */
     FishPlayer.prototype.updateName = function () {
         if (!this.connected())
             return; //No player, no need to update
@@ -216,6 +223,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.validate = function () {
         return this.checkName() && this.checkUsid();
     };
+    /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
         var e_2, _a;
         try {
@@ -236,9 +244,10 @@ var FishPlayer = /** @class */ (function () {
         }
         return true;
     };
+    /**Checks if this player's USID is correct. */
     FishPlayer.prototype.checkUsid = function () {
         if (this.usid != null && this.player.usid() != this.usid) {
-            Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r, kicking"));
+            Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
             if (this.ranksAtLeast(ranks_1.Rank.trusted)) {
                 this.player.kick("Authorization failure!");
             }
@@ -264,6 +273,7 @@ var FishPlayer = /** @class */ (function () {
             usid: this.usid,
         });
     };
+    /**Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
         var e_3, _a;
         //Temporary implementation
@@ -285,6 +295,7 @@ var FishPlayer = /** @class */ (function () {
         Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
         Core.settings.manualSave();
     };
+    /**Loads cached FishPlayers from JSON in Core.settings. */
     FishPlayer.loadAll = function () {
         var e_4, _a;
         //Temporary implementation
@@ -317,6 +328,10 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;
     };
+    /**
+     * @returns whether a player can perform a moderation action on another player.
+     * @param strict If false, then the action is also allowed on players of same rank.
+     */
     FishPlayer.prototype.canModerate = function (player, strict) {
         if (strict === void 0) { strict = true; }
         if (strict)
@@ -359,11 +374,7 @@ var FishPlayer = /** @class */ (function () {
     };
     //#endregion
     //#region moderation
-    /**
-     * Record moderation actions taken on a player.
-     * @param id uuid of the player
-     * @param entry description of action taken
-     */
+    /**Records a moderation action taken on a player. */
     FishPlayer.prototype.addHistoryEntry = function (entry) {
         if (this.history.length > FishPlayer.maxHistoryLength) {
             this.history.shift();

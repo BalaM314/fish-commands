@@ -4,7 +4,6 @@ import * as api from "./api";
 import { isCoreUnitType } from "./utils";
 import { Rank } from "./ranks";
 
-type OnlineFishPlayer = FishPlayer & {player: mindustryPlayer};
 
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
@@ -58,6 +57,7 @@ export class FishPlayer {
 	}
 
 	//#region getplayer
+	//Contains methods used to get FishPlayer instances.
 	static createFromPlayer(player:mindustryPlayer){
 		return new this({
 			name: player.name
@@ -78,6 +78,7 @@ export class FishPlayer {
 	static getById(id:string):FishPlayer | null {
 		return this.cachedPlayers[id] ?? null;
 	}
+	/**Returns the FishPlayer representing the first online player matching a given name. */
 	static getByName(name:string):FishPlayer | null {
 		const realPlayer = Groups.player.find((p:mindustryPlayer) => {
 			return p.name === name ||
@@ -90,6 +91,7 @@ export class FishPlayer {
 		return realPlayer ? this.get(realPlayer) : null;
 	};
 	
+	/**Returns the FishPlayers representing all online players matching a given name. */
 	static getAllByName(name:string, strict = true):FishPlayer[] {
 		let players:FishPlayer[] = [];
 		//Groups.player doesn't support filter
@@ -109,6 +111,8 @@ export class FishPlayer {
 	//#endregion
 
 	//#region eventhandling
+	//Contains methods that handle an event and must be called by other code (usually through Events.on).
+	/**Must be run on PlayerJoinEvent. */
 	static onPlayerJoin(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
 		fishPlayer.updateSavedInfoFromPlayer(player);
@@ -121,6 +125,7 @@ export class FishPlayer {
 			});
 		}
 	}
+	/**Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
 		//if(unit.spawnedByCore)
 		/**
@@ -133,7 +138,7 @@ export class FishPlayer {
 		if(isCoreUnitType(unit.type))
 			this.onRespawn(player);
 	}
-	static onRespawn(player:mindustryPlayer){
+	private static onRespawn(player:mindustryPlayer){
 		const fishP = this.get(player);
 		if(fishP?.stopped) fishP.stopUnit();
 	}
@@ -150,6 +155,7 @@ export class FishPlayer {
 		this.cleanedName = Strings.stripColors(player.name);
 	}
 
+	/**Updates the mindustry player's name, using the prefixes of the current rank and  */
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
@@ -175,6 +181,7 @@ export class FishPlayer {
 	validate(){
 		return this.checkName() && this.checkUsid();
 	}
+	/**Checks if this player's name is allowed. */
 	checkName(){
 		for(const bannedName of config.bannedNames){
 			if(this.name.toLowerCase().includes(bannedName)){
@@ -188,9 +195,10 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		}
 		return true;
 	}
+	/**Checks if this player's USID is correct. */
 	checkUsid(){
 		if(this.usid != null && this.player.usid() != this.usid){
-			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r, kicking`);
+			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r`);
 			if(this.ranksAtLeast(Rank.trusted)){
 				this.player.kick(`Authorization failure!`);
 			}
@@ -217,6 +225,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 			usid: this.usid,
 		});
 	}
+	/**Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){
 		//Temporary implementation
 		let playerDatas:string[] = [];
@@ -227,6 +236,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
 		Core.settings.manualSave();
 	}
+	/**Loads cached FishPlayers from JSON in Core.settings. */
 	static loadAll(){
 		//Temporary implementation
 		const jsonString = Core.settings.get('fish', '');
@@ -250,6 +260,10 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	connected(){
 		return this.player && !this.con.hasDisconnected;
 	}
+	/**
+	 * @returns whether a player can perform a moderation action on another player.
+	 * @param strict If false, then the action is also allowed on players of same rank.
+	 */
 	canModerate(player:FishPlayer, strict:boolean = true){
 		if(strict)
 			return this.rank.level > player.rank.level || player == this;
@@ -288,11 +302,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	//#endregion
 
 	//#region moderation
-	/**
-	 * Record moderation actions taken on a player.
-	 * @param id uuid of the player
-	 * @param entry description of action taken
-	 */
+	/**Records a moderation action taken on a player. */
 	addHistoryEntry(entry:PlayerHistoryEntry){
 		if(this.history.length > FishPlayer.maxHistoryLength){
 			this.history.shift();
