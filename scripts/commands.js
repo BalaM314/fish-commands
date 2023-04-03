@@ -75,20 +75,20 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     try {
         for (var _b = __values(processedCmdArgs.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), i = _d[0], cmdArg = _d[1];
+            //if the arg was not provided
             if (!args[i]) {
                 if (cmdArg.isOptional) {
                     outputArgs[cmdArg.name] = null;
-                    continue;
                 }
                 else if (cmdArg.type == "player" && allowMenus) {
                     outputArgs[cmdArg.name] = null;
                     unresolvedArgs.push(cmdArg);
-                    continue;
                 }
-                else {
+                else
                     throw new Error("arg parsing failed");
-                }
+                continue;
             }
+            //Deserialize the arg
             switch (cmdArg.type) {
                 case "player":
                 case "namedPlayer":
@@ -172,9 +172,7 @@ exports.fail = fail;
  **/
 function register(commands, clientHandler, serverHandler) {
     var e_2, _a;
-    var _loop_1 = function (name) {
-        //Cursed for of loop due to lack of object.entries
-        var data = commands[name];
+    var _loop_1 = function (name, data) {
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
@@ -188,14 +186,16 @@ function register(commands, clientHandler, serverHandler) {
                 var _a;
                 var fishSender = players_1.FishPlayer.get(sender);
                 //Verify authorization
+                //This crashes if data.perm is undefined as it should
                 if (!data.perm.check(fishSender)) {
                     outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.perm.unauthorizedMessage, sender);
                     return;
                 }
                 //closure over processedCmdArgs, should be fine
+                //Process the args
                 var output = processArgs(rawArgs, processedCmdArgs);
                 if ("error" in output) {
-                    //args are invalid
+                    //if args are invalid
                     outputFail(output.error, sender);
                     return;
                 }
@@ -228,9 +228,9 @@ function register(commands, clientHandler, serverHandler) {
             } }));
     };
     try {
-        for (var _b = __values(Object.keys(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
-            var name = _c.value;
-            _loop_1(name);
+        for (var _b = __values(Object.entries(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var _d = __read(_c.value, 2), name = _d[0], data = _d[1];
+            _loop_1(name, data);
         }
     }
     catch (e_2_1) { e_2 = { error: e_2_1 }; }
@@ -244,9 +244,8 @@ function register(commands, clientHandler, serverHandler) {
 exports.register = register;
 function registerConsole(commands, serverHandler) {
     var e_3, _a;
-    var _loop_2 = function (name) {
+    var _loop_2 = function (name, data) {
         //Cursed for of loop due to lack of object.entries
-        var data = commands[name];
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         serverHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
@@ -258,9 +257,10 @@ function registerConsole(commands, serverHandler) {
             return brackets[0] + arg.name + (arg.type == "string" && index + 1 == array.length ? "..." : "") + brackets[1];
         }).join(" "), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs) {
                 //closure over processedCmdArgs, should be fine
+                //Process the args
                 var output = processArgs(rawArgs, processedCmdArgs, false);
                 if ("error" in output) {
-                    //args are invalid
+                    //ifargs are invalid
                     Log.warn(output.error);
                     return;
                 }
@@ -286,9 +286,9 @@ function registerConsole(commands, serverHandler) {
             } }));
     };
     try {
-        for (var _b = __values(Object.keys(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
-            var name = _c.value;
-            _loop_2(name);
+        for (var _b = __values(Object.entries(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var _d = __read(_c.value, 2), name = _d[0], data = _d[1];
+            _loop_2(name, data);
         }
     }
     catch (e_3_1) { e_3 = { error: e_3_1 }; }
@@ -300,6 +300,7 @@ function registerConsole(commands, serverHandler) {
     }
 }
 exports.registerConsole = registerConsole;
+/**Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
 function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
     if (unresolvedArgs.length == 0) {
         callback(processedArgs);

@@ -47,17 +47,18 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 	let outputArgs:Record<string, FishCommandArgType> = {};
 	let unresolvedArgs:CommandArg[] = [];
 	for(const [i, cmdArg] of processedCmdArgs.entries()){
+		//if the arg was not provided
 		if(!args[i]){
 			if(cmdArg.isOptional){
-				outputArgs[cmdArg.name] = null; continue;
+				outputArgs[cmdArg.name] = null;
 			} else if(cmdArg.type == "player" && allowMenus){
 				outputArgs[cmdArg.name] = null;
 				unresolvedArgs.push(cmdArg);
-				continue;
-			} else {
-				throw new Error("arg parsing failed");
-			}
+			} else throw new Error("arg parsing failed");
+			continue;
 		}
+
+		//Deserialize the arg
 		switch(cmdArg.type){
 			case "player": case "namedPlayer":
 				const player = FishPlayer.getByName(args[i]);
@@ -116,9 +117,7 @@ export function fail(message:string):never {
  **/
 export function register(commands:FishCommandsList, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
 
-	for(const name of Object.keys(commands)){
-		//Cursed for of loop due to lack of object.entries
-		const data = commands[name];
+	for(const [name, data] of Object.entries(commands)){
 
 		//Process the args
 		const processedCmdArgs = data.args.map(processArgString);
@@ -136,16 +135,17 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
+				//This crashes if data.perm is undefined as it should
 				if(!data.perm.check(fishSender)){
 					outputFail(data.customUnauthorizedMessage ?? data.perm.unauthorizedMessage, sender);
 					return;
 				}
 
-				
 				//closure over processedCmdArgs, should be fine
+				//Process the args
 				const output = processArgs(rawArgs, processedCmdArgs);
 				if("error" in output){
-					//args are invalid
+					//if args are invalid
 					outputFail(output.error, sender);
 					return;
 				}
@@ -183,9 +183,8 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 
 export function registerConsole(commands:FishConsoleCommandsList, serverHandler:ServerCommandHandler){
 
-	for(const name of Object.keys(commands)){
+	for(const [name, data] of Object.entries(commands)){
 		//Cursed for of loop due to lack of object.entries
-		const data = commands[name];
 
 		//Process the args
 		const processedCmdArgs = data.args.map(processArgString);
@@ -202,9 +201,10 @@ export function registerConsole(commands:FishConsoleCommandsList, serverHandler:
 			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[]) => {
 				
 				//closure over processedCmdArgs, should be fine
+				//Process the args
 				const output = processArgs(rawArgs, processedCmdArgs, false);
 				if("error" in output){
-					//args are invalid
+					//ifargs are invalid
 					Log.warn(output.error);
 					return;
 				}
@@ -231,6 +231,7 @@ export function registerConsole(commands:FishConsoleCommandsList, serverHandler:
 	}
 }
 
+/**Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
 function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>, unresolvedArgs:CommandArg[], sender:FishPlayer, callback:(args:Record<string, FishCommandArgType>) => void){
 	if(unresolvedArgs.length == 0){
 		callback(processedArgs);
