@@ -8,6 +8,7 @@ var players_1 = require("./players");
 var timers = require("./timers");
 var config = require("./config");
 var commands = require("./commands");
+var menus = require("./menus");
 var staffCommands = require("./staffCommands");
 var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
@@ -30,6 +31,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     var serverHandler = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
+    menus.registerListeners();
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);

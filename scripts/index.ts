@@ -7,6 +7,7 @@ import { FishPlayer } from './players';
 import * as timers from './timers';
 import * as config from './config';
 import * as commands from './commands';
+import * as menus from "./menus";
 import * as staffCommands from './staffCommands';
 import * as playerCommands from './playerCommands';
 import * as memberCommands from './memberCommands';
@@ -37,6 +38,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 
 	FishPlayer.loadAll();
 	timers.initializeTimers();
+	menus.registerListeners();
 
 	// Mute muted players
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {

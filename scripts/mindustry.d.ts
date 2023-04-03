@@ -18,6 +18,7 @@ declare const ServerLoadEvent: any;
 declare const Menus: {
 	registerMenu(listener:MenuListener):number;
 }
+type MenuListener = (player:Player, option:number) => unknown;
 declare const UnitTypes: {
 	[index:string]: UnitType;
 }
