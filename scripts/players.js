@@ -229,7 +229,7 @@ var FishPlayer = /** @class */ (function () {
         try {
             for (var _b = __values(config.bannedNames), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var bannedName = _c.value;
-                if (this.name.toLowerCase().includes(bannedName)) {
+                if (this.name.toLowerCase().includes(bannedName.toLowerCase())) {
                     this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."));
                     return false;
                 }

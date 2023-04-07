@@ -184,7 +184,7 @@ export class FishPlayer {
 	/**Checks if this player's name is allowed. */
 	checkName(){
 		for(const bannedName of config.bannedNames){
-			if(this.name.toLowerCase().includes(bannedName)){
+			if(this.name.toLowerCase().includes(bannedName.toLowerCase())){
 				this.player.kick(
 `[scarlet]"${this.name}[scarlet]" is not an allowed name.
 
