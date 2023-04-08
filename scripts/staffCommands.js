@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
@@ -7,8 +18,7 @@ var players_1 = require("./players");
 var utils_1 = require("./utils");
 var ohno_1 = require("./ohno");
 var ranks_1 = require("./ranks");
-exports.commands = {
-    warn: {
+exports.commands = __assign(__assign({ warn: {
         args: ['player:player', 'reason:string?'],
         description: 'Warn a player.',
         perm: commands_1.Perm.mod,
@@ -19,8 +29,7 @@ exports.commands = {
             (0, menus_1.menu)('Warning', reason, [['accept']], args.player);
             outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
-    },
-    mute: {
+    }, mute: {
         args: ['player:player'],
         description: 'Stops a player from chatting.',
         perm: commands_1.Perm.mod,
@@ -33,8 +42,7 @@ exports.commands = {
             args.player.mute(sender);
             outputSuccess("Muted player \"".concat(args.player.cleanedName, "\"."));
         }
-    },
-    unmute: {
+    }, unmute: {
         args: ['player:player'],
         description: 'Unmutes a player',
         perm: commands_1.Perm.mod,
@@ -45,8 +53,7 @@ exports.commands = {
             args.player.unmute(sender);
             outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
         }
-    },
-    kick: {
+    }, kick: {
         args: ['player:player', 'reason:string?'],
         description: 'Kick a player with optional reason.',
         perm: commands_1.Perm.mod,
@@ -59,8 +66,7 @@ exports.commands = {
             args.player.player.kick(reason);
             outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
-    },
-    stop: {
+    }, stop: {
         args: ['player:player'],
         description: 'Stops a player.',
         perm: commands_1.Perm.mod,
@@ -73,8 +79,7 @@ exports.commands = {
             args.player.stop(sender);
             Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped."));
         }
-    },
-    free: {
+    }, free: {
         args: ['player:player'],
         description: 'Frees a player.',
         perm: commands_1.Perm.mod,
@@ -89,8 +94,15 @@ exports.commands = {
                 ;
             }
         }
-    },
-    setrank: {
+    } }, Object.fromEntries(["admin", "mod"].map(function (n) { return [n, {
+        args: [],
+        description: "This command was moved to /setrank.",
+        perm: commands_1.Perm.mod,
+        handler: function (_a) {
+            var outputFail = _a.outputFail;
+            outputFail("This command was moved to /setrank.");
+        }
+    }]; }))), { setrank: {
         args: ["player:exactPlayer", "rank:string"],
         description: "Set a player's rank.",
         perm: commands_1.Perm.mod,
@@ -106,8 +118,7 @@ exports.commands = {
             args.player.setRank(rank);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
         }
-    },
-    murder: {
+    }, murder: {
         args: [],
         description: 'Kills all ohno units',
         perm: commands_1.Perm.mod,
@@ -118,8 +129,7 @@ exports.commands = {
             ohno_1.Ohnos.killAll();
             output("[orange]You massacred [cyan]".concat(numOhnos, "[] helpless ohno crawlers."));
         }
-    },
-    stop_offline: {
+    }, stop_offline: {
         args: ["name:string"],
         description: "Stops an offline player.",
         perm: commands_1.Perm.mod,
@@ -151,8 +161,7 @@ exports.commands = {
                 }
             }, true, function (p) { return p.lastName; });
         }
-    },
-    restart: {
+    }, restart: {
         args: [],
         description: "Stops and restarts the server. Do not run when the player count is high.",
         perm: commands_1.Perm.admin,
@@ -186,8 +195,7 @@ exports.commands = {
             };
             restartLoop(5);
         }
-    },
-    history: {
+    }, history: {
         args: ["player:player"],
         description: "Shows moderation history for a player.",
         perm: commands_1.Perm.mod,
@@ -203,8 +211,7 @@ exports.commands = {
                 output("[yellow]No history was found for player ".concat(args.player.name, "."));
             }
         }
-    },
-    save: {
+    }, save: {
         args: [],
         description: "Saves the game state.",
         perm: commands_1.Perm.mod,
@@ -215,8 +222,7 @@ exports.commands = {
             SaveIO.save(file);
             outputSuccess('Game saved.');
         }
-    },
-    wave: {
+    }, wave: {
         args: ["wave:number"],
         description: "Sets the wave number.",
         perm: commands_1.Perm.admin,
@@ -230,8 +236,7 @@ exports.commands = {
                 outputFail("Wave must be a positive integer.");
             }
         }
-    },
-    label: {
+    }, label: {
         args: ["time:number", "message:string"],
         description: "Places a label at your position for a specified amount of time.",
         perm: commands_1.Perm.admin,
@@ -252,8 +257,7 @@ exports.commands = {
             }, 0, 1, args.time);
             outputSuccess("Placed label \"".concat(args.message, "\" for ").concat(args.time, " seconds."));
         }
-    },
-    member: {
+    }, member: {
         args: ["value:boolean", "player:player"],
         description: "Sets a player's member status.",
         perm: commands_1.Perm.admin,
@@ -264,8 +268,7 @@ exports.commands = {
             players_1.FishPlayer.saveAll();
             outputSuccess("Set membership status of player \"".concat(args.player.name, "\" to ").concat(args.value, "."));
         }
-    },
-    ipban: {
+    }, ipban: {
         args: [],
         description: "Bans a player's IP.",
         perm: commands_1.Perm.admin,
@@ -287,5 +290,4 @@ exports.commands = {
                 }
             }, true, function (opt) { return opt.name; });
         }
-    }
-};
+    } });

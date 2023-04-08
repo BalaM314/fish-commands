@@ -1,7 +1,7 @@
 import { Perm, fail } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
-import type { FishCommandsList, mindustryPlayerData } from "./types";
+import type { FishCommandData, FishCommandsList, mindustryPlayerData } from "./types";
 import { getTimeSinceText } from "./utils";
 import * as api from "./api";
 import { Ohnos } from "./ohno";
@@ -79,6 +79,15 @@ export const commands:FishCommandsList = {
 			}
 		}
 	},
+
+	...Object.fromEntries(["admin", "mod"].map<[string, FishCommandData]>(n => [n, {
+		args: [],
+		description: "This command was moved to /setrank.",
+		perm: Perm.mod,
+		handler({outputFail}){
+			outputFail(`This command was moved to /setrank.`);
+		}
+	}])),
 
 	setrank: {
 		args: ["player:exactPlayer", "rank:string"],
