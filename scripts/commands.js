@@ -35,20 +35,22 @@ exports.allCommands = {};
 var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"];
 /** Represents a permission level that is required to run a specific command. */
 var Perm = /** @class */ (function () {
-    function Perm(name, check, unauthorizedMessage) {
+    function Perm(name, check, color, unauthorizedMessage) {
+        if (color === void 0) { color = ""; }
         if (unauthorizedMessage === void 0) { unauthorizedMessage = "You do not have the required permission (".concat(name, ") to execute this command"); }
         this.name = name;
         this.check = check;
+        this.color = color;
         this.unauthorizedMessage = unauthorizedMessage;
     }
     Perm.fromRank = function (rank) {
-        return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); });
+        return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
     };
-    Perm.none = new Perm("all", function (fishP) { return true; });
-    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || Perm.mod.check(fishP); });
+    Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
+    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || Perm.mod.check(fishP); }, "[sky]");
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
-    Perm.member = new Perm("member", function (fishP) { return fishP.member || !fishP.stopped; }, "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
+    Perm.member = new Perm("member", function (fishP) { return fishP.member || !fishP.stopped; }, "[pink]", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
     return Perm;
 }());
 exports.Perm = Perm;

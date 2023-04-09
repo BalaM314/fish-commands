@@ -10,14 +10,14 @@ export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer 
 
 /** Represents a permission level that is required to run a specific command. */
 export class Perm {
-	static none = new Perm("all", fishP => true);
-	static notGriefer = new Perm("player", fishP => !fishP.stopped || Perm.mod.check(fishP));
+	static none = new Perm("all", fishP => true, "[sky]");
+	static notGriefer = new Perm("player", fishP => !fishP.stopped || Perm.mod.check(fishP), "[sky]");
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
-	static member = new Perm("member", fishP => fishP.member || !fishP.stopped, `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
-	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
+	static member = new Perm("member", fishP => fishP.member || !fishP.stopped, "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
 	static fromRank(rank:Rank){
-		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank));
+		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);
 	}
 }
 

@@ -218,7 +218,7 @@ exports.commands = __assign(__assign({ unpause: {
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputFail = _a.outputFail, sender = _a.sender, allCommands = _a.allCommands;
             var formatCommand = function (name, color) { return new utils_1.StringBuilder()
-                .add("[".concat(color, "]/").concat(name))
+                .add("".concat(color, "/").concat(name))
                 .chunk("[white]".concat(allCommands[name].args.map(commands_1.formatArg).join(" ")))
                 .chunk("[lightgray]- ".concat(allCommands[name].description))
                 .str; };
@@ -245,13 +245,13 @@ exports.commands = __assign(__assign({ unpause: {
                 var chunkedPlayerCommands = (0, utils_1.to2DArray)(commands_2.player, 15);
                 switch (args.name) {
                     case "admin":
-                        output('[cyan]-- Admin commands --\n' + formatList(commands_2.admin, "cyan"));
+                        output("[".concat(commands_1.Perm.admin.color, "]-- Admin commands --\n") + formatList(commands_2.admin, commands_1.Perm.admin.color));
                         break;
                     case "mod":
-                        output('[acid]-- Mod commands --\n' + formatList(commands_2.mod, "acid"));
+                        output("[".concat(commands_1.Perm.mod.color, "]-- Mod commands --\n") + formatList(commands_2.mod, commands_1.Perm.mod.color));
                         break;
                     case "member":
-                        output('[pink]-- Member commands --\n' + formatList(commands_2.member, "pink"));
+                        output("[".concat(commands_1.Perm.member.color, "]-- Member commands --\n") + formatList(commands_2.member, commands_1.Perm.member.color));
                         break;
                     default:
                         var pageNumber = args.name !== null ? parseInt(args.name) : 1;

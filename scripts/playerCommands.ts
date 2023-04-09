@@ -202,7 +202,7 @@ export const commands:FishCommandsList = {
 		handler({args, output, outputFail, sender, allCommands}){
 
 			const formatCommand = (name:string, color:string) => new StringBuilder()
-				.add(`[${color}]/${name}`)
+				.add(`${color}/${name}`)
 				.chunk(`[white]${allCommands[name].args.map(formatArg).join(" ")}`)
 				.chunk(`[lightgray]- ${allCommands[name].description}`)
 				.str;
@@ -234,9 +234,9 @@ export const commands:FishCommandsList = {
 				const chunkedPlayerCommands:string[][] = to2DArray(commands.player, 15);
 
 				switch(args.name){
-					case "admin": output('[cyan]-- Admin commands --\n' + formatList(commands.admin, "cyan")); break;
-					case "mod": output('[acid]-- Mod commands --\n' + formatList(commands.mod, "acid")); break;
-					case "member": output('[pink]-- Member commands --\n' + formatList(commands.member, "pink")); break;
+					case "admin": output(`[${Perm.admin.color}]-- Admin commands --\n` + formatList(commands.admin, Perm.admin.color)); break;
+					case "mod": output(`[${Perm.mod.color}]-- Mod commands --\n` + formatList(commands.mod, Perm.mod.color)); break;
+					case "member": output(`[${Perm.member.color}]-- Member commands --\n` + formatList(commands.member, Perm.member.color)); break;
 					default:
 						const pageNumber = args.name !== null ? parseInt(args.name) : 1;
 						if((pageNumber - 1) in chunkedPlayerCommands){
