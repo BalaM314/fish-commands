@@ -201,13 +201,21 @@ export const commands:FishCommandsList = {
 		perm: Perm.all,
 		handler({args, output, outputFail, sender, allCommands}){
 
+			const formatCommand = (name:string, color:string) => new StringBuilder()
+				.add(`[${color}]/${name}`)
+				.chunk(`[white]${allCommands[name].args.map(formatArg).join(" ")}`)
+				.chunk(`[lightgray]- ${allCommands[name].description}`)
+				.str;
+			const formatList = (commandList:string[], color:string) => commandList.map(c => formatCommand(c, color)).join("\n");
+
 			if(args.name && isNaN(parseInt(args.name)) && !["mod", "admin", "member"].includes(args.name)){
 				//name is not a number or a category, therefore it is probably a command name
 				if(args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))){
 					output(
 `Help for command ${args.name}:
-	${allCommands[args.name].description}
-	Permission required: ${allCommands[args.name].perm.name}`
+  ${allCommands[args.name].description}
+  Usage: [sky]/${args.name} [white]${allCommands[args.name].args.map(formatArg).join(" ")}
+  Permission required: ${allCommands[args.name].perm.name}`
 					);
 				} else {
 					outputFail(`Command "${args.name}" does not exist.`);
@@ -225,24 +233,16 @@ export const commands:FishCommandsList = {
 				).push(name));
 				const chunkedPlayerCommands:string[][] = to2DArray(commands.player, 15);
 
-				const formatCommand = (name:string, color:string) => new StringBuilder()
-					.add(`[${color}]/${name}`)
-					.chunk(`[white]${allCommands[name].args.map(formatArg).join(" ")}`)
-					.chunk(`[lightgray]- ${allCommands[name].description}`);
-				const formatList = (commandList:string[], color:string) => commandList.map(c => formatCommand(c, color)).join("\n");
-
-				switch(args.page){
+				switch(args.name){
 					case "admin": output('[cyan]-- Admin commands --\n' + formatList(commands.admin, "cyan")); break;
 					case "mod": output('[acid]-- Mod commands --\n' + formatList(commands.mod, "acid")); break;
 					case "member": output('[pink]-- Member commands --\n' + formatList(commands.member, "pink")); break;
 					default:
-						const pageNumber = args.page ? parseInt(args.page) - 1 : 0;
-						if(pageNumber in chunkedPlayerCommands){
-							output(
-	`[sky]-- Commands page [lightgrey]${pageNumber}/${chunkedPlayerCommands.length}[sky] --` + formatList(chunkedPlayerCommands[pageNumber], "sky")
-							);
+						const pageNumber = args.name !== null ? parseInt(args.name) : 1;
+						if((pageNumber - 1) in chunkedPlayerCommands){
+							output(`[sky]-- Commands page [lightgrey]${pageNumber}/${chunkedPlayerCommands.length}[sky] --\n` + formatList(chunkedPlayerCommands[pageNumber - 1], "sky"));
 						} else {
-							outputFail(`"${args.page}" is an invalid page number.`);
+							outputFail(`"${args.name}" is an invalid page number.`);
 						}
 				}
 			}

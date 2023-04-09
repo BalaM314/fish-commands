@@ -217,10 +217,16 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.all,
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputFail = _a.outputFail, sender = _a.sender, allCommands = _a.allCommands;
+            var formatCommand = function (name, color) { return new utils_1.StringBuilder()
+                .add("[".concat(color, "]/").concat(name))
+                .chunk("[white]".concat(allCommands[name].args.map(commands_1.formatArg).join(" ")))
+                .chunk("[lightgray]- ".concat(allCommands[name].description))
+                .str; };
+            var formatList = function (commandList, color) { return commandList.map(function (c) { return formatCommand(c, color); }).join("\n"); };
             if (args.name && isNaN(parseInt(args.name)) && !["mod", "admin", "member"].includes(args.name)) {
                 //name is not a number or a category, therefore it is probably a command name
                 if (args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))) {
-                    output("Help for command ".concat(args.name, ":\n\t").concat(allCommands[args.name].description, "\n\tPermission required: ").concat(allCommands[args.name].perm.name));
+                    output("Help for command ".concat(args.name, ":\n  ").concat(allCommands[args.name].description, "\n  Usage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(" "), "\n  Permission required: ").concat(allCommands[args.name].perm.name));
                 }
                 else {
                     outputFail("Command \"".concat(args.name, "\" does not exist."));
@@ -237,12 +243,7 @@ exports.commands = __assign(__assign({ unpause: {
                             data.perm === commands_1.Perm.member ? commands_2.member : commands_2.player).push(name);
                 });
                 var chunkedPlayerCommands = (0, utils_1.to2DArray)(commands_2.player, 15);
-                var formatCommand_1 = function (name, color) { return new utils_1.StringBuilder()
-                    .add("[".concat(color, "]/").concat(name))
-                    .chunk("[white]".concat(allCommands[name].args.map(commands_1.formatArg).join(" ")))
-                    .chunk("[lightgray]- ".concat(allCommands[name].description)); };
-                var formatList = function (commandList, color) { return commandList.map(function (c) { return formatCommand_1(c, color); }).join("\n"); };
-                switch (args.page) {
+                switch (args.name) {
                     case "admin":
                         output('[cyan]-- Admin commands --\n' + formatList(commands_2.admin, "cyan"));
                         break;
@@ -253,12 +254,12 @@ exports.commands = __assign(__assign({ unpause: {
                         output('[pink]-- Member commands --\n' + formatList(commands_2.member, "pink"));
                         break;
                     default:
-                        var pageNumber = args.page ? parseInt(args.page) - 1 : 0;
-                        if (pageNumber in chunkedPlayerCommands) {
-                            output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --") + formatList(chunkedPlayerCommands[pageNumber], "sky"));
+                        var pageNumber = args.name !== null ? parseInt(args.name) : 1;
+                        if ((pageNumber - 1) in chunkedPlayerCommands) {
+                            output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --\n") + formatList(chunkedPlayerCommands[pageNumber - 1], "sky"));
                         }
                         else {
-                            outputFail("\"".concat(args.page, "\" is an invalid page number."));
+                            outputFail("\"".concat(args.name, "\" is an invalid page number."));
                         }
                 }
             }
