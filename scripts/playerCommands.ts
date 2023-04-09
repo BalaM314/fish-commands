@@ -254,7 +254,7 @@ export const commands:FishCommandsList = {
 		description: "Send a message to only one player.",
 		perm: Perm.none,
 		handler({args, sender, output}){
-			recentWhispers[args.player.uuid()] = sender.uuid();
+			recentWhispers[args.player.uuid()] = sender.uuid;
 			args.player.sendMessage(`${args.player.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
 			output(`[#0ffffff0]Message sent to ${args.player.player.name}[#0ffffff0].`);
 		}
@@ -265,8 +265,8 @@ export const commands:FishCommandsList = {
 		description: "Reply to the most recent message.",
 		perm: Perm.none,
 		handler({args, sender, output, outputFail}){
-			if(recentWhispers[sender.uuid()]){
-				const recipient = FishPlayer.getById(recentWhispers[sender.uuid()]);
+			if(recentWhispers[sender.uuid]){
+				const recipient = FishPlayer.getById(recentWhispers[sender.uuid]);
 				if(recipient?.connected()){
 					recipient.sendMessage(`${sender.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
 					output(`[#0ffffff0]Message sent to ${recipient.name}[#0ffffff0].`);

@@ -46,7 +46,7 @@ export class FishPlayer {
 		uuid, name, muted = false, member = false, stopped = false,
 		highlight = null, history = [], rainbow = null, rank = "player", usid
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
-		this.uuid = uuid ?? player.uuid() ?? (() => {throw new Error(`Attempted to create FishPlayer with no UUID`)})();
+		this.uuid = uuid ?? player?.uuid() ?? (() => {throw new Error(`Attempted to create FishPlayer with no UUID`)})();
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
 		this.muted = muted;
 		this.member = member;
@@ -300,6 +300,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 				if("admin" in value) rank = "admin";
 				this.cachedPlayers[key] = new this({
 					rank,
+					uuid: key,
 					...value
 				}, null);
 			}

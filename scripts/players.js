@@ -56,7 +56,7 @@ var FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = false;
         this.trail = null;
-        this.uuid = (_j = uuid !== null && uuid !== void 0 ? uuid : player.uuid()) !== null && _j !== void 0 ? _j : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
+        this.uuid = (_j = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _j !== void 0 ? _j : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_k = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _k !== void 0 ? _k : "Unnamed player [ERROR]";
         this.muted = muted;
         this.member = member;
@@ -364,7 +364,7 @@ var FishPlayer = /** @class */ (function () {
                         rank = "mod";
                     if ("admin" in value)
                         rank = "admin";
-                    this.cachedPlayers[key] = new this(__assign({ rank: rank }, value), null);
+                    this.cachedPlayers[key] = new this(__assign({ rank: rank, uuid: key }, value), null);
                 }
             }
         }
