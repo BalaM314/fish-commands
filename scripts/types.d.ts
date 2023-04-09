@@ -82,6 +82,7 @@ interface TileHistoryEntry {
 
 
 interface FishPlayerData {
+	uuid: string;
 	name: string;
 	muted: boolean;
 	member: boolean;

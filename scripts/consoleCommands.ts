@@ -52,7 +52,7 @@ export const commands:FishConsoleCommandsList = {
 			if(infoList.length == 0) fail(`Nobody with that name could be found.`);
 			let outputString:string[] = [""];
 			for(const player of infoList){
-				const playerInfo = Vars.netServer.admins.getInfo(player.uuid());
+				const playerInfo = Vars.netServer.admins.getInfo(player.uuid);
 				outputString.push(
 `Info for player &c"${player.cleanedName}" &lk(${player.name})&fr
 	UUID: &c"${playerInfo.id}"&fr

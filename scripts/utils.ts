@@ -120,3 +120,56 @@ export class StringBuilder {
 		return this;
 	}
 }
+
+export class StringIO {
+	offset:number = 0;
+	constructor(public string:string = ""){}
+	read(length:number = 1){
+		return this.string.slice(this.offset, this.offset += length) || (() => {throw new Error(`Unexpected EOF`)})();
+	}
+	write(str:string){
+		this.string += str;
+	}
+	readString(){
+		const length = parseInt(this.read(3));
+		if(length == 0) return null;
+		return this.read(length);
+	}
+	writeString(str:string | null){
+		if(str === null){
+			this.string += "000";
+		} else if(str.length > 999){
+			throw new Error(`Cannot write strings with length greater than 999`);
+		} else {
+			this.string += str.length.toString().padStart(3, "0");
+			this.string += str;
+		}
+	}
+	readNumber(size:number = 4){
+		return parseInt(this.read(size));
+	}
+	writeNumber(num:number, size:number = 4){
+		this.string += num.toString().padStart(size, "0");
+	}
+	readBool(){
+		return this.read(1) == "T" ? true : false;
+	}
+	writeBool(val:boolean){
+		this.write(val ? "T" : "F");
+	}
+	writeArray<T>(array:T[], func:(item:T, str:StringIO) => unknown){
+		this.writeNumber(array.length);
+		array.forEach(e => func(e, this));
+	}
+	readArray<T>(func:(str:StringIO) => T):T[] {
+		const length = this.readNumber();
+		const array:T[] = [];
+		for(let i = 0; i < length; i ++){
+			array[i] = func(this);
+		}
+		return array;
+	}
+	expectEOF(){
+		if(this.string.length > this.offset) throw new Error(`Expected EOF, but found extra data: "${this.string.slice(this.offset)}"`);
+	}
+}

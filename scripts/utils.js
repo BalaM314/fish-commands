@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StringBuilder = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.StringIO = exports.StringBuilder = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -131,3 +131,68 @@ var StringBuilder = /** @class */ (function () {
     return StringBuilder;
 }());
 exports.StringBuilder = StringBuilder;
+var StringIO = /** @class */ (function () {
+    function StringIO(string) {
+        if (string === void 0) { string = ""; }
+        this.string = string;
+        this.offset = 0;
+    }
+    StringIO.prototype.read = function (length) {
+        if (length === void 0) { length = 1; }
+        return this.string.slice(this.offset, this.offset += length) || (function () { throw new Error("Unexpected EOF"); })();
+    };
+    StringIO.prototype.write = function (str) {
+        this.string += str;
+    };
+    StringIO.prototype.readString = function () {
+        var length = parseInt(this.read(3));
+        if (length == 0)
+            return null;
+        return this.read(length);
+    };
+    StringIO.prototype.writeString = function (str) {
+        if (str === null) {
+            this.string += "000";
+        }
+        else if (str.length > 999) {
+            throw new Error("Cannot write strings with length greater than 999");
+        }
+        else {
+            this.string += str.length.toString().padStart(3, "0");
+            this.string += str;
+        }
+    };
+    StringIO.prototype.readNumber = function (size) {
+        if (size === void 0) { size = 4; }
+        return parseInt(this.read(size));
+    };
+    StringIO.prototype.writeNumber = function (num, size) {
+        if (size === void 0) { size = 4; }
+        this.string += num.toString().padStart(size, "0");
+    };
+    StringIO.prototype.readBool = function () {
+        return this.read(1) == "T" ? true : false;
+    };
+    StringIO.prototype.writeBool = function (val) {
+        this.write(val ? "T" : "F");
+    };
+    StringIO.prototype.writeArray = function (array, func) {
+        var _this = this;
+        this.writeNumber(array.length);
+        array.forEach(function (e) { return func(e, _this); });
+    };
+    StringIO.prototype.readArray = function (func) {
+        var length = this.readNumber();
+        var array = [];
+        for (var i = 0; i < length; i++) {
+            array[i] = func(this);
+        }
+        return array;
+    };
+    StringIO.prototype.expectEOF = function () {
+        if (this.string.length > this.offset)
+            throw new Error("Expected EOF, but found extra data: \"".concat(this.string.slice(this.offset), "\""));
+    };
+    return StringIO;
+}());
+exports.StringIO = StringIO;
