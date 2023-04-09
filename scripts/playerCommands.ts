@@ -1,8 +1,8 @@
-import { Perm } from "./commands";
+import { formatArg, Perm } from "./commands";
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
-import { getColor, to2DArray } from "./utils";
+import { getColor, StringBuilder, to2DArray } from "./utils";
 import { FishServers } from "./config";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
@@ -196,49 +196,55 @@ export const commands:FishCommandsList = {
 	},
 
 	help: {
-		args: ["page:string?"],
+		args: ["name:string?"],
 		description: "Displays a list of all commands.",
 		perm: Perm.all,
-		handler({args, output, outputFail}){
-			//TODO: genericify
-			const filter = {
-				member: ['pet', 'highlight', 'rainbow', 'bc'],
-				mod: ['warn', 'mute', 'unmute', 'setrank', 'kick', 'stop', 'free', 'murder', 'unmuteall', 'history', 'save', 'stop_offline'],
-				admin: ['sus', 'admin', 'mod', 'wave', 'restart', 'forcertv', 'spawn', 'exterminate', 'label', 'member', 'ipban'],
-			};
+		handler({args, output, outputFail, sender, allCommands}){
 
-			const normalCommands:string[] = [];
-			const modCommands:string[] = [];
-			const adminCommands:string[] = [];
-			const memberCommands:string[] = [];
+			if(args.name && isNaN(parseInt(args.name)) && !["mod", "admin", "member"].includes(args.name)){
+				//name is not a number or a category, therefore it is probably a command name
+				if(args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))){
+					output(
+`Help for command ${args.name}:
+	${allCommands[args.name].description}
+	Permission required: ${allCommands[args.name].perm.name}`
+					);
+				} else {
+					outputFail(`Command "${args.name}" does not exist.`);
+				}
+			} else {
+				const commands: {
+					[P in "player" | "mod" | "admin" | "member"]: string[];
+				} = {
+					player: [], mod: [], admin: [], member: []
+				};
+				Object.entries(allCommands).forEach(([name, data]) => (
+					data.perm === Perm.admin ? commands.admin :
+					data.perm === Perm.mod ? commands.mod :
+					data.perm === Perm.member ? commands.member : commands.player
+				).push(name));
+				const chunkedPlayerCommands:string[][] = to2DArray(commands.player, 15);
 
-			Vars.netServer.clientCommands.getCommandList().forEach((c:Command) => {
-				let temp = `/${c.text} ${c.paramText ? `[white]${c.paramText} ` : ""}[lightgrey]- ${c.description}`;
-				if(filter.member.includes(c.text)) memberCommands.push('[pink]' + temp);
-				else if(filter.mod.includes(c.text)) modCommands.push('[acid]' + temp);
-				else if(filter.admin.includes(c.text)) adminCommands.push('[cyan]' + temp);
-				else normalCommands.push('[sky]' + temp);
-			});
-			const chunkedNormalCommands:string[][] = to2DArray(normalCommands, 15);
+				const formatCommand = (name:string, color:string) => new StringBuilder()
+					.add(`[${color}]/${name}`)
+					.chunk(`[white]${allCommands[name].args.map(formatArg).join(" ")}`)
+					.chunk(`[lightgray]- ${allCommands[name].description}`);
+				const formatList = (commandList:string[], color:string) => commandList.map(c => formatCommand(c, color)).join("\n");
 
-			switch(args.page){
-				case "admin": output('[cyan]--Admin commands--\n' + adminCommands.join('\n')); break;
-				case "mod": output('[acid]--Mod commands--\n' + modCommands.join('\n')); break;
-				case "member": output('[pink]--Member commands--\n' + memberCommands.join('\n')); break;
-				case null: output(
-`[sky]--Commands page [lightgrey]1/${chunkedNormalCommands.length} [sky]--
-${chunkedNormalCommands[0].join('\n')}`
-				); break;
-				default:
-					const pageNumber = Number(args.page);
-					if(chunkedNormalCommands[pageNumber - 1]){
-						output(
-`[sky]--Commands page [lightgrey]${pageNumber}/${chunkedNormalCommands.length}[sky]--
-${chunkedNormalCommands[pageNumber - 1].join("\n")}`
-						);
-					} else {
-						outputFail(`"${args.page}" is an invalid page number.`);
-					}
+				switch(args.page){
+					case "admin": output('[cyan]-- Admin commands --\n' + formatList(commands.admin, "cyan")); break;
+					case "mod": output('[acid]-- Mod commands --\n' + formatList(commands.mod, "acid")); break;
+					case "member": output('[pink]-- Member commands --\n' + formatList(commands.member, "pink")); break;
+					default:
+						const pageNumber = args.page ? parseInt(args.page) - 1 : 0;
+						if(pageNumber in chunkedPlayerCommands){
+							output(
+	`[sky]-- Commands page [lightgrey]${pageNumber}/${chunkedPlayerCommands.length}[sky] --` + formatList(chunkedPlayerCommands[pageNumber], "sky")
+							);
+						} else {
+							outputFail(`"${args.page}" is an invalid page number.`);
+						}
+				}
 			}
 		}
 	},

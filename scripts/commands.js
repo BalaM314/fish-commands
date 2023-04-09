@@ -27,10 +27,12 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerConsole = exports.register = exports.fail = exports.Perm = void 0;
+exports.registerConsole = exports.register = exports.fail = exports.formatArg = exports.Perm = exports.allCommands = void 0;
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
+exports.allCommands = {};
+var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"];
 /** Represents a permission level that is required to run a specific command. */
 var Perm = /** @class */ (function () {
     function Perm(name, check, unauthorizedMessage) {
@@ -50,7 +52,6 @@ var Perm = /** @class */ (function () {
     return Perm;
 }());
 exports.Perm = Perm;
-var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"];
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha
@@ -66,6 +67,12 @@ function processArgString(str) {
         throw new Error("Bad arg string ".concat(str, ": invalid type ").concat(type));
     }
 }
+function formatArg(a) {
+    var isOptional = a.at(-1) == "?";
+    var brackets = isOptional ? ["[", "]"] : ["<", ">"];
+    return brackets[0] + a.split(":")[0] + brackets[1];
+}
+exports.formatArg = formatArg;
 /**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
 function processArgs(args, processedCmdArgs, allowMenus) {
     var e_1, _a;
@@ -213,6 +220,7 @@ function register(commands, clientHandler, serverHandler) {
                             outputSuccess: function (message) { return outputSuccess(message, sender); },
                             output: function (message) { return outputMessage(message, sender); },
                             execServer: function (command) { return serverHandler.handleMessage(command); },
+                            allCommands: exports.allCommands
                         });
                     }
                     catch (err) {
@@ -228,6 +236,7 @@ function register(commands, clientHandler, serverHandler) {
                     }
                 });
             } }));
+        exports.allCommands[name] = data;
     };
     try {
         for (var _b = __values(Object.entries(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {

@@ -31,6 +31,8 @@ interface FishCommandRunner {
 		output:(message:string) => void;
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
+		/**List of every registered command, including this one. */
+		allCommands:FishCommandsList;
 	}): unknown;
 }
 
@@ -59,6 +61,8 @@ interface FishCommandData {
 	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
 	handler: FishCommandRunner;
+	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
+	isHidden?: boolean;
 }
 interface FishConsoleCommandData {
 	/**Args for this command, like ["player:player", "reason:string?"] */

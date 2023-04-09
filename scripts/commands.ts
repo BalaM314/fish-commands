@@ -1,8 +1,11 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, FishConsoleCommandsList } from "./types";
+import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, FishConsoleCommandsList, FishCommandData } from "./types";
 
+export const allCommands:Record<string, FishCommandData> = {};
+const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"] as const;
+export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 
 /** Represents a permission level that is required to run a specific command. */
@@ -18,8 +21,6 @@ export class Perm {
 	}
 }
 
-const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"] as const;
-export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str:string):CommandArg {
@@ -36,6 +37,11 @@ function processArgString(str:string):CommandArg {
 	}
 }
 
+export function formatArg(a:string){
+	const isOptional = a.at(-1) == "?";
+	const brackets = isOptional ? ["[", "]"] : ["<", ">"];
+	return brackets[0] + a.split(":")[0] + brackets[1];
+}
 
 /**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
 function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:boolean = true):{
@@ -167,6 +173,7 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 							outputSuccess: message => outputSuccess(message, sender),
 							output: message => outputMessage(message, sender),
 							execServer: command => serverHandler.handleMessage(command),
+							allCommands
 						});
 					} catch(err){
 						if(err instanceof CommandError){
@@ -179,10 +186,9 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 					}
 				});
 				
-
-				
 			}})
 		);
+		allCommands[name] = data;
 	}
 }
 

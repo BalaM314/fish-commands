@@ -105,3 +105,18 @@ export function setToArray<T>(set:ObjectSet<T>):T[] {
 	set.each(item => array.push(item));
 	return array;
 }
+
+
+export class StringBuilder {
+	str:string = "";
+	add(str:string){
+		this.str += str;
+		return this;
+	}
+	chunk(str:string){
+		if(Strings.stripColors(str).length > 0){
+			this.str = this.str + " " + str;
+		}
+		return this;
+	}
+}

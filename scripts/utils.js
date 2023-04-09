@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.StringBuilder = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -114,3 +114,20 @@ function setToArray(set) {
     return array;
 }
 exports.setToArray = setToArray;
+var StringBuilder = /** @class */ (function () {
+    function StringBuilder() {
+        this.str = "";
+    }
+    StringBuilder.prototype.add = function (str) {
+        this.str += str;
+        return this;
+    };
+    StringBuilder.prototype.chunk = function (str) {
+        if (Strings.stripColors(str).length > 0) {
+            this.str = this.str + " " + str;
+        }
+        return this;
+    };
+    return StringBuilder;
+}());
+exports.StringBuilder = StringBuilder;
