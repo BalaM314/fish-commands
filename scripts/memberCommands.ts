@@ -78,7 +78,7 @@ export const commands:FishCommandsList = {
 				sender.updateName();
 				sender.rainbow = null;
 			} else {
-				if(args.speed > 10 || args.speed <= 0){
+				if(args.speed > 10 || args.speed <= 0 || !Number.isInteger(args.speed)){
 					fail('Speed must be a number between 0 and 10.');
 				}
 	

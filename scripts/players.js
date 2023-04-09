@@ -269,43 +269,43 @@ var FishPlayer = /** @class */ (function () {
         switch (version) {
             case 0:
                 return new this({
-                    uuid: (_a = fishPlayerData.readString()) !== null && _a !== void 0 ? _a : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
-                    name: (_b = fishPlayerData.readString()) !== null && _b !== void 0 ? _b : "Unnamed player [ERROR]",
+                    uuid: (_a = fishPlayerData.readString(2)) !== null && _a !== void 0 ? _a : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    name: (_b = fishPlayerData.readString(2)) !== null && _b !== void 0 ? _b : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     member: fishPlayerData.readBool(),
                     stopped: fishPlayerData.readBool(),
-                    highlight: fishPlayerData.readString(),
+                    highlight: fishPlayerData.readString(2),
                     history: fishPlayerData.readArray(function (str) {
                         var _a, _b;
                         return ({
-                            action: (_a = str.readString()) !== null && _a !== void 0 ? _a : "null",
-                            by: (_b = str.readString()) !== null && _b !== void 0 ? _b : "null",
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
                             time: str.readNumber(15)
                         });
                     }),
                     rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber()),
-                    rank: (_c = fishPlayerData.readString()) !== null && _c !== void 0 ? _c : "",
-                    usid: fishPlayerData.readString()
+                    rank: (_c = fishPlayerData.readString(2)) !== null && _c !== void 0 ? _c : "",
+                    usid: fishPlayerData.readString(2)
                 }, player);
             default: throw new Error("Unknown save version ".concat(version));
         }
     };
     FishPlayer.prototype.write = function (out) {
         var _a, _b;
-        out.writeString(this.uuid);
-        out.writeString(this.name);
+        out.writeString(this.uuid, 2);
+        out.writeString(this.name, 2);
         out.writeBool(this.muted);
         out.writeBool(this.member);
         out.writeBool(this.stopped);
-        out.writeString(this.highlight);
+        out.writeString(this.highlight, 2);
         out.writeArray(this.history, function (i, str) {
-            str.writeString(i.action);
-            str.writeString(i.by);
+            str.writeString(i.action, 2);
+            str.writeString(i.by, 2);
             str.writeNumber(i.time, 15);
         });
-        out.writeNumber((_b = (_a = this.rainbow) === null || _a === void 0 ? void 0 : _a.speed) !== null && _b !== void 0 ? _b : 0);
-        out.writeString(this.rank.name);
-        out.writeString(this.usid);
+        out.writeNumber((_b = (_a = this.rainbow) === null || _a === void 0 ? void 0 : _a.speed) !== null && _b !== void 0 ? _b : 0, 2);
+        out.writeString(this.rank.name, 2);
+        out.writeString(this.usid, 2);
     };
     FishPlayer.prototype.writeLegacy = function () {
         var obj = {};

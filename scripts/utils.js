@@ -144,21 +144,23 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.write = function (str) {
         this.string += str;
     };
-    StringIO.prototype.readString = function () {
-        var length = parseInt(this.read(3));
+    StringIO.prototype.readString = function (/** The length of the written length. */ lenlen) {
+        if (lenlen === void 0) { lenlen = 3; }
+        var length = parseInt(this.read(lenlen));
         if (length == 0)
             return null;
         return this.read(length);
     };
-    StringIO.prototype.writeString = function (str) {
+    StringIO.prototype.writeString = function (str, lenlen) {
+        if (lenlen === void 0) { lenlen = 3; }
         if (str === null) {
             this.string += "000";
         }
-        else if (str.length > 999) {
-            throw new Error("Cannot write strings with length greater than 999");
+        else if (str.length > (Math.pow(10, lenlen) - 1)) {
+            throw new Error("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
         }
         else {
-            this.string += str.length.toString().padStart(3, "0");
+            this.string += str.length.toString().padStart(lenlen, "0");
             this.string += str;
         }
     };

@@ -222,39 +222,39 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		switch(version){
 			case 0:
 				return new this({
-					uuid: fishPlayerData.readString() ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
-					name: fishPlayerData.readString() ?? "Unnamed player [ERROR]",
+					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
 					muted: fishPlayerData.readBool(),
 					member: fishPlayerData.readBool(),
 					stopped: fishPlayerData.readBool(),
-					highlight: fishPlayerData.readString(),
+					highlight: fishPlayerData.readString(2),
 					history: fishPlayerData.readArray(str => ({
-						action: str.readString() ?? "null",
-						by: str.readString() ?? "null",
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
 						time: str.readNumber(15)
 					})),
 					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber()),
-					rank: fishPlayerData.readString() ?? "",
-					usid: fishPlayerData.readString()
+					rank: fishPlayerData.readString(2) ?? "",
+					usid: fishPlayerData.readString(2)
 				}, player);
 			default: throw new Error(`Unknown save version ${version}`);
 		}
 	}
 	write(out:StringIO){
-		out.writeString(this.uuid);
-		out.writeString(this.name);
+		out.writeString(this.uuid, 2);
+		out.writeString(this.name, 2);
 		out.writeBool(this.muted);
 		out.writeBool(this.member);
 		out.writeBool(this.stopped);
-		out.writeString(this.highlight);
+		out.writeString(this.highlight, 2);
 		out.writeArray(this.history, (i, str) => {
-			str.writeString(i.action);
-			str.writeString(i.by);
+			str.writeString(i.action, 2);
+			str.writeString(i.by, 2);
 			str.writeNumber(i.time, 15);
 		});
-		out.writeNumber(this.rainbow?.speed ?? 0);
-		out.writeString(this.rank.name);
-		out.writeString(this.usid);
+		out.writeNumber(this.rainbow?.speed ?? 0, 2);
+		out.writeString(this.rank.name, 2);
+		out.writeString(this.usid, 2);
 	}
 	writeLegacy():string {
 		const obj:any = {};

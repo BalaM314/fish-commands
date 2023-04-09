@@ -130,18 +130,18 @@ export class StringIO {
 	write(str:string){
 		this.string += str;
 	}
-	readString(){
-		const length = parseInt(this.read(3));
+	readString(/** The length of the written length. */lenlen:number = 3){
+		const length = parseInt(this.read(lenlen));
 		if(length == 0) return null;
 		return this.read(length);
 	}
-	writeString(str:string | null){
+	writeString(str:string | null, lenlen:number = 3){
 		if(str === null){
 			this.string += "000";
-		} else if(str.length > 999){
-			throw new Error(`Cannot write strings with length greater than 999`);
+		} else if(str.length > (10 ** lenlen - 1)){
+			throw new Error(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);
 		} else {
-			this.string += str.length.toString().padStart(3, "0");
+			this.string += str.length.toString().padStart(lenlen, "0");
 			this.string += str;
 		}
 	}

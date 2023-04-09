@@ -80,7 +80,7 @@ exports.commands = {
                 sender.rainbow = null;
             }
             else {
-                if (args.speed > 10 || args.speed <= 0) {
+                if (args.speed > 10 || args.speed <= 0 || !Number.isInteger(args.speed)) {
                     (0, commands_1.fail)('Speed must be a number between 0 and 10.');
                 }
                 (_b = sender.rainbow) !== null && _b !== void 0 ? _b : (sender.rainbow = {
