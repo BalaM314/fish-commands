@@ -14,5 +14,8 @@ Object.fromEntries = a => a.reduce((o, [k, v]) => { o[k] = v; return o; }, {});
 Array.prototype.at = function(i){
 	return this[i < 0 ? this.length + i : i];
 }
+String.prototype.at = function(i){
+	return this[i < 0 ? this.length + i : i];
+}
 
 require("index");
