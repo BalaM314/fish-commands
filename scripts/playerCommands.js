@@ -115,7 +115,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, discord: {
         args: [],
         description: "Takes you to our discord.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
             Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
@@ -123,7 +123,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, tilelog: {
         args: [],
         description: "Checks the history of a tile.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, output = _a.output;
             sender.tilelog = true;
@@ -132,7 +132,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, afk: {
         args: [],
         description: "Toggles your afk status.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
             sender.afk = !sender.afk;
@@ -147,7 +147,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, tileid: {
         args: [],
         description: "Checks id of a tile.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, output = _a.output;
             sender.tileId = true;
@@ -158,7 +158,7 @@ exports.commands = __assign(__assign({ unpause: {
     return [name, {
             args: [],
             description: "Switches to the ".concat(name, " server."),
-            perm: commands_1.Perm.all,
+            perm: commands_1.Perm.none,
             handler: function (_a) {
                 var sender = _a.sender;
                 Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(name, " server. Use [cyan]/").concat(name, " [magenta]to join them!"));
@@ -168,7 +168,7 @@ exports.commands = __assign(__assign({ unpause: {
 }))), { s: {
         args: ["message:string"],
         description: "Sends a message to staff only.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args;
             messageStaff(sender.name, args.message);
@@ -185,7 +185,7 @@ exports.commands = __assign(__assign({ unpause: {
     watch: {
         args: ["player:player?"],
         description: "Watch/unwatch a player.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (sender.watch) {
@@ -214,7 +214,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, help: {
         args: ["name:string?"],
         description: "Displays a list of all commands.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputFail = _a.outputFail, sender = _a.sender, allCommands = _a.allCommands;
             var formatCommand = function (name, color) { return new utils_1.StringBuilder()
@@ -267,7 +267,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, msg: {
         args: ["player:player", "message:string"],
         description: "Send a message to only one player.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
             recentWhispers[args.player.uuid()] = sender.uuid();
@@ -277,7 +277,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, r: {
         args: ["message:string"],
         description: "Reply to the most recent message.",
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
             if (recentWhispers[sender.uuid()]) {
@@ -297,7 +297,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, trail: {
         args: ["type:string?", "color:string?"],
         description: 'Use command to see options and toggle trail on/off.',
-        perm: commands_1.Perm.all,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             //overload 1: type not specified

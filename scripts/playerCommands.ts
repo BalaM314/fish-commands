@@ -97,7 +97,7 @@ export const commands:FishCommandsList = {
 	discord: {
 		args: [],
 		description: "Takes you to our discord.",
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({sender}){
 			Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
 		}
@@ -106,7 +106,7 @@ export const commands:FishCommandsList = {
 	tilelog: {
 		args: [],
 		description: "Checks the history of a tile.",
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({sender, output}){
 			sender.tilelog = true;
 			output(`\n \n \n===>[yellow]Click on a tile to check its recent history...\n \n \n `);
@@ -116,7 +116,7 @@ export const commands:FishCommandsList = {
 	afk: {
 		args: [],
 		description: "Toggles your afk status.",
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({sender, outputSuccess}){
 			sender.afk = !sender.afk;
 			sender.updateName();
@@ -131,7 +131,7 @@ export const commands:FishCommandsList = {
 	tileid: {
 		args: [],
 		description: "Checks id of a tile.",
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({sender, output}){
 			sender.tileId = true;
 			output(`Click a tile to see its id...`);
@@ -141,7 +141,7 @@ export const commands:FishCommandsList = {
 	...Object.fromEntries(Object.entries(FishServers).map(([name, data]) => [name, {
 		args: [],
 		description: `Switches to the ${name} server.`,
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({sender}){
 			Call.sendMessage(`${sender.name}[magenta] has gone to the ${name} server. Use [cyan]/${name} [magenta]to join them!`);
 			Call.connect(sender.con, data.ip, data.port);
@@ -151,7 +151,7 @@ export const commands:FishCommandsList = {
 	s: {
 		args: ["message:string"],
 		description: `Sends a message to staff only.`,
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({sender, args}){
 			messageStaff(sender.name, args.message);
 		}
@@ -168,7 +168,7 @@ export const commands:FishCommandsList = {
 	watch: {
 		args: ["player:player?"],
 		description: `Watch/unwatch a player.`,
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({args, sender, outputSuccess}){
 			if(sender.watch){
 				outputSuccess(`No longer watching a player.`);
@@ -198,7 +198,7 @@ export const commands:FishCommandsList = {
 	help: {
 		args: ["name:string?"],
 		description: "Displays a list of all commands.",
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({args, output, outputFail, sender, allCommands}){
 
 			const formatCommand = (name:string, color:string) => new StringBuilder()
@@ -252,7 +252,7 @@ export const commands:FishCommandsList = {
 	msg: {
 		args: ["player:player", "message:string"],
 		description: "Send a message to only one player.",
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({args, sender, output}){
 			recentWhispers[args.player.uuid()] = sender.uuid();
 			args.player.sendMessage(`${args.player.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
@@ -263,7 +263,7 @@ export const commands:FishCommandsList = {
 	r: {
 		args: ["message:string"],
 		description: "Reply to the most recent message.",
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({args, sender, output, outputFail}){
 			if(recentWhispers[sender.uuid()]){
 				const recipient = FishPlayer.getById(recentWhispers[sender.uuid()]);
@@ -282,7 +282,7 @@ export const commands:FishCommandsList = {
 	trail: {
 		args: ["type:string?", "color:string?"],
 		description: 'Use command to see options and toggle trail on/off.',
-		perm: Perm.all,
+		perm: Perm.none,
 		handler({args, sender, output, outputFail, outputSuccess}){
 
 			//overload 1: type not specified

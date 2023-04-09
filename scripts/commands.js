@@ -44,7 +44,7 @@ var Perm = /** @class */ (function () {
     Perm.fromRank = function (rank) {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); });
     };
-    Perm.all = new Perm("all", function (fishP) { return true; });
+    Perm.none = new Perm("all", function (fishP) { return true; });
     Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || Perm.mod.check(fishP); });
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);

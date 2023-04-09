@@ -10,7 +10,7 @@ export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer 
 
 /** Represents a permission level that is required to run a specific command. */
 export class Perm {
-	static all = new Perm("all", fishP => true);
+	static none = new Perm("all", fishP => true);
 	static notGriefer = new Perm("player", fishP => !fishP.stopped || Perm.mod.check(fishP));
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
