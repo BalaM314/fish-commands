@@ -265,12 +265,32 @@ var FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e, _f;
         switch (version) {
             case 0:
                 return new this({
                     uuid: (_a = fishPlayerData.readString(2)) !== null && _a !== void 0 ? _a : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
                     name: (_b = fishPlayerData.readString(2)) !== null && _b !== void 0 ? _b : "Unnamed player [ERROR]",
+                    muted: fishPlayerData.readBool(),
+                    member: fishPlayerData.readBool(),
+                    stopped: fishPlayerData.readBool(),
+                    highlight: fishPlayerData.readString(3),
+                    history: fishPlayerData.readArray(function (str) {
+                        var _a, _b;
+                        return ({
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
+                            time: str.readNumber(15)
+                        });
+                    }),
+                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
+                    rank: (_c = fishPlayerData.readString(2)) !== null && _c !== void 0 ? _c : "",
+                    usid: fishPlayerData.readString(3)
+                }, player);
+            case 1:
+                return new this({
+                    uuid: (_d = fishPlayerData.readString(2)) !== null && _d !== void 0 ? _d : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    name: (_e = fishPlayerData.readString(2)) !== null && _e !== void 0 ? _e : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     member: fishPlayerData.readBool(),
                     stopped: fishPlayerData.readBool(),
@@ -284,7 +304,7 @@ var FishPlayer = /** @class */ (function () {
                         });
                     }),
                     rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_c = fishPlayerData.readString(2)) !== null && _c !== void 0 ? _c : "",
+                    rank: (_f = fishPlayerData.readString(2)) !== null && _f !== void 0 ? _f : "",
                     usid: fishPlayerData.readString(2)
                 }, player);
             default: throw new Error("Unknown save version ".concat(version));
@@ -511,8 +531,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    /**Must have a length of 2. */
-    FishPlayer.saveVersion = 0;
+    FishPlayer.saveVersion = 1;
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;

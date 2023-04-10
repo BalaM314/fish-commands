@@ -8,8 +8,7 @@ import { Rank } from "./ranks";
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	/**Must have a length of 2. */
-	static readonly saveVersion = 0;
+	static readonly saveVersion = 1;
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -221,6 +220,23 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	static read(version:number, fishPlayerData:StringIO, player:mindustryPlayer | null){
 		switch(version){
 			case 0:
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					member: fishPlayerData.readBool(),
+					stopped: fishPlayerData.readBool(),
+					highlight: fishPlayerData.readString(3),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					usid: fishPlayerData.readString(3)
+				}, player);
+			case 1:
 				return new this({
 					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
 					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
