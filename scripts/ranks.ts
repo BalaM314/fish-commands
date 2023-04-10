@@ -8,7 +8,7 @@ export class Rank {
 	//icons and names subject to change
 	static mod = new Rank("mod", 3, "[black]<[green]M[black]>", "[acid]");
 	static admin = new Rank("admin", 4, "[black]<[scarlet]A[black]>", "[cyan]");
-	static developer = new Rank("developer", 5, "[black]<[yellow]\uE80F[black]>", "[orange]");//i want wrench rank
+	static developer = new Rank("developer", 5, "[black]<[orange]\uE80F[black]>", "[blue]");//i want wrench rank
 	static manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>", "[scarlet]");
 	static fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]");//Might want to change this to like owner or something
 	constructor(
