@@ -169,11 +169,11 @@ export const commands:FishCommandsList = {
 		args: ["player:player?"],
 		description: `Watch/unwatch a player.`,
 		perm: Perm.none,
-		handler({args, sender, outputSuccess}){
+		handler({args, sender, outputSuccess, outputFail}){
 			if(sender.watch){
 				outputSuccess(`No longer watching a player.`);
 				sender.watch = false;
-			} else {
+			} else if(args.player){
 				sender.watch = true;
 				const stayX = sender.unit().x;
 				const stayY = sender.unit().y;
@@ -190,6 +190,8 @@ export const commands:FishCommandsList = {
 				};
 	
 				watch();
+			} else {
+				outputFail(`No player to unwatch.`);
 			}
 
 		}
@@ -234,9 +236,9 @@ export const commands:FishCommandsList = {
 				const chunkedPlayerCommands:string[][] = to2DArray(commands.player, 15);
 
 				switch(args.name){
-					case "admin": output(`[${Perm.admin.color}]-- Admin commands --\n` + formatList(commands.admin, Perm.admin.color)); break;
-					case "mod": output(`[${Perm.mod.color}]-- Mod commands --\n` + formatList(commands.mod, Perm.mod.color)); break;
-					case "member": output(`[${Perm.member.color}]-- Member commands --\n` + formatList(commands.member, Perm.member.color)); break;
+					case "admin": output(`${Perm.admin.color}-- Admin commands --\n` + formatList(commands.admin, Perm.admin.color)); break;
+					case "mod": output(`${Perm.mod.color}-- Mod commands --\n` + formatList(commands.mod, Perm.mod.color)); break;
+					case "member": output(`${Perm.member.color}-- Member commands --\n` + formatList(commands.member, Perm.member.color)); break;
 					default:
 						const pageNumber = args.name !== null ? parseInt(args.name) : 1;
 						if((pageNumber - 1) in chunkedPlayerCommands){
@@ -254,7 +256,7 @@ export const commands:FishCommandsList = {
 		description: "Send a message to only one player.",
 		perm: Perm.none,
 		handler({args, sender, output}){
-			recentWhispers[args.player.uuid()] = sender.uuid;
+			recentWhispers[args.player.uuid] = sender.uuid;
 			args.player.sendMessage(`${args.player.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
 			output(`[#0ffffff0]Message sent to ${args.player.player.name}[#0ffffff0].`);
 		}

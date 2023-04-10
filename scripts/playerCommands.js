@@ -187,12 +187,12 @@ exports.commands = __assign(__assign({ unpause: {
         description: "Watch/unwatch a player.",
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (sender.watch) {
                 outputSuccess("No longer watching a player.");
                 sender.watch = false;
             }
-            else {
+            else if (args.player) {
                 sender.watch = true;
                 var stayX_1 = sender.unit().x;
                 var stayY_1 = sender.unit().y;
@@ -209,6 +209,9 @@ exports.commands = __assign(__assign({ unpause: {
                     }
                 };
                 watch_1();
+            }
+            else {
+                outputFail("No player to unwatch.");
             }
         }
     }, help: {
@@ -245,13 +248,13 @@ exports.commands = __assign(__assign({ unpause: {
                 var chunkedPlayerCommands = (0, utils_1.to2DArray)(commands_2.player, 15);
                 switch (args.name) {
                     case "admin":
-                        output("[".concat(commands_1.Perm.admin.color, "]-- Admin commands --\n") + formatList(commands_2.admin, commands_1.Perm.admin.color));
+                        output("".concat(commands_1.Perm.admin.color, "-- Admin commands --\n") + formatList(commands_2.admin, commands_1.Perm.admin.color));
                         break;
                     case "mod":
-                        output("[".concat(commands_1.Perm.mod.color, "]-- Mod commands --\n") + formatList(commands_2.mod, commands_1.Perm.mod.color));
+                        output("".concat(commands_1.Perm.mod.color, "-- Mod commands --\n") + formatList(commands_2.mod, commands_1.Perm.mod.color));
                         break;
                     case "member":
-                        output("[".concat(commands_1.Perm.member.color, "]-- Member commands --\n") + formatList(commands_2.member, commands_1.Perm.member.color));
+                        output("".concat(commands_1.Perm.member.color, "-- Member commands --\n") + formatList(commands_2.member, commands_1.Perm.member.color));
                         break;
                     default:
                         var pageNumber = args.name !== null ? parseInt(args.name) : 1;
@@ -270,7 +273,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
-            recentWhispers[args.player.uuid()] = sender.uuid;
+            recentWhispers[args.player.uuid] = sender.uuid;
             args.player.sendMessage("".concat(args.player.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
             output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
         }
