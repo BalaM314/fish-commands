@@ -65,5 +65,29 @@ export const commands:FishConsoleCommandsList = {
 			}
 			output(outputString.join("\n"));
 		}
+	},
+	unblacklist: {
+		args: ["ip:string"],
+		description:"Unblacklists an ip from the dosBlacklist",
+		handler({args, output}){
+			const ip=args.ip
+			const blacklist=Vars.netServer.admins.dosBlacklist
+            if(blacklist.remove(ip)) {output("Removed "+ip+" from the dosblacklist")}
+			else {fail("That ip doesn't exist or isn't in the blacklist")}
+		}
+	},
+	blacklist:{
+		args:[],
+		description:"Allows you to view the dosBlacklist",
+		handler({output}){
+			let outputString:string[]=[""]
+			const blacklist=Vars.netServer.admins.dosBlacklist
+            if(blacklist.isEmpty()) output("The blacklist is empty")
+            blacklist.each((ip: string)=>{
+                const findings=Vars.netServer.admins.findByName(ip).first()//we don't care about any other infos because woehiansoahikl
+                outputString.push("IP: "+ip+" UUID: "+findings.id+" LAST NAME USED: "+findings.plainLastName())
+            })
+			output(outputString.join("\n"))
+		}
 	}
 };

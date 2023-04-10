@@ -95,5 +95,36 @@ exports.commands = {
             }
             output(outputString.join("\n"));
         }
+    },
+    unblacklist: {
+        args: ["ip:string"],
+        description: "Unblacklists an ip from the dosBlacklist",
+        handler: function (_a) {
+            var args = _a.args, output = _a.output;
+            var ip = args.ip;
+            var blacklist = Vars.netServer.admins.dosBlacklist;
+            if (blacklist.remove(ip)) {
+                output("Removed " + ip + " from the dosblacklist");
+            }
+            else {
+                (0, commands_1.fail)("That ip doesn't exist or isn't in the blacklist");
+            }
+        }
+    },
+    blacklist: {
+        args: [],
+        description: "Allows you to view the dosBlacklist",
+        handler: function (_a) {
+            var output = _a.output;
+            var outputString = [""];
+            var blacklist = Vars.netServer.admins.dosBlacklist;
+            if (blacklist.isEmpty())
+                output("The blacklist is empty");
+            blacklist.each(function (ip) {
+                var findings = Vars.netServer.admins.findByName(ip).first(); //we don't care about any other infos because woehiansoahikl
+                outputString.push("IP: " + ip + " UUID: " + findings.id + " LAST NAME USED: " + findings.plainLastName());
+            });
+            output(outputString.join(","));
+        }
     }
 };
