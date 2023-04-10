@@ -4,6 +4,7 @@
 
 import { getTimeSinceText } from "./utils";
 import { FishPlayer } from './players';
+import { Ohnos } from "./ohno";
 import * as timers from './timers';
 import * as config from './config';
 import * as commands from './commands';
@@ -163,5 +164,8 @@ Events.on(EventType.TapEvent, (e) => {
 		}
 		fishP.tilelog = false;
 	}
+});
 
+Events.on(EventType.GameOverEvent, (e) => {
+	Ohnos.onGameOver();
 });

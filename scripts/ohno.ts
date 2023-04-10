@@ -24,5 +24,8 @@ export const Ohnos = {
 	},
 	amount(){
 		return this.ohnos.length;
+	},
+	onGameOver(){
+		this.killAll();
 	}
 };

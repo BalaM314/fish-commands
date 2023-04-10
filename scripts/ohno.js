@@ -28,5 +28,8 @@ exports.Ohnos = {
     },
     amount: function () {
         return this.ohnos.length;
+    },
+    onGameOver: function () {
+        this.killAll();
     }
 };

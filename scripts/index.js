@@ -5,6 +5,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = require("./utils");
 var players_1 = require("./players");
+var ohno_1 = require("./ohno");
 var timers = require("./timers");
 var config = require("./config");
 var commands = require("./commands");
@@ -143,4 +144,7 @@ Events.on(EventType.TapEvent, function (e) {
         }
         fishP.tilelog = false;
     }
+});
+Events.on(EventType.GameOverEvent, function (e) {
+    ohno_1.Ohnos.onGameOver();
 });
