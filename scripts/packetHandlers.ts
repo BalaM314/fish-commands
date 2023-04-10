@@ -23,7 +23,7 @@ example ["E",10,Vars.player.x,Vars.player.y].join(",")
 if duration is bigger than 10 it will default to 3
 if texts length is above 41 it will kick you
 `,0);return}
-                if(parts[0].length>40+1){player.kick("ok that's a lot of characters, 41 is the limit here",0);return}            
+                if(parts[0].length>41){player.kick("ok that's a lot of characters, 41 is the limit here",0);return}            
                     if(Number(parts[1])<=10){
                         Call.label(parts[0],Number(parts[1]),Number(parts[2]),Number(parts[3]))
                     }

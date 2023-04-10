@@ -124,7 +124,7 @@ exports.commands = {
                 var findings = Vars.netServer.admins.findByName(ip).first(); //we don't care about any other infos because woehiansoahikl
                 outputString.push("IP: " + ip + " UUID: " + findings.id + " LAST NAME USED: " + findings.plainLastName());
             });
-            output(outputString.join(","));
+            output(outputString.join("\n"));
         }
     }
 };
