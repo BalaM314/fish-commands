@@ -112,6 +112,7 @@ interface mindustryPlayerData {
 	admin: boolean;
 	banned: boolean;
 	lastKicked: number;
+	plainLastName(): string;
 }
 
 interface ClientCommandHandler {

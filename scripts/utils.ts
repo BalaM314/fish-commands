@@ -108,7 +108,7 @@ export function setToArray<T>(set:ObjectSet<T>):T[] {
 
 
 export class StringBuilder {
-	str:string = "";
+	constructor(public str:string = ""){}
 	add(str:string){
 		this.str += str;
 		return this;

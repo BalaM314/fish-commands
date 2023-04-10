@@ -99,7 +99,15 @@ declare const Http: {
 	get(url:string):HttpRequest;
 }
 declare class ObjectSet<T> {
+	size:number;
+	select(predicate:(item:T) => boolean):ObjectSet<T>;
 	each(func:(item:T) => unknown);
+	add(item:T):boolean;
+	remove(item:T):boolean;
+	isEmpty():boolean;
+	contains(item:T):boolean;
+	get(key:T):T;
+	first():T;
 }
 
 declare function importPackage(package:any):void;

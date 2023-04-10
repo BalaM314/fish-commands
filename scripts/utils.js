@@ -115,8 +115,9 @@ function setToArray(set) {
 }
 exports.setToArray = setToArray;
 var StringBuilder = /** @class */ (function () {
-    function StringBuilder() {
-        this.str = "";
+    function StringBuilder(str) {
+        if (str === void 0) { str = ""; }
+        this.str = str;
     }
     StringBuilder.prototype.add = function (str) {
         this.str += str;
