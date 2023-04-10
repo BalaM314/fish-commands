@@ -92,9 +92,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.register(staffCommands.commands, clientHandler, serverHandler);
 	commands.register(playerCommands.commands, clientHandler, serverHandler);
 	commands.register(memberCommands.commands, clientHandler, serverHandler);
-	commands.register(packetHandlers.commands, clientHandler, serverHandler);
+	//commands.register(packetHandlers.commands, clientHandler, serverHandler);
 	commands.registerConsole(consoleCommands.commands, serverHandler);
-	packetHandlers.loadPacketHandlers();
+	//packetHandlers.loadPacketHandlers();
 	// stored for limiting /reset frequency
 	Core.settings.remove('lastRestart');
 

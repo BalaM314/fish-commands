@@ -287,14 +287,24 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	/**Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){
-		let out = new StringIO();
-		out.writeNumber(this.saveVersion, 2);
-		out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
-			if((player.rank != Rank.new) || player.member || player.muted){
-				player.write(out);
-			}
-		});
-		Core.settings.put('fish', out.string);
+		this.saveAllLegacy();
+		// let out = new StringIO();
+		// out.writeNumber(this.saveVersion, 2);
+		// out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
+		// 	if((player.rank != Rank.new) || player.member || player.muted){
+		// 		player.write(out);
+		// 	}
+		// });
+		// Core.settings.put('fish', out.string);
+		// Core.settings.manualSave();
+	}
+	static saveAllLegacy(){
+		let playerDatas:string[] = [];
+		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
+			if((player.rank != Rank.player) || player.member)
+				playerDatas.push(`"${uuid}":${player.writeLegacy()}`);
+		}
+		Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
 		Core.settings.manualSave();
 	}
 	/**Loads cached FishPlayers from JSON in Core.settings. */

@@ -14,7 +14,6 @@ var staffCommands = require("./staffCommands");
 var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
 var consoleCommands = require("./consoleCommands");
-var packetHandlers = require("./packetHandlers");
 var tileHistory = {};
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
@@ -77,9 +76,9 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(staffCommands.commands, clientHandler, serverHandler);
     commands.register(playerCommands.commands, clientHandler, serverHandler);
     commands.register(memberCommands.commands, clientHandler, serverHandler);
-    commands.register(packetHandlers.commands, clientHandler, serverHandler);
+    //commands.register(packetHandlers.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
-    packetHandlers.loadPacketHandlers();
+    //packetHandlers.loadPacketHandlers();
     // stored for limiting /reset frequency
     Core.settings.remove('lastRestart');
     //const getIp = Http.get('https://api.ipify.org?format=js');

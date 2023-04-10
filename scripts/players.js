@@ -348,15 +348,35 @@ var FishPlayer = /** @class */ (function () {
     };
     /**Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
-        var out = new utils_1.StringIO();
-        out.writeNumber(this.saveVersion, 2);
-        out.writeArray(Object.entries(this.cachedPlayers), function (_a) {
-            var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
-            if ((player.rank != ranks_1.Rank.new) || player.member || player.muted) {
-                player.write(out);
+        this.saveAllLegacy();
+        // let out = new StringIO();
+        // out.writeNumber(this.saveVersion, 2);
+        // out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
+        // 	if((player.rank != Rank.new) || player.member || player.muted){
+        // 		player.write(out);
+        // 	}
+        // });
+        // Core.settings.put('fish', out.string);
+        // Core.settings.manualSave();
+    };
+    FishPlayer.saveAllLegacy = function () {
+        var e_3, _a;
+        var playerDatas = [];
+        try {
+            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
+                if ((player.rank != ranks_1.Rank.player) || player.member)
+                    playerDatas.push("\"".concat(uuid, "\":").concat(player.writeLegacy()));
             }
-        });
-        Core.settings.put('fish', out.string);
+        }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_3) throw e_3.error; }
+        }
+        Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
         Core.settings.manualSave();
     };
     /**Loads cached FishPlayers from JSON in Core.settings. */
@@ -374,7 +394,7 @@ var FishPlayer = /** @class */ (function () {
         out.expectEOF();
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_3, _a;
+        var e_4, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -388,12 +408,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_3) throw e_3.error; }
+            finally { if (e_4) throw e_4.error; }
         }
     };
     //#endregion
