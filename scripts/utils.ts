@@ -137,7 +137,7 @@ export class StringIO {
 	}
 	writeString(str:string | null, lenlen:number = 3){
 		if(str === null){
-			this.string += "000";
+			this.string += "0".repeat(lenlen);
 		} else if(str.length > (10 ** lenlen - 1)){
 			throw new Error(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);
 		} else {

@@ -154,7 +154,7 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.writeString = function (str, lenlen) {
         if (lenlen === void 0) { lenlen = 3; }
         if (str === null) {
-            this.string += "000";
+            this.string += "0".repeat(lenlen);
         }
         else if (str.length > (Math.pow(10, lenlen) - 1)) {
             throw new Error("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
