@@ -1,7 +1,7 @@
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { FishConsoleCommandsList, mindustryPlayerData } from "./types";
-import { setToArray } from "./utils";
+import { setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
 
 
@@ -68,26 +68,31 @@ export const commands:FishConsoleCommandsList = {
 	},
 	unblacklist: {
 		args: ["ip:string"],
-		description:"Unblacklists an ip from the dosBlacklist",
+		description: "Unblacklists an ip from the DOS blacklist.",
 		handler({args, output}){
-			const ip=args.ip
-			const blacklist=Vars.netServer.admins.dosBlacklist
-            if(blacklist.remove(ip)) {output("Removed "+ip+" from the dosblacklist")}
-			else {fail("That ip doesn't exist or isn't in the blacklist")}
+			const blacklist = Vars.netServer.admins.dosBlacklist;
+			if(blacklist.remove(args.ip)) output(`Removed ${args.ip} from the DOS blacklist.`);
+			else fail(`IP address ${args.ip} is not DOS blacklisted.`);
 		}
 	},
-	blacklist:{
-		args:[],
-		description:"Allows you to view the dosBlacklist",
+	blacklist: {
+		args: [],
+		description: "Allows you to view the DOS blacklist.",
 		handler({output}){
-			let outputString:string[]=[""]
-			const blacklist=Vars.netServer.admins.dosBlacklist
-            if(blacklist.isEmpty()) output("The blacklist is empty")
-            blacklist.each((ip: string)=>{
-                const findings=Vars.netServer.admins.findByName(ip).first()//we don't care about any other infos because woehiansoahikl
-                outputString.push("IP: "+ip+" UUID: "+findings.id+" LAST NAME USED: "+findings.plainLastName())
-            })
-			output(outputString.join("\n"))
+			const blacklist = Vars.netServer.admins.dosBlacklist;
+			if(blacklist.isEmpty()){
+				output("The blacklist is empty");
+				return;
+			}
+
+			let outputString = ["DOS Blacklist:"];
+			blacklist.each((ip:string) => {
+				(Vars.netServer.admins.findByName(ip) as ObjectSet<mindustryPlayerData>).each(data =>
+					outputString.push(`IP: &c${ip}&fr UUID: &c"${data.id}"&fr Last name used: &c"${data.plainLastName()}"&fr`)
+				)
+			});
+
+			output(outputString.join("\n"));
 		}
 	}
 };
