@@ -1,7 +1,7 @@
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { FishConsoleCommandsList, mindustryPlayerData } from "./types";
-import { setToArray } from "./utils";
+import { setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
 
 
@@ -63,6 +63,35 @@ export const commands:FishConsoleCommandsList = {
 	rank: &c${player.rank.name}&fr${(player.stopped ? ", &lris stopped&fr" : "") + (player.muted ? ", &lris muted&fr" : "") + (player.member ? ", &lmis member&fr" : "")}`
 				);
 			}
+			output(outputString.join("\n"));
+		}
+	},
+	unblacklist: {
+		args: ["ip:string"],
+		description: "Unblacklists an ip from the DOS blacklist.",
+		handler({args, output}){
+			const blacklist = Vars.netServer.admins.dosBlacklist;
+			if(blacklist.remove(args.ip)) output(`Removed ${args.ip} from the DOS blacklist.`);
+			else fail(`IP address ${args.ip} is not DOS blacklisted.`);
+		}
+	},
+	blacklist: {
+		args: [],
+		description: "Allows you to view the DOS blacklist.",
+		handler({output}){
+			const blacklist = Vars.netServer.admins.dosBlacklist;
+			if(blacklist.isEmpty()){
+				output("The blacklist is empty");
+				return;
+			}
+
+			let outputString = ["DOS Blacklist:"];
+			blacklist.each((ip:string) => {
+				(Vars.netServer.admins.findByName(ip) as ObjectSet<mindustryPlayerData>).each(data =>
+					outputString.push(`IP: &c${ip}&fr UUID: &c"${data.id}"&fr Last name used: &c"${data.plainLastName()}"&fr`)
+				)
+			});
+
 			output(outputString.join("\n"));
 		}
 	}
