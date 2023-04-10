@@ -256,7 +256,7 @@ exports.commands = __assign(__assign({ unpause: {
                     default:
                         var pageNumber = args.name !== null ? parseInt(args.name) : 1;
                         if ((pageNumber - 1) in chunkedPlayerCommands) {
-                            output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --\n") + formatList(chunkedPlayerCommands[pageNumber - 1], "sky"));
+                            output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --\n") + formatList(chunkedPlayerCommands[pageNumber - 1], "[sky]"));
                         }
                         else {
                             outputFail("\"".concat(args.name, "\" is an invalid page number."));

@@ -283,7 +283,7 @@ var FishPlayer = /** @class */ (function () {
                             time: str.readNumber(15)
                         });
                     }),
-                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber()),
+                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
                     rank: (_c = fishPlayerData.readString(2)) !== null && _c !== void 0 ? _c : "",
                     usid: fishPlayerData.readString(2)
                 }, player);

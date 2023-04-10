@@ -233,7 +233,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 						by: str.readString(2) ?? "null",
 						time: str.readNumber(15)
 					})),
-					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber()),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
 					rank: fishPlayerData.readString(2) ?? "",
 					usid: fishPlayerData.readString(2)
 				}, player);
