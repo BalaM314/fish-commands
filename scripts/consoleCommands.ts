@@ -44,7 +44,7 @@ export const commands:FishConsoleCommandsList = {
 			output(outputString.join("\n"));
 		}
 	},
-	infoOnline: {
+	infoonline: {
 		args: ["player:string"],
 		description: "Display information about an online player.",
 		handler({args, output}){
