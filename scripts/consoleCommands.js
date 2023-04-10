@@ -98,31 +98,31 @@ exports.commands = {
     },
     unblacklist: {
         args: ["ip:string"],
-        description: "Unblacklists an ip from the dosBlacklist",
+        description: "Unblacklists an ip from the DOS blacklist.",
         handler: function (_a) {
             var args = _a.args, output = _a.output;
-            var ip = args.ip;
             var blacklist = Vars.netServer.admins.dosBlacklist;
-            if (blacklist.remove(ip)) {
-                output("Removed " + ip + " from the dosblacklist");
-            }
-            else {
-                (0, commands_1.fail)("That ip doesn't exist or isn't in the blacklist");
-            }
+            if (blacklist.remove(args.ip))
+                output("Removed ".concat(args.ip, " from the DOS blacklist."));
+            else
+                (0, commands_1.fail)("IP address ".concat(args.ip, " is not DOS blacklisted."));
         }
     },
     blacklist: {
         args: [],
-        description: "Allows you to view the dosBlacklist",
+        description: "Allows you to view the DOS blacklist.",
         handler: function (_a) {
             var output = _a.output;
-            var outputString = [""];
             var blacklist = Vars.netServer.admins.dosBlacklist;
-            if (blacklist.isEmpty())
+            if (blacklist.isEmpty()) {
                 output("The blacklist is empty");
+                return;
+            }
+            var outputString = ["DOS Blacklist:"];
             blacklist.each(function (ip) {
-                var findings = Vars.netServer.admins.findByName(ip).first(); //we don't care about any other infos because woehiansoahikl
-                outputString.push("IP: " + ip + " UUID: " + findings.id + " LAST NAME USED: " + findings.plainLastName());
+                Vars.netServer.admins.findByName(ip).each(function (data) {
+                    return outputString.push("IP: &c".concat(ip, "&fr UUID: &c\"").concat(data.id, "\"&fr Last name used: &c\"").concat(data.plainLastName(), "\"&fr"));
+                });
             });
             output(outputString.join("\n"));
         }

@@ -70,7 +70,7 @@ export const commands:FishConsoleCommandsList = {
 		args: ["ip:string"],
 		description: "Unblacklists an ip from the DOS blacklist.",
 		handler({args, output}){
-			const blacklist = Vars.netServer.admins.dosBlacklist;
+			const blacklist = Vars.netServer.admins.dosBlacklist as ObjectSet<string>;
 			if(blacklist.remove(args.ip)) output(`Removed ${args.ip} from the DOS blacklist.`);
 			else fail(`IP address ${args.ip} is not DOS blacklisted.`);
 		}
