@@ -22,7 +22,7 @@ var Rank = /** @class */ (function () {
     //icons and names subject to change
     Rank.mod = new Rank("mod", 3, "[black]<[#6FFC7C]M[black]>", "[#6FFC7C]");
     Rank.admin = new Rank("admin", 4, "[black]<[#c30202]A[black]>", "[#c30202]");
-    Rank.pi = new Rank("pi", 5, "[black]<[orange]π[black]>", "[blue]"); //i want rank
+    Rank.pi = new Rank("pi", 5, "[black]<[orange]\u03C0[black]>", "[blue]"); //i want rank
     Rank.manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>", "[scarlet]");
     Rank.fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]"); //Might want to change this to like owner or something
     return Rank;
