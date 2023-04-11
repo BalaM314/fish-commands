@@ -18,12 +18,12 @@ var Rank = /** @class */ (function () {
     Rank.ranks = {};
     Rank.new = new Rank("new", -1, "", "[forest]");
     Rank.player = new Rank("player", 0, "", "");
-    Rank.trusted = new Rank("trusted", 2, "[black]<[blue][#E67E22]\uE813[black]>", "[#E67E22]");
+    Rank.trusted = new Rank("trusted", 2, "[black]<[#E67E22]\uE813[]>[]", "[#E67E22]");
     //icons and names subject to change
-    Rank.mod = new Rank("mod", 3, "[black]<[#6FFC7C]M[black]>", "[#6FFC7C]");
-    Rank.admin = new Rank("admin", 4, "[black]<[#c30202]A[black]>", "[#c30202]");
-    Rank.pi = new Rank("pi", 5, "[black]<[orange]\u03C0[black]>", "[blue]"); //i want rank
-    Rank.manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>", "[scarlet]");
+    Rank.mod = new Rank("mod", 3, "[black]<[#6FFC7C]M[]>[]", "[#6FFC7C]");
+    Rank.admin = new Rank("admin", 4, "[black]<[#C30202]A[]>[]", "[#c30202]");
+    Rank.pi = new Rank("pi", 5, "[black]<[#FF8000]\u03C0[]>[]", "[blue]"); //i want rank
+    Rank.manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[]>[]", "[scarlet]");
     Rank.fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]"); //Might want to change this to like owner or something
     return Rank;
 }());

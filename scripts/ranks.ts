@@ -4,12 +4,12 @@ export class Rank {
 	
 	static new = new Rank("new", -1, "", "[forest]");
 	static player = new Rank("player", 0, "", "");
-	static trusted = new Rank("trusted", 2, "[black]<[blue][#E67E22]\uE813[black]>", "[#E67E22]");
+	static trusted = new Rank("trusted", 2, "[black]<[#E67E22]\uE813[]>[]", "[#E67E22]");
 	//icons and names subject to change
-	static mod = new Rank("mod", 3, "[black]<[#6FFC7C]M[black]>", "[#6FFC7C]");
-	static admin = new Rank("admin", 4, "[black]<[#c30202]A[black]>", "[#c30202]");
-	static pi = new Rank("pi", 5, "[black]<[orange]\u03C0[black]>", "[blue]");//i want rank
-	static manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>", "[scarlet]");
+	static mod = new Rank("mod", 3, "[black]<[#6FFC7C]M[]>[]", "[#6FFC7C]");
+	static admin = new Rank("admin", 4, "[black]<[#C30202]A[]>[]", "[#c30202]");
+	static pi = new Rank("pi", 5, "[black]<[#FF8000]\u03C0[]>[]", "[blue]");//i want rank
+	static manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[]>[]", "[scarlet]");
 	static fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]");//Might want to change this to like owner or something
 	constructor(
 		public name:string,
