@@ -9,7 +9,7 @@ export function addStopped(uuid:string){
 
 	try {
 		req.submit((response, exception) => {
-			Log.info(response.getResultAsString());
+			//Log.info(response.getResultAsString());
 			if(exception || !response){
 				Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
 			}
@@ -28,7 +28,7 @@ export function free(uuid:string){
 
 	try {
 		req.submit((response, exception) => {
-			Log.info(response.getResultAsString());
+			//Log.info(response.getResultAsString());
 			if(exception || !response){
 				Log.info('\n\nStopped API encountered an error while trying to free a stopped player.\n\n');
 			}

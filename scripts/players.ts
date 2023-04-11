@@ -170,8 +170,6 @@ export class FishPlayer {
 		this.player.name = prefix + this.name;
 	}
 	updateAdminStatus(){
-		Log.info(`Updating admin status of player ${this.name}`);
-		Log.info(`Rank: ${this.rank.name}, is admin: ${this.ranksAtLeast(Rank.admin)}`);
 		if(this.ranksAtLeast(Rank.admin)){
 			Vars.netServer.admins.adminPlayer(this.uuid, this.player.usid());
 			this.player.admin = true;
