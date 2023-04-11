@@ -301,7 +301,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	static saveAllLegacy(){
 		let playerDatas:string[] = [];
 		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
-			if((player.rank != Rank.player) || player.member)
+			if((player.rank != Rank.new) || player.member)
 				playerDatas.push(`"${uuid}":${player.writeLegacy()}`);
 		}
 		Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
