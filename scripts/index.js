@@ -150,3 +150,6 @@ Events.on(EventType.TapEvent, function (e) {
 Events.on(EventType.GameOverEvent, function (e) {
     ohno_1.Ohnos.onGameOver();
 });
+Events.on(EventType.DisposeEvent, function (e) {
+    players_1.FishPlayer.saveAll();
+});

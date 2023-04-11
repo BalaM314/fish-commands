@@ -10,7 +10,7 @@ function addStopped(uuid) {
     req.timeout = 10000;
     try {
         req.submit(function (response, exception) {
-            Log.info(response.getResultAsString());
+            //Log.info(response.getResultAsString());
             if (exception || !response) {
                 Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
             }
@@ -30,7 +30,7 @@ function free(uuid) {
     req.timeout = 10000;
     try {
         req.submit(function (response, exception) {
-            Log.info(response.getResultAsString());
+            //Log.info(response.getResultAsString());
             if (exception || !response) {
                 Log.info('\n\nStopped API encountered an error while trying to free a stopped player.\n\n');
             }

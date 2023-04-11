@@ -209,8 +209,6 @@ var FishPlayer = /** @class */ (function () {
         this.player.name = prefix + this.name;
     };
     FishPlayer.prototype.updateAdminStatus = function () {
-        Log.info("Updating admin status of player ".concat(this.name));
-        Log.info("Rank: ".concat(this.rank.name, ", is admin: ").concat(this.ranksAtLeast(ranks_1.Rank.admin)));
         if (this.ranksAtLeast(ranks_1.Rank.admin)) {
             Vars.netServer.admins.adminPlayer(this.uuid, this.player.usid());
             this.player.admin = true;
@@ -365,7 +363,7 @@ var FishPlayer = /** @class */ (function () {
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
-                if ((player.rank != ranks_1.Rank.player) || player.member)
+                if ((player.rank != ranks_1.Rank.new) || player.member)
                     playerDatas.push("\"".concat(uuid, "\":").concat(player.writeLegacy()));
             }
         }

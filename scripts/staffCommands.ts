@@ -60,7 +60,7 @@ export const commands:FishCommandsList = {
 		perm: Perm.mod,
 		handler({args, sender}){
 			if(args.player.stopped) fail(`Player "${args.player.name}" is already stopped.`);
-			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to kick this player.`);
+			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
 			args.player.stop(sender);
 			Call.sendMessage(`Player "${args.player.name}" has been stopped.`);
 		}

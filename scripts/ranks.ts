@@ -4,11 +4,11 @@ export class Rank {
 	
 	static new = new Rank("new", -1, "", "[forest]");
 	static player = new Rank("player", 0, "", "");
-	static trusted = new Rank("trusted", 2, "[black]<[blue]\uE84D[black]>", "[yellow]");
+	static trusted = new Rank("trusted", 2, "[black]<[blue][#E67E22]\uE813[black]>", "[#E67E22]");
 	//icons and names subject to change
-	static mod = new Rank("mod", 3, "[black]<[green]M[black]>", "[acid]");
-	static admin = new Rank("admin", 4, "[black]<[scarlet]A[black]>", "[cyan]");
-	static developer = new Rank("developer", 5, "[black]<[orange]\uE80F[black]>", "[blue]");//i want wrench rank
+	static mod = new Rank("mod", 3, "[black]<[#6FFC7C]M[black]>", "[#6FFC7C]");
+	static admin = new Rank("admin", 4, "[black]<[#c30202]A[black]>", "[#c30202]");
+	static pi = new Rank("pi", 5, "[black]<[orange]π[black]>", "[blue]");//i want rank
 	static manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>", "[scarlet]");
 	static fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]");//Might want to change this to like owner or something
 	constructor(

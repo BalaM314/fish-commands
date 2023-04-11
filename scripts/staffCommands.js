@@ -75,7 +75,7 @@ exports.commands = __assign(__assign({ warn: {
             if (args.player.stopped)
                 (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already stopped."));
             if (!sender.canModerate(args.player, false))
-                (0, commands_1.fail)("You do not have permission to kick this player.");
+                (0, commands_1.fail)("You do not have permission to stop this player.");
             args.player.stop(sender);
             Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped."));
         }

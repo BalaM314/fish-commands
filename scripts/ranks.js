@@ -18,11 +18,11 @@ var Rank = /** @class */ (function () {
     Rank.ranks = {};
     Rank.new = new Rank("new", -1, "", "[forest]");
     Rank.player = new Rank("player", 0, "", "");
-    Rank.trusted = new Rank("trusted", 2, "[black]<[blue]\uE84D[black]>", "[yellow]");
+    Rank.trusted = new Rank("trusted", 2, "[black]<[blue][#E67E22]\uE813[black]>", "[#E67E22]");
     //icons and names subject to change
-    Rank.mod = new Rank("mod", 3, "[black]<[green]M[black]>", "[acid]");
-    Rank.admin = new Rank("admin", 4, "[black]<[scarlet]A[black]>", "[cyan]");
-    Rank.developer = new Rank("developer", 5, "[black]<[yellow]\uE80F[black]>", "[orange]"); //i want wrench rank
+    Rank.mod = new Rank("mod", 3, "[black]<[#6FFC7C]M[black]>", "[#6FFC7C]");
+    Rank.admin = new Rank("admin", 4, "[black]<[#c30202]A[black]>", "[#c30202]");
+    Rank.pi = new Rank("pi", 5, "[black]<[orange]π[black]>", "[blue]"); //i want rank
     Rank.manager = new Rank("manager", 6, "[black]<[scarlet]\uE82C[black]>", "[scarlet]");
     Rank.fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]"); //Might want to change this to like owner or something
     return Rank;
