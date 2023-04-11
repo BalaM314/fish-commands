@@ -171,3 +171,7 @@ Events.on(EventType.TapEvent, (e) => {
 Events.on(EventType.GameOverEvent, (e) => {
 	Ohnos.onGameOver();
 });
+
+Events.on(EventType.disposeEvent, (e) => {
+	FishPlayer.saveAll();
+});
