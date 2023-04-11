@@ -106,7 +106,7 @@ function loadPacketHandlers() {
             return;
         try {
             var parts = content.split('|');
-            if (fishP.ranksAtLeast(ranks_1.Rank.mod) && parts.length > 10) {
+            if (!fishP.ranksAtLeast(ranks_1.Rank.mod) && parts.length > 10) {
                 player.kick("Non admins can only have a bulk line of 10 parts", 0);
                 return;
             }

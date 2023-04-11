@@ -94,7 +94,7 @@ example: [5,5,100,100,Color.green].join(",")`
 		if(fishP.stopped) return;
 		try{
 			const parts = content.split('|');
-			if(fishP.ranksAtLeast(Rank.mod) && parts.length > 10){
+			if(!fishP.ranksAtLeast(Rank.mod) && parts.length > 10){
 				player.kick("Non admins can only have a bulk line of 10 parts", 0);
 				return;
 			}
