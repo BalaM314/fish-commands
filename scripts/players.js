@@ -398,9 +398,9 @@ var FishPlayer = /** @class */ (function () {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
                 if (value instanceof Object) {
                     var rank = "player";
-                    if ("mod" in value)
+                    if ("mod" in value && value.mod)
                         rank = "mod";
-                    if ("admin" in value)
+                    if ("admin" in value && value.admin)
                         rank = "admin";
                     this.cachedPlayers[key] = new this(__assign({ rank: rank, uuid: key }, value), null);
                 }
