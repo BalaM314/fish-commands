@@ -379,16 +379,17 @@ var FishPlayer = /** @class */ (function () {
     };
     /**Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
-        this.saveAllLegacy();
-        // let out = new StringIO();
-        // out.writeNumber(this.saveVersion, 2);
-        // out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
-        // 	if((player.rank != Rank.new) || player.member || player.muted){
-        // 		player.write(out);
-        // 	}
-        // });
-        // Core.settings.put('fish', out.string);
-        // Core.settings.manualSave();
+        // this.saveAllLegacy();
+        var out = new utils_1.StringIO();
+        out.writeNumber(this.saveVersion, 2);
+        out.writeArray(Object.entries(this.cachedPlayers), function (_a) {
+            var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
+            if ((player.rank != ranks_1.Rank.new) || player.member || player.muted) {
+                player.write(out);
+            }
+        });
+        Core.settings.put('fish', out.string);
+        Core.settings.manualSave();
     };
     FishPlayer.saveAllLegacy = function () {
         var e_4, _a;

@@ -252,7 +252,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 						by: str.readString(2) ?? "null",
 						time: str.readNumber(15)
 					})),
-					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rainbow: ((n:number) => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
 					rank: fishPlayerData.readString(2) ?? "",
 					usid: fishPlayerData.readString(3)
 				}, player);
@@ -307,16 +307,16 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	/**Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){
-		this.saveAllLegacy();
-		// let out = new StringIO();
-		// out.writeNumber(this.saveVersion, 2);
-		// out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
-		// 	if((player.rank != Rank.new) || player.member || player.muted){
-		// 		player.write(out);
-		// 	}
-		// });
-		// Core.settings.put('fish', out.string);
-		// Core.settings.manualSave();
+		// this.saveAllLegacy();
+		let out = new StringIO();
+		out.writeNumber(this.saveVersion, 2);
+		out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
+			if((player.rank != Rank.new) || player.member || player.muted){
+				player.write(out);
+			}
+		});
+		Core.settings.put('fish', out.string);
+		Core.settings.manualSave();
 	}
 	static saveAllLegacy(){
 		let playerDatas:string[] = [];
