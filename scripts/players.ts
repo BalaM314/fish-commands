@@ -104,6 +104,28 @@ export class FishPlayer {
 		});
 		return players;
 	}
+	static getOneByString(str:string):FishPlayer | "none" | "multiple" {
+		const players = this.getAllOnline();
+		let matchingPlayers:FishPlayer[];
+
+		const filters:((p:FishPlayer) => boolean)[] = [
+			p => p.uuid === str,
+			p => p.player.id.toString() === str,
+			p => p.name === str,
+			p => p.cleanedName === str,
+			p => p.cleanedName.toLowerCase() === str.toLowerCase(),
+			p => p.name.includes(str),
+			p => p.cleanedName.includes(str),
+			p => p.cleanedName.toLowerCase().includes(str.toLowerCase()),
+		];
+
+		for(const filter of filters){
+			matchingPlayers = players.filter(filter);
+			if(matchingPlayers.length == 1) return matchingPlayers[0];
+			else if(matchingPlayers.length > 1) return "multiple";
+		}
+		return "none";
+	}
 	//This method exists only because there is no easy way to turn an entitygroup into an array
 	static getAllOnline(){
 		let players:FishPlayer[] = [];

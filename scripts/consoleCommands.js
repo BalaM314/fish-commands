@@ -18,7 +18,7 @@ var utils_1 = require("./utils");
 var commands_1 = require("./commands");
 exports.commands = {
     setrank: {
-        args: ["player:exactPlayer", "rank:string"],
+        args: ["player:player", "rank:string"],
         description: "Set a player's rank.",
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;

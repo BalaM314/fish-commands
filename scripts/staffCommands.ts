@@ -90,7 +90,7 @@ export const commands:FishCommandsList = {
 	}])),
 
 	setrank: {
-		args: ["player:exactPlayer", "rank:string"],
+		args: ["player:player", "rank:string"],
 		description: "Set a player's rank.",
 		perm: Perm.mod,
 		handler({args, outputSuccess, sender}){

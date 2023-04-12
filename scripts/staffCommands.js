@@ -103,7 +103,7 @@ exports.commands = __assign(__assign({ warn: {
             outputFail("This command was moved to /setrank.");
         }
     }]; }))), { setrank: {
-        args: ["player:exactPlayer", "rank:string"],
+        args: ["player:player", "rank:string"],
         description: "Set a player's rank.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {

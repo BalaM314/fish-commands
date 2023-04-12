@@ -32,7 +32,7 @@ var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 exports.allCommands = {};
-var commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"];
+var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer"];
 /** Represents a permission level that is required to run a specific command. */
 var Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
@@ -100,18 +100,15 @@ function processArgs(args, processedCmdArgs, allowMenus) {
             //Deserialize the arg
             switch (cmdArg.type) {
                 case "player":
-                    var player = players_1.FishPlayer.getByName(args[i]);
-                    if (player == null)
+                    var output = players_1.FishPlayer.getOneByString(args[i]);
+                    if (output == "none")
                         return { error: "Player \"".concat(args[i], "\" not found.") };
-                    outputArgs[cmdArg.name] = player;
-                    break;
-                case "exactPlayer":
-                    var players = players_1.FishPlayer.getAllByName(args[i]);
-                    if (players.length === 0)
-                        return { error: "Player \"".concat(args[i], "\" not found. You must specify the name exactly without colors.") };
-                    else if (players.length > 1)
+                    else if (output == "multiple")
                         return { error: "Name \"".concat(args[i], "\" could refer to more than one player.") };
-                    outputArgs[cmdArg.name] = players[0];
+                    outputArgs[cmdArg.name] = output;
+                    break;
+                case "menuPlayer":
+                    return { error: "menuPlayer argtype is not yet implemented" };
                     break;
                 case "number":
                     var number = parseInt(args[i]);

@@ -4,7 +4,7 @@ import { Rank } from "./ranks";
 import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, FishConsoleCommandsList, FishCommandData } from "./types";
 
 export const allCommands:Record<string, FishCommandData> = {};
-const commandArgTypes = ["string", "number", "boolean", "player", "exactPlayer"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 
@@ -67,15 +67,13 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 		//Deserialize the arg
 		switch(cmdArg.type){
 			case "player":
-				const player = FishPlayer.getByName(args[i]);
-				if(player == null) return {error: `Player "${args[i]}" not found.`};
-				outputArgs[cmdArg.name] = player;
+				const output = FishPlayer.getOneByString(args[i]);
+				if(output == "none") return {error: `Player "${args[i]}" not found.`};
+				else if(output == "multiple") return {error: `Name "${args[i]}" could refer to more than one player.`};
+				outputArgs[cmdArg.name] = output;
 				break;
-			case "exactPlayer":
-				const players = FishPlayer.getAllByName(args[i]);
-				if(players.length === 0) return {error: `Player "${args[i]}" not found. You must specify the name exactly without colors.`};
-				else if(players.length > 1) return {error: `Name "${args[i]}" could refer to more than one player.`};
-				outputArgs[cmdArg.name] = players[0];
+			case "menuPlayer":
+				return {error: `menuPlayer argtype is not yet implemented`};
 				break;
 			case "number":
 				const number = parseInt(args[i]);

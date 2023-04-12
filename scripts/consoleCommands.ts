@@ -7,7 +7,7 @@ import { fail } from "./commands";
 
 export const commands:FishConsoleCommandsList = {
 	setrank: {
-		args: ["player:exactPlayer", "rank:string"],
+		args: ["player:player", "rank:string"],
 		description: "Set a player's rank.",
 		handler({args, outputSuccess}){
 			const rank = Rank.getByName(args.rank);
