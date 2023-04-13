@@ -318,10 +318,13 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		Core.settings.put('fish', out.string);
 		Core.settings.manualSave();
 	}
+	shouldCache(){
+		return (this.rank != Rank.new && this.rank != Rank.player) || this.muted || this.member;
+	}
 	static saveAllLegacy(){
 		let playerDatas:string[] = [];
 		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
-			if((player.rank != Rank.new) || player.member)
+			if(player.shouldCache())
 				playerDatas.push(`"${uuid}":${player.writeLegacy()}`);
 		}
 		Core.settings.put('fish', '{' + playerDatas.join(",") + '}');

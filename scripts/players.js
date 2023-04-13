@@ -391,13 +391,16 @@ var FishPlayer = /** @class */ (function () {
         Core.settings.put('fish', out.string);
         Core.settings.manualSave();
     };
+    FishPlayer.prototype.shouldCache = function () {
+        return (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || this.member;
+    };
     FishPlayer.saveAllLegacy = function () {
         var e_4, _a;
         var playerDatas = [];
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
-                if ((player.rank != ranks_1.Rank.new) || player.member)
+                if (player.shouldCache())
                     playerDatas.push("\"".concat(uuid, "\":").concat(player.writeLegacy()));
             }
         }
