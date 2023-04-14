@@ -273,6 +273,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
+            Log.info("".concat(args.player.uuid, " messaged ").concat(sender.uuid));
             recentWhispers[args.player.uuid] = sender.uuid;
             args.player.sendMessage("".concat(args.player.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
             output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
@@ -283,6 +284,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
+            Log.info("Checking for recent whispers to ".concat(sender.uuid));
             if (recentWhispers[sender.uuid]) {
                 var recipient = players_1.FishPlayer.getById(recentWhispers[sender.uuid]);
                 if (recipient === null || recipient === void 0 ? void 0 : recipient.connected()) {
