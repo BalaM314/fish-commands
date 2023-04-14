@@ -136,10 +136,10 @@ exports.commands = __assign(__assign({ warn: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             var admins = Vars.netServer.admins;
-            var possiblePlayers = admins.searchNames(args.name).toSeq().items;
+            var possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));
             if (possiblePlayers.length > 20) {
-                var exactPlayers = admins.findByName(args.name).toSeq().items;
-                if (exactPlayers.size > 0) {
+                var exactPlayers = (0, utils_1.setToArray)(admins.findByName(args.name));
+                if (exactPlayers.length > 0) {
                     possiblePlayers = exactPlayers;
                 }
                 else {

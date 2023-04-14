@@ -2,7 +2,7 @@ import { Perm, fail } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import type { FishCommandData, FishCommandsList, mindustryPlayerData } from "./types";
-import { getTimeSinceText } from "./utils";
+import { getTimeSinceText, setToArray } from "./utils";
 import * as api from "./api";
 import { Ohnos } from "./ohno";
 import { Rank } from "./ranks";
@@ -124,10 +124,10 @@ export const commands:FishCommandsList = {
 		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess}){
 			const admins = Vars.netServer.admins;
-			let possiblePlayers:mindustryPlayerData[] = admins.searchNames(args.name).toSeq().items;
+			let possiblePlayers:mindustryPlayerData[] = setToArray(admins.searchNames(args.name));
 			if(possiblePlayers.length > 20){
-				let exactPlayers = admins.findByName(args.name).toSeq().items;
-				if(exactPlayers.size > 0){
+				let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<mindustryPlayerData>);
+				if(exactPlayers.length > 0){
 					possiblePlayers = exactPlayers;
 				} else {
 					fail('Too many players with that name.');
