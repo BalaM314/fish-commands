@@ -189,7 +189,7 @@ export class FishPlayer {
 		if(this.member) prefix += config.MEMBER_PREFIX;
 
 		prefix += this.rank.prefix;
-		this.player.name = prefix + this.name;
+		this.player.name = prefix + " " + this.name;
 	}
 	updateAdminStatus(){
 		if(this.ranksAtLeast(Rank.admin)){
