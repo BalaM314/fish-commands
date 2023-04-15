@@ -43,7 +43,7 @@ var config = require("./config");
 var api = require("./api");
 var utils_1 = require("./utils");
 var ranks_1 = require("./ranks");
-var FishPlayer = /** @class */ (function () {
+var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, usid = _a.usid;
         var _j, _k, _l, _m;
@@ -384,7 +384,7 @@ var FishPlayer = /** @class */ (function () {
         out.writeNumber(this.saveVersion, 2);
         out.writeArray(Object.entries(this.cachedPlayers), function (_a) {
             var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
-            if ((player.rank != ranks_1.Rank.new) || player.member || player.muted) {
+            if (player.shouldCache()) {
                 player.write(out);
             }
         });
@@ -589,4 +589,3 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.saveVersion = 1;
     return FishPlayer;
 }());
-exports.FishPlayer = FishPlayer;

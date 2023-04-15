@@ -311,7 +311,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		let out = new StringIO();
 		out.writeNumber(this.saveVersion, 2);
 		out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
-			if((player.rank != Rank.new) || player.member || player.muted){
+			if(player.shouldCache()){
 				player.write(out);
 			}
 		});
