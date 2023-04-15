@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Rank = void 0;
-var Rank = /** @class */ (function () {
+var Rank = exports.Rank = /** @class */ (function () {
     function Rank(name, 
     /** Used to determine whether a rank outranks another. */ level, prefix, color) {
         if (color === void 0) { color = ""; }
@@ -28,4 +28,3 @@ var Rank = /** @class */ (function () {
     Rank.fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]"); //Might want to change this to like owner or something
     return Rank;
 }());
-exports.Rank = Rank;
