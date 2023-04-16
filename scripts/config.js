@@ -1,23 +1,18 @@
-const STOPPED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
-const ADMIN_PREFIX = '[black]<[scarlet]A[black]>';
-const MOD_PREFIX = '[black]<[green]M[black]>';
-const AFK_PREFIX = '[orange]\uE876 AFK \uE876 | [white]';
-const MUTED_PREFIX = '[white](muted)';
-const MEMBER_PREFIX = '[black]<[yellow]\uE809[black]>[white]';
-const bannedWords = ['nigger', 'kill yourself', 'kill urself', 'kys', 'cock', 'cock sucker'];
-const bannedNames = ['goldberg', 'eshay'];
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FishServers = exports.ip = exports.bannedNames = exports.bannedWords = exports.MEMBER_PREFIX = exports.MUTED_PREFIX = exports.AFK_PREFIX = exports.MOD_PREFIX = exports.ADMIN_PREFIX = exports.STOPPED_PREFIX = void 0;
+exports.STOPPED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
+exports.ADMIN_PREFIX = '[black]<[scarlet]A[black]>';
+exports.MOD_PREFIX = '[black]<[green]M[black]>';
+exports.AFK_PREFIX = '[orange]\uE876 AFK \uE876 | [white]';
+exports.MUTED_PREFIX = '[white](muted)';
+exports.MEMBER_PREFIX = '[black]<[yellow]\uE809[black]>[white]';
+exports.bannedWords = ['nigger', 'kill yourself', 'kill urself', 'kys', 'cock', 'cock sucker', "iamasussyimposter"];
+exports.bannedNames = ['goldberg', 'eshay', "VALVE"];
 // const ip = 'localhost';
-const ip = '45.79.202.111';
-
-module.exports = {
-  STOPPED_PREFIX: STOPPED_PREFIX,
-  ADMIN_PREFIX: ADMIN_PREFIX,
-  MOD_PREFIX: MOD_PREFIX,
-  AFK_PREFIX: AFK_PREFIX,
-  MUTED_PREFIX: MUTED_PREFIX,
-  MEMBER_PREFIX: MEMBER_PREFIX,
-  bannedWords: bannedWords,
-  ip: ip,
-  bannedNames: bannedNames,
+exports.ip = '45.79.202.111';
+exports.FishServers = {
+    attack: { ip: "162.248.100.98", port: "6567" },
+    survival: { ip: "170.187.144.235", port: "6567" },
+    pvp: { ip: "162.248.100.133", port: "6567" },
 };
