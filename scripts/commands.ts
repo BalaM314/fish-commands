@@ -2,9 +2,10 @@ import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, FishConsoleCommandsList, FishCommandData } from "./types";
+import { getTeam } from "./utils";
 
 export const allCommands:Record<string, FishCommandData> = {};
-const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 
@@ -74,6 +75,11 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				break;
 			case "menuPlayer":
 				return {error: `menuPlayer argtype is not yet implemented`};
+				break;
+			case "team":
+				const team = getTeam(args[i]);
+				if(team == null) return {error: `"${args[i]}" is not a valid team name.`};
+				outputArgs[cmdArg.name] = team;
 				break;
 			case "number":
 				const number = parseInt(args[i]);

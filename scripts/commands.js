@@ -31,8 +31,9 @@ exports.registerConsole = exports.register = exports.fail = exports.formatArg = 
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
+var utils_1 = require("./utils");
 exports.allCommands = {};
-var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer"];
+var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"];
 /** Represents a permission level that is required to run a specific command. */
 var Perm = exports.Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
@@ -108,6 +109,12 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     break;
                 case "menuPlayer":
                     return { error: "menuPlayer argtype is not yet implemented" };
+                    break;
+                case "team":
+                    var team = (0, utils_1.getTeam)(args[i]);
+                    if (team == null)
+                        return { error: "\"".concat(args[i], "\" is not a valid team name.") };
+                    outputArgs[cmdArg.name] = team;
                     break;
                 case "number":
                     var number = parseInt(args[i]);

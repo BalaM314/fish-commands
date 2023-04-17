@@ -31,8 +31,8 @@ declare const Blocks: {
 	[index:string]: Block;
 }
 type Block = any;
-declare const Team: {
-	[index:string]: Team;
+declare class Team {
+	static [T in "sharded" | "crux" | "derelict" | "blue" | "green" | "malis"]: Team;
 }
 type Team = any;
 declare const StatusEffects: {

@@ -2,7 +2,7 @@ import type { FishPlayer } from "./players";
 import type { CommandArgType, Perm, fail } from "./commands";
 
 
-type FishCommandArgType = string | number | FishPlayer | boolean | null;
+type FishCommandArgType = string | number | FishPlayer | Team | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
 
 type ArgsFromArgData<Args extends PreprocessedCommandArgs> = {

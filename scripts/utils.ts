@@ -106,6 +106,11 @@ export function setToArray<T>(set:ObjectSet<T>):T[] {
 	return array;
 }
 
+export function getTeam(team:string):Team | null {
+	if(team in Team && Team[team as keyof typeof Team] instanceof Team) return Team[team as keyof typeof Team];
+	return null;
+}
+
 
 export class StringBuilder {
 	constructor(public str:string = ""){}
