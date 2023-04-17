@@ -125,7 +125,8 @@ export class StringIO {
 	offset:number = 0;
 	constructor(public string:string = ""){}
 	read(length:number = 1){
-		return this.string.slice(this.offset, this.offset += length) || (() => {throw new Error(`Unexpected EOF`)})();
+		if(this.offset + length > this.string.length) throw new Error(`Unexpected EOF`);
+		return this.string.slice(this.offset, this.offset += length);
 	}
 	write(str:string){
 		this.string += str;

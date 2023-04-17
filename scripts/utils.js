@@ -140,7 +140,9 @@ var StringIO = /** @class */ (function () {
     }
     StringIO.prototype.read = function (length) {
         if (length === void 0) { length = 1; }
-        return this.string.slice(this.offset, this.offset += length) || (function () { throw new Error("Unexpected EOF"); })();
+        if (this.offset + length > this.string.length)
+            throw new Error("Unexpected EOF");
+        return this.string.slice(this.offset, this.offset += length);
     };
     StringIO.prototype.write = function (str) {
         this.string += str;
