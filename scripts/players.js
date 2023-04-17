@@ -382,11 +382,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         // this.saveAllLegacy();
         var out = new utils_1.StringIO();
         out.writeNumber(this.saveVersion, 2);
-        out.writeArray(Object.entries(this.cachedPlayers), function (_a) {
+        out.writeArray(Object.entries(this.cachedPlayers)
+            .filter(function (_a) {
+            var _b = __read(_a, 2), uuid = _b[0], fishP = _b[1];
+            return fishP.shouldCache();
+        }), function (_a) {
             var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
-            if (player.shouldCache()) {
-                player.write(out);
-            }
+            return player.write(out);
         });
         Core.settings.put('fish', out.string);
         Core.settings.manualSave();

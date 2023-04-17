@@ -310,11 +310,11 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		// this.saveAllLegacy();
 		let out = new StringIO();
 		out.writeNumber(this.saveVersion, 2);
-		out.writeArray(Object.entries(this.cachedPlayers), ([uuid, player]) => {
-			if(player.shouldCache()){
-				player.write(out);
-			}
-		});
+		out.writeArray(
+			Object.entries(this.cachedPlayers)
+				.filter(([uuid, fishP]) => fishP.shouldCache()),
+			([uuid, player]) => player.write(out)
+		);
 		Core.settings.put('fish', out.string);
 		Core.settings.manualSave();
 	}
