@@ -181,5 +181,17 @@ exports.commands = {
                 }
             });
         }
-    }
+    },
+    loadfishplayerdata: {
+        args: ["areyousure:boolean", "fishplayerdata:string"],
+        description: "Overwrites current fish player data.",
+        handler: function (_a) {
+            var args = _a.args, output = _a.output;
+            if (args.areyousure) {
+                var before = Object.keys(players_1.FishPlayer.cachedPlayers).length;
+                players_1.FishPlayer.loadAll(args.fishplayerdata);
+                output("Loaded fish player data. before:".concat(before, ", after:").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length));
+            }
+        }
+    },
 };

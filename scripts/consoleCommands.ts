@@ -142,5 +142,16 @@ export const commands:FishConsoleCommandsList = {
 			});
 		}
 
-	}
+	},
+	loadfishplayerdata: {
+		args: ["areyousure:boolean", "fishplayerdata:string"],
+		description: "Overwrites current fish player data.",
+		handler({args, output}){
+			if(args.areyousure){
+				let before = Object.keys(FishPlayer.cachedPlayers).length;
+				FishPlayer.loadAll(args.fishplayerdata);
+				output(`Loaded fish player data. before:${before}, after:${Object.keys(FishPlayer.cachedPlayers).length}`);
+			}
+		}
+	},
 };

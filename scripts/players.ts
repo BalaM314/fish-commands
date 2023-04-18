@@ -358,8 +358,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		Core.settings.manualSave();
 	}
 	/**Loads cached FishPlayers from JSON in Core.settings. */
-	static loadAll(){
-		const string = Core.settings.get('fish', '');
+	static loadAll(string = Core.settings.get('fish', '')){
 		if(string == "") return; //If it's empty, don't try to load anything
 		if(string.startsWith("{")) return this.loadAllLegacy(string);
 		const out = new StringIO(string);

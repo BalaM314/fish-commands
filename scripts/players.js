@@ -459,9 +459,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         Core.settings.manualSave();
     };
     /**Loads cached FishPlayers from JSON in Core.settings. */
-    FishPlayer.loadAll = function () {
+    FishPlayer.loadAll = function (string) {
         var _this = this;
-        var string = Core.settings.get('fish', '');
+        if (string === void 0) { string = Core.settings.get('fish', ''); }
         if (string == "")
             return; //If it's empty, don't try to load anything
         if (string.startsWith("{"))
