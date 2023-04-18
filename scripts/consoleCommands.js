@@ -140,22 +140,22 @@ exports.commands = {
                 }
                 else {
                     Vars.netServer.admins.banPlayerIP(args.target);
-                    output("IP &c\"".concat(args.target, "\" &lrwas banned."));
+                    output("&lrIP &c\"".concat(args.target, "\" &lrwas banned."));
                 }
             }
             else if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)) {
                 if (Vars.netServer.admins.isIDBanned(args.target)) {
-                    outputFail("UUID &c\"".concat(args.target, "\"&lr is already banned."));
+                    outputFail("UUID &c\"".concat(args.target, "\"&fr is already banned."));
                 }
                 else {
                     var ip = (_b = Groups.player.find(function (p) { return args.target === p.uuid(); })) === null || _b === void 0 ? void 0 : _b.ip();
                     Vars.netServer.admins.banPlayerID(args.target);
                     if (ip) {
                         Vars.netServer.admins.banPlayerIP(ip);
-                        output("UUID &c\"".concat(args.target, "\" &lrwas banned. IP &c\"").concat(ip, "\"&lr was banned."));
+                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. IP &c\"").concat(ip, "\"&lr was banned."));
                     }
                     else {
-                        output("UUID &c\"".concat(args.target, "\" &lrwas banned. Unable to determine ip!."));
+                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. Unable to determine ip!."));
                     }
                 }
             }
@@ -172,7 +172,7 @@ exports.commands = {
                     var uuid = player.uuid();
                     Vars.netServer.admins.banPlayerID(uuid);
                     Vars.netServer.admins.banPlayerIP(ip);
-                    output("IP &c\"".concat(ip, "\"&lr was banned. UUID &c\"").concat(uuid, "\"&lr was banned."));
+                    output("&lrIP &c\"".concat(ip, "\"&lr was banned. UUID &c\"").concat(uuid, "\"&lr was banned."));
                 }
             }
             Groups.player.each(function (player) {

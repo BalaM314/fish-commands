@@ -105,19 +105,19 @@ export const commands:FishConsoleCommandsList = {
 					outputFail(`IP &c"${args.target}"&fr is already banned.`);
 				} else {
 					Vars.netServer.admins.banPlayerIP(args.target);
-					output(`IP &c"${args.target}" &lrwas banned.`);
+					output(`&lrIP &c"${args.target}" &lrwas banned.`);
 				}
 			} else if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)){
 				if(Vars.netServer.admins.isIDBanned(args.target)){
-					outputFail(`UUID &c"${args.target}"&lr is already banned.`);
+					outputFail(`UUID &c"${args.target}"&fr is already banned.`);
 				} else {
 					const ip:string | null = Groups.player.find((p:mindustryPlayer) => args.target === p.uuid())?.ip();
 					Vars.netServer.admins.banPlayerID(args.target);
 					if(ip){
 						Vars.netServer.admins.banPlayerIP(ip);
-						output(`UUID &c"${args.target}" &lrwas banned. IP &c"${ip}"&lr was banned.`);
+						output(`&lrUUID &c"${args.target}" &lrwas banned. IP &c"${ip}"&lr was banned.`);
 					} else {
-						output(`UUID &c"${args.target}" &lrwas banned. Unable to determine ip!.`);
+						output(`&lrUUID &c"${args.target}" &lrwas banned. Unable to determine ip!.`);
 					}
 				}
 			} else {
@@ -131,7 +131,7 @@ export const commands:FishConsoleCommandsList = {
 					const uuid = player.uuid();
 					Vars.netServer.admins.banPlayerID(uuid);
 					Vars.netServer.admins.banPlayerIP(ip);
-					output(`IP &c"${ip}"&lr was banned. UUID &c"${uuid}"&lr was banned.`);
+					output(`&lrIP &c"${ip}"&lr was banned. UUID &c"${uuid}"&lr was banned.`);
 				}
 			}
 
