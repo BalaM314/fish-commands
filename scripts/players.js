@@ -239,7 +239,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (this.member)
             prefix += config.MEMBER_PREFIX;
         prefix += this.rank.prefix;
-        this.player.name = prefix + " " + this.name;
+        if (prefix != "")
+            this.player.name = prefix + " " + this.name;
     };
     FishPlayer.prototype.updateAdminStatus = function () {
         if (this.ranksAtLeast(ranks_1.Rank.admin)) {
