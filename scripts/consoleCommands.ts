@@ -94,5 +94,53 @@ export const commands:FishConsoleCommandsList = {
 
 			output(outputString.join("\n"));
 		}
+	},
+	whack: {
+		args: ["target:string"],
+		description: "Whacks (ipbans) a player.",
+		handler({args, output, outputFail}){
+			if(Pattern.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", args.target)){
+				//target is an ip
+				if(Vars.netServer.admins.isIPBanned(args.target)){
+					outputFail(`IP &c"${args.target}"&fr is already banned.`);
+				} else {
+					Vars.netServer.admins.banPlayerIP(args.target);
+					output(`IP &c"${args.target}" &lrwas banned.`);
+				}
+			} else if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)){
+				if(Vars.netServer.admins.isIDBanned(args.target)){
+					outputFail(`UUID &c"${args.target}"&lr is already banned.`);
+				} else {
+					const ip:string | null = Groups.player.find((p:mindustryPlayer) => args.target === p.uuid())?.ip();
+					Vars.netServer.admins.banPlayerID(args.target);
+					if(ip){
+						Vars.netServer.admins.banPlayerIP(ip);
+						output(`UUID &c"${args.target}" &lrwas banned. IP &c"${ip}"&lr was banned.`);
+					} else {
+						output(`UUID &c"${args.target}" &lrwas banned. Unable to determine ip!.`);
+					}
+				}
+			} else {
+				const player = FishPlayer.getOneMindustryPlayerByName(args.target);
+				if(player === "none"){
+					outputFail(`Could not find a player name matching &c"${args.target}"`);
+				} else if(player === "multiple"){
+					outputFail(`Name &c"${args.target}"&fr could refer to more than one player.`);
+				} else {
+					const ip = player.ip();
+					const uuid = player.uuid();
+					Vars.netServer.admins.banPlayerID(uuid);
+					Vars.netServer.admins.banPlayerIP(ip);
+					output(`IP &c"${ip}"&lr was banned. UUID &c"${uuid}"&lr was banned.`);
+				}
+			}
+
+			Groups.player.each((player:mindustryPlayer) => {
+				if(Vars.netServer.admins.isIDBanned(player.uuid())){
+						player.con.kick(Packets.KickReason.banned);
+				}
+			});
+		}
+
 	}
 };

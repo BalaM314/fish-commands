@@ -130,4 +130,11 @@ declare class Command {
 	params:any[];
 }
 
+declare class Pattern {
+	static matches(regex:string, target:string):boolean;
+}
+declare const Packets: {
+	KickReason: any;
+};
+
 declare function print(message:string):void;

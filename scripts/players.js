@@ -162,6 +162,39 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         }
         return "none";
     };
+    FishPlayer.getOneMindustryPlayerByName = function (str) {
+        var e_2, _a;
+        if (str == "")
+            return "none";
+        var players = (0, utils_1.setToArray)(Groups.player);
+        var matchingPlayers;
+        var filters = [
+            function (p) { return p.name === str; },
+            function (p) { return Strings.stripColors(p.name) === str; },
+            function (p) { return Strings.stripColors(p.name).toLowerCase() === str.toLowerCase(); },
+            function (p) { return p.name.includes(str); },
+            function (p) { return Strings.stripColors(p.name).includes(str); },
+            function (p) { return Strings.stripColors(p.name).toLowerCase().includes(str.toLowerCase()); },
+        ];
+        try {
+            for (var filters_2 = __values(filters), filters_2_1 = filters_2.next(); !filters_2_1.done; filters_2_1 = filters_2.next()) {
+                var filter = filters_2_1.value;
+                matchingPlayers = players.filter(filter);
+                if (matchingPlayers.length == 1)
+                    return matchingPlayers[0];
+                else if (matchingPlayers.length > 1)
+                    return "multiple";
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (filters_2_1 && !filters_2_1.done && (_a = filters_2.return)) _a.call(filters_2);
+            }
+            finally { if (e_2) throw e_2.error; }
+        }
+        return "none";
+    };
     //This method exists only because there is no easy way to turn an entitygroup into an array
     FishPlayer.getAllOnline = function () {
         var players = [];
@@ -207,7 +240,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             fishP.stopUnit();
     };
     FishPlayer.forEachPlayer = function (func) {
-        var e_2, _a;
+        var e_3, _a;
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
@@ -215,12 +248,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     func(player);
             }
         }
-        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_2) throw e_2.error; }
+            finally { if (e_3) throw e_3.error; }
         }
     };
     /**Must be called at player join, before updateName(). */
@@ -265,7 +298,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
-        var e_3, _a;
+        var e_4, _a;
         try {
             for (var _b = __values(config.bannedNames), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var bannedName = _c.value;
@@ -275,12 +308,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_3) throw e_3.error; }
+            finally { if (e_4) throw e_4.error; }
         }
         return true;
     };
@@ -406,7 +439,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || this.member;
     };
     FishPlayer.saveAllLegacy = function () {
-        var e_4, _a;
+        var e_5, _a;
         var playerDatas = [];
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
@@ -415,12 +448,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     playerDatas.push("\"".concat(uuid, "\":").concat(player.writeLegacy()));
             }
         }
-        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        catch (e_5_1) { e_5 = { error: e_5_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_4) throw e_4.error; }
+            finally { if (e_5) throw e_5.error; }
         }
         Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
         Core.settings.manualSave();
@@ -440,7 +473,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         out.expectEOF();
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_5, _a;
+        var e_6, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -454,12 +487,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_5) throw e_5.error; }
+            finally { if (e_6) throw e_6.error; }
         }
     };
     //#endregion

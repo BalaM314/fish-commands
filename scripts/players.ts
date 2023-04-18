@@ -1,7 +1,7 @@
 import type { FishPlayerData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
 import * as api from "./api";
-import { isCoreUnitType, StringIO } from "./utils";
+import { isCoreUnitType, setToArray, StringIO } from "./utils";
 import { Rank } from "./ranks";
 
 
@@ -120,6 +120,27 @@ export class FishPlayer {
 			p => p.name.includes(str),
 			p => p.cleanedName.includes(str),
 			p => p.cleanedName.toLowerCase().includes(str.toLowerCase()),
+		];
+
+		for(const filter of filters){
+			matchingPlayers = players.filter(filter);
+			if(matchingPlayers.length == 1) return matchingPlayers[0];
+			else if(matchingPlayers.length > 1) return "multiple";
+		}
+		return "none";
+	}
+	static getOneMindustryPlayerByName(str:string):mindustryPlayer | "none" | "multiple" {
+		if(str == "") return "none";
+		const players = setToArray(Groups.player as ObjectSet<mindustryPlayer>);
+		let matchingPlayers:mindustryPlayer[];
+
+		const filters:((p:mindustryPlayer) => boolean)[] = [
+			p => p.name === str,
+			p => Strings.stripColors(p.name) === str,
+			p => Strings.stripColors(p.name).toLowerCase() === str.toLowerCase(),
+			p => p.name.includes(str),
+			p => Strings.stripColors(p.name).includes(str),
+			p => Strings.stripColors(p.name).toLowerCase().includes(str.toLowerCase()),
 		];
 
 		for(const filter of filters){

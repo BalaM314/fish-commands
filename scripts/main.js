@@ -5,6 +5,7 @@
 
 importPackage(Packages.arc);
 importPackage(Packages.mindustry.type);
+importPackage(Packages.java.util.regex);
 
 //Polyfills
 Object.entries = o => Object.keys(o).map(k => [k, o[k]]);
