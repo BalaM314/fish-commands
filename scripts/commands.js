@@ -84,8 +84,8 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     try {
         for (var _b = __values(processedCmdArgs.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), i = _d[0], cmdArg = _d[1];
-            //if the arg was not provided
-            if (!args[i]) {
+            if (!(i in args) || args[i] === "") {
+                //if the arg was not provided or it was empty
                 if (cmdArg.isOptional) {
                     outputArgs[cmdArg.name] = null;
                 }
@@ -94,7 +94,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     unresolvedArgs.push(cmdArg);
                 }
                 else
-                    throw new Error("arg parsing failed");
+                    return { error: "No value specified for arg ".concat(cmdArg.name, ". Did you type two spaces instead of one?") };
                 continue;
             }
             //Deserialize the arg

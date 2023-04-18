@@ -82,6 +82,7 @@ export class FishPlayer {
 	}
 	/**Returns the FishPlayer representing the first online player matching a given name. */
 	static getByName(name:string):FishPlayer | null {
+		if(name == "") return null;
 		const realPlayer = Groups.player.find((p:mindustryPlayer) => {
 			return p.name === name ||
 				p.name.includes(name) ||
@@ -96,6 +97,7 @@ export class FishPlayer {
 	/**Returns the FishPlayers representing all online players matching a given name. */
 	static getAllByName(name:string, strict = true):FishPlayer[] {
 		let players:FishPlayer[] = [];
+		if(name == "") return [];
 		//Groups.player doesn't support filter
 		Groups.player.each((p:mindustryPlayer) => {
 			const fishP = FishPlayer.get(p);
@@ -105,6 +107,7 @@ export class FishPlayer {
 		return players;
 	}
 	static getOneByString(str:string):FishPlayer | "none" | "multiple" {
+		if(str == "") return "none";
 		const players = this.getAllOnline();
 		let matchingPlayers:FishPlayer[];
 

@@ -98,6 +98,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Returns the FishPlayer representing the first online player matching a given name. */
     FishPlayer.getByName = function (name) {
+        if (name == "")
+            return null;
         var realPlayer = Groups.player.find(function (p) {
             return p.name === name ||
                 p.name.includes(name) ||
@@ -113,6 +115,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.getAllByName = function (name, strict) {
         if (strict === void 0) { strict = true; }
         var players = [];
+        if (name == "")
+            return [];
         //Groups.player doesn't support filter
         Groups.player.each(function (p) {
             var fishP = FishPlayer.get(p);
@@ -125,6 +129,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.getOneByString = function (str) {
         var e_1, _a;
+        if (str == "")
+            return "none";
         var players = this.getAllOnline();
         var matchingPlayers;
         var filters = [
