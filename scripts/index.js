@@ -153,3 +153,12 @@ Events.on(EventType.GameOverEvent, function (e) {
 Events.on(EventType.DisposeEvent, function (e) {
     players_1.FishPlayer.saveAll();
 });
+Events.on(EventType.PlayerConnectionConfirmed, function (e) {
+    var info = e.player.getInfo();
+    if (info.timesJoined) {
+        Log.info("&lrNew player joined: name &c".concat(e.player.name, "&lr, uuid &c").concat(e.player.uuid(), "&lr, ip &c").concat(e.player.ip(), "&lr"));
+    }
+});
+Events.on(EventType.PlayerIpBanEvent, function (e) {
+    Log.info("&lrIP &c".concat(e.ip, "&lr was banned"));
+});
