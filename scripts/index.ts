@@ -178,11 +178,7 @@ Events.on(EventType.DisposeEvent, (e) => {
 
 Events.on(EventType.PlayerConnectionConfirmed, (e) => {
 	const info = e.player.getInfo();
-	if(info.timesJoined){
+	if(info.timesJoined == 1){
 		Log.info(`&lrNew player joined: name &c${e.player.name}&lr, uuid &c${e.player.uuid()}&lr, ip &c${e.player.ip()}&lr`);
 	}
-});
-
-Events.on(EventType.PlayerIpBanEvent, (e) => {
-	Log.info(`&lrIP &c${e.ip}&lr was banned`);
 });
