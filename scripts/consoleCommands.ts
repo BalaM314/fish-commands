@@ -137,7 +137,8 @@ export const commands:FishConsoleCommandsList = {
 
 			Groups.player.each((player:mindustryPlayer) => {
 				if(Vars.netServer.admins.isIDBanned(player.uuid())){
-						player.con.kick(Packets.KickReason.banned);
+					player.con.kick(Packets.KickReason.banned);
+					Call.sendMessage(`[yellow] Player ${player.name} [scarlet] has been whacked.`);
 				}
 			});
 		}

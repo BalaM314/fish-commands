@@ -178,6 +178,7 @@ exports.commands = {
             Groups.player.each(function (player) {
                 if (Vars.netServer.admins.isIDBanned(player.uuid())) {
                     player.con.kick(Packets.KickReason.banned);
+                    Call.sendMessage("[yellow] Player ".concat(player.name, " [scarlet] has been whacked."));
                 }
             });
         }
