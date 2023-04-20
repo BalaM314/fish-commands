@@ -13,4 +13,5 @@ export const FishServers = {
 	attack: { ip: "162.248.100.98", port: "6567" },
 	survival: { ip: "170.187.144.235", port: "6567" },
 	pvp: { ip: "162.248.100.133", port: "6567" },
+	sandbox: { ip: "162.248.102.204", port: "6567" },
 };
