@@ -9,8 +9,8 @@ export class Rank {
 	static mod = new Rank("mod", 3, "[black]<[#6FFC7C]\uE817[]>[]", "[#6FFC7C]");
 	static admin = new Rank("admin", 4, "[black]<[#C30202]\uE82C[]>[]", "[#C30202]");
 	static developer = new Rank("developer", 5, "[black]<[#B000FF]\uE80E[]>[]", "[#B000FF]");
-	static pi = new Rank("pi", 9, "[black]<[#FF8000]\u03C0[]>[]", "[blue]");//i want rank
 	static manager = new Rank("manager", 10, "[black]<[scarlet]\uE88E[]>[]", "[scarlet]");
+	static pi = new Rank("pi", 11, "[black]<[#FF8000]\u03C0[]>[]", "[blue]");//i want rank
 	static fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]");//Might want to change this to like owner or something
 	constructor(
 		public name:string,

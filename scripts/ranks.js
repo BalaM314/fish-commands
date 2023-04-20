@@ -23,8 +23,8 @@ var Rank = exports.Rank = /** @class */ (function () {
     Rank.mod = new Rank("mod", 3, "[black]<[#6FFC7C]\uE817[]>[]", "[#6FFC7C]");
     Rank.admin = new Rank("admin", 4, "[black]<[#C30202]\uE82C[]>[]", "[#C30202]");
     Rank.developer = new Rank("developer", 5, "[black]<[#B000FF]\uE80E[]>[]", "[#B000FF]");
-    Rank.pi = new Rank("pi", 9, "[black]<[#FF8000]\u03C0[]>[]", "[blue]"); //i want rank
     Rank.manager = new Rank("manager", 10, "[black]<[scarlet]\uE88E[]>[]", "[scarlet]");
+    Rank.pi = new Rank("pi", 11, "[black]<[#FF8000]\u03C0[]>[]", "[blue]"); //i want rank
     Rank.fish = new Rank("fish", 999, "[blue]>|||>[] ", "[blue]"); //Might want to change this to like owner or something
     return Rank;
 }());
