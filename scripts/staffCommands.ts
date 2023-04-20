@@ -170,6 +170,7 @@ export const commands:FishCommandsList = {
 				Call.sendMessage('[scarlet]' + String(sec));
 
 				if(sec <= 0){
+					Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
 					Core.app.post(() => {
 						SaveIO.save(file);
 						Core.app.exit();
