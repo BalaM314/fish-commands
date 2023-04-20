@@ -386,14 +386,14 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.write = function (out) {
         var _a, _b;
         out.writeString(this.uuid, 2);
-        out.writeString(this.name, 2);
+        out.writeString(this.name, 2, true);
         out.writeBool(this.muted);
         out.writeBool(this.member);
         out.writeBool(this.stopped);
-        out.writeString(this.highlight, 2);
+        out.writeString(this.highlight, 2, true);
         out.writeArray(this.history, function (i, str) {
             str.writeString(i.action, 2);
-            str.writeString(i.by, 2);
+            str.writeString(i.by.slice(0, 98), 2, true);
             str.writeNumber(i.time, 15);
         });
         out.writeNumber((_b = (_a = this.rainbow) === null || _a === void 0 ? void 0 : _a.speed) !== null && _b !== void 0 ? _b : 0, 2);

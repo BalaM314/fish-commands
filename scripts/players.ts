@@ -305,14 +305,14 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	write(out:StringIO){
 		out.writeString(this.uuid, 2);
-		out.writeString(this.name, 2);
+		out.writeString(this.name, 2, true);
 		out.writeBool(this.muted);
 		out.writeBool(this.member);
 		out.writeBool(this.stopped);
-		out.writeString(this.highlight, 2);
+		out.writeString(this.highlight, 2, true);
 		out.writeArray(this.history, (i, str) => {
 			str.writeString(i.action, 2);
-			str.writeString(i.by, 2);
+			str.writeString(i.by.slice(0, 98), 2, true);
 			str.writeNumber(i.time, 15);
 		});
 		out.writeNumber(this.rainbow?.speed ?? 0, 2);

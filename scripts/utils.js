@@ -160,13 +160,21 @@ var StringIO = /** @class */ (function () {
             return null;
         return this.read(length);
     };
-    StringIO.prototype.writeString = function (str, lenlen) {
+    StringIO.prototype.writeString = function (str, lenlen, truncate) {
         if (lenlen === void 0) { lenlen = 3; }
+        if (truncate === void 0) { truncate = false; }
         if (str === null) {
             this.string += "0".repeat(lenlen);
         }
         else if (str.length > (Math.pow(10, lenlen) - 1)) {
-            throw new Error("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
+            if (truncate) {
+                Log.err("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
+                this.string += (Math.pow(10, lenlen) - 1).toString().padStart(lenlen, "0");
+                this.string += str.slice(0, (Math.pow(10, lenlen) - 1));
+            }
+            else {
+                throw new Error("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
+            }
         }
         else {
             this.string += str.length.toString().padStart(lenlen, "0");

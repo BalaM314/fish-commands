@@ -141,11 +141,17 @@ export class StringIO {
 		if(length == 0) return null;
 		return this.read(length);
 	}
-	writeString(str:string | null, lenlen:number = 3){
+	writeString(str:string | null, lenlen:number = 3, truncate = false){
 		if(str === null){
 			this.string += "0".repeat(lenlen);
 		} else if(str.length > (10 ** lenlen - 1)){
-			throw new Error(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);
+			if(truncate){
+				Log.err(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);
+				this.string += (10 ** lenlen - 1).toString().padStart(lenlen, "0");
+				this.string += str.slice(0, (10 ** lenlen - 1));
+			} else {
+				throw new Error(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);
+			}
 		} else {
 			this.string += str.length.toString().padStart(lenlen, "0");
 			this.string += str;
