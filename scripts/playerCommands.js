@@ -33,6 +33,7 @@ var ohno_1 = require("./ohno");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
 var config_1 = require("./config");
+var ranks_1 = require("./ranks");
 function teleportPlayer(player, to) {
     player.unit().set(to.unit().x, to.unit().y);
     Call.setPosition(player.con, to.unit().x, to.unit().y);
@@ -368,5 +369,16 @@ exports.commands = __assign(__assign({ unpause: {
             else {
                 outputFail(canSpawn);
             }
+        }
+    }, ranks: {
+        args: [],
+        description: "Displays information about all ranks.",
+        perm: commands_1.Perm.none,
+        handler: function (_a) {
+            var output = _a.output;
+            output("List of ranks:\n"
+                + Object.values(ranks_1.Rank.ranks).map(function (rank) {
+                    return "".concat(rank.prefix, " ").concat(rank.color).concat((0, utils_1.capitalizeText)(rank.name), "[]: ").concat(rank.color).concat(rank.description, "[]");
+                }).join("\n"));
         }
     } });

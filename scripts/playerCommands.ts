@@ -2,8 +2,9 @@ import { formatArg, Perm } from "./commands";
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
-import { getColor, StringBuilder, to2DArray } from "./utils";
+import { capitalizeText, getColor, StringBuilder, to2DArray } from "./utils";
 import { FishServers } from "./config";
+import { Rank } from "./ranks";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
 	player.unit().set(to.unit().x, to.unit().y);
@@ -359,5 +360,19 @@ export const commands:FishCommandsList = {
 				outputFail(canSpawn);
 			}
 		}
-	}
+	},
+
+	ranks: {
+		args: [],
+		description: "Displays information about all ranks.",
+		perm: Perm.none,
+		handler({output}){
+			output(
+`List of ranks:\n`
++ Object.values(Rank.ranks).map(rank =>
+	`${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]`
+).join("\n")
+			);
+		}
+	},
 };

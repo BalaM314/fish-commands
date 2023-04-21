@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -215,3 +215,13 @@ var StringIO = /** @class */ (function () {
     return StringIO;
 }());
 exports.StringIO = StringIO;
+function capitalizeText(text) {
+    return text
+        .split(" ")
+        .map(function (word, i, arr) {
+        return (["a", "an", "the", "in", "and", "of", "it"].includes(word) &&
+            i !== 0 && i !== arr.length - 1) ?
+            word : word[0].toUpperCase() + word.substring(1);
+    }).join(" ");
+}
+exports.capitalizeText = capitalizeText;
