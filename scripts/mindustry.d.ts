@@ -32,7 +32,12 @@ declare const Blocks: {
 }
 type Block = any;
 declare class Team {
-	static [T in "sharded" | "crux" | "derelict" | "blue" | "green" | "malis"]: Team;
+	static derelict:Team;
+	static sharded:Team;
+	static crux:Team;
+	static malis:Team;
+	static green:Team;
+	static blue:Team;
 }
 type Team = any;
 declare const StatusEffects: {
