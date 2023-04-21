@@ -299,4 +299,36 @@ export const commands:FishCommandsList = {
 		}
 	},
 
+	kill: {
+		args: ["player:player"],
+		description: "Kills a player's unit.",
+		perm: Perm.admin,
+		customUnauthorizedMessage: "You do not have the required permission (admin) to execute this command. You may be looking for /die.",
+		handler({args, sender, outputFail, outputSuccess}){
+			if(!sender.canModerate(args.player, false))
+				fail(`You do not have permission to kill the unit of this player.`);
+
+			const unit = args.player.unit();
+			if(unit){
+				unit.kill();
+				outputSuccess(`Killed the unit of player "${args.player.cleanedName}".`);
+			} else {
+				outputFail(`Player "${args.player.cleanedName}" does not have a unit.`)
+			}
+		}
+	},
+
+	respawn: {
+		args: ["player:player"],
+		description: "Forces a player to respawn.",
+		perm: Perm.admin,
+		handler({args, sender, outputSuccess}){
+			if(!sender.canModerate(args.player, false))
+				fail(`You do not have permission to respawn this player.`);
+			
+			args.player.forceRespawn();
+			outputSuccess(`Respawned player "${args.player.cleanedName}".`);
+		}
+	}
+
 };

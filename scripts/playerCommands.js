@@ -104,7 +104,7 @@ exports.commands = __assign(__assign({ unpause: {
                 outputFail("This command was run recently and is on cooldown.");
             }
         }
-    }, kill: {
+    }, die: {
         args: [],
         description: "Commits die.",
         perm: commands_1.Perm.notGriefer,

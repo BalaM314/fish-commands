@@ -302,4 +302,33 @@ exports.commands = __assign(__assign({ warn: {
             args.player.player.team(args.team);
             outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));
         }
+    }, kill: {
+        args: ["player:player"],
+        description: "Kills a player's unit.",
+        perm: commands_1.Perm.admin,
+        customUnauthorizedMessage: "You do not have the required permission (admin) to execute this command. You may be looking for /die.",
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            if (!sender.canModerate(args.player, false))
+                (0, commands_1.fail)("You do not have permission to kill the unit of this player.");
+            var unit = args.player.unit();
+            if (unit) {
+                unit.kill();
+                outputSuccess("Killed the unit of player \"".concat(args.player.cleanedName, "\"."));
+            }
+            else {
+                outputFail("Player \"".concat(args.player.cleanedName, "\" does not have a unit."));
+            }
+        }
+    }, respawn: {
+        args: ["player:player"],
+        description: "Forces a player to respawn.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (!sender.canModerate(args.player, false))
+                (0, commands_1.fail)("You do not have permission to respawn this player.");
+            args.player.forceRespawn();
+            outputSuccess("Respawned player \"".concat(args.player.cleanedName, "\"."));
+        }
     } });

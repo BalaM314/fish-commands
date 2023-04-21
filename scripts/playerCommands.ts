@@ -86,7 +86,7 @@ export const commands:FishCommandsList = {
 		}
 	},
 
-	kill: {
+	die: {
 		args: [],
 		description: "Commits die.",
 		perm: Perm.notGriefer,
