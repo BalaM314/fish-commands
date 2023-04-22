@@ -124,6 +124,21 @@ export const commands:FishCommandsList = {
 		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess}){
 			const admins = Vars.netServer.admins;
+
+			if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)){
+				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
+				if(info != null){
+					const fishP = FishPlayer.getFromInfo(info);
+					if(sender.canModerate(fishP, true)){
+						fishP.stop(sender);
+						outputSuccess(`Player "${info.lastName}" was stopped.`);
+					} else {
+						outputFail(`You do not have permission to stop this player.`);
+					}
+				}
+				return;
+			}
+
 			let possiblePlayers:mindustryPlayerData[] = setToArray(admins.searchNames(args.name));
 			if(possiblePlayers.length > 20){
 				let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<mindustryPlayerData>);

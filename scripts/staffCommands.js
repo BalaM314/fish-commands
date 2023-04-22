@@ -136,6 +136,20 @@ exports.commands = __assign(__assign({ warn: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             var admins = Vars.netServer.admins;
+            if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)) {
+                var info = admins.getInfoOptional(args.name);
+                if (info != null) {
+                    var fishP = players_1.FishPlayer.getFromInfo(info);
+                    if (sender.canModerate(fishP, true)) {
+                        fishP.stop(sender);
+                        outputSuccess("Player \"".concat(info.lastName, "\" was stopped."));
+                    }
+                    else {
+                        outputFail("You do not have permission to stop this player.");
+                    }
+                }
+                return;
+            }
             var possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));
             if (possiblePlayers.length > 20) {
                 var exactPlayers = (0, utils_1.setToArray)(admins.findByName(args.name));
