@@ -10,6 +10,22 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var players_1 = require("./players");
@@ -197,4 +213,34 @@ exports.commands = {
             }
         }
     },
+    clearstoredusids: {
+        args: ["areyousure:boolean?", "areyoureallysure:boolean?", "areyoureallyreallysure:boolean?"],
+        description: "Removes every stored USID.",
+        handler: function (_a) {
+            var e_3, _b;
+            var args = _a.args, output = _a.output;
+            if (args.areyousure && args.areyoureallysure && args.areyoureallyreallysure) {
+                var total = 0;
+                try {
+                    for (var _c = __values(Object.entries(players_1.FishPlayer.cachedPlayers)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                        var _e = __read(_d.value, 2), uuid = _e[0], fishP = _e[1];
+                        total++;
+                        fishP.usid = null;
+                    }
+                }
+                catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                finally {
+                    try {
+                        if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
+                    }
+                    finally { if (e_3) throw e_3.error; }
+                }
+                players_1.FishPlayer.saveAll();
+                output("Removed ".concat(total, " stored USIDs."));
+            }
+            else {
+                output("Are you sure?!?!?!?!?!!");
+            }
+        }
+    }
 };

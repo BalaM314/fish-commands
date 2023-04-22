@@ -157,4 +157,21 @@ export const commands:FishConsoleCommandsList = {
 			}
 		}
 	},
+	clearstoredusids: {
+		args: ["areyousure:boolean?", "areyoureallysure:boolean?", "areyoureallyreallysure:boolean?"],
+		description: "Removes every stored USID.",
+		handler({args, output}){
+			if(args.areyousure && args.areyoureallysure && args.areyoureallyreallysure){
+				let total = 0;
+				for(const [uuid, fishP] of Object.entries(FishPlayer.cachedPlayers)){
+					total ++;
+					fishP.usid = null;
+				}
+				FishPlayer.saveAll();
+				output(`Removed ${total} stored USIDs.`);
+			} else {
+				output(`Are you sure?!?!?!?!?!!`);
+			}
+		}
+	}
 };
