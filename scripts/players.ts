@@ -362,13 +362,20 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	/**Loads cached FishPlayers from JSON in Core.settings. */
 	static loadAll(string = Core.settings.get('fish', '')){
-		if(string == "") return; //If it's empty, don't try to load anything
-		if(string.startsWith("{")) return this.loadAllLegacy(string);
-		const out = new StringIO(string);
-		const version = out.readNumber(2);
-		out.readArray(str => FishPlayer.read(version, str, null))
-			.forEach(p => this.cachedPlayers[p.uuid] = p);
-		out.expectEOF();
+		try {
+			if(string == "") return; //If it's empty, don't try to load anything
+			if(string.startsWith("{")) return this.loadAllLegacy(string);
+			const out = new StringIO(string);
+			const version = out.readNumber(2);
+			out.readArray(str => FishPlayer.read(version, str, null))
+				.forEach(p => this.cachedPlayers[p.uuid] = p);
+			out.expectEOF();
+		} catch(err){
+			Log.err(`[CRITICAL] FAILED TO LOAD CACHED FISH PLAYER DATA`);
+			Log.err("=============================");
+			Log.err(string);
+			Log.err("=============================");
+		}
 	}
 	static loadAllLegacy(jsonString:string){
 		for(let [key, value] of Object.entries(JSON.parse(jsonString))){
@@ -410,7 +417,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		return this.player.team();
 	}
 	get con():NetConnection {
-		return this.player.con;
+		return this.player?.con;
 	}
 	sendMessage(message:string){
 		return this.player?.sendMessage(message);

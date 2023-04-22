@@ -466,15 +466,23 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.loadAll = function (string) {
         var _this = this;
         if (string === void 0) { string = Core.settings.get('fish', ''); }
-        if (string == "")
-            return; //If it's empty, don't try to load anything
-        if (string.startsWith("{"))
-            return this.loadAllLegacy(string);
-        var out = new utils_1.StringIO(string);
-        var version = out.readNumber(2);
-        out.readArray(function (str) { return FishPlayer.read(version, str, null); })
-            .forEach(function (p) { return _this.cachedPlayers[p.uuid] = p; });
-        out.expectEOF();
+        try {
+            if (string == "")
+                return; //If it's empty, don't try to load anything
+            if (string.startsWith("{"))
+                return this.loadAllLegacy(string);
+            var out = new utils_1.StringIO(string);
+            var version_1 = out.readNumber(2);
+            out.readArray(function (str) { return FishPlayer.read(version_1, str, null); })
+                .forEach(function (p) { return _this.cachedPlayers[p.uuid] = p; });
+            out.expectEOF();
+        }
+        catch (err) {
+            Log.err("[CRITICAL] FAILED TO LOAD CACHED FISH PLAYER DATA");
+            Log.err("=============================");
+            Log.err(string);
+            Log.err("=============================");
+        }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
         var e_6, _a;
@@ -526,7 +534,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     Object.defineProperty(FishPlayer.prototype, "con", {
         get: function () {
-            return this.player.con;
+            var _a;
+            return (_a = this.player) === null || _a === void 0 ? void 0 : _a.con;
         },
         enumerable: false,
         configurable: true
