@@ -16,6 +16,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 var commands_1 = require("./commands");
+var api_1 = require("./api");
 exports.commands = {
     setrank: {
         args: ["player:player", "rank:string"],
@@ -177,6 +178,7 @@ exports.commands = {
             }
             Groups.player.each(function (player) {
                 if (Vars.netServer.admins.isIDBanned(player.uuid())) {
+                    (0, api_1.addStopped)(player.uuid());
                     player.con.kick(Packets.KickReason.banned);
                     Call.sendMessage("[yellow] Player ".concat(player.name, " [scarlet] has been whacked."));
                 }

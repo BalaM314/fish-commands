@@ -3,6 +3,7 @@ import { Rank } from "./ranks";
 import { FishConsoleCommandsList, mindustryPlayerData } from "./types";
 import { setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
+import { addStopped } from "./api";
 
 
 export const commands:FishConsoleCommandsList = {
@@ -137,6 +138,7 @@ export const commands:FishConsoleCommandsList = {
 
 			Groups.player.each((player:mindustryPlayer) => {
 				if(Vars.netServer.admins.isIDBanned(player.uuid())){
+					addStopped(player.uuid());
 					player.con.kick(Packets.KickReason.banned);
 					Call.sendMessage(`[yellow] Player ${player.name} [scarlet] has been whacked.`);
 				}
