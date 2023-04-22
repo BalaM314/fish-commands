@@ -198,7 +198,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     //This method exists only because there is no easy way to turn an entitygroup into an array
     FishPlayer.getAllOnline = function () {
         var players = [];
-        Groups.player.each(function (p) { return players.push(FishPlayer.get(p)); });
+        Groups.player.each(function (p) {
+            var fishP = FishPlayer.get(p);
+            if (fishP.connected())
+                players.push(fishP);
+        });
         return players;
     };
     //#endregion

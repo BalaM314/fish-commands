@@ -153,7 +153,10 @@ export class FishPlayer {
 	//This method exists only because there is no easy way to turn an entitygroup into an array
 	static getAllOnline(){
 		let players:FishPlayer[] = [];
-		Groups.player.each((p:mindustryPlayer) => players.push(FishPlayer.get(p)));
+		Groups.player.each((p:mindustryPlayer) => {
+			const fishP = FishPlayer.get(p);
+			if(fishP.connected()) players.push(fishP);
+		});
 		return players;
 	}
 	//#endregion
