@@ -375,4 +375,13 @@ export const commands:FishCommandsList = {
 			);
 		}
 	},
+
+	rank: {
+		args: ["player:player"],
+		description: "Displays the rank of a player.",
+		perm: Perm.none,
+		handler({args, output}){
+			output(`Player ${args.player.cleanedName}'s rank is ${args.player.rank.color}${args.player.rank.name}[].`);
+		}
+	}
 };

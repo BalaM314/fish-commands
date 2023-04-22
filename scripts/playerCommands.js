@@ -381,4 +381,12 @@ exports.commands = __assign(__assign({ unpause: {
                     return "".concat(rank.prefix, " ").concat(rank.color).concat((0, utils_1.capitalizeText)(rank.name), "[]: ").concat(rank.color).concat(rank.description, "[]");
                 }).join("\n"));
         }
+    }, rank: {
+        args: ["player:player"],
+        description: "Displays the rank of a player.",
+        perm: commands_1.Perm.none,
+        handler: function (_a) {
+            var args = _a.args, output = _a.output;
+            output("Player ".concat(args.player.cleanedName, "'s rank is ").concat(args.player.rank.color).concat(args.player.rank.name, "[]."));
+        }
     } });
