@@ -140,7 +140,7 @@ export const commands:FishConsoleCommandsList = {
 				if(Vars.netServer.admins.isIDBanned(player.uuid())){
 					addStopped(player.uuid());
 					player.con.kick(Packets.KickReason.banned);
-					Call.sendMessage(`[yellow] Player ${player.name} [scarlet] has been whacked.`);
+					Call.sendMessage(`[scarlet] Player [yellow]${player.name} [scarlet] has been whacked.`);
 				}
 			});
 		}

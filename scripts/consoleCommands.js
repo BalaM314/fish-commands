@@ -196,7 +196,7 @@ exports.commands = {
                 if (Vars.netServer.admins.isIDBanned(player.uuid())) {
                     (0, api_1.addStopped)(player.uuid());
                     player.con.kick(Packets.KickReason.banned);
-                    Call.sendMessage("[yellow] Player ".concat(player.name, " [scarlet] has been whacked."));
+                    Call.sendMessage("[scarlet] Player [yellow]".concat(player.name, " [scarlet] has been whacked."));
                 }
             });
         }
