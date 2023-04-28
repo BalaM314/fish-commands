@@ -633,6 +633,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (this.connected() && this.unit()) {
             if ((0, utils_1.isCoreUnitType)(this.unit().type)) {
                 this.unit().type = UnitTypes.stell;
+                this.unit().health = UnitTypes.stell.health;
                 this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
             }
             else {

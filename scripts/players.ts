@@ -511,6 +511,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		if(this.connected() && this.unit()){
 			if(isCoreUnitType(this.unit().type)){
 				this.unit().type = UnitTypes.stell;
+				this.unit().health = UnitTypes.stell.health;
 				this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
 			} else {
 				this.forceRespawn();
