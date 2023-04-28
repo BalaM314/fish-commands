@@ -522,3 +522,4 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	//#endregion
 
 }
+
