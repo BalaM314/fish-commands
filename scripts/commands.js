@@ -131,9 +131,10 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                         case "yes":
                         case "yeah":
                         case "ya":
-                        case "ya":
+                        case "ye":
                         case "t":
                         case "y":
+                        case "1":
                             outputArgs[cmdArg.name] = true;
                             break;
                         case "false":
@@ -143,6 +144,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                         case "nope":
                         case "f":
                         case "n":
+                        case "0":
                             outputArgs[cmdArg.name] = false;
                             break;
                         default: return { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") };
