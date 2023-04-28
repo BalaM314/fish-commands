@@ -287,5 +287,15 @@ exports.commands = {
                 Core.app.exit();
             });
         }
+    },
+    rename: {
+        args: ["player:player", "newname:string"],
+        description: "Changes the name of a player.",
+        handler: function (_a) {
+            var args = _a.args, outputSuccess = _a.outputSuccess;
+            var oldName = args.player.name;
+            args.player.player.name = args.newname;
+            outputSuccess("Renamed ".concat(oldName, " to ").concat(args.newname, "."));
+        }
     }
 };
