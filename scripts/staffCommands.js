@@ -319,7 +319,7 @@ exports.commands = __assign(__assign({ warn: {
     }, kill: {
         args: ["player:player"],
         description: "Kills a player's unit.",
-        perm: commands_1.Perm.admin,
+        perm: commands_1.Perm.mod,
         customUnauthorizedMessage: "You do not have the required permission (admin) to execute this command. You may be looking for /die.",
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
@@ -337,7 +337,7 @@ exports.commands = __assign(__assign({ warn: {
     }, respawn: {
         args: ["player:player"],
         description: "Forces a player to respawn.",
-        perm: commands_1.Perm.admin,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (!sender.canModerate(args.player, false))

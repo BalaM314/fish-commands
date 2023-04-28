@@ -317,7 +317,7 @@ export const commands:FishCommandsList = {
 	kill: {
 		args: ["player:player"],
 		description: "Kills a player's unit.",
-		perm: Perm.admin,
+		perm: Perm.mod,
 		customUnauthorizedMessage: "You do not have the required permission (admin) to execute this command. You may be looking for /die.",
 		handler({args, sender, outputFail, outputSuccess}){
 			if(!sender.canModerate(args.player, false))
@@ -336,7 +336,7 @@ export const commands:FishCommandsList = {
 	respawn: {
 		args: ["player:player"],
 		description: "Forces a player to respawn.",
-		perm: Perm.admin,
+		perm: Perm.mod,
 		handler({args, sender, outputSuccess}){
 			if(!sender.canModerate(args.player, false))
 				fail(`You do not have permission to respawn this player.`);
