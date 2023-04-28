@@ -1,6 +1,6 @@
 # Fish commands
 
-A custom commands plugin for >|||>Fish servers.
+A custom commands plugin for >|||>Fish servers. Created by Brandons404, rewritten by BalaM314.
 
 ## Player commands
 
