@@ -173,5 +173,46 @@ export const commands:FishConsoleCommandsList = {
 				output(`Are you sure?!?!?!?!?!!`);
 			}
 		}
+	},
+	update: {
+		args: ["branch:string?"],
+		description: "Updates the plugin.",
+		handler({args, output, outputSuccess, outputFail}){
+			const commandsDir = Vars.modDirectory.child("fish-commands");
+			if(!commandsDir.exists()){
+				fail(`Fish commands directory at path ${commandsDir.absolutePath()} does not exist!`);
+			}
+			output("Updating...");
+			const gitProcess = new ProcessBuilder("git", "pull", "origin", args.branch ?? "master")
+				.directory(commandsDir.file())
+				.redirectErrorStream(true)
+				.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+				.start();
+			Timer.schedule(() => {
+				gitProcess.waitFor();
+				if(gitProcess.exitValue() == 0){
+					outputSuccess(`Updated successfully. Restart to apply changes.`);
+				} else {
+					outputFail(`Update failed!`);
+				}
+			}, 0);
+		}
+	},
+	restart: {
+		args: ["areyousure:boolean?"],
+		description: "Restarts the server.",
+		handler({args, output}){
+			if(!args.areyousure) fail(`Are you sure?!!?!!11!!1`);
+			output(`Restarting...`);
+
+			Core.settings.manualSave();
+			FishPlayer.saveAll();
+			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+			Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
+			Core.app.post(() => {
+				SaveIO.save(file);
+				Core.app.exit();
+			});
+		}
 	}
 };

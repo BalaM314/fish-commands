@@ -135,9 +135,37 @@ declare class Command {
 	params:any[];
 }
 
+declare class JavaFile {}
+declare class Fi {
+	file(): JavaFile;
+	child(path:string): Fi;
+	exists(): boolean;
+}
+
 declare class Pattern {
 	static matches(regex:string, target:string):boolean;
 }
+declare class Runtime {
+	static getRuntime():Runtime;
+	exec(command:string, envp:string[] | null, dir:JavaFile):Process;
+}
+declare class ProcessBuilder {
+	constructor(...args:string[]){}
+	directory(file?:JavaFile):ProcessBuilder;
+	redirectErrorStream(value:boolean):ProcessBuilder;
+	redirectOutput(value:any):ProcessBuilder;
+	start():Process;
+
+	static Redirect: {
+		PIPE: any;
+		INHERIT: any;
+	}
+}
+declare class Process {
+	waitFor();
+	exitValue():number;
+}
+
 declare const Packets: {
 	KickReason: any;
 };
