@@ -223,7 +223,7 @@ export function registerConsole(commands:FishConsoleCommandsList, serverHandler:
 					data.handler({
 						rawArgs,
 						args: output.processedArgs,
-						outputFail: message => Log.warn(`⚠ ${message}`),
+						outputFail: message => Log.err(`${message}`),
 						outputSuccess: message => Log.info(`${message}`),
 						output: message => Log.info(message),
 						execServer: command => serverHandler.handleMessage(command),

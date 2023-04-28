@@ -278,7 +278,7 @@ function registerConsole(commands, serverHandler) {
                     data.handler({
                         rawArgs: rawArgs,
                         args: output.processedArgs,
-                        outputFail: function (message) { return Log.warn("\u26A0 ".concat(message)); },
+                        outputFail: function (message) { return Log.err("".concat(message)); },
                         outputSuccess: function (message) { return Log.info("".concat(message)); },
                         output: function (message) { return Log.info(message); },
                         execServer: function (command) { return serverHandler.handleMessage(command); },
