@@ -189,6 +189,7 @@ export class FishPlayer {
 			});
 		}
 		const ip = player.ip();
+		const info:mindustryPlayerData = player.getInfo();
 		if(!(ip in this.checkedIps)){
 			api.isVpn(ip, isVpn => {
 				this.stats.numIpsChecked ++;
@@ -200,6 +201,7 @@ export class FishPlayer {
 						uuid: player.uuid(),
 						name: player.name
 					};
+					if(info.timesJoined == 1) this.messageStaff(`[scarlet]WARNING: player [cyan]"${player.name}[cyan]"[scarlet] is new and using a vpn.`);
 				} else {
 					this.checkedIps[ip] = false;
 				}
@@ -553,6 +555,23 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 			}
 		}
 	}
+
+	/**
+	 * Sends a message to staff only.
+	 * @returns if the message was received by anyone.
+	 */
+	static messageStaff(message:string):boolean {
+		let messageReceived = false;
+		Groups.player.forEach((pl:mindustryPlayer) => {
+			const fishP = FishPlayer.get(pl);
+			if(fishP.ranksAtLeast(Rank.mod)){
+				pl.sendMessage(message);
+				messageReceived = true;
+			}
+		});
+		return messageReceived;
+	}
+
 	//#endregion
 
 }

@@ -226,6 +226,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             });
         }
         var ip = player.ip();
+        var info = player.getInfo();
         if (!(ip in this.checkedIps)) {
             api.isVpn(ip, function (isVpn) {
                 _this.stats.numIpsChecked++;
@@ -237,6 +238,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                         uuid: player.uuid(),
                         name: player.name
                     };
+                    if (info.timesJoined == 1)
+                        _this.messageStaff("[scarlet]WARNING: player [cyan]\"".concat(player.name, "[cyan]\"[scarlet] is new and using a vpn."));
                 }
                 else {
                     _this.checkedIps[ip] = false;
@@ -664,6 +667,21 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 //This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd
             }
         }
+    };
+    /**
+     * Sends a message to staff only.
+     * @returns if the message was received by anyone.
+     */
+    FishPlayer.messageStaff = function (message) {
+        var messageReceived = false;
+        Groups.player.forEach(function (pl) {
+            var fishP = FishPlayer.get(pl);
+            if (fishP.ranksAtLeast(ranks_1.Rank.mod)) {
+                pl.sendMessage(message);
+                messageReceived = true;
+            }
+        });
+        return messageReceived;
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;

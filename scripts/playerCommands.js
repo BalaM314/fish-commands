@@ -59,16 +59,6 @@ var Cleaner = {
         return true;
     },
 };
-function messageStaff(name, msg) {
-    var message = "[gray]<[cyan]staff[gray]>[white]".concat(name, "[green]: [cyan]").concat(msg);
-    Groups.player.forEach(function (pl) {
-        var fishP = players_1.FishPlayer.get(pl);
-        if (commands_1.Perm.mod.check(fishP)) {
-            pl.sendMessage(message);
-        }
-    });
-}
-;
 var recentWhispers = {};
 exports.commands = __assign(__assign({ unpause: {
         args: [],
@@ -171,8 +161,14 @@ exports.commands = __assign(__assign({ unpause: {
         description: "Sends a message to staff only.",
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var sender = _a.sender, args = _a.args;
-            messageStaff(sender.name, args.message);
+            var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var wasReceived = players_1.FishPlayer.messageStaff("[gray]<[cyan]staff[gray]>[white]".concat(sender.player.name, "[green]: [cyan]").concat(args.message));
+            if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
+                if (wasReceived)
+                    outputSuccess("Message sent to staff.");
+                else
+                    outputFail("No staff were online to receive your message.");
+            }
         }
     }, 
     /**

@@ -35,17 +35,7 @@ const Cleaner = {
 		});
 		return true;
 	},
-};
-
-function messageStaff(name:string, msg:string){
-	const message = `[gray]<[cyan]staff[gray]>[white]${name}[green]: [cyan]${msg}`;
-	Groups.player.forEach((pl:mindustryPlayer) => {
-		const fishP = FishPlayer.get(pl);
-		if(Perm.mod.check(fishP)){
-			pl.sendMessage(message);
-		}
-	});
-};
+}
 
 let recentWhispers:Record<string, string> = {};
 
@@ -153,8 +143,12 @@ export const commands:FishCommandsList = {
 		args: ["message:string"],
 		description: `Sends a message to staff only.`,
 		perm: Perm.none,
-		handler({sender, args}){
-			messageStaff(sender.name, args.message);
+		handler({sender, args, outputSuccess, outputFail}){
+			const wasReceived = FishPlayer.messageStaff(`[gray]<[cyan]staff[gray]>[white]${sender.player.name}[green]: [cyan]${args.message}`);
+			if(!sender.ranksAtLeast(Rank.mod)){
+				if(wasReceived) outputSuccess(`Message sent to staff.`);
+				else outputFail(`No staff were online to receive your message.`);
+			}
 		}
 	},
 
