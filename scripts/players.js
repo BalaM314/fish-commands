@@ -210,6 +210,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     //Contains methods that handle an event and must be called by other code (usually through Events.on).
     /**Must be run on PlayerJoinEvent. */
     FishPlayer.onPlayerJoin = function (player) {
+        var _this = this;
         var _a;
         var _b, _c;
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
@@ -222,6 +223,28 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     fishPlayer.free("api");
                 if (stopped)
                     fishPlayer.stop("api");
+            });
+        }
+        var ip = player.ip();
+        if (!(ip in this.checkedIps)) {
+            api.isVpn(ip, function (isVpn) {
+                _this.stats.numIpsChecked++;
+                if (isVpn) {
+                    _this.stats.numIpsFlagged++;
+                    Log.warn("IP ".concat(ip, " was flagged as VPN. Flag rate: ").concat(_this.stats.numIpsFlagged, "/").concat(_this.stats.numIpsChecked, " (").concat(_this.stats.numIpsFlagged / _this.stats.numIpsChecked, ")"));
+                    _this.checkedIps[ip] = {
+                        ip: ip,
+                        uuid: player.uuid(),
+                        name: player.name
+                    };
+                }
+                else {
+                    _this.checkedIps[ip] = false;
+                }
+            }, function (err) {
+                Log.err("Error while checking for VPN status of ip ".concat(ip, "!"));
+                Log.err(err);
+                _this.stats.numIpsErrored++;
             });
         }
     };
@@ -645,5 +668,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
     FishPlayer.saveVersion = 1;
+    //Static transients
+    FishPlayer.stats = {
+        numIpsChecked: 0,
+        numIpsFlagged: 0,
+        numIpsErrored: 0,
+    };
+    //Added temporarily as part of antiVPN testing.
+    FishPlayer.checkedIps = {};
     return FishPlayer;
 }());

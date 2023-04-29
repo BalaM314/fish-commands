@@ -9,6 +9,19 @@ export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
 	static readonly saveVersion = 1;
+
+	//Static transients
+	static stats = {
+		numIpsChecked: 0,
+		numIpsFlagged: 0,
+		numIpsErrored: 0,
+	};
+	//Added temporarily as part of antiVPN testing.
+	static checkedIps:Record<string, false | {
+		name: string;
+		uuid: string;
+		ip: string;
+	}> = {};
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -173,6 +186,27 @@ export class FishPlayer {
 			api.getStopped(player.uuid(), (stopped) => {
 				if(fishPlayer.stopped && !stopped) fishPlayer.free("api");
 				if(stopped) fishPlayer.stop("api");
+			});
+		}
+		const ip = player.ip();
+		if(!(ip in this.checkedIps)){
+			api.isVpn(ip, isVpn => {
+				this.stats.numIpsChecked ++;
+				if(isVpn){
+					this.stats.numIpsFlagged ++;
+					Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${this.stats.numIpsFlagged}/${this.stats.numIpsChecked} (${this.stats.numIpsFlagged / this.stats.numIpsChecked})`);
+					this.checkedIps[ip] = {
+						ip,
+						uuid: player.uuid(),
+						name: player.name
+					};
+				} else {
+					this.checkedIps[ip] = false;
+				}
+			}, err => {
+				Log.err(`Error while checking for VPN status of ip ${ip}!`);
+				Log.err(err);
+				this.stats.numIpsErrored ++;
 			});
 		}
 	}
