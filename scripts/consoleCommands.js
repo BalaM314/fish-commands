@@ -292,10 +292,15 @@ exports.commands = {
         args: ["player:player", "newname:string"],
         description: "Changes the name of a player.",
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess;
-            var oldName = args.player.name;
-            args.player.player.name = args.newname;
-            outputSuccess("Renamed ".concat(oldName, " to ").concat(args.newname, "."));
+            var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            if (args.player.ranksAtLeast(ranks_1.Rank.pi)) {
+                outputFail("Operation aborted: Player ".concat(args.player.name, " is insufficiently trollable."));
+            }
+            else {
+                var oldName = args.player.name;
+                args.player.player.name = args.newname;
+                outputSuccess("Renamed ".concat(oldName, " to ").concat(args.newname, "."));
+            }
         }
     },
     checkantivpn: {

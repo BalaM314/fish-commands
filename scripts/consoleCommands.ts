@@ -218,10 +218,14 @@ export const commands:FishConsoleCommandsList = {
 	rename: {
 		args: ["player:player", "newname:string"],
 		description: "Changes the name of a player.",
-		handler({args, outputSuccess}){
-			const oldName = args.player.name;
-			args.player.player.name = args.newname;
-			outputSuccess(`Renamed ${oldName} to ${args.newname}.`);
+		handler({args, outputFail, outputSuccess}){
+			if(args.player.ranksAtLeast(Rank.pi)){
+				outputFail(`Operation aborted: Player ${args.player.name} is insufficiently trollable.`);
+			} else {
+				const oldName = args.player.name;
+				args.player.player.name = args.newname;
+				outputSuccess(`Renamed ${oldName} to ${args.newname}.`);
+			}
 		}
 	},
 	checkantivpn: {
