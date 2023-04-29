@@ -297,5 +297,17 @@ exports.commands = {
             args.player.player.name = args.newname;
             outputSuccess("Renamed ".concat(oldName, " to ").concat(args.newname, "."));
         }
+    },
+    checkantivpn: {
+        args: [],
+        description: "Outputs VPN flag rate statistics.",
+        handler: function (_a) {
+            var output = _a.output;
+            players_1.FishPlayer.stats;
+            output("&lgAntiVPN statistics&fr\nFlag rate: &c".concat(players_1.FishPlayer.stats.numIpsFlagged, "&fr / &c").concat(players_1.FishPlayer.stats.numIpsChecked, "&fr\n").concat(players_1.FishPlayer.stats.numIpsErrored, " errors\nList of flagged ips:\n") + Object.entries(players_1.FishPlayer.checkedIps).filter(function (e) { return e[1] !== false; }).map(function (_a) {
+                var _b = __read(_a, 2), ip = _b[0], data = _b[1];
+                return "&c".concat(ip, "&fr: name &c\"").concat(data.name, "\"&fr, uuid &c\"").concat(data.uuid, "\"&fr");
+            }));
+        }
     }
 };

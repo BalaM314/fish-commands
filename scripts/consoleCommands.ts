@@ -223,5 +223,21 @@ export const commands:FishConsoleCommandsList = {
 			args.player.player.name = args.newname;
 			outputSuccess(`Renamed ${oldName} to ${args.newname}.`);
 		}
+	},
+	checkantivpn: {
+		args: [],
+		description: "Outputs VPN flag rate statistics.",
+		handler({output}){
+			FishPlayer.stats;
+			output(
+`&lgAntiVPN statistics&fr
+Flag rate: &c${FishPlayer.stats.numIpsFlagged}&fr / &c${FishPlayer.stats.numIpsChecked}&fr
+${FishPlayer.stats.numIpsErrored} errors
+List of flagged ips:
+` + Object.entries(FishPlayer.checkedIps).filter<[string, { name: string; uuid: string; ip: string;}]>((e:any[]):e is [string, { name: string; uuid: string; ip: string;}] => e[1] !== false).map(([ip, data]) =>
+	`&c${ip}&fr: name &c"${data.name}"&fr, uuid &c"${data.uuid}"&fr`
+)
+			);
+		}
 	}
 };
