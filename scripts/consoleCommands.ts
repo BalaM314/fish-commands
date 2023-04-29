@@ -238,9 +238,13 @@ export const commands:FishConsoleCommandsList = {
 Flag rate: &c${FishPlayer.stats.numIpsFlagged}&fr / &c${FishPlayer.stats.numIpsChecked}&fr
 ${FishPlayer.stats.numIpsErrored} errors
 List of flagged unmoderated ips:
-` + (Object.entries(FishPlayer.checkedIps).filter<[string, FlaggedIPData]>((e:[string, FlaggedIPData | false]):e is [string, FlaggedIPData] => e[1] !== false && !e[1].moderated).map(([ip, data]) =>
+${Object.entries(FishPlayer.checkedIps).filter<[string, FlaggedIPData]>((e:[string, FlaggedIPData | false]):e is [string, FlaggedIPData] => e[1] !== false && !e[1].moderated).map(([ip, data]) =>
 	`&c${ip}&fr: name &c"${data.name}"&fr, uuid &c"${data.uuid}"&fr`
-).join("\n") || "none")
+).join("\n") || "none"}
+List of flagged moderated ips:
+${Object.entries(FishPlayer.checkedIps).filter<[string, FlaggedIPData]>((e:[string, FlaggedIPData | false]):e is [string, FlaggedIPData] => e[1] !== false && e[1].moderated).map(([ip, data]) =>
+	`&c${ip}&fr: name &c"${data.name}"&fr, uuid &c"${data.uuid}"&fr`
+).join("\n") || "none"}`
 			);
 		}
 	}
