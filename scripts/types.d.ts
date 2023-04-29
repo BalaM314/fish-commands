@@ -140,3 +140,10 @@ interface CommandArg {
 	type: CommandArgType;
 	isOptional: boolean;
 }
+
+interface FlaggedIPData {
+	name: string;
+	uuid: string;
+	ip: string;
+	moderated: boolean;
+};

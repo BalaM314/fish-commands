@@ -236,10 +236,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     _this.checkedIps[ip] = {
                         ip: ip,
                         uuid: player.uuid(),
-                        name: player.name
+                        name: player.name,
+                        moderated: false,
                     };
                     if (info.timesJoined < 5)
-                        _this.messageStaff("[scarlet]WARNING: player [cyan]\"".concat(player.name, "[cyan]\"[scarlet] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
+                        _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
                 }
                 else {
                     _this.checkedIps[ip] = false;
@@ -597,6 +598,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.stopped = true;
         this.stopUnit();
         this.updateName();
+        if (FishPlayer.checkedIps[this.player.ip()] !== false)
+            FishPlayer.checkedIps[this.player.ip()].moderated = true;
         this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
         if (by instanceof FishPlayer) {
             this.addHistoryEntry({
@@ -629,6 +632,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (this.muted)
             return;
         this.muted = true;
+        if (FishPlayer.checkedIps[this.player.ip()] !== false)
+            FishPlayer.checkedIps[this.player.ip()].moderated = true;
         this.updateName();
         this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
         if (by instanceof FishPlayer) {

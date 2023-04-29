@@ -1,4 +1,4 @@
-import type { FishPlayerData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
+import type { FishPlayerData, FlaggedIPData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
 import * as api from "./api";
 import { isCoreUnitType, setToArray, StringIO } from "./utils";
@@ -17,11 +17,7 @@ export class FishPlayer {
 		numIpsErrored: 0,
 	};
 	//Added temporarily as part of antiVPN testing.
-	static checkedIps:Record<string, false | {
-		name: string;
-		uuid: string;
-		ip: string;
-	}> = {};
+	static checkedIps:Record<string, false | FlaggedIPData> = {};
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -199,9 +195,10 @@ export class FishPlayer {
 					this.checkedIps[ip] = {
 						ip,
 						uuid: player.uuid(),
-						name: player.name
+						name: player.name,
+						moderated: false,
 					};
-					if(info.timesJoined < 5) this.messageStaff(`[scarlet]WARNING: player [cyan]"${player.name}[cyan]"[scarlet] is new (${info.timesJoined - 1} joins) and using a vpn.`);
+					if(info.timesJoined < 5) this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
 				} else {
 					this.checkedIps[ip] = false;
 				}
@@ -487,6 +484,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		this.stopped = true;
 		this.stopUnit();
 		this.updateName();
+		if(FishPlayer.checkedIps[this.player.ip()] !== false) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
 		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
 		if(by instanceof FishPlayer){
 			this.addHistoryEntry({
@@ -517,6 +515,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	mute(by:FishPlayer | "api"){
 		if(this.muted) return;
 		this.muted = true;
+		if(FishPlayer.checkedIps[this.player.ip()] !== false) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
 		this.updateName();
 		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
 		if(by instanceof FishPlayer){

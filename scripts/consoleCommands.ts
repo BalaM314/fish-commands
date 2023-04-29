@@ -1,6 +1,6 @@
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { FishConsoleCommandsList, mindustryPlayerData } from "./types";
+import { FishConsoleCommandsList, FlaggedIPData, mindustryPlayerData } from "./types";
 import { setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
 import { addStopped } from "./api";
@@ -237,10 +237,10 @@ export const commands:FishConsoleCommandsList = {
 `&lgAntiVPN statistics&fr
 Flag rate: &c${FishPlayer.stats.numIpsFlagged}&fr / &c${FishPlayer.stats.numIpsChecked}&fr
 ${FishPlayer.stats.numIpsErrored} errors
-List of flagged ips:
-` + Object.entries(FishPlayer.checkedIps).filter<[string, { name: string; uuid: string; ip: string;}]>((e:any[]):e is [string, { name: string; uuid: string; ip: string;}] => e[1] !== false).map(([ip, data]) =>
+List of flagged unmoderated ips:
+` + Object.entries(FishPlayer.checkedIps).filter<[string, FlaggedIPData]>((e:[string, FlaggedIPData | false]):e is [string, FlaggedIPData] => e[1] !== false && !e[1].moderated).map(([ip, data]) =>
 	`&c${ip}&fr: name &c"${data.name}"&fr, uuid &c"${data.uuid}"&fr`
-)
+).join("\n")
 			);
 		}
 	}
