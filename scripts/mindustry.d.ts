@@ -102,6 +102,7 @@ declare class HttpReponse {
 declare const Http: {
 	post(url:string, content:string):HttpRequest;
 	get(url:string):HttpRequest;
+	get(url:string, callback:(res:HttpReponse) => unknown):void;
 }
 declare class ObjectSet<T> {
 	size:number;

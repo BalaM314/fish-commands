@@ -61,3 +61,16 @@ export function getStopped(uuid:string, callback:(stopped:boolean) => unknown){
 		Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
 	}
 };
+
+/**Make an API request to see if an IP is likely VPN. */
+export function isVpn(ip:string, callback:(isVpn:boolean) => unknown, callbackError?:(errorMessage:any) => unknown){
+	try {
+		Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, res => {
+			const data = res.getResultAsString();
+			const json = JSON.parse(data);
+			callback(json.proxy || json.hosting);
+		})
+	} catch(err){
+		callbackError?.(err);
+	}
+}

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStopped = exports.free = exports.addStopped = void 0;
+exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
 // Add a player's uuid to the stopped api
 function addStopped(uuid) {
@@ -67,3 +67,17 @@ function getStopped(uuid, callback) {
 }
 exports.getStopped = getStopped;
 ;
+/**Make an API request to see if an IP is likely VPN. */
+function isVpn(ip, callback, callbackError) {
+    try {
+        Http.get("http://ip-api.com/json/".concat(ip, "?fields=proxy,hosting"), function (res) {
+            var data = res.getResultAsString();
+            var json = JSON.parse(data);
+            callback(json.proxy || json.hosting);
+        });
+    }
+    catch (err) {
+        callbackError === null || callbackError === void 0 ? void 0 : callbackError(err);
+    }
+}
+exports.isVpn = isVpn;
