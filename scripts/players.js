@@ -238,8 +238,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                         uuid: player.uuid(),
                         name: player.name
                     };
-                    if (info.timesJoined == 1)
-                        _this.messageStaff("[scarlet]WARNING: player [cyan]\"".concat(player.name, "[cyan]\"[scarlet] is new and using a vpn."));
+                    if (info.timesJoined < 5)
+                        _this.messageStaff("[scarlet]WARNING: player [cyan]\"".concat(player.name, "[cyan]\"[scarlet] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
                 }
                 else {
                     _this.checkedIps[ip] = false;

@@ -201,7 +201,7 @@ export class FishPlayer {
 						uuid: player.uuid(),
 						name: player.name
 					};
-					if(info.timesJoined == 1) this.messageStaff(`[scarlet]WARNING: player [cyan]"${player.name}[cyan]"[scarlet] is new and using a vpn.`);
+					if(info.timesJoined < 5) this.messageStaff(`[scarlet]WARNING: player [cyan]"${player.name}[cyan]"[scarlet] is new (${info.timesJoined - 1} joins) and using a vpn.`);
 				} else {
 					this.checkedIps[ip] = false;
 				}
