@@ -484,7 +484,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		this.stopped = true;
 		this.stopUnit();
 		this.updateName();
-		if(FishPlayer.checkedIps[this.player.ip()] !== false) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
+		if(FishPlayer.checkedIps[this.player.ip()]) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
 		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
 		if(by instanceof FishPlayer){
 			this.addHistoryEntry({

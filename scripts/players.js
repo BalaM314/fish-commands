@@ -598,7 +598,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.stopped = true;
         this.stopUnit();
         this.updateName();
-        if (FishPlayer.checkedIps[this.player.ip()] !== false)
+        if (FishPlayer.checkedIps[this.player.ip()])
             FishPlayer.checkedIps[this.player.ip()].moderated = true;
         this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
         if (by instanceof FishPlayer) {
