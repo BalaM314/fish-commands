@@ -369,6 +369,32 @@ export const commands:FishCommandsList = {
 			);
 		}
 	},
+	
+	team: {
+		args: ["team:team", "player:player"],
+		description: "Changes the team of a player.",
+		perm: Perm.notGriefer,
+		handler({args, sender, outputFail, outputSuccess}){
+			if(!sender.canModerate(args.player, false)) {
+				outputFail(`You do not have permission to change the team of this player.`);
+				return;
+			}
+
+			const gamemode = Vars.state.rules.mode().name();
+			if (gamemode === "sandbox" && sender.rank.level < Rank.trusted.level) {
+				outputFail('Yout must be trusted rank or above to use this command.');
+				return;
+			}
+
+			if (gamemode !== "sandbox" && sender.rank.level < Rank.mod.level) {
+				outputFail('You do not have permission to use this command.')
+				return;
+			}
+
+			args.player.player.team(args.team);
+			outputSuccess(`Changed team of player ${args.player.name} to ${args.team.name}.`);
+		}
+	},
 
 	rank: {
 		args: ["player:player"],

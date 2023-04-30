@@ -301,19 +301,6 @@ export const commands:FishCommandsList = {
 		}
 	},
 
-	team: {
-		args: ["team:team", "player:player"],
-		description: "Changes the team of a player.",
-		perm: Perm.mod,
-		handler({args, sender, outputSuccess}){
-			if(!sender.canModerate(args.player, false))
-				fail(`You do not have permission to change the team of this player.`);
-
-			args.player.player.team(args.team);
-			outputSuccess(`Changed team of player ${args.player.name} to ${args.team.name}.`);
-		}
-	},
-
 	kill: {
 		args: ["player:player"],
 		description: "Kills a player's unit.",
