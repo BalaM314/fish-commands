@@ -109,7 +109,7 @@ function addToTileHistory(e, eventType) {
             time: Date.now(),
         });
     }
-    if (eventType === 'rotate') {
+    else if (eventType === 'rotate') {
         tileHistory[pos].push({
             name: realP.name,
             action: 'rotated',
@@ -117,7 +117,15 @@ function addToTileHistory(e, eventType) {
             time: Date.now(),
         });
     }
-    if (tileHistory[pos].length >= 3) {
+    else if (eventType === 'config') {
+        tileHistory[pos].push({
+            name: realP.name,
+            action: 'configured',
+            type: 'block',
+            time: Date.now(),
+        });
+    }
+    if (tileHistory[pos].length >= 9) {
         tileHistory[pos].shift();
     }
     return;
@@ -125,6 +133,9 @@ function addToTileHistory(e, eventType) {
 ;
 Events.on(EventType.BlockBuildBeginEvent, function (e) {
     addToTileHistory(e, 'build');
+});
+Events.on(EventType.ConfigEvent, function (e) {
+    addToTileHistory(e, 'config');
 });
 Events.on(EventType.TapEvent, function (e) {
     var fishP = players_1.FishPlayer.get(e.player);

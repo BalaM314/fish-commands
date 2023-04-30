@@ -109,7 +109,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.
  */
-function addToTileHistory(e:any, eventType:"build" | "rotate"){
+function addToTileHistory(e:any, eventType:"build" | "rotate" | "config"){
 	const unit = e.unit;
 	if(!unit.player) return;
 	const tile = e.tile;
@@ -125,18 +125,23 @@ function addToTileHistory(e:any, eventType:"build" | "rotate"){
 			type: destroy ? 'tile' : tile.block(),
 			time: Date.now(),
 		});
-	}
-
-	if(eventType === 'rotate'){
+	} else if(eventType === 'rotate'){
 		tileHistory[pos].push({
 			name: realP.name,
 			action: 'rotated',
 			type: 'block',
 			time: Date.now(),
 		});
+	} else if(eventType === 'config'){
+		tileHistory[pos].push({
+			name: realP.name,
+			action: 'configured',
+			type: 'block',
+			time: Date.now(),
+		});
 	}
 
-	if(tileHistory[pos].length >= 3){
+	if(tileHistory[pos].length >= 9){
 		tileHistory[pos].shift();
 	}
 	return;
@@ -144,6 +149,10 @@ function addToTileHistory(e:any, eventType:"build" | "rotate"){
 
 Events.on(EventType.BlockBuildBeginEvent, (e) => {
 	addToTileHistory(e, 'build');
+});
+
+Events.on(EventType.ConfigEvent, (e) => {
+	addToTileHistory(e, 'config');
 });
 
 Events.on(EventType.TapEvent, (e) => {
