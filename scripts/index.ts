@@ -68,12 +68,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 
 		//prevent stopped players from doing anything other than deposit items.
 		if(fishP.stopped){
-			if(action.type == ActionType.depositItem){
-				return true;
-			} else {
-				action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
-				return false;
-			}
+			action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
+			return false;
 		} else {
 			if(action.type === ActionType.rotate){
 				addToTileHistory({
