@@ -33,6 +33,7 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 var commands_1 = require("./commands");
 var api_1 = require("./api");
+var fjsContext = require("./fjsContext");
 exports.commands = {
     setrank: {
         args: ["player:player", "rank:string"],
@@ -308,7 +309,6 @@ exports.commands = {
         description: "Outputs VPN flag rate statistics.",
         handler: function (_a) {
             var output = _a.output;
-            players_1.FishPlayer.stats;
             output("&lgAntiVPN statistics&fr\nFlag rate: &c".concat(players_1.FishPlayer.stats.numIpsFlagged, "&fr / &c").concat(players_1.FishPlayer.stats.numIpsChecked, "&fr\n").concat(players_1.FishPlayer.stats.numIpsErrored, " errors\nList of flagged unmoderated ips:\n").concat(Object.entries(players_1.FishPlayer.checkedIps).filter(function (e) { return e[1] !== false && !e[1].moderated; }).map(function (_a) {
                 var _b = __read(_a, 2), ip = _b[0], data = _b[1];
                 return "&c".concat(ip, "&fr: name &c\"").concat(data.name, "\"&fr, uuid &c\"").concat(data.uuid, "\"&fr");
@@ -316,6 +316,14 @@ exports.commands = {
                 var _b = __read(_a, 2), ip = _b[0], data = _b[1];
                 return "&c".concat(ip, "&fr: name &c\"").concat(data.name, "\"&fr, uuid &c\"").concat(data.uuid, "\"&fr");
             }).join("\n") || "none"));
+        }
+    },
+    fjs: {
+        args: ["js:string"],
+        description: "Executes arbitrary javascript code, but has access to fish-commands's variables.",
+        handler: function (_a) {
+            var args = _a.args;
+            fjsContext.runJS(args.js);
         }
     }
 };

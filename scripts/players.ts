@@ -282,7 +282,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	/**Checks if this player's USID is correct. */
 	checkUsid(){
-		if(this.usid != null && this.player.usid() != this.usid){
+		if(this.usid != null && this.usid != "" && this.player.usid() != this.usid){
 			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r`);
 			if(this.ranksAtLeast(Rank.trusted)){
 				this.player.kick(`Authorization failure!`);

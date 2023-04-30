@@ -350,7 +350,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Checks if this player's USID is correct. */
     FishPlayer.prototype.checkUsid = function () {
-        if (this.usid != null && this.player.usid() != this.usid) {
+        if (this.usid != null && this.usid != "" && this.player.usid() != this.usid) {
             Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
             if (this.ranksAtLeast(ranks_1.Rank.trusted)) {
                 this.player.kick("Authorization failure!");

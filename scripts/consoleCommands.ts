@@ -4,6 +4,7 @@ import { FishConsoleCommandsList, FlaggedIPData, mindustryPlayerData } from "./t
 import { setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
 import { addStopped } from "./api";
+import * as fjsContext from "./fjsContext";
 
 
 export const commands:FishConsoleCommandsList = {
@@ -232,7 +233,6 @@ export const commands:FishConsoleCommandsList = {
 		args: [],
 		description: "Outputs VPN flag rate statistics.",
 		handler({output}){
-			FishPlayer.stats;
 			output(
 `&lgAntiVPN statistics&fr
 Flag rate: &c${FishPlayer.stats.numIpsFlagged}&fr / &c${FishPlayer.stats.numIpsChecked}&fr
@@ -246,6 +246,13 @@ ${Object.entries(FishPlayer.checkedIps).filter<[string, FlaggedIPData]>((e:[stri
 	`&c${ip}&fr: name &c"${data.name}"&fr, uuid &c"${data.uuid}"&fr`
 ).join("\n") || "none"}`
 			);
+		}
+	},
+	fjs: {
+		args: ["js:string"],
+		description: "Executes arbitrary javascript code, but has access to fish-commands's variables.",
+		handler({args}){
+			fjsContext.runJS(args.js);
 		}
 	}
 };
