@@ -49,6 +49,7 @@ var Perm = exports.Perm = /** @class */ (function () {
     };
     Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
     Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || Perm.mod.check(fishP); }, "[sky]");
+    Perm.notMuted = new Perm("notMuted", function (fishP) { return !fishP.muted || fishP.ranksAtLeast(ranks_1.Rank.mod); });
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
     Perm.member = new Perm("member", function (fishP) { return fishP.member && !fishP.stopped; }, "[pink]", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");

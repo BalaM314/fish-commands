@@ -267,7 +267,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, msg: {
         args: ["player:player", "message:string"],
         description: "Send a message to only one player.",
-        perm: commands_1.Perm.none,
+        perm: commands_1.Perm.notMuted,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
             recentWhispers[args.player.uuid] = sender.uuid;
@@ -277,7 +277,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, r: {
         args: ["message:string"],
         description: "Reply to the most recent message.",
-        perm: commands_1.Perm.none,
+        perm: commands_1.Perm.notMuted,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
             Log.info("Checking for recent whispers to ".concat(sender.uuid));

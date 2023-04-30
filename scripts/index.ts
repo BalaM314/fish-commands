@@ -47,7 +47,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 		const fishPlayer = FishPlayer.get(player);
 
 		if(fishPlayer.muted){
-			player.sendMessage('[scarlet]⚠ [yellow]You are muted.');
+			player.sendMessage(`[gray]<[red]muted[gray]>[white]${player.name}[green]: [cyan]${text}`);
+			FishPlayer.messageStaff(`[gray]<[red]muted[gray]>[white]${player.name}[green]: [cyan]${text}`);
 			return null;
 		}
 

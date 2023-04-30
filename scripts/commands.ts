@@ -13,6 +13,7 @@ export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer 
 export class Perm {
 	static none = new Perm("all", fishP => true, "[sky]");
 	static notGriefer = new Perm("player", fishP => !fishP.stopped || Perm.mod.check(fishP), "[sky]");
+	static notMuted = new Perm("notMuted", fishP => !fishP.muted || fishP.ranksAtLeast(Rank.mod));
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
 	static member = new Perm("member", fishP => fishP.member && !fishP.stopped, "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
