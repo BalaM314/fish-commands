@@ -262,9 +262,9 @@ ${Object.entries(FishPlayer.checkedIps).filter<[string, FlaggedIPData]>((e:[stri
 		handler({output}){
 			output(
 `Memory usage:
-Total: ${Math.round(Core.app.getJavaHeap() / (2 ** 20))} MB
+Total: ${Math.round(Core.app.getJavaHeap() / (2 ** 10))} KB
 Number of cached fish players: ${Object.keys(FishPlayer.cachedPlayers).length}
-Length of tilelog entries: ${Object.values(tileHistory).reduce((acc, a) => acc + a.length, 0)}`
+Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, a) => acc + a.length, 0) / (2 ** 10))} KB`
 			);
 		}
 	}

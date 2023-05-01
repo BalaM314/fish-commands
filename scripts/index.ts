@@ -182,6 +182,10 @@ Events.on(EventType.TapEvent, (e) => {
 
 Events.on(EventType.GameOverEvent, (e) => {
 	Ohnos.onGameOver();
+	for(const [key, value] of Object.entries(tileHistory)){
+		tileHistory[key] = null!;
+		delete tileHistory[key];
+	}
 });
 
 Events.on(EventType.DisposeEvent, (e) => {
