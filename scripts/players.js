@@ -43,6 +43,7 @@ var config = require("./config");
 var api = require("./api");
 var utils_1 = require("./utils");
 var ranks_1 = require("./ranks");
+var menus_1 = require("./menus");
 var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, usid = _a.usid;
@@ -244,6 +245,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                         fishPlayer.mute("vpn");
                         _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted."));
                         Log.warn("Player ".concat(player.name, " (").concat(player.uuid(), ") was muted."));
+                        (0, menus_1.menu)("Welcome to Fish Network!", "Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.", ["Close", "Discord"], fishPlayer, function (_a) {
+                            var option = _a.option, sender = _a.sender;
+                            if (option == "Discord") {
+                                Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+                            }
+                        }, false, function (o) { return o; });
                     }
                     else if (info.timesJoined < 5) {
                         _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));

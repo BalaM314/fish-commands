@@ -3,6 +3,7 @@ import * as config from "./config";
 import * as api from "./api";
 import { isCoreUnitType, setToArray, StringIO } from "./utils";
 import { Rank } from "./ranks";
+import { menu } from "./menus";
 
 
 export class FishPlayer {
@@ -202,7 +203,12 @@ export class FishPlayer {
 						fishPlayer.stop("vpn");
 						fishPlayer.mute("vpn");
 						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted.`);
-						Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`)
+						Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`);
+						menu("Welcome to Fish Network!", `Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`, ["Close", "Discord"], fishPlayer, ({option, sender}) => {
+							if(option == "Discord"){
+								Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+							}
+						}, false, o => o);
 					} else if(info.timesJoined < 5){
 						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
 					}
