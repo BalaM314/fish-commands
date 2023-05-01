@@ -239,8 +239,15 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                         name: player.name,
                         moderated: false,
                     };
-                    if (info.timesJoined < 5)
+                    if (info.timesJoined <= 1) {
+                        fishPlayer.stop("vpn");
+                        fishPlayer.mute("vpn");
+                        _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted."));
+                        Log.warn("Player ".concat(player.name, " (").concat(player.uuid(), ") was muted."));
+                    }
+                    else if (info.timesJoined < 5) {
                         _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
+                    }
                 }
                 else {
                     _this.checkedIps[ip] = false;
@@ -609,6 +616,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             });
             api.addStopped(this.uuid);
         }
+        else if (by === "vpn") {
+            this.addHistoryEntry({
+                action: 'stopped',
+                by: by,
+                time: Date.now(),
+            });
+        }
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.free = function (by) {
@@ -640,6 +654,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.addHistoryEntry({
                 action: 'muted',
                 by: by.name,
+                time: Date.now(),
+            });
+        }
+        else if (by === "vpn") {
+            this.addHistoryEntry({
+                action: 'muted',
+                by: by,
                 time: Date.now(),
             });
         }

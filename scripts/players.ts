@@ -198,7 +198,14 @@ export class FishPlayer {
 						name: player.name,
 						moderated: false,
 					};
-					if(info.timesJoined < 5) this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
+					if(info.timesJoined <= 1){
+						fishPlayer.stop("vpn");
+						fishPlayer.mute("vpn");
+						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted.`);
+						Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`)
+					} else if(info.timesJoined < 5){
+						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
+					}
 				} else {
 					this.checkedIps[ip] = false;
 				}
@@ -480,7 +487,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		this.getById(id)?.addHistoryEntry(entry);
 	}
 
-	stop(by:FishPlayer | "api"){
+	stop(by:FishPlayer | "api" | "vpn"){
 		this.stopped = true;
 		this.stopUnit();
 		this.updateName();
@@ -493,6 +500,12 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 				time: Date.now(),
 			});
 			api.addStopped(this.uuid);
+		} else if(by === "vpn"){
+			this.addHistoryEntry({
+				action: 'stopped',
+				by,
+				time: Date.now(),
+			});
 		}
 		FishPlayer.saveAll();
 	}
@@ -512,7 +525,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		}
 		FishPlayer.saveAll();
 	}
-	mute(by:FishPlayer | "api"){
+	mute(by:FishPlayer | "api" | "vpn"){
 		if(this.muted) return;
 		this.muted = true;
 		if(FishPlayer.checkedIps[this.player.ip()] !== false) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
@@ -524,10 +537,16 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 				by: by.name,
 				time: Date.now(),
 			});
+		} else if(by === "vpn"){
+			this.addHistoryEntry({
+				action: 'muted',
+				by: by,
+				time: Date.now(),
+			});
 		}
 		FishPlayer.saveAll();
 	}
-	unmute(by:FishPlayer | "api"){
+	unmute(by:FishPlayer | "api" | "vpn"){
 		if(!this.muted) return;
 		this.muted = false;
 		this.updateName();
