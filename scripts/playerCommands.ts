@@ -5,6 +5,7 @@ import type { FishCommandsList } from "./types";
 import { capitalizeText, getColor, StringBuilder, to2DArray } from "./utils";
 import { FishServers } from "./config";
 import { Rank } from "./ranks";
+import { recentWhispers } from "./globals";
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
 	player.unit().set(to.unit().x, to.unit().y);
@@ -36,8 +37,6 @@ const Cleaner = {
 		return true;
 	},
 }
-
-let recentWhispers:Record<string, string> = {};
 
 export const commands:FishCommandsList = {
 

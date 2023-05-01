@@ -5,6 +5,7 @@ import { setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
 import { addStopped } from "./api";
 import * as fjsContext from "./fjsContext";
+import { tileHistory } from "./globals";
 
 
 export const commands:FishConsoleCommandsList = {
@@ -253,6 +254,18 @@ ${Object.entries(FishPlayer.checkedIps).filter<[string, FlaggedIPData]>((e:[stri
 		description: "Executes arbitrary javascript code, but has access to fish-commands's variables.",
 		handler({args}){
 			fjsContext.runJS(args.js);
+		}
+	},
+	checkmem: {
+		args: [],
+		description: "Checks memory usage of various objects.",
+		handler({output}){
+			output(
+`Memory usage:
+Total: ${Math.round(Core.app.getJavaHeap() / (2 ** 20))} MB
+Number of cached fish players: ${Object.keys(FishPlayer.cachedPlayers).length}
+Number of tilelog entries: ${Object.values(tileHistory).reduce((acc, a) => acc + a.length, 0)}`
+			);
 		}
 	}
 };

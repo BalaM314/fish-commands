@@ -34,6 +34,7 @@ var utils_1 = require("./utils");
 var commands_1 = require("./commands");
 var api_1 = require("./api");
 var fjsContext = require("./fjsContext");
+var globals_1 = require("./globals");
 exports.commands = {
     setrank: {
         args: ["player:player", "rank:string"],
@@ -324,6 +325,14 @@ exports.commands = {
         handler: function (_a) {
             var args = _a.args;
             fjsContext.runJS(args.js);
+        }
+    },
+    checkmem: {
+        args: [],
+        description: "Checks memory usage of various objects.",
+        handler: function (_a) {
+            var output = _a.output;
+            output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 20))), " MB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, "\nNumber of tilelog entries: ").concat(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0)));
         }
     }
 };

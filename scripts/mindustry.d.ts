@@ -76,6 +76,7 @@ declare const Core: {
 	app: {
 		post(func:() => unknown):void;
 		exit():void;
+		getJavaHeap():number;
 		listeners: any[];
 	}
 }

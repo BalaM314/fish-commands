@@ -14,10 +14,10 @@ import * as playerCommands from './playerCommands';
 import * as memberCommands from './memberCommands';
 import * as consoleCommands from "./consoleCommands";
 import * as packetHandlers from "./packetHandlers";
-import type { TileHistoryEntry } from "./types";
+import { tileHistory } from "./globals";
 
 
-let tileHistory:Record<string, TileHistoryEntry[]> = {};
+
 
 Events.on(EventType.PlayerJoin, (e) => {
 	FishPlayer.onPlayerJoin(e.player);

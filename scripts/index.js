@@ -14,7 +14,7 @@ var staffCommands = require("./staffCommands");
 var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
 var consoleCommands = require("./consoleCommands");
-var tileHistory = {};
+var globals_1 = require("./globals");
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
@@ -113,15 +113,15 @@ function addToTileHistory(e) {
     }
     else
         return;
-    (_h = tileHistory[pos]) !== null && _h !== void 0 ? _h : (tileHistory[pos] = []);
-    tileHistory[pos].push({
+    (_h = globals_1.tileHistory[pos]) !== null && _h !== void 0 ? _h : (globals_1.tileHistory[pos] = []);
+    globals_1.tileHistory[pos].push({
         action: action,
         name: name,
         time: time,
         type: type
     });
-    if (tileHistory[pos].length >= 9) {
-        tileHistory[pos].shift();
+    if (globals_1.tileHistory[pos].length >= 9) {
+        globals_1.tileHistory[pos].shift();
     }
 }
 ;
@@ -137,11 +137,11 @@ Events.on(EventType.TapEvent, function (e) {
         var realP = e.player;
         var tile = e.tile;
         var pos = tile.x + ',' + tile.y;
-        if (!tileHistory[pos]) {
+        if (!globals_1.tileHistory[pos]) {
             realP.sendMessage("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
         }
         else {
-            realP.sendMessage(tileHistory[pos].map(function (e) {
+            realP.sendMessage(globals_1.tileHistory[pos].map(function (e) {
                 return "".concat(e.name, " [yellow]").concat(e.action, " a ").concat(e.type, " ").concat((0, utils_1.getTimeSinceText)(e.time));
             }).join('\n'));
         }

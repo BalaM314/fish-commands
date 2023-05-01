@@ -2,6 +2,7 @@ const api = require("./api");
 const commands = require("./commands");
 const config = require("./config");
 const consoleCommands = require("./consoleCommands");
+const globals = require("./globals");
 const memberCommands = require("./api");
 const menus = require("./menus");
 const ohno = require("./ohno");

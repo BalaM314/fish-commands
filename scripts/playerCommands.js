@@ -34,6 +34,7 @@ var players_1 = require("./players");
 var utils_1 = require("./utils");
 var config_1 = require("./config");
 var ranks_1 = require("./ranks");
+var globals_1 = require("./globals");
 function teleportPlayer(player, to) {
     player.unit().set(to.unit().x, to.unit().y);
     Call.setPosition(player.con, to.unit().x, to.unit().y);
@@ -59,7 +60,6 @@ var Cleaner = {
         return true;
     },
 };
-var recentWhispers = {};
 exports.commands = __assign(__assign({ unpause: {
         args: [],
         description: "Unpauses the game.",
@@ -282,7 +282,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.notMuted,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
-            recentWhispers[args.player.uuid] = sender.uuid;
+            globals_1.recentWhispers[args.player.uuid] = sender.uuid;
             args.player.sendMessage("".concat(sender.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
             output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
         }
@@ -293,10 +293,10 @@ exports.commands = __assign(__assign({ unpause: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
             Log.info("Checking for recent whispers to ".concat(sender.uuid));
-            if (recentWhispers[sender.uuid]) {
-                var recipient = players_1.FishPlayer.getById(recentWhispers[sender.uuid]);
+            if (globals_1.recentWhispers[sender.uuid]) {
+                var recipient = players_1.FishPlayer.getById(globals_1.recentWhispers[sender.uuid]);
                 if (recipient === null || recipient === void 0 ? void 0 : recipient.connected()) {
-                    recentWhispers[recentWhispers[sender.uuid]] = sender.uuid;
+                    globals_1.recentWhispers[globals_1.recentWhispers[sender.uuid]] = sender.uuid;
                     recipient.sendMessage("".concat(sender.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
                     output("[#0ffffff0]Message sent to ".concat(recipient.name, "[#0ffffff0]."));
                 }
