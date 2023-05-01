@@ -388,11 +388,11 @@ exports.commands = __assign(__assign({ unpause: {
             var gamemode = Vars.state.rules.mode().name();
             if (gamemode === "sandbox") {
                 if (!sender.ranksAtLeast(ranks_1.Rank.trusted))
-                    (0, commands_1.fail)('Yout must be trusted rank or above to use this command.');
+                    (0, commands_1.fail)('You must be trusted rank or above to use this command.');
             }
             else {
                 if (!sender.ranksAtLeast(ranks_1.Rank.mod))
-                    (0, commands_1.fail)('You do not have permission to use this command.');
+                    (0, commands_1.fail)('You do not have the required permission (mod) to execute this command.');
             }
             args.player.player.team(args.team);
             outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));

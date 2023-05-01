@@ -381,10 +381,10 @@ export const commands:FishCommandsList = {
 			const gamemode = Vars.state.rules.mode().name();
 			if(gamemode === "sandbox"){
 				if(!sender.ranksAtLeast(Rank.trusted))
-					fail('Yout must be trusted rank or above to use this command.');
+					fail('You must be trusted rank or above to use this command.');
 			} else {
 				if(!sender.ranksAtLeast(Rank.mod))
-					fail('You do not have permission to use this command.');
+					fail('You do not have the required permission (mod) to execute this command.');
 			}
 
 			args.player.player.team(args.team);
