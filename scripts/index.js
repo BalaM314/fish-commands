@@ -88,11 +88,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
  */
 function addToTileHistory(e, eventType) {
     var _a;
-    var unit = e.unit;
-    if (!unit.player)
-        return;
     var tile = e.tile;
-    var realP = e.unit.player;
+    var realP = e.unit ? e.unit.player : e.player;
+    if (!realP)
+        return;
     var pos = tile.x + ',' + tile.y;
     var destroy = e.breaking;
     (_a = tileHistory[pos]) !== null && _a !== void 0 ? _a : (tileHistory[pos] = []);

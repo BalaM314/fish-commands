@@ -106,10 +106,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  * command.
  */
 function addToTileHistory(e:any, eventType:"build" | "rotate" | "config"){
-	const unit = e.unit;
-	if(!unit.player) return;
 	const tile = e.tile;
-	const realP = e.unit.player;
+	const realP = e.unit ? e.unit.player : e.player;
+	if(!realP) return;
 	const pos = tile.x + ',' + tile.y;
 	const destroy = e.breaking;
 	
