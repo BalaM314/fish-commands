@@ -382,19 +382,17 @@ exports.commands = __assign(__assign({ unpause: {
         description: "Changes the team of a player.",
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
-            if (!sender.canModerate(args.player, false)) {
-                outputFail("You do not have permission to change the team of this player.");
-                return;
-            }
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (!sender.canModerate(args.player, false))
+                (0, commands_1.fail)("You do not have permission to change the team of this player.");
             var gamemode = Vars.state.rules.mode().name();
-            if (gamemode === "sandbox" && sender.rank.level < ranks_1.Rank.trusted.level) {
-                outputFail('Yout must be trusted rank or above to use this command.');
-                return;
+            if (gamemode === "sandbox") {
+                if (!sender.ranksAtLeast(ranks_1.Rank.trusted))
+                    (0, commands_1.fail)('Yout must be trusted rank or above to use this command.');
             }
-            if (gamemode !== "sandbox" && sender.rank.level < ranks_1.Rank.mod.level) {
-                outputFail('You do not have permission to use this command.');
-                return;
+            else {
+                if (!sender.ranksAtLeast(ranks_1.Rank.mod))
+                    (0, commands_1.fail)('You do not have permission to use this command.');
             }
             args.player.player.team(args.team);
             outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));

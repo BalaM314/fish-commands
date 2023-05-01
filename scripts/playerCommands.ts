@@ -1,4 +1,4 @@
-import { formatArg, Perm } from "./commands";
+import { fail, formatArg, Perm } from "./commands";
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
@@ -374,21 +374,17 @@ export const commands:FishCommandsList = {
 		args: ["team:team", "player:player"],
 		description: "Changes the team of a player.",
 		perm: Perm.notGriefer,
-		handler({args, sender, outputFail, outputSuccess}){
-			if(!sender.canModerate(args.player, false)) {
-				outputFail(`You do not have permission to change the team of this player.`);
-				return;
-			}
+		handler({args, sender, outputSuccess}){
+			if(!sender.canModerate(args.player, false))
+				fail(`You do not have permission to change the team of this player.`);
 
 			const gamemode = Vars.state.rules.mode().name();
-			if (gamemode === "sandbox" && sender.rank.level < Rank.trusted.level) {
-				outputFail('Yout must be trusted rank or above to use this command.');
-				return;
-			}
-
-			if (gamemode !== "sandbox" && sender.rank.level < Rank.mod.level) {
-				outputFail('You do not have permission to use this command.')
-				return;
+			if(gamemode === "sandbox"){
+				if(!sender.ranksAtLeast(Rank.trusted))
+					fail('Yout must be trusted rank or above to use this command.');
+			} else {
+				if(!sender.ranksAtLeast(Rank.mod))
+					fail('You do not have permission to use this command.');
 			}
 
 			args.player.player.team(args.team);
