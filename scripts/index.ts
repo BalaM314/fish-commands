@@ -120,7 +120,7 @@ function addToTileHistory(e:any){
 		pos = e.tile.tile.x + ',' + e.tile.tile.y;
 		name = e.player?.name ?? "unknown";
 		action = "configured";
-		type = e.tile.block?.name ?? "unknown";
+		type = e.tile.tile.block().name;
 	} else if(e instanceof Object && "pos" in e && "name" in e && "action" in e && "type" in e){
 		({pos, name, action, type} = e);
 	} else return;
