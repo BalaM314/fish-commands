@@ -88,7 +88,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
  * command.
  */
 function addToTileHistory(e) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     var pos, name, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         pos = e.tile.x + ',' + e.tile.y;
@@ -104,7 +104,7 @@ function addToTileHistory(e) {
     }
     else if (e instanceof EventType.ConfigEvent) {
         pos = e.tile.tile.x + ',' + e.tile.tile.y;
-        name = e.player.name;
+        name = (_g = (_f = e.player) === null || _f === void 0 ? void 0 : _f.name) !== null && _g !== void 0 ? _g : "unknown";
         action = "configured";
         type = e.tile.block.name;
     }
@@ -113,7 +113,7 @@ function addToTileHistory(e) {
     }
     else
         return;
-    (_f = tileHistory[pos]) !== null && _f !== void 0 ? _f : (tileHistory[pos] = []);
+    (_h = tileHistory[pos]) !== null && _h !== void 0 ? _h : (tileHistory[pos] = []);
     tileHistory[pos].push({
         action: action,
         name: name,

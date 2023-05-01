@@ -118,7 +118,7 @@ function addToTileHistory(e:any){
 		}
 	} else if(e instanceof EventType.ConfigEvent){
 		pos = e.tile.tile.x + ',' + e.tile.tile.y;
-		name = e.player.name;
+		name = e.player?.name ?? "unknown";
 		action = "configured";
 		type = e.tile.block.name;
 	} else if(e instanceof Object && "pos" in e && "name" in e && "action" in e && "type" in e){
