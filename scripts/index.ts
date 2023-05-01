@@ -49,6 +49,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 		if(fishPlayer.muted){
 			player.sendMessage(`[gray]<[red]muted[gray]>[white]${player.name}[green]: [cyan]${text}`);
 			FishPlayer.messageStaff(`[gray]<[red]muted[gray]>[white]${player.name}[green]: [cyan]${text}`);
+			Log.info(`<muted>${player.name}: ${text}`);
 			return null;
 		}
 

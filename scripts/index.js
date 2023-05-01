@@ -66,6 +66,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
         if (fishPlayer.muted) {
             player.sendMessage("[gray]<[red]muted[gray]>[white]".concat(player.name, "[green]: [cyan]").concat(text));
             players_1.FishPlayer.messageStaff("[gray]<[red]muted[gray]>[white]".concat(player.name, "[green]: [cyan]").concat(text));
+            Log.info("<muted>".concat(player.name, ": ").concat(text));
             return null;
         }
         if (fishPlayer.highlight) {
