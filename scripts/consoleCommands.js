@@ -332,7 +332,7 @@ exports.commands = {
         description: "Checks memory usage of various objects.",
         handler: function (_a) {
             var output = _a.output;
-            output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 20))), " MB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, "\nNumber of tilelog entries: ").concat(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0)));
+            output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 20))), " MB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, "\nLength of tilelog entries: ").concat(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0)));
         }
     }
 };

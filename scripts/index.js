@@ -88,7 +88,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
  * command.
  */
 function addToTileHistory(e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g;
     var pos, name, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         pos = e.tile.x + ',' + e.tile.y;
@@ -113,16 +113,29 @@ function addToTileHistory(e) {
     }
     else
         return;
-    (_h = globals_1.tileHistory[pos]) !== null && _h !== void 0 ? _h : (globals_1.tileHistory[pos] = []);
-    globals_1.tileHistory[pos].push({
+    //Decode
+    var existingData = globals_1.tileHistory[pos] ? utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
+        action: d.readString(2),
+        name: d.readString(),
+        time: d.readNumber(16),
+        type: d.readString(2),
+    }); }, 1); }) : [];
+    existingData.push({
         action: action,
         name: name,
         time: time,
         type: type
     });
-    if (globals_1.tileHistory[pos].length >= 9) {
-        globals_1.tileHistory[pos].shift();
+    if (existingData.length >= 9) {
+        existingData = existingData.splice(0, 9);
     }
+    //Encode
+    globals_1.tileHistory[pos] = utils_1.StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
+        str.writeString(el.action, 2);
+        str.writeString(el.name);
+        str.writeNumber(el.time, 16);
+        str.writeString(el.type, 2);
+    }, 1); });
 }
 ;
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
@@ -141,7 +154,13 @@ Events.on(EventType.TapEvent, function (e) {
             realP.sendMessage("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
         }
         else {
-            realP.sendMessage(globals_1.tileHistory[pos].map(function (e) {
+            var history = globals_1.tileHistory[pos] ? utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
+                action: d.readString(2),
+                name: d.readString(),
+                time: d.readNumber(16),
+                type: d.readString(2),
+            }); }, 1); }) : [];
+            realP.sendMessage(history.map(function (e) {
                 return "".concat(e.name, " [yellow]").concat(e.action, " a ").concat(e.type, " ").concat((0, utils_1.getTimeSinceText)(e.time));
             }).join('\n'));
         }

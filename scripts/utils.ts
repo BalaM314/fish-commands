@@ -169,12 +169,12 @@ export class StringIO {
 	writeBool(val:boolean){
 		this.write(val ? "T" : "F");
 	}
-	writeArray<T>(array:T[], func:(item:T, str:StringIO) => unknown){
-		this.writeNumber(array.length);
+	writeArray<T>(array:T[], func:(item:T, str:StringIO) => unknown, lenlen?:number){
+		this.writeNumber(array.length, lenlen);
 		array.forEach(e => func(e, this));
 	}
-	readArray<T>(func:(str:StringIO) => T):T[] {
-		const length = this.readNumber();
+	readArray<T>(func:(str:StringIO) => T, lenlen?:number):T[] {
+		const length = this.readNumber(lenlen);
 		const array:T[] = [];
 		for(let i = 0; i < length; i ++){
 			array[i] = func(this);
@@ -183,6 +183,15 @@ export class StringIO {
 	}
 	expectEOF(){
 		if(this.string.length > this.offset) throw new Error(`Expected EOF, but found extra data: "${this.string.slice(this.offset)}"`);
+	}
+	static read<T>(data:string, func:(str:StringIO) => T):T {
+		const str = new StringIO(data);
+		return func(str);
+	}
+	static write<T>(data:T, func:(str:StringIO, data:T) => unknown):string {
+		const str = new StringIO();
+		func(str, data);
+		return str.string;
 	}
 }
 

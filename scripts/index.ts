@@ -2,7 +2,7 @@
  * This used to be main.js but was renamed to index.js due to rhino issue
  */
 
-import { getTimeSinceText } from "./utils";
+import { StringIO, getTimeSinceText } from "./utils";
 import { FishPlayer } from './players';
 import { Ohnos } from "./ohno";
 import * as timers from './timers';
@@ -125,14 +125,28 @@ function addToTileHistory(e:any){
 		({pos, name, action, type} = e);
 	} else return;
 
-	tileHistory[pos] ??= [];
-	tileHistory[pos].push({
+	//Decode
+	let existingData = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
+		action: d.readString(2),
+		name: d.readString(),
+		time: d.readNumber(16),
+		type: d.readString(2),
+	}), 1)) : [];
+
+	existingData.push({
 		action, name, time, type
 	});
-
-	if(tileHistory[pos].length >= 9){
-		tileHistory[pos].shift();
+	if(existingData.length >= 9){
+		existingData = existingData.splice(0, 9);
 	}
+
+	//Encode
+	tileHistory[pos] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
+		str.writeString(el.action, 2);
+		str.writeString(el.name);
+		str.writeNumber(el.time, 16);
+		str.writeString(el.type, 2);
+	}, 1));
 };
 
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
@@ -152,7 +166,13 @@ Events.on(EventType.TapEvent, (e) => {
 				`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`
 			);
 		} else {
-			realP.sendMessage(tileHistory[pos].map(e =>
+			const history = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
+				action: d.readString(2),
+				name: d.readString(),
+				time: d.readNumber(16),
+				type: d.readString(2),
+			}), 1)) : [];
+			realP.sendMessage(history.map(e =>
 				`${e.name} [yellow]${e.action} a ${e.type} ${getTimeSinceText(e.time)}`
 			).join('\n'));
 		}

@@ -195,13 +195,13 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.writeBool = function (val) {
         this.write(val ? "T" : "F");
     };
-    StringIO.prototype.writeArray = function (array, func) {
+    StringIO.prototype.writeArray = function (array, func, lenlen) {
         var _this = this;
-        this.writeNumber(array.length);
+        this.writeNumber(array.length, lenlen);
         array.forEach(function (e) { return func(e, _this); });
     };
-    StringIO.prototype.readArray = function (func) {
-        var length = this.readNumber();
+    StringIO.prototype.readArray = function (func, lenlen) {
+        var length = this.readNumber(lenlen);
         var array = [];
         for (var i = 0; i < length; i++) {
             array[i] = func(this);
@@ -211,6 +211,15 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.expectEOF = function () {
         if (this.string.length > this.offset)
             throw new Error("Expected EOF, but found extra data: \"".concat(this.string.slice(this.offset), "\""));
+    };
+    StringIO.read = function (data, func) {
+        var str = new StringIO(data);
+        return func(str);
+    };
+    StringIO.write = function (data, func) {
+        var str = new StringIO();
+        func(str, data);
+        return str.string;
     };
     return StringIO;
 }());
