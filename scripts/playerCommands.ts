@@ -95,12 +95,22 @@ export const commands:FishCommandsList = {
 	},
 
 	tilelog: {
-		args: [],
+		args: ["persist:boolean?"],
 		description: "Checks the history of a tile.",
 		perm: Perm.none,
-		handler({sender, output}){
-			sender.tilelog = true;
-			output(`\n \n \n===>[yellow]Click on a tile to check its recent history...\n \n \n `);
+		handler({args, sender, output, outputSuccess}){
+			if(sender.tilelog === "persist"){
+				sender.tilelog = null;
+				outputSuccess(`Tilelog disabled.`);
+			} else {
+				if(args.persist){
+					sender.tilelog = "persist";
+					outputSuccess(`Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.`);
+				} else {
+					sender.tilelog = "once";
+					output(`\n \n===>[yellow]Click on a tile to check its recent history...\n `);
+				}
+			}
 		}
 	},
 

@@ -30,7 +30,7 @@ export class FishPlayer {
 	} = {cancelOptionId: -1};
 	afk:boolean = false;
 	tileId = false;
-	tilelog = false;
+	tilelog:null | "once" | "persist" = null;
 	trail: {
 		type: string;
 		color: Color;

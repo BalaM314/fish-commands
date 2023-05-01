@@ -171,4 +171,8 @@ declare const Packets: {
 	KickReason: any;
 };
 
+declare const ConstructBlock: {
+	ConstructBuild: any;
+}
+
 declare function print(message:string):void;

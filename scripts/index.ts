@@ -73,16 +73,14 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 		} else {
 			if(action.type === ActionType.rotate){
 				addToTileHistory({
-					unit: player.unit(),
-					tile: action.tile,
-					player: player,
-					breaking: null,
-				}, 'rotate');
+					pos: action.tile.x + "," + action.tile.y,
+					name: action.player.name,
+					action: "rotated",
+					type: action.tile.block()?.name ?? "nothing",
+				});
 			}
 			return true;
 		}
-
-		
 	});
 
 
@@ -105,50 +103,40 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.
  */
-function addToTileHistory(e:any, eventType:"build" | "rotate" | "config"){
-	const tile = e.tile;
-	const realP = e.unit ? e.unit.player : e.player;
-	if(!realP) return;
-	const pos = tile.x + ',' + tile.y;
-	const destroy = e.breaking;
-	
+function addToTileHistory(e:any){
+
+	let pos:string, name:string, action:string, type:string, time:number = Date.now();
+	if(e instanceof EventType.BlockBuildBeginEvent){
+		pos = e.tile.x + ',' + e.tile.y;
+		name = e.unit?.player?.name ?? e.unit?.type.name ?? "unknown unit";
+		if(e.breaking){
+			action = "broke";
+			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
+		} else {
+			action = "built";
+			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
+		}
+	} else if(e instanceof EventType.ConfigEvent){
+		pos = e.tile.tile.x + ',' + e.tile.tile.y;
+		name = e.player.name;
+		action = "configured";
+		type = e.tile.block.name;
+	} else if(e instanceof Object && "pos" in e && "name" in e && "action" in e && "type" in e){
+		({pos, name, action, type} = e);
+	} else return;
+
 	tileHistory[pos] ??= [];
-	if(eventType === 'build'){
-		tileHistory[pos].push({
-			name: realP.name,
-			action: destroy ? 'broke' : 'built',
-			type: destroy ? 'tile' : tile.block(),
-			time: Date.now(),
-		});
-	} else if(eventType === 'rotate'){
-		tileHistory[pos].push({
-			name: realP.name,
-			action: 'rotated',
-			type: 'block',
-			time: Date.now(),
-		});
-	} else if(eventType === 'config'){
-		tileHistory[pos].push({
-			name: realP.name,
-			action: 'configured',
-			type: 'block',
-			time: Date.now(),
-		});
-	}
+	tileHistory[pos].push({
+		action, name, time, type
+	});
 
 	if(tileHistory[pos].length >= 9){
 		tileHistory[pos].shift();
 	}
-	return;
 };
 
-Events.on(EventType.BlockBuildBeginEvent, (e) => {
-	addToTileHistory(e, 'build');
-});
-
-Events.on(EventType.ConfigEvent, (e) => {
-	addToTileHistory(e, 'config');
-});
+Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
+Events.on(EventType.ConfigEvent, addToTileHistory);
 
 Events.on(EventType.TapEvent, (e) => {
 	const fishP = FishPlayer.get(e.player);
@@ -163,13 +151,12 @@ Events.on(EventType.TapEvent, (e) => {
 			realP.sendMessage(
 				`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`
 			);
-			fishP.tilelog = false;
 		} else {
 			realP.sendMessage(tileHistory[pos].map(e =>
-				e.name + `[yellow] ` + e.action + ' a block ' + getTimeSinceText(e.time)
+				`${e.name} [yellow]${e.action} a ${e.type} ${getTimeSinceText(e.time)}`
 			).join('\n'));
 		}
-		fishP.tilelog = false;
+		if(fishP.tilelog === "once") fishP.tilelog = null;
 	}
 });
 

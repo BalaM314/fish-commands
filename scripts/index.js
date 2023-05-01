@@ -50,6 +50,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     });
     // Action filters
     Vars.netServer.admins.addActionFilter(function (action) {
+        var _a, _b;
         var player = action.player;
         var fishP = players_1.FishPlayer.get(player);
         //prevent stopped players from doing anything other than deposit items.
@@ -60,11 +61,11 @@ Events.on(EventType.ServerLoadEvent, function (e) {
         else {
             if (action.type === ActionType.rotate) {
                 addToTileHistory({
-                    unit: player.unit(),
-                    tile: action.tile,
-                    player: player,
-                    breaking: null,
-                }, 'rotate');
+                    pos: action.tile.x + "," + action.tile.y,
+                    name: action.player.name,
+                    action: "rotated",
+                    type: (_b = (_a = action.tile.block()) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : "nothing",
+                });
             }
             return true;
         }
@@ -86,51 +87,46 @@ Events.on(EventType.ServerLoadEvent, function (e) {
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.
  */
-function addToTileHistory(e, eventType) {
-    var _a;
-    var tile = e.tile;
-    var realP = e.unit ? e.unit.player : e.player;
-    if (!realP)
+function addToTileHistory(e) {
+    var _a, _b, _c, _d, _e, _f;
+    var pos, name, action, type, time = Date.now();
+    if (e instanceof EventType.BlockBuildBeginEvent) {
+        pos = e.tile.x + ',' + e.tile.y;
+        name = (_e = (_c = (_b = (_a = e.unit) === null || _a === void 0 ? void 0 : _a.player) === null || _b === void 0 ? void 0 : _b.name) !== null && _c !== void 0 ? _c : (_d = e.unit) === null || _d === void 0 ? void 0 : _d.type.name) !== null && _e !== void 0 ? _e : "unknown unit";
+        if (e.breaking) {
+            action = "broke";
+            type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
+        }
+        else {
+            action = "built";
+            type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
+        }
+    }
+    else if (e instanceof EventType.ConfigEvent) {
+        pos = e.tile.tile.x + ',' + e.tile.tile.y;
+        name = e.player.name;
+        action = "configured";
+        type = e.tile.block.name;
+    }
+    else if (e instanceof Object && "pos" in e && "name" in e && "action" in e && "type" in e) {
+        (pos = e.pos, name = e.name, action = e.action, type = e.type);
+    }
+    else
         return;
-    var pos = tile.x + ',' + tile.y;
-    var destroy = e.breaking;
-    (_a = tileHistory[pos]) !== null && _a !== void 0 ? _a : (tileHistory[pos] = []);
-    if (eventType === 'build') {
-        tileHistory[pos].push({
-            name: realP.name,
-            action: destroy ? 'broke' : 'built',
-            type: destroy ? 'tile' : tile.block(),
-            time: Date.now(),
-        });
-    }
-    else if (eventType === 'rotate') {
-        tileHistory[pos].push({
-            name: realP.name,
-            action: 'rotated',
-            type: 'block',
-            time: Date.now(),
-        });
-    }
-    else if (eventType === 'config') {
-        tileHistory[pos].push({
-            name: realP.name,
-            action: 'configured',
-            type: 'block',
-            time: Date.now(),
-        });
-    }
+    (_f = tileHistory[pos]) !== null && _f !== void 0 ? _f : (tileHistory[pos] = []);
+    tileHistory[pos].push({
+        action: action,
+        name: name,
+        time: time,
+        type: type
+    });
     if (tileHistory[pos].length >= 9) {
         tileHistory[pos].shift();
     }
-    return;
 }
 ;
-Events.on(EventType.BlockBuildBeginEvent, function (e) {
-    addToTileHistory(e, 'build');
-});
-Events.on(EventType.ConfigEvent, function (e) {
-    addToTileHistory(e, 'config');
-});
+Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
+Events.on(EventType.ConfigEvent, addToTileHistory);
 Events.on(EventType.TapEvent, function (e) {
     var fishP = players_1.FishPlayer.get(e.player);
     if (fishP.tileId) {
@@ -143,14 +139,14 @@ Events.on(EventType.TapEvent, function (e) {
         var pos = tile.x + ',' + tile.y;
         if (!tileHistory[pos]) {
             realP.sendMessage("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
-            fishP.tilelog = false;
         }
         else {
             realP.sendMessage(tileHistory[pos].map(function (e) {
-                return e.name + "[yellow] " + e.action + ' a block ' + (0, utils_1.getTimeSinceText)(e.time);
+                return "".concat(e.name, " [yellow]").concat(e.action, " a ").concat(e.type, " ").concat((0, utils_1.getTimeSinceText)(e.time));
             }).join('\n'));
         }
-        fishP.tilelog = false;
+        if (fishP.tilelog === "once")
+            fishP.tilelog = null;
     }
 });
 Events.on(EventType.GameOverEvent, function (e) {

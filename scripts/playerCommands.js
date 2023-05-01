@@ -112,13 +112,25 @@ exports.commands = __assign(__assign({ unpause: {
             Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
         }
     }, tilelog: {
-        args: [],
+        args: ["persist:boolean?"],
         description: "Checks the history of a tile.",
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var sender = _a.sender, output = _a.output;
-            sender.tilelog = true;
-            output("\n \n \n===>[yellow]Click on a tile to check its recent history...\n \n \n ");
+            var args = _a.args, sender = _a.sender, output = _a.output, outputSuccess = _a.outputSuccess;
+            if (sender.tilelog === "persist") {
+                sender.tilelog = null;
+                outputSuccess("Tilelog disabled.");
+            }
+            else {
+                if (args.persist) {
+                    sender.tilelog = "persist";
+                    outputSuccess("Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.");
+                }
+                else {
+                    sender.tilelog = "once";
+                    output("\n \n===>[yellow]Click on a tile to check its recent history...\n ");
+                }
+            }
         }
     }, afk: {
         args: [],

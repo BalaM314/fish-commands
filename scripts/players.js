@@ -55,7 +55,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.activeMenu = { cancelOptionId: -1 };
         this.afk = false;
         this.tileId = false;
-        this.tilelog = false;
+        this.tilelog = null;
         this.trail = null;
         this.uuid = (_j = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _j !== void 0 ? _j : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_k = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _k !== void 0 ? _k : "Unnamed player [ERROR]";
