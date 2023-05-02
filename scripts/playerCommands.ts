@@ -1,4 +1,4 @@
-import { formatArg, Perm } from "./commands";
+import { fail, formatArg, Perm } from "./commands";
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
@@ -376,6 +376,28 @@ export const commands:FishCommandsList = {
 	`${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]`
 ).join("\n")
 			);
+		}
+	},
+	
+	team: {
+		args: ["team:team", "player:player"],
+		description: "Changes the team of a player.",
+		perm: Perm.notGriefer,
+		handler({args, sender, outputSuccess}){
+			if(!sender.canModerate(args.player, false))
+				fail(`You do not have permission to change the team of this player.`);
+
+			const gamemode = Vars.state.rules.mode().name();
+			if(gamemode === "sandbox"){
+				if(!sender.ranksAtLeast(Rank.trusted))
+					fail('You must be trusted rank or above to use this command.');
+			} else {
+				if(!sender.ranksAtLeast(Rank.mod))
+					fail('You do not have the required permission (mod) to execute this command.');
+			}
+
+			args.player.player.team(args.team);
+			outputSuccess(`Changed team of player ${args.player.name} to ${args.team.name}.`);
 		}
 	},
 

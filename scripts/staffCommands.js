@@ -305,17 +305,6 @@ exports.commands = __assign(__assign({ warn: {
                 }
             }, true, function (opt) { return opt.name; });
         }
-    }, team: {
-        args: ["team:team", "player:player"],
-        description: "Changes the team of a player.",
-        perm: commands_1.Perm.mod,
-        handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
-            if (!sender.canModerate(args.player, false))
-                (0, commands_1.fail)("You do not have permission to change the team of this player.");
-            args.player.player.team(args.team);
-            outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));
-        }
     }, kill: {
         args: ["player:player"],
         description: "Kills a player's unit.",

@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "watch": "tsc --watch"
+  },
   "devDependencies": {
     "@types/node": "^18.14.2"
   }

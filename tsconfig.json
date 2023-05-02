@@ -6,7 +6,8 @@
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,
 		"skipLibCheck": true,
-		"lib": [ "ES2022" ],
-		"downlevelIteration": true //we are targeting rhino and it supports array iterators
+		"lib": ["ES2022"],
+		"downlevelIteration": true, //we are targeting rhino and it supports array iterators
+		"newLine": "crlf"
 	}
 }

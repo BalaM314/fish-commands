@@ -389,6 +389,26 @@ exports.commands = __assign(__assign({ unpause: {
                     return "".concat(rank.prefix, " ").concat(rank.color).concat((0, utils_1.capitalizeText)(rank.name), "[]: ").concat(rank.color).concat(rank.description, "[]");
                 }).join("\n"));
         }
+    }, team: {
+        args: ["team:team", "player:player"],
+        description: "Changes the team of a player.",
+        perm: commands_1.Perm.notGriefer,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (!sender.canModerate(args.player, false))
+                (0, commands_1.fail)("You do not have permission to change the team of this player.");
+            var gamemode = Vars.state.rules.mode().name();
+            if (gamemode === "sandbox") {
+                if (!sender.ranksAtLeast(ranks_1.Rank.trusted))
+                    (0, commands_1.fail)('You must be trusted rank or above to use this command.');
+            }
+            else {
+                if (!sender.ranksAtLeast(ranks_1.Rank.mod))
+                    (0, commands_1.fail)('You do not have the required permission (mod) to execute this command.');
+            }
+            args.player.player.team(args.team);
+            outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));
+        }
     }, rank: {
         args: ["player:player"],
         description: "Displays the rank of a player.",
