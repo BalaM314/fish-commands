@@ -249,6 +249,7 @@ export class FishPlayer {
 		this.player = player;
 		this.name = player.name;
 		this.usid ??= player.usid();
+		this.afk = false;//Reset to false on join
 		this.cleanedName = Strings.stripColors(player.name);
 	}
 
