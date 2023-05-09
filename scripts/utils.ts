@@ -213,7 +213,6 @@ export function matchFilter(text:string):boolean {
 		if(replacedText.includes(word)){
 			let moreReplacedText = replacedText;
 			whitelist.forEach(w => moreReplacedText = moreReplacedText.replace(new RegExp(w, "g"), ""));
-			Log.info(`Text ${replacedText} found to contain banned word ${word}, whitelisted words are [${whitelist.join(", ")}], was replaced to ${moreReplacedText}`);
 			if(moreReplacedText.includes(word)) return true;
 		}
 	}

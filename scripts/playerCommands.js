@@ -292,7 +292,6 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.notMuted,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
-            Log.info("Checking for recent whispers to ".concat(sender.uuid));
             if (globals_1.recentWhispers[sender.uuid]) {
                 var recipient = players_1.FishPlayer.getById(globals_1.recentWhispers[sender.uuid]);
                 if (recipient === null || recipient === void 0 ? void 0 : recipient.connected()) {

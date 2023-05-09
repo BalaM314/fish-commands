@@ -270,7 +270,6 @@ function matchFilter(text) {
         if (replacedText.includes(word)) {
             var moreReplacedText_1 = replacedText;
             whitelist.forEach(function (w) { return moreReplacedText_1 = moreReplacedText_1.replace(new RegExp(w, "g"), ""); });
-            Log.info("Text ".concat(replacedText, " found to contain banned word ").concat(word, ", whitelisted words are [").concat(whitelist.join(", "), "], was replaced to ").concat(moreReplacedText_1));
             if (moreReplacedText_1.includes(word))
                 return { value: true };
         }

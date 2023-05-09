@@ -271,7 +271,6 @@ export const commands:FishCommandsList = {
 		description: "Reply to the most recent message.",
 		perm: Perm.notMuted,
 		handler({args, sender, output, outputFail}){
-			Log.info(`Checking for recent whispers to ${sender.uuid}`);
 			if(recentWhispers[sender.uuid]){
 				const recipient = FishPlayer.getById(recentWhispers[sender.uuid]);
 				if(recipient?.connected()){
