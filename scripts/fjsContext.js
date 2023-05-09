@@ -24,9 +24,10 @@ exports.runJS = function(input){
 	try {
 		const output = eval(input);
 		if(output instanceof Array){
-			Log.info(`[${output.join(", ")}]`);
+			Log.info("[" + output.join(", ") + "]");
+		} else {
+			Log.info(output);
 		}
-		Log.info(output);
 	} catch(err){
 		Log.err(err);
 	}
