@@ -265,7 +265,7 @@ exports.capitalizeText = capitalizeText;
 function matchFilter(text) {
     var e_1, _a;
     //Replace substitutions
-    var replacedText = text.split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
+    var replacedText = Strings.stripColors(text).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
     var _loop_1 = function (word, whitelist) {
         if (replacedText.includes(word)) {
             var moreReplacedText_1 = replacedText;

@@ -208,7 +208,7 @@ export function capitalizeText(text:string):string {
 
 export function matchFilter(text:string):boolean {
 	//Replace substitutions
-	const replacedText = text.split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
+	const replacedText = Strings.stripColors(text).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
 	for(const [word, whitelist] of bannedWords){
 		if(replacedText.includes(word)){
 			let moreReplacedText = replacedText;
