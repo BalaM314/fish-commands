@@ -20,5 +20,11 @@ Array.prototype.at = function(i){
 String.prototype.at = function(i){
 	return this[i < 0 ? this.length + i : i];
 }
+Array.prototype.flat = function(depth){
+	depth = (depth == undefined) ? 1 : depth;
+	return depth > 0 ? this.reduce((acc, item) =>
+		acc.concat(Array.isArray(item) ? item.flat(depth - 1) : item)
+	, []) : this;
+}
 
 require("index");

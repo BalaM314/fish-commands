@@ -1,3 +1,4 @@
+import { bannedWords, substitutions } from "./config";
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -203,4 +204,18 @@ export function capitalizeText(text:string):string {
 			i !== 0 && i !== arr.length - 1)?
 			word : word[0].toUpperCase() + word.substring(1)
 		).join(" ");
+}
+
+export function matchFilter(text:string):boolean {
+	//Replace substitutions
+	const replacedText = text.split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
+	for(const [word, whitelist] of bannedWords){
+		if(replacedText.includes(word)){
+			let moreReplacedText = replacedText;
+			whitelist.forEach(w => moreReplacedText = moreReplacedText.replace(new RegExp(w, "g"), ""));
+			Log.info(`Text ${replacedText} found to contain banned word ${word}, whitelisted words are [${whitelist.join(", ")}], was replaced to ${moreReplacedText}`);
+			if(moreReplacedText.includes(word)) return true;
+		}
+	}
+	return false;
 }

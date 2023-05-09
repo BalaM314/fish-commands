@@ -2,7 +2,7 @@
  * This used to be main.js but was renamed to index.js due to rhino issue
  */
 
-import { StringIO, getTimeSinceText } from "./utils";
+import { StringIO, getTimeSinceText, matchFilter } from "./utils";
 import { FishPlayer } from './players';
 import { Ohnos } from "./ohno";
 import * as timers from './timers';
@@ -53,13 +53,16 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 			return null;
 		}
 
+		if(matchFilter(text)){
+			return `[#f456f]I really hope everyone is having a fun time :) <3`;
+		}
+
 		if(fishPlayer.highlight){
 			return fishPlayer.highlight + text;
 		}
 
-		return config.bannedWords.some((bw) => text.includes(bw))
-			? '[#f456f]I really hope everyone is having a fun time :) <3'
-			: text;
+		return text;
+
 	});
 
 	// Action filters

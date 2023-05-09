@@ -34,7 +34,6 @@ var utils_1 = require("./utils");
 var players_1 = require("./players");
 var ohno_1 = require("./ohno");
 var timers = require("./timers");
-var config = require("./config");
 var commands = require("./commands");
 var menus = require("./menus");
 var staffCommands = require("./staffCommands");
@@ -69,12 +68,13 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             Log.info("<muted>".concat(player.name, ": ").concat(text));
             return null;
         }
+        if ((0, utils_1.matchFilter)(text)) {
+            return "[#f456f]I really hope everyone is having a fun time :) <3";
+        }
         if (fishPlayer.highlight) {
             return fishPlayer.highlight + text;
         }
-        return config.bannedWords.some(function (bw) { return text.includes(bw); })
-            ? '[#f456f]I really hope everyone is having a fun time :) <3'
-            : text;
+        return text;
     });
     // Action filters
     Vars.netServer.admins.addActionFilter(function (action) {

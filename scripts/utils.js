@@ -1,6 +1,34 @@
 "use strict";
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.matchFilter = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+var config_1 = require("./config");
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -234,3 +262,34 @@ function capitalizeText(text) {
     }).join(" ");
 }
 exports.capitalizeText = capitalizeText;
+function matchFilter(text) {
+    var e_1, _a;
+    //Replace substitutions
+    var replacedText = text.split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
+    var _loop_1 = function (word, whitelist) {
+        if (replacedText.includes(word)) {
+            var moreReplacedText_1 = replacedText;
+            whitelist.forEach(function (w) { return moreReplacedText_1 = moreReplacedText_1.replace(new RegExp(w, "g"), ""); });
+            Log.info("Text ".concat(replacedText, " found to contain banned word ").concat(word, ", whitelisted words are [").concat(whitelist.join(", "), "], was replaced to ").concat(moreReplacedText_1));
+            if (moreReplacedText_1.includes(word))
+                return { value: true };
+        }
+    };
+    try {
+        for (var bannedWords_1 = __values(config_1.bannedWords), bannedWords_1_1 = bannedWords_1.next(); !bannedWords_1_1.done; bannedWords_1_1 = bannedWords_1.next()) {
+            var _b = __read(bannedWords_1_1.value, 2), word = _b[0], whitelist = _b[1];
+            var state_1 = _loop_1(word, whitelist);
+            if (typeof state_1 === "object")
+                return state_1.value;
+        }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (bannedWords_1_1 && !bannedWords_1_1.done && (_a = bannedWords_1.return)) _a.call(bannedWords_1);
+        }
+        finally { if (e_1) throw e_1.error; }
+    }
+    return false;
+}
+exports.matchFilter = matchFilter;
