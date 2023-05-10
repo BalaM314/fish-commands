@@ -62,13 +62,12 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
+        if ((0, utils_1.matchFilter)(text))
+            text = "[#f456f]I really hope everyone is having a fun time :) <3";
         if (fishPlayer.muted) {
             players_1.FishPlayer.messageMuted(player.name, text);
             Log.info("<muted>".concat(player.name, ": ").concat(text));
             return null;
-        }
-        if ((0, utils_1.matchFilter)(text)) {
-            return "[#f456f]I really hope everyone is having a fun time :) <3";
         }
         if (fishPlayer.highlight) {
             return fishPlayer.highlight + text;

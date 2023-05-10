@@ -15,6 +15,7 @@ import * as memberCommands from './memberCommands';
 import * as consoleCommands from "./consoleCommands";
 import * as packetHandlers from "./packetHandlers";
 import { tileHistory } from "./globals";
+import { Rank } from "./ranks";
 
 
 
@@ -46,15 +47,14 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
 		const fishPlayer = FishPlayer.get(player);
 
+		if(matchFilter(text)) text = `[#f456f]I really hope everyone is having a fun time :) <3`;
+
 		if(fishPlayer.muted){
 			FishPlayer.messageMuted(player.name, text);
 			Log.info(`<muted>${player.name}: ${text}`);
 			return null;
 		}
 
-		if(matchFilter(text)){
-			return `[#f456f]I really hope everyone is having a fun time :) <3`;
-		}
 
 		if(fishPlayer.highlight){
 			return fishPlayer.highlight + text;
