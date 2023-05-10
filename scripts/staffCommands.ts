@@ -331,6 +331,15 @@ export const commands:FishCommandsList = {
 			args.player.forceRespawn();
 			outputSuccess(`Respawned player "${args.player.cleanedName}".`);
 		}
-	}
+	},
+
+	m: {
+		args: ["message:string"],
+		description: `Sends a message to muted players only.`,
+		perm: Perm.mod,
+		handler({sender, args}){
+			FishPlayer.messageMuted(sender.player.name, args.message);
+		}
+	},
 
 };

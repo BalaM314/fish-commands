@@ -334,4 +334,12 @@ exports.commands = __assign(__assign({ warn: {
             args.player.forceRespawn();
             outputSuccess("Respawned player \"".concat(args.player.cleanedName, "\"."));
         }
+    }, m: {
+        args: ["message:string"],
+        description: "Sends a message to muted players only.",
+        perm: commands_1.Perm.mod,
+        handler: function (_a) {
+            var sender = _a.sender, args = _a.args;
+            players_1.FishPlayer.messageMuted(sender.player.name, args.message);
+        }
     } });
