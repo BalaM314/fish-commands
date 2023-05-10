@@ -606,7 +606,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	static messageMuted(senderName:string, message:string):boolean;
 	static messageMuted(senderName:string):boolean;
 	static messageMuted(arg1:string, arg2?:string):boolean {
-		const message = arg2 ? `[gray]<[red]muted[gray]>[white]${arg1}[coral]: [gray]${arg2}` : arg1;
+		const message = arg2 ? `[gray]<[red]muted[gray]>[white]${arg1}[coral]: [lightgray]${arg2}` : arg1;
 		let messageReceived = false;
 		Groups.player.forEach((pl:mindustryPlayer) => {
 			const fishP = FishPlayer.get(pl);

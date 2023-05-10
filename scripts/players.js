@@ -715,7 +715,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return messageReceived;
     };
     FishPlayer.messageMuted = function (arg1, arg2) {
-        var message = arg2 ? "[gray]<[red]muted[gray]>[white]".concat(arg1, "[coral]: [gray]").concat(arg2) : arg1;
+        var message = arg2 ? "[gray]<[red]muted[gray]>[white]".concat(arg1, "[coral]: [lightgray]").concat(arg2) : arg1;
         var messageReceived = false;
         Groups.player.forEach(function (pl) {
             var fishP = FishPlayer.get(pl);
