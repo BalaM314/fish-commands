@@ -279,7 +279,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, msg: {
         args: ["player:player", "message:string"],
         description: "Send a message to only one player.",
-        perm: commands_1.Perm.notMuted,
+        perm: commands_1.Perm.chat,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
             globals_1.recentWhispers[args.player.uuid] = sender.uuid;
@@ -289,7 +289,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, r: {
         args: ["message:string"],
         description: "Reply to the most recent message.",
-        perm: commands_1.Perm.notMuted,
+        perm: commands_1.Perm.chat,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
             if (globals_1.recentWhispers[sender.uuid]) {
@@ -391,20 +391,11 @@ exports.commands = __assign(__assign({ unpause: {
     }, team: {
         args: ["team:team", "player:player"],
         description: "Changes the team of a player.",
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to change the team of this player.");
-            var gamemode = Vars.state.rules.mode().name();
-            if (gamemode === "sandbox") {
-                if (!sender.ranksAtLeast(ranks_1.Rank.trusted))
-                    (0, commands_1.fail)('You must be trusted rank or above to use this command.');
-            }
-            else {
-                if (!sender.ranksAtLeast(ranks_1.Rank.mod))
-                    (0, commands_1.fail)('You do not have the required permission (mod) to execute this command.');
-            }
             args.player.player.team(args.team);
             outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));
         }

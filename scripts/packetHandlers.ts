@@ -45,7 +45,7 @@ if text length is above 41 you will be kicked`
 
 	Vars.netServer.addPacketHandler("bulkLabel", (player:mindustryPlayer, content:string) => {
 		const fishP = FishPlayer.get(player);
-		if(!fishP.ranksAtLeast(Rank.mod)){
+		if(!fishP.hasPerm("bulkLabelPacket")){
 			player.kick("Not an admin or a moderator, cannot access BulkLabel", 0);
 			return;
 		}
@@ -94,7 +94,7 @@ example: [5,5,100,100,Color.green].join(",")`
 		if(fishP.stopped) return;
 		try{
 			const parts = content.split('|');
-			if(!fishP.ranksAtLeast(Rank.mod) && parts.length > 10){
+			if(!fishP.hasPerm("bulkLabelPacket") && parts.length > 10){
 				player.kick("Non admins can only have a bulk line of 10 parts", 0);
 				return;
 			}
@@ -150,7 +150,7 @@ export const commands:FishCommandsList = {
 			Call.infoMessage(con, `"The code style when submitted was beyond drunk... but it worked... barely " -BalaM314`);
 			Call.infoMessage(con, `these packet handlers and everything related to them were made by [green]frog`);
 			Call.infoMessage(con, "All commands mentioned should be performed on the client side console");
-			if(sender.ranksAtLeast(Rank.admin)){
+			if(sender.hasPerm("bulkLabelPacket")){
 				Call.infoMessage(con, `bulkLabel - Call.serverPacketReliable("bulkLabel",/*it's basically like label but seperated by | you get the idea*/) - this is admin only`);
 			}
 			Call.infoMessage(con, `label - Call.serverPacketReliable("label",[text,duration,x,y].join(","))\nthe text cannot be larger than 41 characters, duration cannot be larger than 10`);

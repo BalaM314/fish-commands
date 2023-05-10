@@ -44,6 +44,7 @@ var api = require("./api");
 var utils_1 = require("./utils");
 var ranks_1 = require("./ranks");
 var menus_1 = require("./menus");
+var commands_1 = require("./commands");
 var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, usid = _a.usid;
@@ -330,7 +331,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.player.name = this.name;
     };
     FishPlayer.prototype.updateAdminStatus = function () {
-        if (this.ranksAtLeast(ranks_1.Rank.admin)) {
+        if (this.hasPerm("admin")) {
             Vars.netServer.admins.adminPlayer(this.uuid, this.player.usid());
             this.player.admin = true;
         }
@@ -567,6 +568,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.ranksAtLeast = function (rank) {
         return this.rank.level >= rank.level;
+    };
+    FishPlayer.prototype.hasPerm = function (perm) {
+        return commands_1.Perm[perm].check(this);
     };
     FishPlayer.prototype.unit = function () {
         return this.player.unit();

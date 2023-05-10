@@ -34,7 +34,7 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
 var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"];
-/** Represents a permission level that is required to run a specific command. */
+/** Represents a permission that is required to do something. */
 var Perm = exports.Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
         if (color === void 0) { color = ""; }
@@ -48,11 +48,17 @@ var Perm = exports.Perm = /** @class */ (function () {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
     };
     Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
-    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || Perm.mod.check(fishP); }, "[sky]");
-    Perm.notMuted = new Perm("notMuted", function (fishP) { return !fishP.muted || fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || fishP.ranksAtLeast(ranks_1.Rank.mod); }, "[sky]");
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
     Perm.member = new Perm("member", function (fishP) { return fishP.member && !fishP.stopped; }, "[pink]", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
+    Perm.chat = new Perm("chat", function (fishP) { return !fishP.muted || fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.bypassChatFilter = new Perm("bypassChatFilter", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
+    Perm.play = new Perm("play", function (fishP) { return !fishP.stopped || fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.seeErrorMessages = new Perm("seeErrorMessages", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
+    Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
+    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.changeTeam = new Perm("changeTeam", function (fishP) { return Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(ranks_1.Rank.trusted) : fishP.ranksAtLeast(ranks_1.Rank.mod); });
     return Perm;
 }());
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
@@ -238,7 +244,7 @@ function register(commands, clientHandler, serverHandler) {
                         }
                         else {
                             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
-                            if (fishSender.ranksAtLeast(ranks_1.Rank.admin))
+                            if (fishSender.hasPerm("seeErrorMessages"))
                                 sender.sendMessage(err.toString());
                         }
                     }

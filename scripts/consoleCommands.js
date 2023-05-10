@@ -295,7 +295,7 @@ exports.commands = {
         description: "Changes the name of a player.",
         handler: function (_a) {
             var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
-            if (args.player.ranksAtLeast(ranks_1.Rank.pi)) {
+            if (args.player.hasPerm("blockTrolling")) {
                 outputFail("Operation aborted: Player ".concat(args.player.name, " is insufficiently trollable."));
             }
             else {

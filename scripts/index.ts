@@ -5,6 +5,7 @@
 import { StringIO, getTimeSinceText, matchFilter } from "./utils";
 import { FishPlayer } from './players';
 import { Ohnos } from "./ohno";
+import { Perm } from "./commands";
 import * as timers from './timers';
 import * as config from './config';
 import * as commands from './commands';
@@ -47,9 +48,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
 		const fishPlayer = FishPlayer.get(player);
 
-		if(matchFilter(text) && !fishPlayer.ranksAtLeast(Rank.admin)) text = `[#f456f]I really hope everyone is having a fun time :) <3`;
+		if(matchFilter(text) && !fishPlayer.hasPerm("bypassChatFilter")) text = `[#f456f]I really hope everyone is having a fun time :) <3`;
 
-		if(fishPlayer.muted){
+		if(!fishPlayer.hasPerm("chat")){
 			FishPlayer.messageMuted(player.name, text);
 			Log.info(`<muted>${player.name}: ${text}`);
 			return null;
@@ -70,13 +71,13 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 		const fishP = FishPlayer.get(player);
 
 		//prevent stopped players from doing anything other than deposit items.
-		if(fishP.stopped){
+		if(!fishP.hasPerm("play")){
 			action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
 			return false;
 		} else {
 			if(action.type === ActionType.rotate){
 				addToTileHistory({
-					pos: action.tile.x + "," + action.tile.y,
+					pos: `${action.tile.x},${action.tile.y}`,
 					name: action.player.name,
 					action: "rotated",
 					type: action.tile.block()?.name ?? "nothing",

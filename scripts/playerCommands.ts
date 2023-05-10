@@ -258,7 +258,7 @@ export const commands:FishCommandsList = {
 	msg: {
 		args: ["player:player", "message:string"],
 		description: "Send a message to only one player.",
-		perm: Perm.notMuted,
+		perm: Perm.chat,
 		handler({args, sender, output}){
 			recentWhispers[args.player.uuid] = sender.uuid;
 			args.player.sendMessage(`${sender.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
@@ -269,7 +269,7 @@ export const commands:FishCommandsList = {
 	r: {
 		args: ["message:string"],
 		description: "Reply to the most recent message.",
-		perm: Perm.notMuted,
+		perm: Perm.chat,
 		handler({args, sender, output, outputFail}){
 			if(recentWhispers[sender.uuid]){
 				const recipient = FishPlayer.getById(recentWhispers[sender.uuid]);
@@ -381,19 +381,10 @@ export const commands:FishCommandsList = {
 	team: {
 		args: ["team:team", "player:player"],
 		description: "Changes the team of a player.",
-		perm: Perm.notGriefer,
+		perm: Perm.changeTeam,
 		handler({args, sender, outputSuccess}){
 			if(!sender.canModerate(args.player, false))
 				fail(`You do not have permission to change the team of this player.`);
-
-			const gamemode = Vars.state.rules.mode().name();
-			if(gamemode === "sandbox"){
-				if(!sender.ranksAtLeast(Rank.trusted))
-					fail('You must be trusted rank or above to use this command.');
-			} else {
-				if(!sender.ranksAtLeast(Rank.mod))
-					fail('You do not have the required permission (mod) to execute this command.');
-			}
 
 			args.player.player.team(args.team);
 			outputSuccess(`Changed team of player ${args.player.name} to ${args.team.name}.`);

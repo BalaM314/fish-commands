@@ -4,6 +4,7 @@ import * as api from "./api";
 import { isCoreUnitType, setToArray, StringIO } from "./utils";
 import { Rank } from "./ranks";
 import { menu } from "./menus";
+import { Perm, PermType } from "./commands";
 
 
 export class FishPlayer {
@@ -269,7 +270,7 @@ export class FishPlayer {
 			this.player.name = this.name;
 	}
 	updateAdminStatus(){
-		if(this.ranksAtLeast(Rank.admin)){
+		if(this.hasPerm("admin")){
 			Vars.netServer.admins.adminPlayer(this.uuid, this.player.usid());
 			this.player.admin = true;
 		} else {
@@ -456,6 +457,9 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	ranksAtLeast(rank:Rank){
 		return this.rank.level >= rank.level;
+	}
+	hasPerm(perm:PermType){
+		return Perm[perm].check(this);
 	}
 	unit():Unit {
 		return this.player.unit();

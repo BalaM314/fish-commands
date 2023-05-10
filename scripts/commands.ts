@@ -8,15 +8,27 @@ export const allCommands:Record<string, FishCommandData> = {};
 const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
-
-/** Represents a permission level that is required to run a specific command. */
+//Cursed
+type SelectPerm<T> = T extends infer A ? (
+	A extends keyof typeof Perm ? (
+		(typeof Perm)[A] extends Perm ? A : never
+	) : never
+) : never;
+export type PermType = SelectPerm<keyof typeof Perm>;
+/** Represents a permission that is required to do something. */
 export class Perm {
 	static none = new Perm("all", fishP => true, "[sky]");
-	static notGriefer = new Perm("player", fishP => !fishP.stopped || Perm.mod.check(fishP), "[sky]");
-	static notMuted = new Perm("notMuted", fishP => !fishP.muted || fishP.ranksAtLeast(Rank.mod));
+	static notGriefer = new Perm("player", fishP => !fishP.stopped || fishP.ranksAtLeast(Rank.mod), "[sky]");
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
 	static member = new Perm("member", fishP => fishP.member && !fishP.stopped, "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	static chat = new Perm("chat", fishP => !fishP.muted || fishP.ranksAtLeast(Rank.mod));
+	static bypassChatFilter = new Perm("bypassChatFilter", fishP => fishP.ranksAtLeast(Rank.admin));
+	static play = new Perm("play", fishP => !fishP.stopped || fishP.ranksAtLeast(Rank.mod));
+	static seeErrorMessages = new Perm("seeErrorMessages", fishP => fishP.ranksAtLeast(Rank.admin));
+	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
+	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => fishP.ranksAtLeast(Rank.mod));
+	static changeTeam = new Perm("changeTeam", fishP => Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(Rank.trusted) : fishP.ranksAtLeast(Rank.mod));
 	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
 	static fromRank(rank:Rank){
 		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);
@@ -186,7 +198,7 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 							outputFail(err.message, sender);
 						} else {
 							sender.sendMessage(`[scarlet]❌ An error occurred while executing the command!`);
-							if(fishSender.ranksAtLeast(Rank.admin)) sender.sendMessage((<any>err).toString());
+							if(fishSender.hasPerm("seeErrorMessages")) sender.sendMessage((<any>err).toString());
 						}
 					}
 				});

@@ -41,7 +41,6 @@ var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
 var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
-var ranks_1 = require("./ranks");
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
@@ -63,9 +62,9 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
-        if ((0, utils_1.matchFilter)(text) && !fishPlayer.ranksAtLeast(ranks_1.Rank.admin))
+        if ((0, utils_1.matchFilter)(text) && !fishPlayer.hasPerm("bypassChatFilter"))
             text = "[#f456f]I really hope everyone is having a fun time :) <3";
-        if (fishPlayer.muted) {
+        if (!fishPlayer.hasPerm("chat")) {
             players_1.FishPlayer.messageMuted(player.name, text);
             Log.info("<muted>".concat(player.name, ": ").concat(text));
             return null;
@@ -81,14 +80,14 @@ Events.on(EventType.ServerLoadEvent, function (e) {
         var player = action.player;
         var fishP = players_1.FishPlayer.get(player);
         //prevent stopped players from doing anything other than deposit items.
-        if (fishP.stopped) {
+        if (!fishP.hasPerm("play")) {
             action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
             return false;
         }
         else {
             if (action.type === ActionType.rotate) {
                 addToTileHistory({
-                    pos: action.tile.x + "," + action.tile.y,
+                    pos: "".concat(action.tile.x, ",").concat(action.tile.y),
                     name: action.player.name,
                     action: "rotated",
                     type: (_b = (_a = action.tile.block()) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : "nothing",

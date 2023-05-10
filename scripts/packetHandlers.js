@@ -18,7 +18,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = exports.loadPacketHandlers = void 0;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
-var ranks_1 = require("./ranks");
 var lastLabelText = "";
 var lastAccessedBulkLabel = null;
 var lastAccessedLabel = null;
@@ -52,7 +51,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler("bulkLabel", function (player, content) {
         var e_1, _a;
         var fishP = players_1.FishPlayer.get(player);
-        if (!fishP.ranksAtLeast(ranks_1.Rank.mod)) {
+        if (!fishP.hasPerm("bulkLabelPacket")) {
             player.kick("Not an admin or a moderator, cannot access BulkLabel", 0);
             return;
         }
@@ -106,7 +105,7 @@ function loadPacketHandlers() {
             return;
         try {
             var parts = content.split('|');
-            if (!fishP.ranksAtLeast(ranks_1.Rank.mod) && parts.length > 10) {
+            if (!fishP.hasPerm("bulkLabelPacket") && parts.length > 10) {
                 player.kick("Non admins can only have a bulk line of 10 parts", 0);
                 return;
             }
@@ -175,7 +174,7 @@ exports.commands = {
             Call.infoMessage(con, "\"The code style when submitted was beyond drunk... but it worked... barely \" -BalaM314");
             Call.infoMessage(con, "these packet handlers and everything related to them were made by [green]frog");
             Call.infoMessage(con, "All commands mentioned should be performed on the client side console");
-            if (sender.ranksAtLeast(ranks_1.Rank.admin)) {
+            if (sender.hasPerm("bulkLabelPacket")) {
                 Call.infoMessage(con, "bulkLabel - Call.serverPacketReliable(\"bulkLabel\",/*it's basically like label but seperated by | you get the idea*/) - this is admin only");
             }
             Call.infoMessage(con, "label - Call.serverPacketReliable(\"label\",[text,duration,x,y].join(\",\"))\nthe text cannot be larger than 41 characters, duration cannot be larger than 10");

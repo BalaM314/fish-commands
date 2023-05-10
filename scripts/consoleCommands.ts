@@ -221,7 +221,7 @@ export const commands:FishConsoleCommandsList = {
 		args: ["player:player", "newname:string"],
 		description: "Changes the name of a player.",
 		handler({args, outputFail, outputSuccess}){
-			if(args.player.ranksAtLeast(Rank.pi)){
+			if(args.player.hasPerm("blockTrolling")){
 				outputFail(`Operation aborted: Player ${args.player.name} is insufficiently trollable.`);
 			} else {
 				const oldName = args.player.name;
