@@ -41,6 +41,7 @@ var playerCommands = require("./playerCommands");
 var memberCommands = require("./memberCommands");
 var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
+var ranks_1 = require("./ranks");
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
@@ -62,7 +63,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
-        if ((0, utils_1.matchFilter)(text))
+        if ((0, utils_1.matchFilter)(text) && !fishPlayer.ranksAtLeast(ranks_1.Rank.admin))
             text = "[#f456f]I really hope everyone is having a fun time :) <3";
         if (fishPlayer.muted) {
             players_1.FishPlayer.messageMuted(player.name, text);

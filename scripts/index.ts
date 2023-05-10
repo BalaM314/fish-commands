@@ -47,7 +47,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
 		const fishPlayer = FishPlayer.get(player);
 
-		if(matchFilter(text)) text = `[#f456f]I really hope everyone is having a fun time :) <3`;
+		if(matchFilter(text) && !fishPlayer.ranksAtLeast(Rank.admin)) text = `[#f456f]I really hope everyone is having a fun time :) <3`;
 
 		if(fishPlayer.muted){
 			FishPlayer.messageMuted(player.name, text);
