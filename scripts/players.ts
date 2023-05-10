@@ -585,11 +585,32 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	 * Sends a message to staff only.
 	 * @returns if the message was received by anyone.
 	 */
-	static messageStaff(message:string):boolean {
+	static messageStaff(senderName:string, message:string):boolean;
+	static messageStaff(senderName:string):boolean;
+	static messageStaff(arg1:string, arg2?:string):boolean {
+		const message = arg2 ? `[gray]<[cyan]staff[gray]>[white]${arg1}[green]: [cyan]${arg2}` : arg1;
 		let messageReceived = false;
 		Groups.player.forEach((pl:mindustryPlayer) => {
 			const fishP = FishPlayer.get(pl);
 			if(fishP.ranksAtLeast(Rank.mod)){
+				pl.sendMessage(message);
+				messageReceived = true;
+			}
+		});
+		return messageReceived;
+	}
+	/**
+	 * Sends a message to muted players only.
+	 * @returns if the message was received by anyone.
+	 */
+	static messageMuted(senderName:string, message:string):boolean;
+	static messageMuted(senderName:string):boolean;
+	static messageMuted(arg1:string, arg2?:string):boolean {
+		const message = arg2 ? `[gray]<[red]muted[gray]>[white]${arg1}[coral]: [gray]${arg2}` : arg1;
+		let messageReceived = false;
+		Groups.player.forEach((pl:mindustryPlayer) => {
+			const fishP = FishPlayer.get(pl);
+			if(fishP.ranksAtLeast(Rank.mod) || fishP.muted){
 				pl.sendMessage(message);
 				messageReceived = true;
 			}

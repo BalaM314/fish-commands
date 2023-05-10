@@ -702,15 +702,24 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             }
         }
     };
-    /**
-     * Sends a message to staff only.
-     * @returns if the message was received by anyone.
-     */
-    FishPlayer.messageStaff = function (message) {
+    FishPlayer.messageStaff = function (arg1, arg2) {
+        var message = arg2 ? "[gray]<[cyan]staff[gray]>[white]".concat(arg1, "[green]: [cyan]").concat(arg2) : arg1;
         var messageReceived = false;
         Groups.player.forEach(function (pl) {
             var fishP = FishPlayer.get(pl);
             if (fishP.ranksAtLeast(ranks_1.Rank.mod)) {
+                pl.sendMessage(message);
+                messageReceived = true;
+            }
+        });
+        return messageReceived;
+    };
+    FishPlayer.messageMuted = function (arg1, arg2) {
+        var message = arg2 ? "[gray]<[red]muted[gray]>[white]".concat(arg1, "[coral]: [gray]").concat(arg2) : arg1;
+        var messageReceived = false;
+        Groups.player.forEach(function (pl) {
+            var fishP = FishPlayer.get(pl);
+            if (fishP.ranksAtLeast(ranks_1.Rank.mod) || fishP.muted) {
                 pl.sendMessage(message);
                 messageReceived = true;
             }

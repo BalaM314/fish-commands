@@ -63,8 +63,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
         if (fishPlayer.muted) {
-            player.sendMessage("[gray]<[red]muted[gray]>[white]".concat(player.name, "[green]: [cyan]").concat(text));
-            players_1.FishPlayer.messageStaff("[gray]<[red]muted[gray]>[white]".concat(player.name, "[green]: [cyan]").concat(text));
+            players_1.FishPlayer.messageMuted(player.name, text);
             Log.info("<muted>".concat(player.name, ": ").concat(text));
             return null;
         }

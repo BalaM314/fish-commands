@@ -153,7 +153,7 @@ export const commands:FishCommandsList = {
 		description: `Sends a message to staff only.`,
 		perm: Perm.none,
 		handler({sender, args, outputSuccess, outputFail}){
-			const wasReceived = FishPlayer.messageStaff(`[gray]<[cyan]staff[gray]>[white]${sender.player.name}[green]: [cyan]${args.message}`);
+			const wasReceived = FishPlayer.messageStaff(sender.player.name, args.message);
 			if(!sender.ranksAtLeast(Rank.mod)){
 				if(wasReceived) outputSuccess(`Message sent to staff.`);
 				else outputFail(`No staff were online to receive your message.`);
