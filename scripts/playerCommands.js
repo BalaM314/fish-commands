@@ -394,7 +394,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
-            if (!sender.canModerate(args.player, false))
+            if (!sender.canModerate(args.player, true))
                 (0, commands_1.fail)("You do not have permission to change the team of this player.");
             args.player.player.team(args.team);
             outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));

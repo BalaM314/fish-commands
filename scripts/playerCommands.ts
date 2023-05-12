@@ -383,7 +383,7 @@ export const commands:FishCommandsList = {
 		description: "Changes the team of a player.",
 		perm: Perm.changeTeam,
 		handler({args, sender, outputSuccess}){
-			if(!sender.canModerate(args.player, false))
+			if(!sender.canModerate(args.player, true))
 				fail(`You do not have permission to change the team of this player.`);
 
 			args.player.player.team(args.team);
