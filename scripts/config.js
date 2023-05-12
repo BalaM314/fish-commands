@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FishServers = exports.ip = exports.substitutions = exports.bannedNames = exports.bannedWords = exports.MEMBER_PREFIX = exports.MUTED_PREFIX = exports.AFK_PREFIX = exports.MOD_PREFIX = exports.ADMIN_PREFIX = exports.STOPPED_PREFIX = void 0;
+exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.bannedNames = exports.bannedWords = exports.MEMBER_PREFIX = exports.MUTED_PREFIX = exports.AFK_PREFIX = exports.MOD_PREFIX = exports.ADMIN_PREFIX = exports.STOPPED_PREFIX = void 0;
 exports.STOPPED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 exports.ADMIN_PREFIX = '[black]<[scarlet]A[black]>';
 exports.MOD_PREFIX = '[black]<[green]M[black]>';
@@ -88,11 +88,13 @@ exports.substitutions = Object.fromEntries(Object.entries({
     var _b = __read(_a, 2), char = _b[0], alts = _b[1];
     return alts.map(function (alt) { return [alt, char]; });
 }).flat(1));
-// const ip = 'localhost';
-exports.ip = '45.79.202.111';
+exports.ip = 'localhost';
+// export const ip = '45.79.202.111';
 exports.FishServers = {
     attack: { ip: "162.248.100.98", port: "6567" },
     survival: { ip: "170.187.144.235", port: "6567" },
     pvp: { ip: "162.248.100.133", port: "6567" },
     sandbox: { ip: "162.248.102.204", port: "6567" },
 };
+var getGamemode = function () { return Vars.state.rules.mode().name(); };
+exports.getGamemode = getGamemode;

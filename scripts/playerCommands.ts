@@ -6,6 +6,7 @@ import { capitalizeText, getColor, StringBuilder, to2DArray } from "./utils";
 import { FishServers } from "./config";
 import { Rank } from "./ranks";
 import { recentWhispers } from "./globals";
+import * as api from './api';
 
 function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
 	player.unit().set(to.unit().x, to.unit().y);
@@ -153,6 +154,7 @@ export const commands:FishCommandsList = {
 		description: `Sends a message to staff only.`,
 		perm: Perm.none,
 		handler({sender, args, outputSuccess, outputFail}){
+			api.logModerationAction(`**[Staff] ${sender.cleanedName}**: ${args.message}`);
 			const wasReceived = FishPlayer.messageStaff(sender.player.name, args.message);
 			if(!sender.ranksAtLeast(Rank.mod)){
 				if(wasReceived) outputSuccess(`Message sent to staff.`);

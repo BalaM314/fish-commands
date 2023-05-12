@@ -35,6 +35,7 @@ var utils_1 = require("./utils");
 var config_1 = require("./config");
 var ranks_1 = require("./ranks");
 var globals_1 = require("./globals");
+var api = require("./api");
 function teleportPlayer(player, to) {
     player.unit().set(to.unit().x, to.unit().y);
     Call.setPosition(player.con, to.unit().x, to.unit().y);
@@ -174,6 +175,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            api.logModerationAction("**[Staff] ".concat(sender.cleanedName, "**: ").concat(args.message));
             var wasReceived = players_1.FishPlayer.messageStaff(sender.player.name, args.message);
             if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
                 if (wasReceived)

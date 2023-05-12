@@ -1,4 +1,6 @@
-import { bannedWords, substitutions } from "./config";
+import { bannedWords, substitutions, getGamemode } from "./config";
+import * as api from './api';
+import { FishPlayer } from "./players";
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -217,4 +219,10 @@ export function matchFilter(text:string):boolean {
 		}
 	}
 	return false;
+}
+
+export function logDumpAction(action: string, by: FishPlayer, to: FishPlayer): void {
+	const message = `${by.cleanedName} ${action} ${to.cleanedName}\n**Server:** ${getGamemode()}\n**uuid:** ${to.player.uuid()}\n**ip**: ${to.player.ip()}`;
+	api.logModerationAction(message)
+	return;
 }
