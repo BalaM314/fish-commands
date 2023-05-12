@@ -58,7 +58,12 @@ var Perm = exports.Perm = /** @class */ (function () {
     Perm.seeErrorMessages = new Perm("seeErrorMessages", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
     Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.mod); });
-    Perm.changeTeam = new Perm("changeTeam", function (fishP) { return Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(ranks_1.Rank.trusted) : fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.changeTeam = new Perm("changeTeam", function (fishP) {
+        return Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(ranks_1.Rank.trusted)
+            : Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast(ranks_1.Rank.admin)
+                : Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast(ranks_1.Rank.mod)
+                    : fishP.ranksAtLeast(ranks_1.Rank.admin);
+    });
     return Perm;
 }());
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
