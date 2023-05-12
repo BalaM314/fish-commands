@@ -81,10 +81,10 @@ export function logModerationAction(message: string) {
   try {
     req.submit((response, exception) => {
       if (exception || !response) {
-        Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
+        Log.info('\n\nError occured when trying to log moderation action.\n\n');
       }
     });
   } catch (e) {
-    Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
+    Log.info('\n\nError occured when trying to log moderation action.\n\n');
   }
 }

@@ -88,8 +88,8 @@ exports.substitutions = Object.fromEntries(Object.entries({
     var _b = __read(_a, 2), char = _b[0], alts = _b[1];
     return alts.map(function (alt) { return [alt, char]; });
 }).flat(1));
-exports.ip = 'localhost';
-// export const ip = '45.79.202.111';
+// export const ip = 'localhost';
+exports.ip = '45.79.202.111';
 exports.FishServers = {
     attack: { ip: "162.248.100.98", port: "6567" },
     survival: { ip: "170.187.144.235", port: "6567" },
