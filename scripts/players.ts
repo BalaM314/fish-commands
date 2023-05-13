@@ -1,7 +1,7 @@
 import type { FishPlayerData, FlaggedIPData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
 import * as api from "./api";
-import { isCoreUnitType, setToArray, StringIO } from "./utils";
+import { isCoreUnitType, logAction, setToArray, StringIO } from "./utils";
 import { Rank } from "./ranks";
 import { menu } from "./menus";
 import { Perm, PermType } from "./commands";
@@ -203,6 +203,7 @@ export class FishPlayer {
 					if(info.timesJoined <= 1){
 						fishPlayer.stop("vpn");
 						fishPlayer.mute("vpn");
+						logAction("autoflagged", "AntiVPN", fishPlayer);
 						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted.`);
 						Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`);
 						menu("Welcome to Fish Network!", `Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`, ["Close", "Discord"], fishPlayer, ({option, sender}) => {

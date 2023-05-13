@@ -244,6 +244,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     if (info.timesJoined <= 1) {
                         fishPlayer.stop("vpn");
                         fishPlayer.mute("vpn");
+                        (0, utils_1.logAction)("autoflagged", "AntiVPN", fishPlayer);
                         _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted."));
                         Log.warn("Player ".concat(player.name, " (").concat(player.uuid(), ") was muted."));
                         (0, menus_1.menu)("Welcome to Fish Network!", "Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.", ["Close", "Discord"], fishPlayer, function (_a) {

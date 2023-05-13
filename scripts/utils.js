@@ -301,6 +301,7 @@ function matchFilter(text) {
 exports.matchFilter = matchFilter;
 function logAction(action, by, to) {
     var name, uuid, ip;
+    var actor = typeof by === "string" ? by : by.name;
     if (to instanceof players_1.FishPlayer) {
         name = escapeTextDiscord(to.cleanedName);
         uuid = to.uuid;
@@ -311,6 +312,6 @@ function logAction(action, by, to) {
         uuid = to.id;
         ip = to.lastIP;
     }
-    api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, " ").concat(name, "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
+    api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
 }
 exports.logAction = logAction;

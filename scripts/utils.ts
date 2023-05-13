@@ -227,8 +227,9 @@ export function matchFilter(text:string):boolean {
 	return false;
 }
 
-export function logAction(action: string, by: FishPlayer, to: FishPlayer | mindustryPlayerData) {
+export function logAction(action: string, by: FishPlayer | string, to: FishPlayer | mindustryPlayerData) {
 	let name:string, uuid:string, ip:string;
+	let actor:string = typeof by === "string" ? by : by.name;
 	if(to instanceof FishPlayer){
 		name = escapeTextDiscord(to.cleanedName);
 		uuid = to.uuid;
@@ -239,7 +240,7 @@ export function logAction(action: string, by: FishPlayer, to: FishPlayer | mindu
 		ip = to.lastIP;
 	}
 	api.sendModerationMessage(
-`${by.cleanedName} ${action} ${name}
+`${actor} ${action} ${name}
 **Server:** ${getGamemode()}
 **uuid:** \`${uuid}\`
 **ip**: \`${ip}\``
