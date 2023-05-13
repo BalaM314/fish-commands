@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logModerationAction = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
+exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
 // Add a player's uuid to the stopped api
 function addStopped(uuid) {
@@ -79,7 +79,7 @@ function isVpn(ip, callback, callbackError) {
 }
 exports.isVpn = isVpn;
 // Send info to moderation dump api/discord
-function logModerationAction(message) {
+function sendModerationMessage(message) {
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/mod-dump"), JSON.stringify({ message: message })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     try {
@@ -93,4 +93,4 @@ function logModerationAction(message) {
         Log.info('\n\nError occured when trying to log moderation action.\n\n');
     }
 }
-exports.logModerationAction = logModerationAction;
+exports.sendModerationMessage = sendModerationMessage;

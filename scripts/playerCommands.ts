@@ -154,7 +154,7 @@ export const commands:FishCommandsList = {
 		description: `Sends a message to staff only.`,
 		perm: Perm.none,
 		handler({sender, args, outputSuccess, outputFail}){
-			api.logModerationAction(`**[Staff] ${sender.cleanedName}**: ${args.message}`);
+			api.sendModerationMessage(`**[Staff] ${sender.cleanedName}**: ${args.message}`);
 			const wasReceived = FishPlayer.messageStaff(sender.player.name, args.message);
 			if(!sender.ranksAtLeast(Rank.mod)){
 				if(wasReceived) outputSuccess(`Message sent to staff.`);

@@ -221,8 +221,8 @@ export function matchFilter(text:string):boolean {
 	return false;
 }
 
-export function logDumpAction(action: string, by: FishPlayer, to: FishPlayer): void {
+export function logAction(action: string, by: FishPlayer, to: FishPlayer): void {
 	const message = `${by.cleanedName} ${action} ${to.cleanedName}\n**Server:** ${getGamemode()}\n**uuid:** ${to.player.uuid()}\n**ip**: ${to.player.ip()}`;
-	api.logModerationAction(message)
+	api.sendModerationMessage(message)
 	return;
 }

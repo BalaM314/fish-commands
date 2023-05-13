@@ -28,7 +28,7 @@ exports.commands = __assign(__assign({ warn: {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
             (0, menus_1.menu)('Warning', reason, [['accept']], args.player);
-            (0, utils_1.logDumpAction)('warned', sender, args.player);
+            (0, utils_1.logAction)('warned', sender, args.player);
             outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
     }, mute: {
@@ -42,7 +42,7 @@ exports.commands = __assign(__assign({ warn: {
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to mute this player.");
             args.player.mute(sender);
-            (0, utils_1.logDumpAction)('muted', sender, args.player);
+            (0, utils_1.logAction)('muted', sender, args.player);
             outputSuccess("Muted player \"".concat(args.player.cleanedName, "\"."));
         }
     }, unmute: {
@@ -54,7 +54,7 @@ exports.commands = __assign(__assign({ warn: {
             if (!args.player.muted)
                 (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is not muted."));
             args.player.unmute(sender);
-            (0, utils_1.logDumpAction)('unmuted', sender, args.player);
+            (0, utils_1.logAction)('unmuted', sender, args.player);
             outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
         }
     }, kick: {
@@ -68,7 +68,7 @@ exports.commands = __assign(__assign({ warn: {
                 (0, commands_1.fail)("You do not have permission to kick this player.");
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
             args.player.player.kick(reason);
-            (0, utils_1.logDumpAction)('kicked', sender, args.player);
+            (0, utils_1.logAction)('kicked', sender, args.player);
             outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
     }, stop: {
@@ -82,7 +82,7 @@ exports.commands = __assign(__assign({ warn: {
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
             args.player.stop(sender);
-            (0, utils_1.logDumpAction)('stopped', sender, args.player);
+            (0, utils_1.logAction)('stopped', sender, args.player);
             Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped."));
         }
     }, free: {
@@ -93,7 +93,7 @@ exports.commands = __assign(__assign({ warn: {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (args.player.stopped) {
                 args.player.free(sender);
-                (0, utils_1.logDumpAction)('freed', sender, args.player);
+                (0, utils_1.logAction)('freed', sender, args.player);
                 outputSuccess("Player \"".concat(args.player.name, "\" has been freed."));
             }
             else {
@@ -123,7 +123,7 @@ exports.commands = __assign(__assign({ warn: {
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to modify the rank of player \"".concat(args.player.name, "\""));
             args.player.setRank(rank);
-            (0, utils_1.logDumpAction)("set rank to ".concat(rank.name, " for"), sender, args.player);
+            (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), sender, args.player);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
         }
     }, murder: {
@@ -150,7 +150,7 @@ exports.commands = __assign(__assign({ warn: {
                     var fishP = players_1.FishPlayer.getFromInfo(info);
                     if (sender.canModerate(fishP, true)) {
                         fishP.stop(sender);
-                        (0, utils_1.logDumpAction)('stopped', sender, args.player);
+                        (0, utils_1.logAction)('stopped', sender, args.player);
                         outputSuccess("Player \"".concat(info.lastName, "\" was stopped."));
                     }
                     else {
@@ -177,7 +177,7 @@ exports.commands = __assign(__assign({ warn: {
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (sender.canModerate(fishP, true)) {
                     fishP.stop(sender);
-                    (0, utils_1.logDumpAction)('stopped', sender, args.player);
+                    (0, utils_1.logAction)('stopped', sender, args.player);
                     outputSuccess("Player \"".concat(option.lastName, "\" was stopped."));
                 }
                 else {

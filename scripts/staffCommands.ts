@@ -2,7 +2,7 @@ import { Perm, fail } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import type { FishCommandData, FishCommandsList, mindustryPlayerData } from "./types";
-import { getTimeSinceText, setToArray, logDumpAction } from "./utils";
+import { getTimeSinceText, setToArray, logAction } from "./utils";
 import { Ohnos } from "./ohno";
 import { Rank } from "./ranks";
 import * as api from './api';
@@ -15,7 +15,7 @@ export const commands:FishCommandsList = {
 		handler({args, sender, outputSuccess}){
 			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
 			menu('Warning', reason, [['accept']], args.player);
-			logDumpAction('warned', sender, args.player);
+			logAction('warned', sender, args.player);
 			outputSuccess(`Warned player "${args.player.cleanedName}" for "${reason}"`);
 		}
 	},
@@ -28,7 +28,7 @@ export const commands:FishCommandsList = {
 			if(args.player.muted) fail(`Player "${args.player.cleanedName}" is already muted.`);
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to mute this player.`);
 			args.player.mute(sender);
-			logDumpAction('muted', sender, args.player);
+			logAction('muted', sender, args.player);
 			outputSuccess(`Muted player "${args.player.cleanedName}".`);
 		}
 	},
@@ -40,7 +40,7 @@ export const commands:FishCommandsList = {
 		handler({args, sender, outputSuccess}){
 			if(!args.player.muted) fail(`Player "${args.player.cleanedName}" is not muted.`);
 			args.player.unmute(sender);
-			logDumpAction('unmuted', sender, args.player);
+			logAction('unmuted', sender, args.player);
 			outputSuccess(`Unmuted player "${args.player.cleanedName}".`);
 		}
 	},
@@ -53,7 +53,7 @@ export const commands:FishCommandsList = {
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
 			const reason = args.reason ?? 'A staff member did not like your actions.';
 			args.player.player.kick(reason);
-			logDumpAction('kicked', sender, args.player);
+			logAction('kicked', sender, args.player);
 			outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}"`);
 		}
 	},
@@ -66,7 +66,7 @@ export const commands:FishCommandsList = {
 			if(args.player.stopped) fail(`Player "${args.player.name}" is already stopped.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
 			args.player.stop(sender);
-			logDumpAction('stopped', sender, args.player);
+			logAction('stopped', sender, args.player);
 			Call.sendMessage(`Player "${args.player.name}" has been stopped.`);
 		}
 	},
@@ -78,7 +78,7 @@ export const commands:FishCommandsList = {
 		handler({args, sender, outputSuccess, outputFail}){
 			if(args.player.stopped){
 				args.player.free(sender);
-				logDumpAction('freed', sender, args.player);
+				logAction('freed', sender, args.player);
 				outputSuccess(`Player "${args.player.name}" has been freed.`);
 			} else {
 				outputFail(`Player "${args.player.name}" is not stopped.`);;
@@ -108,7 +108,7 @@ export const commands:FishCommandsList = {
 				fail(`You do not have permission to modify the rank of player "${args.player.name}"`);
 
 			args.player.setRank(rank);
-			logDumpAction(`set rank to ${rank.name} for`, sender, args.player);
+			logAction(`set rank to ${rank.name} for`, sender, args.player);
 			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
 		}
 	},
@@ -138,7 +138,7 @@ export const commands:FishCommandsList = {
 					const fishP = FishPlayer.getFromInfo(info);
 					if(sender.canModerate(fishP, true)){
 						fishP.stop(sender);
-						logDumpAction('stopped', sender, args.player);
+						logAction('stopped', sender, args.player);
 						outputSuccess(`Player "${info.lastName}" was stopped.`);
 					} else {
 						outputFail(`You do not have permission to stop this player.`);
@@ -163,7 +163,7 @@ export const commands:FishCommandsList = {
 				const fishP = FishPlayer.getFromInfo(option);
 				if(sender.canModerate(fishP, true)){
 					fishP.stop(sender);
-					logDumpAction('stopped', sender, args.player);
+					logAction('stopped', sender, args.player);
 					outputSuccess(`Player "${option.lastName}" was stopped.`);
 				} else {
 					outputFail(`You do not have permission to stop this player.`);

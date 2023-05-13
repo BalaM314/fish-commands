@@ -175,7 +175,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            api.logModerationAction("**[Staff] ".concat(sender.cleanedName, "**: ").concat(args.message));
+            api.sendModerationMessage("**[Staff] ".concat(sender.cleanedName, "**: ").concat(args.message));
             var wasReceived = players_1.FishPlayer.messageStaff(sender.player.name, args.message);
             if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
                 if (wasReceived)

@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logDumpAction = exports.matchFilter = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.logAction = exports.matchFilter = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var config_1 = require("./config");
 var api = require("./api");
 function logg(msg) { Call.sendMessage(msg); }
@@ -293,9 +293,9 @@ function matchFilter(text) {
     return false;
 }
 exports.matchFilter = matchFilter;
-function logDumpAction(action, by, to) {
+function logAction(action, by, to) {
     var message = "".concat(by.cleanedName, " ").concat(action, " ").concat(to.cleanedName, "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** ").concat(to.player.uuid(), "\n**ip**: ").concat(to.player.ip());
-    api.logModerationAction(message);
+    api.sendModerationMessage(message);
     return;
 }
-exports.logDumpAction = logDumpAction;
+exports.logAction = logAction;
