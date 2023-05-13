@@ -209,6 +209,11 @@ export function capitalizeText(text:string):string {
 		).join(" ");
 }
 
+const pattern = Pattern.compile(`([*\\_~\`|:])`);
+export function escapeTextDiscord(text:string):string {
+	return pattern.matcher(text).replaceAll("\\\\$1");
+}
+
 export function matchFilter(text:string):boolean {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(text).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
@@ -225,11 +230,11 @@ export function matchFilter(text:string):boolean {
 export function logAction(action: string, by: FishPlayer, to: FishPlayer | mindustryPlayerData) {
 	let name:string, uuid:string, ip:string;
 	if(to instanceof FishPlayer){
-		name = to.cleanedName;
+		name = escapeTextDiscord(to.cleanedName);
 		uuid = to.uuid;
 		ip = to.player.ip();
 	} else {
-		name = to.plainLastName();
+		name = escapeTextDiscord(to.plainLastName());
 		uuid = to.id;
 		ip = to.lastIP;
 	}

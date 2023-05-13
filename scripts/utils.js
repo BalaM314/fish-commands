@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logAction = exports.matchFilter = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var config_1 = require("./config");
 var api = require("./api");
 var players_1 = require("./players");
@@ -264,6 +264,11 @@ function capitalizeText(text) {
     }).join(" ");
 }
 exports.capitalizeText = capitalizeText;
+var pattern = Pattern.compile("([*\\_~`|:])");
+function escapeTextDiscord(text) {
+    return pattern.matcher(text).replaceAll("\\\\$1");
+}
+exports.escapeTextDiscord = escapeTextDiscord;
 function matchFilter(text) {
     var e_1, _a;
     //Replace substitutions
@@ -297,12 +302,12 @@ exports.matchFilter = matchFilter;
 function logAction(action, by, to) {
     var name, uuid, ip;
     if (to instanceof players_1.FishPlayer) {
-        name = to.cleanedName;
+        name = escapeTextDiscord(to.cleanedName);
         uuid = to.uuid;
         ip = to.player.ip();
     }
     else {
-        name = to.plainLastName();
+        name = escapeTextDiscord(to.plainLastName());
         uuid = to.id;
         ip = to.lastIP;
     }
