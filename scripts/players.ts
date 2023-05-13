@@ -254,7 +254,7 @@ export class FishPlayer {
 		this.cleanedName = Strings.stripColors(player.name);
 	}
 
-	/**Updates the mindustry player's name, using the prefixes of the current rank and  */
+	/**Updates the mindustry player's name, using the prefixes of the current rank and (TODO) role flags. */
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';

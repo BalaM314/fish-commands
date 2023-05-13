@@ -311,7 +311,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.afk = false; //Reset to false on join
         this.cleanedName = Strings.stripColors(player.name);
     };
-    /**Updates the mindustry player's name, using the prefixes of the current rank and  */
+    /**Updates the mindustry player's name, using the prefixes of the current rank and (TODO) role flags. */
     FishPlayer.prototype.updateName = function () {
         if (!this.connected())
             return; //No player, no need to update
