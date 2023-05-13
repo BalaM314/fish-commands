@@ -18,7 +18,6 @@ var players_1 = require("./players");
 var utils_1 = require("./utils");
 var ohno_1 = require("./ohno");
 var ranks_1 = require("./ranks");
-var api = require("./api");
 exports.commands = __assign(__assign({ warn: {
         args: ['player:player', 'reason:string?'],
         description: 'Warn a player.',
@@ -311,7 +310,7 @@ exports.commands = __assign(__assign({ warn: {
                 }
                 else {
                     execServer("ban ip ".concat(option.ip()));
-                    api.logModerationAction("".concat(sender.cleanedName, " ip-banned player: ").concat(option.name));
+                    (0, utils_1.logAction)("ip-banned", sender, option);
                     outputSuccess("IP-banned player ".concat(option.name, "."));
                 }
             }, true, function (opt) { return opt.name; });

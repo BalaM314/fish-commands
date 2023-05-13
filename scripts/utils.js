@@ -30,6 +30,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.logAction = exports.matchFilter = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var config_1 = require("./config");
 var api = require("./api");
+var players_1 = require("./players");
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;
 function list(ar) { Call.sendMessage(ar.join(' | ')); }
@@ -294,8 +295,17 @@ function matchFilter(text) {
 }
 exports.matchFilter = matchFilter;
 function logAction(action, by, to) {
-    var message = "".concat(by.cleanedName, " ").concat(action, " ").concat(to.cleanedName, "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** ").concat(to.player.uuid(), "\n**ip**: ").concat(to.player.ip());
-    api.sendModerationMessage(message);
-    return;
+    var name, uuid, ip;
+    if (to instanceof players_1.FishPlayer) {
+        name = to.cleanedName;
+        uuid = to.uuid;
+        ip = to.player.ip();
+    }
+    else {
+        name = to.plainLastName();
+        uuid = to.id;
+        ip = to.lastIP;
+    }
+    api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, " ").concat(name, "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
 }
 exports.logAction = logAction;

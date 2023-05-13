@@ -146,6 +146,11 @@ declare class Fi {
 
 declare class Pattern {
 	static matches(regex:string, target:string):boolean;
+	static compile(regex:string):Pattern;
+	matcher(input:string):Matcher;
+}
+declare class Matcher {
+	replaceAll(replacement:string):string;
 }
 declare class Runtime {
 	static getRuntime():Runtime;

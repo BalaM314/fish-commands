@@ -1,6 +1,7 @@
 import { bannedWords, substitutions, getGamemode } from "./config";
 import * as api from './api';
 import { FishPlayer } from "./players";
+import { mindustryPlayerData } from "./types";
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -221,8 +222,21 @@ export function matchFilter(text:string):boolean {
 	return false;
 }
 
-export function logAction(action: string, by: FishPlayer, to: FishPlayer): void {
-	const message = `${by.cleanedName} ${action} ${to.cleanedName}\n**Server:** ${getGamemode()}\n**uuid:** ${to.player.uuid()}\n**ip**: ${to.player.ip()}`;
-	api.sendModerationMessage(message)
-	return;
+export function logAction(action: string, by: FishPlayer, to: FishPlayer | mindustryPlayerData) {
+	let name:string, uuid:string, ip:string;
+	if(to instanceof FishPlayer){
+		name = to.cleanedName;
+		uuid = to.uuid;
+		ip = to.player.ip();
+	} else {
+		name = to.plainLastName();
+		uuid = to.id;
+		ip = to.lastIP;
+	}
+	api.sendModerationMessage(
+`${by.cleanedName} ${action} ${name}
+**Server:** ${getGamemode()}
+**uuid:** \`${uuid}\`
+**ip**: \`${ip}\``
+	);
 }
