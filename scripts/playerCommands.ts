@@ -3,7 +3,7 @@ import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
 import { capitalizeText, getColor, StringBuilder, to2DArray } from "./utils";
-import { FishServers } from "./config";
+import { FishServers, getGamemode } from "./config";
 import { Rank } from "./ranks";
 import { recentWhispers } from "./globals";
 import * as api from './api';
@@ -154,12 +154,16 @@ export const commands:FishCommandsList = {
 		description: `Sends a message to staff only.`,
 		perm: Perm.none,
 		handler({sender, args, outputSuccess, outputFail}){
-			api.sendModerationMessage(`**[Staff] ${sender.cleanedName}**: ${args.message}`);
-			const wasReceived = FishPlayer.messageStaff(sender.player.name, args.message);
-			if(!sender.ranksAtLeast(Rank.mod)){
-				if(wasReceived) outputSuccess(`Message sent to staff.`);
-				else outputFail(`No staff were online to receive your message.`);
-			}
+			api.sendStaffMessage(args.message, sender.name, sender.cleanedName, (sent) => {
+				if(!sender.ranksAtLeast(Rank.mod)){
+					if(sent) outputSuccess(`Message sent to all staff.`);
+					else {
+						const wasReceived = FishPlayer.messageStaff(sender.player.name, args.message);
+						if (wasReceived) outputSuccess(`Message sent to staff.`);
+						else outputFail(`No staff were online to receive your message.`);
+					}
+				}
+			})
 		}
 	},
 

@@ -1,4 +1,5 @@
 import { FishPlayer } from "./players";
+import { getStaffMessages } from './api'
 
 
 export function initializeTimers(){
@@ -20,5 +21,15 @@ export function initializeTimers(){
 		() => FishPlayer.forEachPlayer(p => p.displayTrail()),
 		5,
 		0.15
+	);
+	//Staff chat
+	Timer.schedule(() => {
+		getStaffMessages((messages) => {
+			if (!messages.length) return;
+				FishPlayer.messageStaff(messages);
+			})
+		},
+		5,
+		3
 	);
 }

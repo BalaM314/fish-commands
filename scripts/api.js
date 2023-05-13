@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
+exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
 // Add a player's uuid to the stopped api
 function addStopped(uuid) {
@@ -94,3 +94,52 @@ function sendModerationMessage(message) {
     }
 }
 exports.sendModerationMessage = sendModerationMessage;
+/**Get staff messages from discord. */
+function getStaffMessages(callback) {
+    var server = (0, config_1.getGamemode)();
+    var req = Http.post("http://".concat(config_1.ip, ":5000/api/getStaffMessages"), JSON.stringify({ server: server })).header('Content-Type', 'application/json').header('Accept', '*/*');
+    req.timeout = 10000;
+    try {
+        req.submit(function (response, exception) {
+            if (exception || !response) {
+                Log.info('\n\nError occured when trying to fetch staff chat.\n\n');
+            }
+            else {
+                var temp = response.getResultAsString();
+                if (!temp.length)
+                    return false;
+                callback(JSON.parse(temp).messages);
+            }
+        });
+    }
+    catch (e) {
+        Log.info('\n\nError occured when trying to fetch staff chat.\n\n');
+    }
+}
+exports.getStaffMessages = getStaffMessages;
+/**Send staff messages from server. */
+function sendStaffMessage(message, playerName, cleanedName, callback) {
+    var server = (0, config_1.getGamemode)();
+    var req = Http.post("http://".concat(config_1.ip, ":5000/api/sendStaffMessage"), 
+    // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
+    JSON.stringify({ message: message, playerName: playerName, cleanedName: cleanedName, server: server }))
+        .header('Content-Type', 'application/json').header('Accept', '*/*');
+    req.timeout = 10000;
+    try {
+        req.submit(function (response, exception) {
+            if (exception || !response) {
+                Log.info('\n\nError occured when trying to send staff chat.\n\n');
+            }
+            else {
+                var temp = response.getResultAsString();
+                if (!temp.length)
+                    return false;
+                callback(JSON.parse(temp).data);
+            }
+        });
+    }
+    catch (e) {
+        Log.info('\n\nError occured when trying to send staff chat.\n\n');
+    }
+}
+exports.sendStaffMessage = sendStaffMessage;

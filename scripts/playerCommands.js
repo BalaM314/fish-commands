@@ -175,14 +175,19 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            api.sendModerationMessage("**[Staff] ".concat(sender.cleanedName, "**: ").concat(args.message));
-            var wasReceived = players_1.FishPlayer.messageStaff(sender.player.name, args.message);
-            if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
-                if (wasReceived)
-                    outputSuccess("Message sent to staff.");
-                else
-                    outputFail("No staff were online to receive your message.");
-            }
+            api.sendStaffMessage(args.message, sender.name, sender.cleanedName, function (sent) {
+                if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
+                    if (sent)
+                        outputSuccess("Message sent to all staff.");
+                    else {
+                        var wasReceived = players_1.FishPlayer.messageStaff(sender.player.name, args.message);
+                        if (wasReceived)
+                            outputSuccess("Message sent to staff.");
+                        else
+                            outputFail("No staff were online to receive your message.");
+                    }
+                }
+            });
         }
     }, 
     /**
