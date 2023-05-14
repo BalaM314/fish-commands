@@ -4,7 +4,7 @@ import { FishPlayer } from "./players";
 import type { FishCommandsList } from "./types";
 import { capitalizeText, getColor, StringBuilder, to2DArray } from "./utils";
 import { FishServers } from "./config";
-import { Rank } from "./ranks";
+import { Rank, RoleFlag } from "./ranks";
 import { recentWhispers } from "./globals";
 import * as api from './api';
 
@@ -374,8 +374,12 @@ export const commands:FishCommandsList = {
 			output(
 `List of ranks:\n`
 + Object.values(Rank.ranks).map(rank =>
-	`${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]`
-).join("\n")
+	`${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]\n`
+) +
+`List of flags:\n`
++ Object.values(RoleFlag.flags).map(flag =>
+	`${flag.prefix} ${flag.color}${capitalizeText(flag.name)}[]: ${flag.color}${flag.description}[]\n`
+) 
 			);
 		}
 	},
