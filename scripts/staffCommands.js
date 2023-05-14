@@ -191,7 +191,7 @@ exports.commands = __assign(__assign({ warn: {
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (sender.canModerate(fishP, true)) {
                     fishP.stop(sender);
-                    (0, utils_1.logAction)('stopped', sender, fishP);
+                    (0, utils_1.logAction)('stopped', sender, option);
                     outputSuccess("Player \"".concat(option.lastName, "\" was stopped."));
                 }
                 else {
