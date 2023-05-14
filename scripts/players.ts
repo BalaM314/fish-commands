@@ -68,6 +68,10 @@ export class FishPlayer {
 		this.rank = Rank.getByName(rank) ?? Rank.new;
 		this.flags = new Set(flags.map(RoleFlag.getByName).filter((f):f is RoleFlag => f != null));
 		if(member) this.flags.add(RoleFlag.member);
+		if(rank == "developer"){
+			this.rank = Rank.admin;
+			this.flags.add(RoleFlag.developer);
+		}
 		this.usid = usid ?? player?.usid() ?? null;
 	}
 
