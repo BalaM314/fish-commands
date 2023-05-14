@@ -109,7 +109,7 @@ export const commands:FishCommandsList = {
 
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, sender, args.player);
-			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
+			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.color}${rank.name}[]`);
 		}
 	},
 
@@ -125,7 +125,7 @@ export const commands:FishCommandsList = {
 
 			args.player.setFlag(flag, args.value);
 			logAction(`set roleflag ${flag.name} to ${args.value} for`, sender, args.player);
-			outputSuccess(`Set role flag ${flag.name} of player "${args.player.name}" to ${args.value}`);
+			outputSuccess(`Set role flag ${flag.color}${flag.name}[] of player "${args.player.name}" to ${args.value}`);
 		}
 	},
 

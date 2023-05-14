@@ -46,7 +46,7 @@ exports.commands = {
                 (0, commands_1.fail)("Unknown rank ".concat(args.rank));
             args.player.setRank(rank);
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), "console", args.player);
-            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
+            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));
         }
     },
     setflag: {
@@ -59,7 +59,7 @@ exports.commands = {
                 (0, commands_1.fail)("Unknown role flag ".concat(args.rank));
             args.player.setFlag(flag, args.value);
             (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), "console", args.player);
-            outputSuccess("Set role flag ".concat(flag.name, " of player \"").concat(args.player.name, "\" to ").concat(args.value));
+            outputSuccess("Set role flag ".concat(flag.color).concat(flag.name, "[] of player \"").concat(args.player.name, "\" to ").concat(args.value));
         }
     },
     savePlayers: {

@@ -123,7 +123,7 @@ exports.commands = __assign(__assign({ warn: {
                 (0, commands_1.fail)("You do not have permission to modify the rank of player \"".concat(args.player.name, "\""));
             args.player.setRank(rank);
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), sender, args.player);
-            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
+            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));
         }
     }, setflag: {
         args: ["player:player", "roleflag:string", "value:boolean"],
@@ -138,7 +138,7 @@ exports.commands = __assign(__assign({ warn: {
                 (0, commands_1.fail)("You do not have permission to modify the role flags of player \"".concat(args.player.name, "\""));
             args.player.setFlag(flag, args.value);
             (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), sender, args.player);
-            outputSuccess("Set role flag ".concat(flag.name, " of player \"").concat(args.player.name, "\" to ").concat(args.value));
+            outputSuccess("Set role flag ".concat(flag.color).concat(flag.name, "[] of player \"").concat(args.player.name, "\" to ").concat(args.value));
         }
     }, murder: {
         args: [],

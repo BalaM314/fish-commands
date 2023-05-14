@@ -18,7 +18,7 @@ export const commands:FishConsoleCommandsList = {
 
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, "console", args.player);
-			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
+			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.color}${rank.name}[]`);
 		}
 	},
 	setflag: {
@@ -30,7 +30,7 @@ export const commands:FishConsoleCommandsList = {
 
 			args.player.setFlag(flag, args.value);
 			logAction(`set roleflag ${flag.name} to ${args.value} for`, "console", args.player);
-			outputSuccess(`Set role flag ${flag.name} of player "${args.player.name}" to ${args.value}`);
+			outputSuccess(`Set role flag ${flag.color}${flag.name}[] of player "${args.player.name}" to ${args.value}`);
 		}
 	},
 	savePlayers: {
