@@ -57,7 +57,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
-        Log.info("Constructing fish player data: ".concat(uuid, " ").concat(name, " ").concat(muted, " ").concat(stopped, " ").concat(highlight, " [").concat(history.length, "] ").concat(rank, " [").concat(flags.join(", "), "] ").concat(usid));
         this.uuid = (_k = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _k !== void 0 ? _k : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_l = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]";
         this.muted = muted;

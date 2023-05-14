@@ -55,7 +55,6 @@ export class FishPlayer {
 		uuid, name, muted = false, member = false, stopped = false,
 		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
-		Log.info(`Constructing fish player data: ${uuid} ${name} ${muted} ${stopped} ${highlight} [${history.length}] ${rank} [${flags.join(", ")}] ${usid}`);
 		this.uuid = uuid ?? player?.uuid() ?? (() => {throw new Error(`Attempted to create FishPlayer with no UUID`)})();
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
 		this.muted = muted;
