@@ -388,11 +388,11 @@ exports.commands = __assign(__assign({ unpause: {
             output("List of ranks:\n"
                 + Object.values(ranks_1.Rank.ranks).map(function (rank) {
                     return "".concat(rank.prefix, " ").concat(rank.color).concat((0, utils_1.capitalizeText)(rank.name), "[]: ").concat(rank.color).concat(rank.description, "[]\n");
-                }) +
+                }).join("") +
                 "List of flags:\n"
                 + Object.values(ranks_1.RoleFlag.flags).map(function (flag) {
                     return "".concat(flag.prefix, " ").concat(flag.color).concat((0, utils_1.capitalizeText)(flag.name), "[]: ").concat(flag.color).concat(flag.description, "[]\n");
-                }));
+                }).join(""));
         }
     }, team: {
         args: ["team:team", "player:player"],

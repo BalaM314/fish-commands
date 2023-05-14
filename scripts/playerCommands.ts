@@ -375,11 +375,11 @@ export const commands:FishCommandsList = {
 `List of ranks:\n`
 + Object.values(Rank.ranks).map(rank =>
 	`${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]\n`
-) +
+).join("") +
 `List of flags:\n`
 + Object.values(RoleFlag.flags).map(flag =>
 	`${flag.prefix} ${flag.color}${capitalizeText(flag.name)}[]: ${flag.color}${flag.description}[]\n`
-) 
+).join("")
 			);
 		}
 	},
