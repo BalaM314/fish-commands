@@ -138,7 +138,7 @@ exports.commands = __assign(__assign({ warn: {
                 (0, commands_1.fail)("You do not have permission to modify the role flags of player \"".concat(args.player.name, "\""));
             args.player.setFlag(flag, args.value);
             (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), sender, args.player);
-            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(flag.name));
+            outputSuccess("Set role flag ".concat(flag.name, " of player \"").concat(args.player.name, "\" to ").concat(args.value));
         }
     }, murder: {
         args: [],

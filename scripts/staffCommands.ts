@@ -125,7 +125,7 @@ export const commands:FishCommandsList = {
 
 			args.player.setFlag(flag, args.value);
 			logAction(`set roleflag ${flag.name} to ${args.value} for`, sender, args.player);
-			outputSuccess(`Set rank of player "${args.player.name}" to ${flag.name}`);
+			outputSuccess(`Set role flag ${flag.name} of player "${args.player.name}" to ${args.value}`);
 		}
 	},
 

@@ -1,7 +1,7 @@
 import { FishPlayer } from "./players";
-import { Rank } from "./ranks";
+import { Rank, RoleFlag } from "./ranks";
 import { FishConsoleCommandsList, FlaggedIPData, mindustryPlayerData } from "./types";
-import { setToArray, StringBuilder } from "./utils";
+import { logAction, setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
 import { addStopped } from "./api";
 import * as fjsContext from "./fjsContext";
@@ -17,7 +17,20 @@ export const commands:FishConsoleCommandsList = {
 			if(rank == null) fail(`Unknown rank ${args.rank}`);
 
 			args.player.setRank(rank);
+			logAction(`set rank to ${rank.name} for`, "console", args.player);
 			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
+		}
+	},
+	setflag: {
+		args: ["player:player", "rank:string", "value:boolean"],
+		description: "Set a player's role flags.",
+		handler({args, outputSuccess}){
+			const flag = RoleFlag.getByName(args.rank);
+			if(flag == null) fail(`Unknown role flag ${args.rank}`);
+
+			args.player.setFlag(flag, args.value);
+			logAction(`set roleflag ${flag.name} to ${args.value} for`, "console", args.player);
+			outputSuccess(`Set role flag ${flag.name} of player "${args.player.name}" to ${args.value}`);
 		}
 	},
 	savePlayers: {
