@@ -2,7 +2,7 @@ import type { FishPlayerData, FlaggedIPData, mindustryPlayerData, PlayerHistoryE
 import * as config from "./config";
 import * as api from "./api";
 import { isCoreUnitType, logAction, setToArray, StringIO } from "./utils";
-import { Rank } from "./ranks";
+import { Rank, RoleFlag } from "./ranks";
 import { menu } from "./menus";
 import { Perm, PermType } from "./commands";
 
@@ -10,7 +10,7 @@ import { Perm, PermType } from "./commands";
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 1;
+	static readonly saveVersion = 2;
 
 	//Static transients
 	static stats = {
@@ -29,7 +29,6 @@ export class FishPlayer {
 		cancelOptionId: number;
 		callback?: (sender:FishPlayer, option:number) => void;
 	} = {cancelOptionId: -1};
-	afk:boolean = false;
 	tileId = false;
 	tilelog:null | "once" | "persist" = null;
 	trail: {
@@ -42,9 +41,9 @@ export class FishPlayer {
 	uuid: string;
 	name: string;
 	muted: boolean;
-	member: boolean;
 	stopped: boolean;
 	rank: Rank;
+	flags: Set<RoleFlag>;
 	highlight: string | null;
 	rainbow: {
 		speed: number;
@@ -54,12 +53,12 @@ export class FishPlayer {
 
 	constructor({
 		uuid, name, muted = false, member = false, stopped = false,
-		highlight = null, history = [], rainbow = null, rank = "player", usid
+		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
+		Log.info(`Constructing fish player data: ${uuid} ${name} ${muted} ${stopped} ${highlight} [${history.length}] ${rank} [${flags.join(", ")}] ${usid}`);
 		this.uuid = uuid ?? player?.uuid() ?? (() => {throw new Error(`Attempted to create FishPlayer with no UUID`)})();
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
 		this.muted = muted;
-		this.member = member;
 		this.stopped = stopped;
 		this.highlight = highlight;
 		this.history = history;
@@ -67,6 +66,8 @@ export class FishPlayer {
 		this.rainbow = rainbow;
 		this.cleanedName = Strings.stripColors(this.name);
 		this.rank = Rank.getByName(rank) ?? Rank.new;
+		this.flags = new Set(flags.map(RoleFlag.getByName).filter((f):f is RoleFlag => f != null));
+		if(member) this.flags.add(RoleFlag.member);
 		this.usid = usid ?? player?.usid() ?? null;
 	}
 
@@ -251,7 +252,9 @@ export class FishPlayer {
 		this.player = player;
 		this.name = player.name;
 		this.usid ??= player.usid();
-		this.afk = false;//Reset to false on join
+		this.flags.forEach(f => {
+			if(!f.peristent) this.flags.delete(f);
+		});
 		this.cleanedName = Strings.stripColors(player.name);
 	}
 
@@ -261,9 +264,9 @@ export class FishPlayer {
 		let prefix = '';
 		if(this.stopped) prefix += config.STOPPED_PREFIX;
 		if(this.muted) prefix += config.MUTED_PREFIX;
-		if(this.afk) prefix += config.AFK_PREFIX;
-		if(this.member) prefix += config.MEMBER_PREFIX;
-
+		for(const flag of this.flags){
+			prefix += flag.prefix;
+		}
 		prefix += this.rank.prefix;
 		if(prefix != "")
 			this.player.name = prefix + " " + this.name;
@@ -352,6 +355,23 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 					rank: fishPlayerData.readString(2) ?? "",
 					usid: fishPlayerData.readString(2)
 				}, player);
+			case 2:
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					stopped: fishPlayerData.readBool(),
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2)
+				}, player);
 			default: throw new Error(`Unknown save version ${version}`);
 		}
 	}
@@ -359,7 +379,6 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		out.writeString(this.uuid, 2);
 		out.writeString(this.name, 2, true);
 		out.writeBool(this.muted);
-		out.writeBool(this.member);
 		out.writeBool(this.stopped);
 		out.writeString(this.highlight, 2, true);
 		out.writeArray(this.history, (i, str) => {
@@ -369,24 +388,11 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		});
 		out.writeNumber(this.rainbow?.speed ?? 0, 2);
 		out.writeString(this.rank.name, 2);
+		out.writeArray(Array.from(this.flags).filter(f => f.peristent), (f, str) => str.writeString(f.name, 2), 2);
 		out.writeString(this.usid, 2);
-	}
-	writeLegacy():string {
-		const obj:any = {};
-		obj.name = this.name;
-		if(this.muted != false) obj.muted = this.muted;
-		if(this.member != false) obj.member = this.member;
-		if(this.stopped != false) obj.stopped = this.stopped;
-		if(this.highlight != null) obj.highlight = this.highlight;
-		obj.history = this.history;
-		if(this.rainbow != null) obj.rainbow = this.rainbow;
-		if(this.rank != Rank.new) obj.rank = this.rank.name;
-		obj.usid = this.usid;
-		return JSON.stringify(obj);
 	}
 	/**Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){
-		// this.saveAllLegacy();
 		let out = new StringIO();
 		out.writeNumber(this.saveVersion, 2);
 		out.writeArray(
@@ -398,16 +404,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		Core.settings.manualSave();
 	}
 	shouldCache(){
-		return (this.rank != Rank.new && this.rank != Rank.player) || this.muted || this.member;
-	}
-	static saveAllLegacy(){
-		let playerDatas:string[] = [];
-		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
-			if(player.shouldCache())
-				playerDatas.push(`"${uuid}":${player.writeLegacy()}`);
-		}
-		Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
-		Core.settings.manualSave();
+		return (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0);
 	}
 	/**Loads cached FishPlayers from JSON in Core.settings. */
 	static loadAll(string = Core.settings.get('fish', '')){
@@ -421,6 +418,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 			out.expectEOF();
 		} catch(err){
 			Log.err(`[CRITICAL] FAILED TO LOAD CACHED FISH PLAYER DATA`);
+			Log.err(err as any);
 			Log.err("=============================");
 			Log.err(string);
 			Log.err("=============================");
@@ -480,6 +478,23 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		this.updateName();
 		this.updateAdminStatus();
 		FishPlayer.saveAll();
+	}
+	setFlag(flag_:RoleFlag | string, value:boolean){
+		Log.info(`Setting ${flag_} to ${value}`);
+		const flag = flag_ instanceof RoleFlag ? flag_ : RoleFlag.getByName(flag_);
+		if(flag){
+			if(value){
+				this.flags.add(flag);
+			} else {
+				this.flags.delete(flag);
+			}
+			this.updateName();
+		}
+	}
+	hasFlag(flagName:string){
+		const flag = RoleFlag.getByName(flagName);
+		if(flag) return this.flags.has(flag);
+		else return false;
 	}
 	forceRespawn(){
 		this.player.clearUnit();

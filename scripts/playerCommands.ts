@@ -119,9 +119,9 @@ export const commands:FishCommandsList = {
 		description: "Toggles your afk status.",
 		perm: Perm.none,
 		handler({sender, outputSuccess}){
-			sender.afk = !sender.afk;
+			sender.setFlag("afk", !sender.hasFlag("afk"));
 			sender.updateName();
-			if(sender.afk){
+			if(sender.hasFlag("afk")){
 				outputSuccess(`You are now marked as AFK.`);
 			} else {
 				outputSuccess(`You are no longer marked as AFK.`);

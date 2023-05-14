@@ -47,29 +47,31 @@ var menus_1 = require("./menus");
 var commands_1 = require("./commands");
 var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, usid = _a.usid;
-        var _j, _k, _l, _m;
+        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid;
+        var _k, _l, _m, _o;
         //Transients
         this.player = null;
         this.pet = "";
         this.watch = false;
         this.activeMenu = { cancelOptionId: -1 };
-        this.afk = false;
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
-        this.uuid = (_j = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _j !== void 0 ? _j : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
-        this.name = (_k = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _k !== void 0 ? _k : "Unnamed player [ERROR]";
+        Log.info("Constructing fish player data: ".concat(uuid, " ").concat(name, " ").concat(muted, " ").concat(stopped, " ").concat(highlight, " [").concat(history.length, "] ").concat(rank, " [").concat(flags.join(", "), "] ").concat(usid));
+        this.uuid = (_k = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _k !== void 0 ? _k : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
+        this.name = (_l = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]";
         this.muted = muted;
-        this.member = member;
         this.stopped = stopped;
         this.highlight = highlight;
         this.history = history;
         this.player = player;
         this.rainbow = rainbow;
         this.cleanedName = Strings.stripColors(this.name);
-        this.rank = (_l = ranks_1.Rank.getByName(rank)) !== null && _l !== void 0 ? _l : ranks_1.Rank.new;
-        this.usid = (_m = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _m !== void 0 ? _m : null;
+        this.rank = (_m = ranks_1.Rank.getByName(rank)) !== null && _m !== void 0 ? _m : ranks_1.Rank.new;
+        this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
+        if (member)
+            this.flags.add(ranks_1.RoleFlag.member);
+        this.usid = (_o = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _o !== void 0 ? _o : null;
     }
     //#region getplayer
     //Contains methods used to get FishPlayer instances.
@@ -305,15 +307,20 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
+        var _this = this;
         var _a;
         this.player = player;
         this.name = player.name;
         (_a = this.usid) !== null && _a !== void 0 ? _a : (this.usid = player.usid());
-        this.afk = false; //Reset to false on join
+        this.flags.forEach(function (f) {
+            if (!f.peristent)
+                _this.flags.delete(f);
+        });
         this.cleanedName = Strings.stripColors(player.name);
     };
     /**Updates the mindustry player's name, using the prefixes of the current rank and (TODO) role flags. */
     FishPlayer.prototype.updateName = function () {
+        var e_4, _a;
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
@@ -321,10 +328,19 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             prefix += config.STOPPED_PREFIX;
         if (this.muted)
             prefix += config.MUTED_PREFIX;
-        if (this.afk)
-            prefix += config.AFK_PREFIX;
-        if (this.member)
-            prefix += config.MEMBER_PREFIX;
+        try {
+            for (var _b = __values(this.flags), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var flag = _c.value;
+                prefix += flag.prefix;
+            }
+        }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_4) throw e_4.error; }
+        }
         prefix += this.rank.prefix;
         if (prefix != "")
             this.player.name = prefix + " " + this.name;
@@ -346,7 +362,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
-        var e_4, _a;
+        var e_5, _a;
         try {
             for (var _b = __values(config.bannedNames), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var bannedName = _c.value;
@@ -356,12 +372,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        catch (e_5_1) { e_5 = { error: e_5_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_4) throw e_4.error; }
+            finally { if (e_5) throw e_5.error; }
         }
         return true;
     };
@@ -386,7 +402,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         switch (version) {
             case 0:
                 return new this({
@@ -428,6 +444,26 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     rank: (_f = fishPlayerData.readString(2)) !== null && _f !== void 0 ? _f : "",
                     usid: fishPlayerData.readString(2)
                 }, player);
+            case 2:
+                return new this({
+                    uuid: (_g = fishPlayerData.readString(2)) !== null && _g !== void 0 ? _g : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    name: (_h = fishPlayerData.readString(2)) !== null && _h !== void 0 ? _h : "Unnamed player [ERROR]",
+                    muted: fishPlayerData.readBool(),
+                    stopped: fishPlayerData.readBool(),
+                    highlight: fishPlayerData.readString(2),
+                    history: fishPlayerData.readArray(function (str) {
+                        var _a, _b;
+                        return ({
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
+                            time: str.readNumber(15)
+                        });
+                    }),
+                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
+                    rank: (_j = fishPlayerData.readString(2)) !== null && _j !== void 0 ? _j : "",
+                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
+                    usid: fishPlayerData.readString(2)
+                }, player);
             default: throw new Error("Unknown save version ".concat(version));
         }
     };
@@ -436,7 +472,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         out.writeString(this.uuid, 2);
         out.writeString(this.name, 2, true);
         out.writeBool(this.muted);
-        out.writeBool(this.member);
         out.writeBool(this.stopped);
         out.writeString(this.highlight, 2, true);
         out.writeArray(this.history, function (i, str) {
@@ -446,30 +481,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         });
         out.writeNumber((_b = (_a = this.rainbow) === null || _a === void 0 ? void 0 : _a.speed) !== null && _b !== void 0 ? _b : 0, 2);
         out.writeString(this.rank.name, 2);
+        out.writeArray(Array.from(this.flags).filter(function (f) { return f.peristent; }), function (f, str) { return str.writeString(f.name, 2); }, 2);
         out.writeString(this.usid, 2);
-    };
-    FishPlayer.prototype.writeLegacy = function () {
-        var obj = {};
-        obj.name = this.name;
-        if (this.muted != false)
-            obj.muted = this.muted;
-        if (this.member != false)
-            obj.member = this.member;
-        if (this.stopped != false)
-            obj.stopped = this.stopped;
-        if (this.highlight != null)
-            obj.highlight = this.highlight;
-        obj.history = this.history;
-        if (this.rainbow != null)
-            obj.rainbow = this.rainbow;
-        if (this.rank != ranks_1.Rank.new)
-            obj.rank = this.rank.name;
-        obj.usid = this.usid;
-        return JSON.stringify(obj);
     };
     /**Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
-        // this.saveAllLegacy();
         var out = new utils_1.StringIO();
         out.writeNumber(this.saveVersion, 2);
         out.writeArray(Object.entries(this.cachedPlayers)
@@ -484,27 +500,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         Core.settings.manualSave();
     };
     FishPlayer.prototype.shouldCache = function () {
-        return (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || this.member;
-    };
-    FishPlayer.saveAllLegacy = function () {
-        var e_5, _a;
-        var playerDatas = [];
-        try {
-            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
-                if (player.shouldCache())
-                    playerDatas.push("\"".concat(uuid, "\":").concat(player.writeLegacy()));
-            }
-        }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_5) throw e_5.error; }
-        }
-        Core.settings.put('fish', '{' + playerDatas.join(",") + '}');
-        Core.settings.manualSave();
+        return (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0);
     };
     /**Loads cached FishPlayers from JSON in Core.settings. */
     FishPlayer.loadAll = function (string) {
@@ -523,6 +519,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         }
         catch (err) {
             Log.err("[CRITICAL] FAILED TO LOAD CACHED FISH PLAYER DATA");
+            Log.err(err);
             Log.err("=============================");
             Log.err(string);
             Log.err("=============================");
@@ -596,6 +593,26 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.updateName();
         this.updateAdminStatus();
         FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.setFlag = function (flag_, value) {
+        Log.info("Setting ".concat(flag_, " to ").concat(value));
+        var flag = flag_ instanceof ranks_1.RoleFlag ? flag_ : ranks_1.RoleFlag.getByName(flag_);
+        if (flag) {
+            if (value) {
+                this.flags.add(flag);
+            }
+            else {
+                this.flags.delete(flag);
+            }
+            this.updateName();
+        }
+    };
+    FishPlayer.prototype.hasFlag = function (flagName) {
+        var flag = ranks_1.RoleFlag.getByName(flagName);
+        if (flag)
+            return this.flags.has(flag);
+        else
+            return false;
     };
     FishPlayer.prototype.forceRespawn = function () {
         this.player.clearUnit();
@@ -733,7 +750,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    FishPlayer.saveVersion = 1;
+    FishPlayer.saveVersion = 2;
     //Static transients
     FishPlayer.stats = {
         numIpsChecked: 0,

@@ -85,9 +85,11 @@ interface FishPlayerData {
 	uuid: string;
 	name: string;
 	muted: boolean;
+	/**@deprecated */
 	member: boolean;
 	stopped: boolean;
 	rank: string;
+	flags: string[];
 	highlight: string | null;
 	rainbow: { speed:number; } | null;
 	history: PlayerHistoryEntry[];

@@ -4,7 +4,7 @@ import { FishPlayer } from "./players";
 import type { FishCommandData, FishCommandsList, mindustryPlayerData } from "./types";
 import { getTimeSinceText, setToArray, logAction } from "./utils";
 import { Ohnos } from "./ohno";
-import { Rank } from "./ranks";
+import { Rank, RoleFlag } from "./ranks";
 import * as api from './api';
 
 export const commands:FishCommandsList = {
@@ -110,6 +110,22 @@ export const commands:FishCommandsList = {
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, sender, args.player);
 			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
+		}
+	},
+
+	setflag: {
+		args: ["player:player", "roleflag:string", "value:boolean"],
+		description: "Set a player's role flags.",
+		perm: Perm.mod,
+		handler({args, sender, outputSuccess}){
+			const flag = RoleFlag.getByName(args.roleflag);
+			if(flag == null) fail(`Unknown role flag ${args.roleflag}`);
+			if(!sender.canModerate(args.player))
+				fail(`You do not have permission to modify the role flags of player "${args.player.name}"`);
+
+			args.player.setFlag(flag, args.value);
+			logAction(`set roleflag ${flag.name} to ${args.value} for`, sender, args.player);
+			outputSuccess(`Set rank of player "${args.player.name}" to ${flag.name}`);
 		}
 	},
 
@@ -283,7 +299,7 @@ export const commands:FishCommandsList = {
 		description: "Sets a player's member status.",
 		perm: Perm.admin,
 		handler({args, outputSuccess}){
-			(args.player as FishPlayer).member = args.value;
+			(args.player as FishPlayer).setFlag("member", args.value);
 			args.player.updateName();
 			FishPlayer.saveAll();
 			outputSuccess(`Set membership status of player "${args.player.name}" to ${args.value}.`);

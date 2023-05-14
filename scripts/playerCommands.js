@@ -139,9 +139,9 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
-            sender.afk = !sender.afk;
+            sender.setFlag("afk", !sender.hasFlag("afk"));
             sender.updateName();
-            if (sender.afk) {
+            if (sender.hasFlag("afk")) {
                 outputSuccess("You are now marked as AFK.");
             }
             else {

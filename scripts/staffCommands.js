@@ -125,6 +125,21 @@ exports.commands = __assign(__assign({ warn: {
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), sender, args.player);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
         }
+    }, setflag: {
+        args: ["player:player", "roleflag:string", "value:boolean"],
+        description: "Set a player's role flags.",
+        perm: commands_1.Perm.mod,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var flag = ranks_1.RoleFlag.getByName(args.roleflag);
+            if (flag == null)
+                (0, commands_1.fail)("Unknown role flag ".concat(args.roleflag));
+            if (!sender.canModerate(args.player))
+                (0, commands_1.fail)("You do not have permission to modify the role flags of player \"".concat(args.player.name, "\""));
+            args.player.setFlag(flag, args.value);
+            (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), sender, args.player);
+            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(flag.name));
+        }
     }, murder: {
         args: [],
         description: 'Kills all ohno units',
@@ -287,7 +302,7 @@ exports.commands = __assign(__assign({ warn: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
-            args.player.member = args.value;
+            args.player.setFlag("member", args.value);
             args.player.updateName();
             players_1.FishPlayer.saveAll();
             outputSuccess("Set membership status of player \"".concat(args.player.name, "\" to ").concat(args.value, "."));
