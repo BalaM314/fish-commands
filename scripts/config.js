@@ -16,13 +16,9 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.bannedNames = exports.bannedWords = exports.MEMBER_PREFIX = exports.MUTED_PREFIX = exports.AFK_PREFIX = exports.MOD_PREFIX = exports.ADMIN_PREFIX = exports.STOPPED_PREFIX = void 0;
+exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.bannedNames = exports.bannedWords = exports.MUTED_PREFIX = exports.STOPPED_PREFIX = void 0;
 exports.STOPPED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
-exports.ADMIN_PREFIX = '[black]<[scarlet]A[black]>';
-exports.MOD_PREFIX = '[black]<[green]M[black]>';
-exports.AFK_PREFIX = '[orange]\uE876 AFK \uE876 | [white]';
 exports.MUTED_PREFIX = '[white](muted)';
-exports.MEMBER_PREFIX = '[black]<[yellow]\uE809[black]>[white]';
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return typeof word == "string" ? [word, []] : [word[0], word.slice(1)]; });
 })([

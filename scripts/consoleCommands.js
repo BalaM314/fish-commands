@@ -45,7 +45,21 @@ exports.commands = {
             if (rank == null)
                 (0, commands_1.fail)("Unknown rank ".concat(args.rank));
             args.player.setRank(rank);
-            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.name));
+            (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), "console", args.player);
+            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));
+        }
+    },
+    setflag: {
+        args: ["player:player", "rank:string", "value:boolean"],
+        description: "Set a player's role flags.",
+        handler: function (_a) {
+            var args = _a.args, outputSuccess = _a.outputSuccess;
+            var flag = ranks_1.RoleFlag.getByName(args.rank);
+            if (flag == null)
+                (0, commands_1.fail)("Unknown role flag ".concat(args.rank));
+            args.player.setFlag(flag, args.value);
+            (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), "console", args.player);
+            outputSuccess("Set role flag ".concat(flag.color).concat(flag.name, "[] of player \"").concat(args.player.name, "\" to ").concat(args.value));
         }
     },
     savePlayers: {
@@ -97,7 +111,7 @@ exports.commands = {
             var outputString = [""];
             var _loop_2 = function (player) {
                 var playerInfo = Vars.netServer.admins.getInfo(player.uuid);
-                outputString.push("Info for player &c\"".concat(player.cleanedName, "\" &lk(").concat(player.name, ")&fr\n\tUUID: &c\"").concat(playerInfo.id, "\"&fr\n\tUSID: &c").concat(player.usid ? "\"".concat(player.usid, "\"") : "unknown", "&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times\n\trank: &c").concat(player.rank.name, "&fr").concat((player.stopped ? ", &lris stopped&fr" : "") + (player.muted ? ", &lris muted&fr" : "") + (player.member ? ", &lmis member&fr" : "")));
+                outputString.push("Info for player &c\"".concat(player.cleanedName, "\" &lk(").concat(player.name, ")&fr\n\tUUID: &c\"").concat(playerInfo.id, "\"&fr\n\tUSID: &c").concat(player.usid ? "\"".concat(player.usid, "\"") : "unknown", "&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times\n\trank: &c").concat(player.rank.name, "&fr").concat((player.stopped ? ", &lris stopped&fr" : "") + (player.hasFlag("muted") ? ", &lris muted&fr" : "") + (player.hasFlag("member") ? ", &lmis member&fr" : "")));
             };
             try {
                 for (var infoList_2 = __values(infoList), infoList_2_1 = infoList_2.next(); !infoList_2_1.done; infoList_2_1 = infoList_2.next()) {

@@ -1,7 +1,7 @@
 import { FishPlayer } from "./players";
-import { Rank } from "./ranks";
+import { Rank, RoleFlag } from "./ranks";
 import { FishConsoleCommandsList, FlaggedIPData, mindustryPlayerData } from "./types";
-import { setToArray, StringBuilder } from "./utils";
+import { logAction, setToArray, StringBuilder } from "./utils";
 import { fail } from "./commands";
 import { addStopped } from "./api";
 import * as fjsContext from "./fjsContext";
@@ -17,7 +17,20 @@ export const commands:FishConsoleCommandsList = {
 			if(rank == null) fail(`Unknown rank ${args.rank}`);
 
 			args.player.setRank(rank);
-			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.name}`);
+			logAction(`set rank to ${rank.name} for`, "console", args.player);
+			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.color}${rank.name}[]`);
+		}
+	},
+	setflag: {
+		args: ["player:player", "rank:string", "value:boolean"],
+		description: "Set a player's role flags.",
+		handler({args, outputSuccess}){
+			const flag = RoleFlag.getByName(args.rank);
+			if(flag == null) fail(`Unknown role flag ${args.rank}`);
+
+			args.player.setFlag(flag, args.value);
+			logAction(`set roleflag ${flag.name} to ${args.value} for`, "console", args.player);
+			outputSuccess(`Set role flag ${flag.color}${flag.name}[] of player "${args.player.name}" to ${args.value}`);
 		}
 	},
 	savePlayers: {
@@ -63,7 +76,7 @@ export const commands:FishConsoleCommandsList = {
 	all names used: ${playerInfo.names.map((n:string) => `&c"${n}"&fr`).items.join(', ')}
 	all IPs used: ${playerInfo.ips.map((n:string) => (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr').items.join(", ")}
 	joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times
-	rank: &c${player.rank.name}&fr${(player.stopped ? ", &lris stopped&fr" : "") + (player.muted ? ", &lris muted&fr" : "") + (player.member ? ", &lmis member&fr" : "")}`
+	rank: &c${player.rank.name}&fr${(player.stopped ? ", &lris stopped&fr" : "") + (player.hasFlag("muted") ? ", &lris muted&fr" : "") + (player.hasFlag("member") ? ", &lmis member&fr" : "")}`
 				);
 			}
 			output(outputString.join("\n"));

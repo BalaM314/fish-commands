@@ -21,7 +21,7 @@ export class Perm {
 	static notGriefer = new Perm("player", fishP => !fishP.stopped || fishP.ranksAtLeast(Rank.mod), "[sky]");
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
-	static member = new Perm("member", fishP => fishP.member && !fishP.stopped, "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.stopped, "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
 	static chat = new Perm("chat", fishP => !fishP.muted || fishP.ranksAtLeast(Rank.mod));
 	static bypassChatFilter = new Perm("bypassChatFilter", fishP => fishP.ranksAtLeast(Rank.admin));
 	static play = new Perm("play", fishP => !fishP.stopped || fishP.ranksAtLeast(Rank.mod));

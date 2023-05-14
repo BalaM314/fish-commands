@@ -52,9 +52,7 @@ var Cleaner = {
             Call.sound(user.con, Sounds.rockBreak, 1, 1, 0);
         }, 0, 0.05, 10);
         Vars.world.tiles.eachTile(function (t) {
-            if ([
-                107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114, 122, 123,
-            ].includes(t.block().id)) {
+            if ([107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114, 122, 123].includes(t.block().id)) {
                 t.setNet(Blocks.air, Team.sharded, 0);
             }
         });
@@ -63,14 +61,14 @@ var Cleaner = {
 };
 exports.commands = __assign(__assign({ unpause: {
         args: [],
-        description: "Unpauses the game.",
+        description: 'Unpauses the game.',
         perm: commands_1.Perm.notGriefer,
         handler: function () {
             Core.app.post(function () { return Vars.state.set(GameState.State.playing); });
-        }
+        },
     }, tp: {
-        args: ["player:player"],
-        description: "Teleport to another player.",
+        args: ['player:player'],
+        description: 'Teleport to another player.',
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var _b;
@@ -81,10 +79,10 @@ exports.commands = __assign(__assign({ unpause: {
             else {
                 outputFail("Can only teleport while in a core unit.");
             }
-        }
+        },
     }, clean: {
         args: [],
-        description: "Removes all boulders from the map.",
+        description: 'Removes all boulders from the map.',
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
@@ -94,72 +92,74 @@ exports.commands = __assign(__assign({ unpause: {
             else {
                 outputFail("This command was run recently and is on cooldown.");
             }
-        }
+        },
     }, die: {
         args: [],
-        description: "Commits die.",
+        description: 'Commits die.',
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var _b;
             var sender = _a.sender;
             (_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.kill();
-        }
+        },
     }, discord: {
         args: [],
-        description: "Takes you to our discord.",
+        description: 'Takes you to our discord.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
             Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
-        }
+        },
     }, tilelog: {
-        args: ["persist:boolean?"],
-        description: "Checks the history of a tile.",
+        args: ['persist:boolean?'],
+        description: 'Checks the history of a tile.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputSuccess = _a.outputSuccess;
-            if (sender.tilelog === "persist") {
+            if (sender.tilelog === 'persist') {
                 sender.tilelog = null;
                 outputSuccess("Tilelog disabled.");
             }
             else {
                 if (args.persist) {
-                    sender.tilelog = "persist";
+                    sender.tilelog = 'persist';
                     outputSuccess("Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.");
                 }
                 else {
-                    sender.tilelog = "once";
+                    sender.tilelog = 'once';
                     output("\n \n===>[yellow]Click on a tile to check its recent history...\n ");
                 }
             }
-        }
+        },
     }, afk: {
         args: [],
-        description: "Toggles your afk status.",
+        description: 'Toggles your afk status.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
-            sender.afk = !sender.afk;
+            sender.setFlag('afk', !sender.hasFlag('afk'));
             sender.updateName();
-            if (sender.afk) {
+            if (sender.hasFlag('afk')) {
                 outputSuccess("You are now marked as AFK.");
             }
             else {
                 outputSuccess("You are no longer marked as AFK.");
             }
-        }
+        },
     }, tileid: {
         args: [],
-        description: "Checks id of a tile.",
+        description: 'Checks id of a tile.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, output = _a.output;
             sender.tileId = true;
             output("Click a tile to see its id...");
-        }
+        },
     } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
     var _b = __read(_a, 2), name = _b[0], data = _b[1];
-    return [name, {
+    return [
+        name,
+        {
             args: [],
             description: "Switches to the ".concat(name, " server."),
             perm: commands_1.Perm.none,
@@ -167,10 +167,11 @@ exports.commands = __assign(__assign({ unpause: {
                 var sender = _a.sender;
                 Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(name, " server. Use [cyan]/").concat(name, " [magenta]to join them!"));
                 Call.connect(sender.con, data.ip, data.port);
-            }
-        }];
+            },
+        },
+    ];
 }))), { s: {
-        args: ["message:string"],
+        args: ['message:string'],
         description: "Sends a message to staff only.",
         perm: commands_1.Perm.none,
         handler: function (_a) {
@@ -188,7 +189,7 @@ exports.commands = __assign(__assign({ unpause: {
                     }
                 }
             });
-        }
+        },
     }, 
     /**
      * This command is mostly for mobile (or players without foos).
@@ -199,7 +200,7 @@ exports.commands = __assign(__assign({ unpause: {
      * player will be up the target player's butt
      */
     watch: {
-        args: ["player:player?"],
+        args: ['player:player?'],
         description: "Watch/unwatch a player.",
         perm: commands_1.Perm.none,
         handler: function (_a) {
@@ -229,23 +230,24 @@ exports.commands = __assign(__assign({ unpause: {
             else {
                 outputFail("No player to unwatch.");
             }
-        }
+        },
     }, help: {
-        args: ["name:string?"],
-        description: "Displays a list of all commands.",
+        args: ['name:string?'],
+        description: 'Displays a list of all commands.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputFail = _a.outputFail, sender = _a.sender, allCommands = _a.allCommands;
-            var formatCommand = function (name, color) { return new utils_1.StringBuilder()
-                .add("".concat(color, "/").concat(name))
-                .chunk("[white]".concat(allCommands[name].args.map(commands_1.formatArg).join(" ")))
-                .chunk("[lightgray]- ".concat(allCommands[name].description))
-                .str; };
-            var formatList = function (commandList, color) { return commandList.map(function (c) { return formatCommand(c, color); }).join("\n"); };
-            if (args.name && isNaN(parseInt(args.name)) && !["mod", "admin", "member"].includes(args.name)) {
+            var formatCommand = function (name, color) {
+                return new utils_1.StringBuilder()
+                    .add("".concat(color, "/").concat(name))
+                    .chunk("[white]".concat(allCommands[name].args.map(commands_1.formatArg).join(' ')))
+                    .chunk("[lightgray]- ".concat(allCommands[name].description)).str;
+            };
+            var formatList = function (commandList, color) { return commandList.map(function (c) { return formatCommand(c, color); }).join('\n'); };
+            if (args.name && isNaN(parseInt(args.name)) && !['mod', 'admin', 'member'].includes(args.name)) {
                 //name is not a number or a category, therefore it is probably a command name
                 if (args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))) {
-                    output("Help for command ".concat(args.name, ":\n  ").concat(allCommands[args.name].description, "\n  Usage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(" "), "\n  Permission required: ").concat(allCommands[args.name].perm.name));
+                    output("Help for command ".concat(args.name, ":\n  ").concat(allCommands[args.name].description, "\n  Usage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(' '), "\n  Permission required: ").concat(allCommands[args.name].perm.name));
                 }
                 else {
                     outputFail("Command \"".concat(args.name, "\" does not exist."));
@@ -253,49 +255,50 @@ exports.commands = __assign(__assign({ unpause: {
             }
             else {
                 var commands_2 = {
-                    player: [], mod: [], admin: [], member: []
+                    player: [],
+                    mod: [],
+                    admin: [],
+                    member: [],
                 };
                 Object.entries(allCommands).forEach(function (_a) {
                     var _b = __read(_a, 2), name = _b[0], data = _b[1];
-                    return (data.perm === commands_1.Perm.admin ? commands_2.admin :
-                        data.perm === commands_1.Perm.mod ? commands_2.mod :
-                            data.perm === commands_1.Perm.member ? commands_2.member : commands_2.player).push(name);
+                    return (data.perm === commands_1.Perm.admin ? commands_2.admin : data.perm === commands_1.Perm.mod ? commands_2.mod : data.perm === commands_1.Perm.member ? commands_2.member : commands_2.player).push(name);
                 });
                 var chunkedPlayerCommands = (0, utils_1.to2DArray)(commands_2.player, 15);
                 switch (args.name) {
-                    case "admin":
+                    case 'admin':
                         output("".concat(commands_1.Perm.admin.color, "-- Admin commands --\n") + formatList(commands_2.admin, commands_1.Perm.admin.color));
                         break;
-                    case "mod":
+                    case 'mod':
                         output("".concat(commands_1.Perm.mod.color, "-- Mod commands --\n") + formatList(commands_2.mod, commands_1.Perm.mod.color));
                         break;
-                    case "member":
+                    case 'member':
                         output("".concat(commands_1.Perm.member.color, "-- Member commands --\n") + formatList(commands_2.member, commands_1.Perm.member.color));
                         break;
                     default:
                         var pageNumber = args.name !== null ? parseInt(args.name) : 1;
-                        if ((pageNumber - 1) in chunkedPlayerCommands) {
-                            output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --\n") + formatList(chunkedPlayerCommands[pageNumber - 1], "[sky]"));
+                        if (pageNumber - 1 in chunkedPlayerCommands) {
+                            output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --\n") + formatList(chunkedPlayerCommands[pageNumber - 1], '[sky]'));
                         }
                         else {
                             outputFail("\"".concat(args.name, "\" is an invalid page number."));
                         }
                 }
             }
-        }
+        },
     }, msg: {
-        args: ["player:player", "message:string"],
-        description: "Send a message to only one player.",
+        args: ['player:player', 'message:string'],
+        description: 'Send a message to only one player.',
         perm: commands_1.Perm.chat,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output;
             globals_1.recentWhispers[args.player.uuid] = sender.uuid;
             args.player.sendMessage("".concat(sender.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
             output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
-        }
+        },
     }, r: {
-        args: ["message:string"],
-        description: "Reply to the most recent message.",
+        args: ['message:string'],
+        description: 'Reply to the most recent message.',
         perm: commands_1.Perm.chat,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
@@ -313,9 +316,9 @@ exports.commands = __assign(__assign({ unpause: {
             else {
                 outputFail("It doesn't look like someone has messaged you recently. Try whispering to them with [white]\"/msg <player> <message>\"");
             }
-        }
+        },
     }, trail: {
-        args: ["type:string?", "color:string?"],
+        args: ['type:string?', 'color:string?'],
         description: 'Use command to see options and toggle trail on/off.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
@@ -369,10 +372,10 @@ exports.commands = __assign(__assign({ unpause: {
             else {
                 outputFail("[scarlet]Sorry, \"".concat(args.color, "\" is not a valid color.\n[yellow]Color can be in the following formats:\n[pink]pink [white]| [gray]#696969 [white]| 255,0,0."));
             }
-        }
+        },
     }, ohno: {
         args: [],
-        description: "Spawns an ohno.",
+        description: 'Spawns an ohno.',
         perm: commands_1.Perm.notGriefer,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail;
@@ -383,21 +386,25 @@ exports.commands = __assign(__assign({ unpause: {
             else {
                 outputFail(canSpawn);
             }
-        }
+        },
     }, ranks: {
         args: [],
-        description: "Displays information about all ranks.",
+        description: 'Displays information about all ranks.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var output = _a.output;
-            output("List of ranks:\n"
-                + Object.values(ranks_1.Rank.ranks).map(function (rank) {
-                    return "".concat(rank.prefix, " ").concat(rank.color).concat((0, utils_1.capitalizeText)(rank.name), "[]: ").concat(rank.color).concat(rank.description, "[]");
-                }).join("\n"));
-        }
+            output("List of ranks:\n" +
+                Object.values(ranks_1.Rank.ranks)
+                    .map(function (rank) { return "".concat(rank.prefix, " ").concat(rank.color).concat((0, utils_1.capitalizeText)(rank.name), "[]: ").concat(rank.color).concat(rank.description, "[]\n"); })
+                    .join('') +
+                "List of flags:\n" +
+                Object.values(ranks_1.RoleFlag.flags)
+                    .map(function (flag) { return "".concat(flag.prefix, " ").concat(flag.color).concat((0, utils_1.capitalizeText)(flag.name), "[]: ").concat(flag.color).concat(flag.description, "[]\n"); })
+                    .join(''));
+        },
     }, team: {
-        args: ["team:team", "player:player"],
-        description: "Changes the team of a player.",
+        args: ['team:team', 'player:player'],
+        description: 'Changes the team of a player.',
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
@@ -405,13 +412,13 @@ exports.commands = __assign(__assign({ unpause: {
                 (0, commands_1.fail)("You do not have permission to change the team of this player.");
             args.player.player.team(args.team);
             outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));
-        }
+        },
     }, rank: {
-        args: ["player:player"],
-        description: "Displays the rank of a player.",
+        args: ['player:player'],
+        description: 'Displays the rank of a player.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output;
             output("Player ".concat(args.player.cleanedName, "'s rank is ").concat(args.player.rank.color).concat(args.player.rank.name, "[]."));
-        }
+        },
     } });

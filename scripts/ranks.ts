@@ -8,7 +8,6 @@ export class Rank {
 	//icons and names subject to change
 	static mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "[#6FFC7C]");
 	static admin = new Rank("admin", 4, "Administrators with the power to ban players.", "[black]<[#C30202]\uE82C[]>[]", "[#C30202]");
-	static developer = new Rank("developer", 5, "Awarded to people who contribute to the server's codebase.", "[black]<[#B000FF]\uE80E[]>[]", "[#B000FF]");
 	static manager = new Rank("manager", 10, "Managers have file and console access.", "[black]<[scarlet]\uE88E[]>[]", "[scarlet]");
 	static pi = new Rank("pi", 11, "3.14159265358979323846264338327950288419716", "[black]<[#FF8000]\u03C0[]>[]", "[blue]");//i want pi rank
 	static fish = new Rank("fish", 999, "Owner.", "[blue]>|||>[] ", "[blue]");//Might want to change this to like owner or something
@@ -21,7 +20,24 @@ export class Rank {
 	){
 		Rank.ranks[name] = this;
 	}
-	static getByName(name:string):Rank | null{
-		return this.ranks[name] ?? null;
+	static getByName(name:string):Rank | null {
+		return Rank.ranks[name] ?? null;
+	}
+}
+
+export class RoleFlag {
+	static flags:Record<string, RoleFlag> = {};
+	static developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]");
+	static member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]");
+	static afk = new RoleFlag("afk", "[orange]\uE876 AFK \uE876 | [white]", "Used for players who are idle for longer than 2 minutes.", "[orange]", false);
+	constructor(
+		public name:string,
+		public prefix:string,
+		public description:string,
+		public color:string,
+		public peristent:boolean = true,
+	){RoleFlag.flags[name] = this;}
+	static getByName(name:string):RoleFlag | null {
+		return RoleFlag.flags[name] ?? null;
 	}
 }
