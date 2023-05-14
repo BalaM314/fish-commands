@@ -519,6 +519,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 
 	stop(by:FishPlayer | "api" | "vpn"){
 		this.stopped = true;
+		if(!this.connected()) return;
 		this.stopUnit();
 		this.updateName();
 		if(FishPlayer.checkedIps[this.player.ip()]) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;

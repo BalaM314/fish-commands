@@ -636,6 +636,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.stop = function (by) {
         this.stopped = true;
+        if (!this.connected())
+            return;
         this.stopUnit();
         this.updateName();
         if (FishPlayer.checkedIps[this.player.ip()])

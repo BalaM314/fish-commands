@@ -154,7 +154,7 @@ export const commands:FishCommandsList = {
 					const fishP = FishPlayer.getFromInfo(info);
 					if(sender.canModerate(fishP, true)){
 						fishP.stop(sender);
-						logAction('stopped', sender, args.player);
+						logAction('stopped', sender, info);
 						outputSuccess(`Player "${info.lastName}" was stopped.`);
 					} else {
 						outputFail(`You do not have permission to stop this player.`);
