@@ -23,7 +23,7 @@ exports.bannedWords = (function (words) {
     return words.map(function (word) { return typeof word == "string" ? [word, []] : [word[0], word.slice(1)]; });
 })([
     "nig" + "ger", "re" + "tard", 'kill yourself', 'kill urself', ['kys', "skys", "skyscraper", "skystone"], "co" + "ck", "co" + "ck sucker", "iamasussyimposter",
-    ["rape", "grape", "therap", "drape", "scrape"],
+    ["rape", "grape", "therap", "drape", "scrape", "trapez"],
     "porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
 exports.bannedNames = ['goldberg', 'eshay', "VALVE"];

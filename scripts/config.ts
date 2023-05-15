@@ -5,7 +5,7 @@ export const bannedWords:[word:string, whitelist:string[]][] = (
 		words.map(word => typeof word == "string" ? [word, []] : [word[0], word.slice(1)])
 )([
 	"nig"+"ger", "re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "skyscraper", "skystone"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter",
-	["rape", "grape", "therap", "drape", "scrape"],
+	["rape", "grape", "therap", "drape", "scrape", "trapez"],
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
 export const bannedNames = ['goldberg', 'eshay', "VALVE"];
