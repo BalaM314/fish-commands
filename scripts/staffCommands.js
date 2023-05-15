@@ -325,7 +325,7 @@ exports.commands = __assign(__assign({ warn: {
                 }
                 else {
                     execServer("ban ip ".concat(option.ip()));
-                    (0, utils_1.logAction)("ip-banned", sender, option);
+                    (0, utils_1.logAction)("ip-banned", sender, option.getInfo());
                     outputSuccess("IP-banned player ".concat(option.name, "."));
                 }
             }, true, function (opt) { return opt.name; });

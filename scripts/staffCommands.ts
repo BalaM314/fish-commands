@@ -320,7 +320,7 @@ export const commands:FishCommandsList = {
 					outputFail(`Cannot ip ban an admin.`);
 				} else {
 					execServer(`ban ip ${option.ip()}`);
-					logAction("ip-banned", sender, option);
+					logAction("ip-banned", sender, option.getInfo());
 					outputSuccess(`IP-banned player ${option.name}.`);
 				}
 			}, true, opt => opt.name);
