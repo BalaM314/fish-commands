@@ -2,10 +2,10 @@ import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, FishConsoleCommandsList, FishCommandData } from "./types";
-import { getTeam } from "./utils";
+import { getTeam, parseTimeString } from "./utils";
 
 export const allCommands:Record<string, FishCommandData> = {};
-const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 //Cursed
@@ -102,6 +102,11 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				const number = parseInt(args[i]);
 				if(isNaN(number)) return {error: `Invalid number "${args[i]}"`};
 				outputArgs[cmdArg.name] = number;
+				break;
+			case "time":
+				const seconds = parseTimeString(args[i]);
+				if(seconds == null) return {error: `Invalid time string "${args[i]}"`};
+				outputArgs[cmdArg.name] = seconds;
 				break;
 			case "string":
 				outputArgs[cmdArg.name] = args[i];

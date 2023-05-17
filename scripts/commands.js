@@ -33,7 +33,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
-var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team"];
+var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"];
 /** Represents a permission that is required to do something. */
 var Perm = exports.Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
@@ -133,6 +133,12 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     if (isNaN(number))
                         return { error: "Invalid number \"".concat(args[i], "\"") };
                     outputArgs[cmdArg.name] = number;
+                    break;
+                case "time":
+                    var seconds = (0, utils_1.parseTimeString)(args[i]);
+                    if (seconds == null)
+                        return { error: "Invalid time string \"".concat(args[i], "\"") };
+                    outputArgs[cmdArg.name] = seconds;
                     break;
                 case "string":
                     outputArgs[cmdArg.name] = args[i];

@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.parseTimeString = exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var config_1 = require("./config");
 var api = require("./api");
 var players_1 = require("./players");
@@ -315,3 +315,30 @@ function logAction(action, by, to) {
     api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
 }
 exports.logAction = logAction;
+/**@returns the number of seconds. */
+function parseTimeString(str) {
+    var e_2, _a;
+    var formats = [
+        [/(\d+)s/, 1],
+        [/(\d+)m/, 60],
+        [/(\d+)h/, 3600],
+        [/(\d+)d/, 86400],
+        [/(\d+)w/, 604800],
+    ];
+    try {
+        for (var formats_1 = __values(formats), formats_1_1 = formats_1.next(); !formats_1_1.done; formats_1_1 = formats_1.next()) {
+            var _b = __read(formats_1_1.value, 2), regex = _b[0], mult = _b[1];
+            if (regex.test(str))
+                return Number(regex.exec(str)[1]) * mult;
+        }
+    }
+    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    finally {
+        try {
+            if (formats_1_1 && !formats_1_1.done && (_a = formats_1.return)) _a.call(formats_1);
+        }
+        finally { if (e_2) throw e_2.error; }
+    }
+    return null;
+}
+exports.parseTimeString = parseTimeString;

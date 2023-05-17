@@ -246,3 +246,18 @@ export function logAction(action: string, by: FishPlayer | string, to: FishPlaye
 **ip**: \`${ip}\``
 	);
 }
+
+/**@returns the number of seconds. */
+export function parseTimeString(str:string):number | null {
+	const formats:[RegExp, number][] = [
+		[/(\d+)s/, 1],
+		[/(\d+)m/, 60],
+		[/(\d+)h/, 3600],
+		[/(\d+)d/, 86400],
+		[/(\d+)w/, 604800],
+	];
+	for(const [regex, mult] of formats){
+		if(regex.test(str)) return Number(regex.exec(str)![1]) * mult;
+	}
+	return null;
+}
