@@ -156,7 +156,7 @@ export const commands: FishCommandsList = {
     description: `Sends a message to staff only.`,
     perm: Perm.none,
     handler({ sender, args, outputSuccess, outputFail }) {
-      api.sendStaffMessage(args.message, sender.name, sender.cleanedName, (sent) => {
+      api.sendStaffMessage(args.message, sender.name, (sent) => {
         if (!sender.ranksAtLeast(Rank.mod)) {
           if (sent) outputSuccess(`Message sent to all staff.`);
           else {

@@ -176,7 +176,7 @@ exports.commands = __assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            api.sendStaffMessage(args.message, sender.name, sender.cleanedName, function (sent) {
+            api.sendStaffMessage(args.message, sender.name, function (sent) {
                 if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
                     if (sent)
                         outputSuccess("Message sent to all staff.");

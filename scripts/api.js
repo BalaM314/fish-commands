@@ -118,11 +118,12 @@ function getStaffMessages(callback) {
 }
 exports.getStaffMessages = getStaffMessages;
 /**Send staff messages from server. */
-function sendStaffMessage(message, playerName, cleanedName, callback) {
+function sendStaffMessage(message, playerName, callback) {
+    if (callback === void 0) { callback = function () { }; }
     var server = (0, config_1.getGamemode)();
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/sendStaffMessage"), 
     // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
-    JSON.stringify({ message: message, playerName: playerName, cleanedName: cleanedName, server: server }))
+    JSON.stringify({ message: message, playerName: playerName, cleanedName: Strings.stripColors(playerName), server: server }))
         .header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     try {

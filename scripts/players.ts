@@ -208,6 +208,7 @@ export class FishPlayer {
 						fishPlayer.stop("vpn");
 						fishPlayer.mute("vpn");
 						logAction("autoflagged", "AntiVPN", fishPlayer);
+						api.sendStaffMessage(`Autoflagged player ${player.name} for suspected vpn!`, "AntiVPN");
 						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted.`);
 						Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`);
 						menu("Welcome to Fish Network!", `Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`, ["Close", "Discord"], fishPlayer, ({option, sender}) => {
