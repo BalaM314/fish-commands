@@ -40,8 +40,12 @@ var listeners = (function (d) { return d; })({
         var fishSender = players_1.FishPlayer.get(player);
         if (option === -1 || option === fishSender.activeMenu.cancelOptionId)
             return;
+        var prevCallback = fishSender.activeMenu.callback;
         (_b = (_a = fishSender.activeMenu).callback) === null || _b === void 0 ? void 0 : _b.call(_a, fishSender, option);
-        fishSender.activeMenu.callback = undefined;
+        //if the callback wasn't modified, then clear it
+        if (fishSender.activeMenu.callback === prevCallback)
+            fishSender.activeMenu.callback = undefined;
+        //otherwise, the menu spawned another menu that needs to be handled
     },
     none: function (player, option) {
         //do nothing

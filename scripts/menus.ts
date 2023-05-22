@@ -13,8 +13,12 @@ const listeners = (
 		const fishSender = FishPlayer.get(player);
 		if(option === -1 || option === fishSender.activeMenu.cancelOptionId) return;
 
+		const prevCallback = fishSender.activeMenu.callback;
 		fishSender.activeMenu.callback?.(fishSender, option);
-		fishSender.activeMenu.callback = undefined;
+		//if the callback wasn't modified, then clear it
+		if(fishSender.activeMenu.callback === prevCallback)
+			fishSender.activeMenu.callback = undefined;
+		//otherwise, the menu spawned another menu that needs to be handled
 	},
 	none(player, option){
 		//do nothing
@@ -29,14 +33,14 @@ export function registerListeners(){
 }
 
 /**Displays a menu to a player. */
-function menu(title:string, description:string, options:string[][], target:FishPlayer):void;
+function menu(title:string, description:string, options:string[], target:FishPlayer):void;
 /**Displays a menu to a player with callback. */
 function menu<T>(
 	title:string, description:string, options:T[], target:FishPlayer,
 	callback: (opts: {
 		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
 	}) => void,
-	includeCancel:boolean, optionStringifier?:(opt:T) => string, columns?:number
+	includeCancel?:boolean, optionStringifier?:(opt:T) => string, columns?:number
 ):void;
 //this is a minor abomination but theres no good way to do overloads in typescript
 function menu<T>(

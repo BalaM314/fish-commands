@@ -14,7 +14,7 @@ export const commands:FishCommandsList = {
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess}){
 			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
-			menu('Warning', reason, [['accept']], args.player);
+			menu('Warning', reason, ['accept'], args.player);
 			logAction('warned', sender, args.player);
 			outputSuccess(`Warned player "${args.player.cleanedName}" for "${reason}"`);
 		}
