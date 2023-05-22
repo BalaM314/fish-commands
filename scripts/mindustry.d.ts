@@ -97,13 +97,13 @@ declare class HttpRequest {
 	header(name:string, value:string):HttpRequest;
 	timeout: number;
 }
-declare class HttpReponse {
+declare class HttpResponse {
 	getResultAsString():string;
 }
 declare const Http: {
 	post(url:string, content:string):HttpRequest;
 	get(url:string):HttpRequest;
-	get(url:string, callback:(res:HttpReponse) => unknown):void;
+	get(url:string, callback:(res:HttpResponse) => unknown):void;
 }
 declare class ObjectSet<T> {
 	size:number;
