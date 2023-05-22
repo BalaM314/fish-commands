@@ -23,6 +23,9 @@ export class Rank {
 	static getByName(name:string):Rank | null {
 		return Rank.ranks[name] ?? null;
 	}
+	coloredName(){
+		return this.color + this.name + "[]";
+	}
 }
 
 export class RoleFlag {
@@ -39,5 +42,8 @@ export class RoleFlag {
 	){RoleFlag.flags[name] = this;}
 	static getByName(name:string):RoleFlag | null {
 		return RoleFlag.flags[name] ?? null;
+	}
+	coloredName(){
+		return this.color + this.name + "[]";
 	}
 }

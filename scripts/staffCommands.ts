@@ -2,7 +2,7 @@ import { Perm, fail } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import type { FishCommandData, FishCommandsList, mindustryPlayerData } from "./types";
-import { getTimeSinceText, setToArray, logAction } from "./utils";
+import { getTimeSinceText, setToArray, logAction, escapeStringColors, formatTimeRelative, colorBadBoolean } from "./utils";
 import { Ohnos } from "./ohno";
 import { Rank, RoleFlag } from "./ranks";
 import * as api from './api';
@@ -368,5 +368,22 @@ export const commands:FishCommandsList = {
 			FishPlayer.messageMuted(sender.player.name, args.message);
 		}
 	},
+
+	info: {
+		args: ["target:player"],
+		description: "Displays information about a player.",
+		perm: Perm.mod,
+		handler({sender, args, output}){
+			output(
+`[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColors(args.target.name)})
+	[accent]Rank: ${args.target.rank.coloredName()}
+	[accent]Role flags: ${Array.from(args.target.flags as RoleFlag[]).map(f => f.coloredName()).join(" ")}
+	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
+	[accent]marked: ${args.target.marked() ? `until ${formatTimeRelative(args.target.unmarkTime)}` : "[green]false"}
+	[accent]muted: ${colorBadBoolean(args.target.muted)}
+	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}`.replace(/\t/g, "    ")
+			);
+		}
+	}
 
 };

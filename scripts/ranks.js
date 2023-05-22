@@ -16,6 +16,9 @@ var Rank = exports.Rank = /** @class */ (function () {
         var _a;
         return (_a = Rank.ranks[name]) !== null && _a !== void 0 ? _a : null;
     };
+    Rank.prototype.coloredName = function () {
+        return this.color + this.name + "[]";
+    };
     Rank.ranks = {};
     Rank.new = new Rank("new", -1, "For new players.", "", "[forest]");
     Rank.player = new Rank("player", 0, "Ordinary players.", "");
@@ -41,6 +44,9 @@ var RoleFlag = exports.RoleFlag = /** @class */ (function () {
     RoleFlag.getByName = function (name) {
         var _a;
         return (_a = RoleFlag.flags[name]) !== null && _a !== void 0 ? _a : null;
+    };
+    RoleFlag.prototype.coloredName = function () {
+        return this.color + this.name + "[]";
     };
     RoleFlag.flags = {};
     RoleFlag.developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]");

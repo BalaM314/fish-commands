@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseTimeString = exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var config_1 = require("./config");
 var api = require("./api");
 var players_1 = require("./players");
@@ -77,6 +77,40 @@ function getTimeSinceText(old) {
 }
 exports.getTimeSinceText = getTimeSinceText;
 ;
+function formatTimeRelative(time) {
+    var difference = Math.abs(time - Date.now());
+    var months = Math.floor(difference / (30 * 24 * 60 * 60 * 1000));
+    var days = Math.floor((difference % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+    var hours = Math.floor((difference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    var minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
+    var seconds = Math.floor((difference % (60 * 1000)) / (1000));
+    if (time > Date.now())
+        return "in " + [
+            months && "".concat(months, " months"),
+            days && "".concat(days, " days"),
+            hours && "".concat(hours, " hours"),
+            minutes && "".concat(minutes, " minutes"),
+            seconds && "".concat(seconds, " seconds"),
+        ].filter(function (s) { return s; }).join(", ");
+    else
+        return "in " + [
+            months && "".concat(months, " months"),
+            days && "".concat(days, " days"),
+            hours && "".concat(hours, " hours"),
+            minutes && "".concat(minutes, " minutes"),
+            seconds && "".concat(seconds, " seconds"),
+        ].filter(function (s) { return s; }).join(", ");
+}
+exports.formatTimeRelative = formatTimeRelative;
+;
+function colorBoolean(val) {
+    return val ? "[green]true[]" : "[red]false[]";
+}
+exports.colorBoolean = colorBoolean;
+function colorBadBoolean(val) {
+    return val ? "[red]true[]" : "[green]false[]";
+}
+exports.colorBadBoolean = colorBadBoolean;
 function to2DArray(array, width) {
     if (array.length == 0)
         return [];
@@ -343,3 +377,8 @@ function parseTimeString(str) {
     return null;
 }
 exports.parseTimeString = parseTimeString;
+/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
+function escapeStringColors(str) {
+    return str.replace(/\[/g, "[[");
+}
+exports.escapeStringColors = escapeStringColors;

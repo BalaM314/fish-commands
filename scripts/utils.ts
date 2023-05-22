@@ -49,6 +49,42 @@ export function getTimeSinceText(old:number){
 	return timeSince;
 };
 
+export function formatTimeRelative(time:number){
+	const difference = Math.abs(time - Date.now());
+
+	const months = Math.floor(difference / (30 * 24 * 60 * 60 * 1000));
+	const days = Math.floor((difference % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+	const hours = Math.floor((difference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+	const minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
+	const seconds = Math.floor((difference % (60 * 1000)) / (1000));
+
+	if(time > Date.now())
+		return "in " + [
+			months && `${months} months`,
+			days && `${days} days`,
+			hours && `${hours} hours`,
+			minutes && `${minutes} minutes`,
+			seconds && `${seconds} seconds`,
+		].filter(s => s).join(", ");
+	else
+		return "in " + [
+			months && `${months} months`,
+			days && `${days} days`,
+			hours && `${hours} hours`,
+			minutes && `${minutes} minutes`,
+			seconds && `${seconds} seconds`,
+		].filter(s => s).join(", ");
+
+};
+
+export function colorBoolean(val:boolean){
+	return val ? `[green]true[]` : `[red]false[]`
+}
+
+export function colorBadBoolean(val:boolean){
+	return val ? `[red]true[]` : `[green]false[]`
+}
+
 export function to2DArray<T>(array:T[], width:number){
 	if(array.length == 0) return [];
 	let output:T[][] = [[]];
@@ -261,4 +297,9 @@ export function parseTimeString(str:string):number | null {
 		if(regex.test(str)) return Number(regex.exec(str)![1]) * mult;
 	}
 	return null;
+}
+
+/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
+export function escapeStringColors(str:string):string {
+	return str.replace(/\[/g, "[[");
 }
