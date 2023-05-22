@@ -330,7 +330,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             return; //No player, no need to update
         var prefix = '';
         if (this.marked())
-            prefix += config.STOPPED_PREFIX;
+            prefix += config.MARKED_PREFIX;
         if (this.muted)
             prefix += config.MUTED_PREFIX;
         try {

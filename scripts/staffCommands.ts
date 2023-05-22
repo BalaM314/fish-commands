@@ -63,12 +63,12 @@ export const commands:FishCommandsList = {
 		description: 'Stops a player.',
 		perm: Perm.mod,
 		handler({args, rawArgs, sender}){
-			if(args.player.marked()) fail(`Player "${args.player.name}" is already stopped.`);
+			if(args.player.marked()) fail(`Player "${args.player.name}" is already marked.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
 			const time = args.time ?? 604800;
 			args.player.stop(sender, time);
 			logAction('stopped', sender, args.player);
-			Call.sendMessage(`Player "${args.player.name}" has been stopped for ${args.time ? rawArgs[1] : "30 days"}.`);
+			Call.sendMessage(`Player "${args.player.name}" has been marked for ${args.time ? rawArgs[1] : "7 days"}.`);
 		}
 	},
 
@@ -80,9 +80,15 @@ export const commands:FishCommandsList = {
 			if(args.player.marked()){
 				args.player.free(sender);
 				logAction('freed', sender, args.player);
-				outputSuccess(`Player "${args.player.name}" has been freed.`);
+				outputSuccess(`Player "${args.player.name}" has been unmarked.`);
+			} else if(args.player.autoflagged){
+				args.player.autoflagged = false;
+				args.player.sendMessage("[yellow]You have been freed! Enjoy!");
+				args.player.updateName();
+				args.player.forceRespawn();
+				outputSuccess(`Player "${args.player.name}" has been unflagged.`);
 			} else {
-				outputFail(`Player "${args.player.name}" is not stopped.`);;
+				outputFail(`Player "${args.player.name}" is not marked or autoflagged.`);;
 			}
 		}
 	},
@@ -156,7 +162,7 @@ export const commands:FishCommandsList = {
 					if(sender.canModerate(fishP, true)){
 						fishP.stop(sender, args.time ?? 604800);
 						logAction('stopped', sender, info);
-						outputSuccess(`Player "${info.lastName}" was stopped.`);
+						outputSuccess(`Player "${info.lastName}" was marked.`);
 					} else {
 						outputFail(`You do not have permission to stop this player.`);
 					}
@@ -176,14 +182,30 @@ export const commands:FishCommandsList = {
 				fail("No players with that name were found.");
 			}
 
-			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
+			function stop(option:mindustryPlayerData, time:number){
 				const fishP = FishPlayer.getFromInfo(option);
 				if(sender.canModerate(fishP, true)){
-					fishP.stop(sender, args.time ?? 604800);
+					fishP.stop(sender, time);
 					logAction('stopped', sender, option);
-					outputSuccess(`Player "${option.lastName}" was stopped.`);
+					outputSuccess(`Player "${option.lastName}" was marked.`);
 				} else {
 					outputFail(`You do not have permission to stop this player.`);
+				}
+			}
+
+			menu("Stop", "Choose a player to mark", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
+				if(args.time == null){
+					menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, ({option: optionTime, sender}) => {
+						Log.info("hello?");
+						const time =
+							optionTime == "2 days" ? 172800 :
+							optionTime == "7 days" ? 604800 :
+							optionTime == "30 days" ? 2592000 :
+							999999999999;
+						stop(optionPlayer, time);
+					}, false);
+				} else {
+					stop(optionPlayer, args.time);
 				}
 			}, true, p => p.lastName);
 		}

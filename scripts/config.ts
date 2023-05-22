@@ -1,4 +1,4 @@
-export const STOPPED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
+export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 export const MUTED_PREFIX = '[white](muted)';
 export const bannedWords:[word:string, whitelist:string[]][] = (
 	(words:(string | string[])[]) =>

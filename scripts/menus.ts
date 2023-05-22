@@ -36,7 +36,7 @@ function menu<T>(
 	callback: (opts: {
 		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
 	}) => void,
-	includeCancel:boolean, optionStringifier:(opt:T) => string
+	includeCancel:boolean, optionStringifier?:(opt:T) => string, columns?:number
 ):void;
 //this is a minor abomination but theres no good way to do overloads in typescript
 function menu<T>(

@@ -269,7 +269,7 @@ export class FishPlayer {
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
-		if(this.marked()) prefix += config.STOPPED_PREFIX;
+		if(this.marked()) prefix += config.MARKED_PREFIX;
 		if(this.muted) prefix += config.MUTED_PREFIX;
 		for(const flag of this.flags){
 			prefix += flag.prefix;

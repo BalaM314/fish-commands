@@ -78,13 +78,13 @@ exports.commands = __assign(__assign({ warn: {
             var _b;
             var args = _a.args, rawArgs = _a.rawArgs, sender = _a.sender;
             if (args.player.marked())
-                (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already stopped."));
+                (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800;
             args.player.stop(sender, time);
             (0, utils_1.logAction)('stopped', sender, args.player);
-            Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped for ").concat(args.time ? rawArgs[1] : "30 days", "."));
+            Call.sendMessage("Player \"".concat(args.player.name, "\" has been marked for ").concat(args.time ? rawArgs[1] : "7 days", "."));
         }
     }, free: {
         args: ['player:player'],
@@ -95,10 +95,17 @@ exports.commands = __assign(__assign({ warn: {
             if (args.player.marked()) {
                 args.player.free(sender);
                 (0, utils_1.logAction)('freed', sender, args.player);
-                outputSuccess("Player \"".concat(args.player.name, "\" has been freed."));
+                outputSuccess("Player \"".concat(args.player.name, "\" has been unmarked."));
+            }
+            else if (args.player.autoflagged) {
+                args.player.autoflagged = false;
+                args.player.sendMessage("[yellow]You have been freed! Enjoy!");
+                args.player.updateName();
+                args.player.forceRespawn();
+                outputSuccess("Player \"".concat(args.player.name, "\" has been unflagged."));
             }
             else {
-                outputFail("Player \"".concat(args.player.name, "\" is not stopped."));
+                outputFail("Player \"".concat(args.player.name, "\" is not marked or autoflagged."));
                 ;
             }
         }
@@ -168,7 +175,7 @@ exports.commands = __assign(__assign({ warn: {
                     if (sender.canModerate(fishP, true)) {
                         fishP.stop(sender, (_b = args.time) !== null && _b !== void 0 ? _b : 604800);
                         (0, utils_1.logAction)('stopped', sender, info);
-                        outputSuccess("Player \"".concat(info.lastName, "\" was stopped."));
+                        outputSuccess("Player \"".concat(info.lastName, "\" was marked."));
                     }
                     else {
                         outputFail("You do not have permission to stop this player.");
@@ -189,17 +196,32 @@ exports.commands = __assign(__assign({ warn: {
             else if (possiblePlayers.length == 0) {
                 (0, commands_1.fail)("No players with that name were found.");
             }
-            (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, sender, function (_a) {
-                var _b;
-                var option = _a.option, sender = _a.sender;
+            function stop(option, time) {
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (sender.canModerate(fishP, true)) {
-                    fishP.stop(sender, (_b = args.time) !== null && _b !== void 0 ? _b : 604800);
+                    fishP.stop(sender, time);
                     (0, utils_1.logAction)('stopped', sender, option);
-                    outputSuccess("Player \"".concat(option.lastName, "\" was stopped."));
+                    outputSuccess("Player \"".concat(option.lastName, "\" was marked."));
                 }
                 else {
                     outputFail("You do not have permission to stop this player.");
+                }
+            }
+            (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (_a) {
+                var optionPlayer = _a.option, sender = _a.sender;
+                if (args.time == null) {
+                    (0, menus_1.menu)("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, function (_a) {
+                        var optionTime = _a.option, sender = _a.sender;
+                        Log.info("hello?");
+                        var time = optionTime == "2 days" ? 172800 :
+                            optionTime == "7 days" ? 604800 :
+                                optionTime == "30 days" ? 2592000 :
+                                    999999999999;
+                        stop(optionPlayer, time);
+                    }, false);
+                }
+                else {
+                    stop(optionPlayer, args.time);
                 }
             }, true, function (p) { return p.lastName; });
         }
