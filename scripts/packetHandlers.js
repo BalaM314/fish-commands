@@ -27,7 +27,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler("label", function (player, content) {
         try {
             var fishP = players_1.FishPlayer.get(player);
-            if (fishP.stopped)
+            if (!fishP.hasPerm("play"))
                 return;
             var parts = content.split(',');
             if (parts.length != 4) {
@@ -83,7 +83,7 @@ function loadPacketHandlers() {
     });
     Vars.netServer.addPacketHandler("lineEffect", function (player, content) {
         var fishP = players_1.FishPlayer.get(player);
-        if (fishP.stopped)
+        if (!fishP.hasPerm("play"))
             return;
         try {
             var parts = content.split(',');
@@ -101,7 +101,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler("bulkLineEffect", function (player, content) {
         var e_2, _a;
         var fishP = players_1.FishPlayer.get(player);
-        if (fishP.stopped)
+        if (!fishP.hasPerm("play"))
             return;
         try {
             var parts = content.split('|');
@@ -141,7 +141,7 @@ exports.commands = {
     packet_handler_last_accessed: {
         args: [],
         description: "Gives you the players and the packet handler which they last accessed",
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var output = _a.output;
             var outputText = [""];
@@ -164,7 +164,7 @@ exports.commands = {
     packet_handler_docs: {
         description: "Documentation on how to use packet handlers that are in this server",
         args: [],
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
             var con = sender.player.con;

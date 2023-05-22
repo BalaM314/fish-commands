@@ -71,18 +71,20 @@ exports.commands = __assign(__assign({ warn: {
             outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
     }, stop: {
-        args: ['player:player'],
+        args: ['player:player', "time:time?"],
         description: 'Stops a player.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender;
-            if (args.player.stopped)
+            var _b;
+            var args = _a.args, rawArgs = _a.rawArgs, sender = _a.sender;
+            if (args.player.marked())
                 (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already stopped."));
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
-            args.player.stop(sender);
+            var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800;
+            args.player.stop(sender, time);
             (0, utils_1.logAction)('stopped', sender, args.player);
-            Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped."));
+            Call.sendMessage("Player \"".concat(args.player.name, "\" has been stopped for ").concat(args.time ? rawArgs[1] : "30 days", "."));
         }
     }, free: {
         args: ['player:player'],
@@ -90,7 +92,7 @@ exports.commands = __assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (args.player.stopped) {
+            if (args.player.marked()) {
                 args.player.free(sender);
                 (0, utils_1.logAction)('freed', sender, args.player);
                 outputSuccess("Player \"".concat(args.player.name, "\" has been freed."));
@@ -152,10 +154,11 @@ exports.commands = __assign(__assign({ warn: {
             output("[orange]You massacred [cyan]".concat(numOhnos, "[] helpless ohno crawlers."));
         }
     }, stop_offline: {
-        args: ["name:string"],
+        args: ["name:string", "time:time?"],
         description: "Stops an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
+            var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             var admins = Vars.netServer.admins;
             if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)) {
@@ -163,7 +166,7 @@ exports.commands = __assign(__assign({ warn: {
                 if (info != null) {
                     var fishP = players_1.FishPlayer.getFromInfo(info);
                     if (sender.canModerate(fishP, true)) {
-                        fishP.stop(sender);
+                        fishP.stop(sender, (_b = args.time) !== null && _b !== void 0 ? _b : 604800);
                         (0, utils_1.logAction)('stopped', sender, info);
                         outputSuccess("Player \"".concat(info.lastName, "\" was stopped."));
                     }
@@ -187,10 +190,11 @@ exports.commands = __assign(__assign({ warn: {
                 (0, commands_1.fail)("No players with that name were found.");
             }
             (0, menus_1.menu)("Stop", "Choose a player to stop", possiblePlayers, sender, function (_a) {
+                var _b;
                 var option = _a.option, sender = _a.sender;
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (sender.canModerate(fishP, true)) {
-                    fishP.stop(sender);
+                    fishP.stop(sender, (_b = args.time) !== null && _b !== void 0 ? _b : 604800);
                     (0, utils_1.logAction)('stopped', sender, option);
                     outputSuccess("Player \"".concat(option.lastName, "\" was stopped."));
                 }

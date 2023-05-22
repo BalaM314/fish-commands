@@ -18,13 +18,12 @@ export type PermType = SelectPerm<keyof typeof Perm>;
 /** Represents a permission that is required to do something. */
 export class Perm {
 	static none = new Perm("all", fishP => true, "[sky]");
-	static notGriefer = new Perm("player", fishP => !fishP.stopped || fishP.ranksAtLeast(Rank.mod), "[sky]");
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
-	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.stopped, "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
-	static chat = new Perm("chat", fishP => !fishP.muted || fishP.ranksAtLeast(Rank.mod));
+	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast(Rank.mod));
 	static bypassChatFilter = new Perm("bypassChatFilter", fishP => fishP.ranksAtLeast(Rank.admin));
-	static play = new Perm("play", fishP => !fishP.stopped || fishP.ranksAtLeast(Rank.mod));
+	static play = new Perm("play", fishP => (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast(Rank.mod));
 	static seeErrorMessages = new Perm("seeErrorMessages", fishP => fishP.ranksAtLeast(Rank.admin));
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
 	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => fishP.ranksAtLeast(Rank.mod));

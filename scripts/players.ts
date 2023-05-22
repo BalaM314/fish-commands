@@ -10,7 +10,7 @@ import { Perm, PermType } from "./commands";
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 2;
+	static readonly saveVersion = 3;
 
 	//Static transients
 	static stats = {
@@ -41,7 +41,8 @@ export class FishPlayer {
 	uuid: string;
 	name: string;
 	muted: boolean;
-	stopped: boolean;
+	autoflagged: boolean;
+	unmarkTime: number;
 	rank: Rank;
 	flags: Set<RoleFlag>;
 	highlight: string | null;
@@ -52,13 +53,17 @@ export class FishPlayer {
 	usid: string | null;
 
 	constructor({
-		uuid, name, muted = false, member = false, stopped = false,
-		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid
+		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
+		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid,
+		//deprecated
+		member, stopped,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
 		this.uuid = uuid ?? player?.uuid() ?? (() => {throw new Error(`Attempted to create FishPlayer with no UUID`)})();
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
 		this.muted = muted;
-		this.stopped = stopped;
+		this.unmarkTime = unmarked;
+		if(stopped) this.unmarkTime = Date.now() + 2592000; //30 days
+		this.autoflagged = autoflagged;
 		this.highlight = highlight;
 		this.history = history;
 		this.player = player;
@@ -185,9 +190,8 @@ export class FishPlayer {
 		if(fishPlayer.validate()){
 			fishPlayer.updateName();
 			fishPlayer.updateAdminStatus();
-			api.getStopped(player.uuid(), (stopped) => {
-				if(fishPlayer.stopped && !stopped) fishPlayer.free("api");
-				if(stopped) fishPlayer.stop("api");
+			api.getStopped(player.uuid(), (unmarked) => {
+				fishPlayer.unmarkTime = unmarked;
 			});
 		}
 		const ip = player.ip();
@@ -205,8 +209,7 @@ export class FishPlayer {
 						moderated: false,
 					};
 					if(info.timesJoined <= 1){
-						fishPlayer.stop("vpn");
-						fishPlayer.mute("vpn");
+						fishPlayer.autoflagged = true;
 						logAction("autoflagged", "AntiVPN", fishPlayer);
 						api.sendStaffMessage(`Autoflagged player ${player.name} for suspected vpn!`, "AntiVPN");
 						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted.`);
@@ -244,7 +247,7 @@ export class FishPlayer {
 	}
 	private static onRespawn(player:mindustryPlayer){
 		const fishP = this.get(player);
-		if(fishP?.stopped) fishP.stopUnit();
+		if(fishP.marked()) fishP.stopUnit();
 	}
 	static forEachPlayer(func:(player:FishPlayer) => unknown){
 		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
@@ -266,7 +269,7 @@ export class FishPlayer {
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
-		if(this.stopped) prefix += config.STOPPED_PREFIX;
+		if(this.marked()) prefix += config.STOPPED_PREFIX;
 		if(this.muted) prefix += config.MUTED_PREFIX;
 		for(const flag of this.flags){
 			prefix += flag.prefix;
@@ -376,6 +379,24 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
 					usid: fishPlayerData.readString(2)
 				}, player);
+			case 3:
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					autoflagged: fishPlayerData.readBool(),
+					unmarkTime: fishPlayerData.readNumber(13),
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2)
+				}, player);
 			default: throw new Error(`Unknown save version ${version}`);
 		}
 	}
@@ -383,7 +404,8 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		out.writeString(this.uuid, 2);
 		out.writeString(this.name, 2, true);
 		out.writeBool(this.muted);
-		out.writeBool(this.stopped);
+		out.writeBool(this.autoflagged);
+		out.writeNumber(this.unmarkTime, 13);// this will stop working in 2286!
 		out.writeString(this.highlight, 2, true);
 		out.writeArray(this.history, (i, str) => {
 			str.writeString(i.action, 2);
@@ -518,20 +540,18 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		this.getById(id)?.addHistoryEntry(entry);
 	}
 
-	stop(by:FishPlayer | "api" | "vpn"){
-		this.stopped = true;
-		if(!this.connected()) return;
-		this.stopUnit();
-		this.updateName();
-		if(FishPlayer.checkedIps[this.player.ip()]) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
-		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+	marked():boolean {
+		return this.unmarkTime > Date.now();
+	}
+	stop(by:FishPlayer | "api" | "vpn", time:number){
+		this.unmarkTime = Date.now() + time * 1000;
 		if(by instanceof FishPlayer){
 			this.addHistoryEntry({
 				action: 'stopped',
 				by: by.name,
 				time: Date.now(),
 			});
-			api.addStopped(this.uuid);
+			api.addStopped(this.uuid, this.unmarkTime);
 		} else if(by === "vpn"){
 			this.addHistoryEntry({
 				action: 'stopped',
@@ -539,11 +559,16 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 				time: Date.now(),
 			});
 		}
+		if(!this.connected()) return;
+		this.stopUnit();
+		this.updateName();
+		if(FishPlayer.checkedIps[this.player.ip()]) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
+		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
 		FishPlayer.saveAll();
 	}
 	free(by:FishPlayer | "api"){
-		if(!this.stopped) return;
-		this.stopped = false;
+		if(!this.marked()) return;
+		this.unmarkTime = -1;
 		this.updateName();
 		this.forceRespawn();
 		if(by instanceof FishPlayer){

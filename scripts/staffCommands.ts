@@ -59,15 +59,16 @@ export const commands:FishCommandsList = {
 	},
 
 	stop: {
-		args: ['player:player'],
+		args: ['player:player', "time:time?"],
 		description: 'Stops a player.',
 		perm: Perm.mod,
-		handler({args, sender}){
-			if(args.player.stopped) fail(`Player "${args.player.name}" is already stopped.`);
+		handler({args, rawArgs, sender}){
+			if(args.player.marked()) fail(`Player "${args.player.name}" is already stopped.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
-			args.player.stop(sender);
+			const time = args.time ?? 604800;
+			args.player.stop(sender, time);
 			logAction('stopped', sender, args.player);
-			Call.sendMessage(`Player "${args.player.name}" has been stopped.`);
+			Call.sendMessage(`Player "${args.player.name}" has been stopped for ${args.time ? rawArgs[1] : "30 days"}.`);
 		}
 	},
 
@@ -76,7 +77,7 @@ export const commands:FishCommandsList = {
 		description: 'Frees a player.',
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess, outputFail}){
-			if(args.player.stopped){
+			if(args.player.marked()){
 				args.player.free(sender);
 				logAction('freed', sender, args.player);
 				outputSuccess(`Player "${args.player.name}" has been freed.`);
@@ -142,7 +143,7 @@ export const commands:FishCommandsList = {
 	},
 
 	stop_offline: {
-		args: ["name:string"],
+		args: ["name:string", "time:time?"],
 		description: "Stops an offline player.",
 		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess}){
@@ -153,7 +154,7 @@ export const commands:FishCommandsList = {
 				if(info != null){
 					const fishP = FishPlayer.getFromInfo(info);
 					if(sender.canModerate(fishP, true)){
-						fishP.stop(sender);
+						fishP.stop(sender, args.time ?? 604800);
 						logAction('stopped', sender, info);
 						outputSuccess(`Player "${info.lastName}" was stopped.`);
 					} else {
@@ -178,7 +179,7 @@ export const commands:FishCommandsList = {
 			menu("Stop", "Choose a player to stop", possiblePlayers, sender, ({option, sender}) => {
 				const fishP = FishPlayer.getFromInfo(option);
 				if(sender.canModerate(fishP, true)){
-					fishP.stop(sender);
+					fishP.stop(sender, args.time ?? 604800);
 					logAction('stopped', sender, option);
 					outputSuccess(`Player "${option.lastName}" was stopped.`);
 				} else {

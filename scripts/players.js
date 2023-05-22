@@ -47,7 +47,9 @@ var menus_1 = require("./menus");
 var commands_1 = require("./commands");
 var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.member, member = _c === void 0 ? false : _c, _d = _a.stopped, stopped = _d === void 0 ? false : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid;
+        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, 
+        //deprecated
+        member = _a.member, stopped = _a.stopped;
         var _k, _l, _m, _o;
         //Transients
         this.player = null;
@@ -60,7 +62,10 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.uuid = (_k = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _k !== void 0 ? _k : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_l = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]";
         this.muted = muted;
-        this.stopped = stopped;
+        this.unmarkTime = unmarked;
+        if (stopped)
+            this.unmarkTime = Date.now() + 2592000; //30 days
+        this.autoflagged = autoflagged;
         this.highlight = highlight;
         this.history = history;
         this.player = player;
@@ -225,11 +230,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (fishPlayer.validate()) {
             fishPlayer.updateName();
             fishPlayer.updateAdminStatus();
-            api.getStopped(player.uuid(), function (stopped) {
-                if (fishPlayer.stopped && !stopped)
-                    fishPlayer.free("api");
-                if (stopped)
-                    fishPlayer.stop("api");
+            api.getStopped(player.uuid(), function (unmarked) {
+                fishPlayer.unmarkTime = unmarked;
             });
         }
         var ip = player.ip();
@@ -247,8 +249,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                         moderated: false,
                     };
                     if (info.timesJoined <= 1) {
-                        fishPlayer.stop("vpn");
-                        fishPlayer.mute("vpn");
+                        fishPlayer.autoflagged = true;
                         (0, utils_1.logAction)("autoflagged", "AntiVPN", fishPlayer);
                         api.sendStaffMessage("Autoflagged player ".concat(player.name, " for suspected vpn!"), "AntiVPN");
                         _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted."));
@@ -289,7 +290,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.onRespawn = function (player) {
         var fishP = this.get(player);
-        if (fishP === null || fishP === void 0 ? void 0 : fishP.stopped)
+        if (fishP.marked())
             fishP.stopUnit();
     };
     FishPlayer.forEachPlayer = function (func) {
@@ -328,7 +329,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
-        if (this.stopped)
+        if (this.marked())
             prefix += config.STOPPED_PREFIX;
         if (this.muted)
             prefix += config.MUTED_PREFIX;
@@ -406,7 +407,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         switch (version) {
             case 0:
                 return new this({
@@ -468,6 +469,27 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
                     usid: fishPlayerData.readString(2)
                 }, player);
+            case 3:
+                return new this({
+                    uuid: (_k = fishPlayerData.readString(2)) !== null && _k !== void 0 ? _k : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    name: (_l = fishPlayerData.readString(2)) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]",
+                    muted: fishPlayerData.readBool(),
+                    autoflagged: fishPlayerData.readBool(),
+                    unmarkTime: fishPlayerData.readNumber(13),
+                    highlight: fishPlayerData.readString(2),
+                    history: fishPlayerData.readArray(function (str) {
+                        var _a, _b;
+                        return ({
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
+                            time: str.readNumber(15)
+                        });
+                    }),
+                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
+                    rank: (_m = fishPlayerData.readString(2)) !== null && _m !== void 0 ? _m : "",
+                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
+                    usid: fishPlayerData.readString(2)
+                }, player);
             default: throw new Error("Unknown save version ".concat(version));
         }
     };
@@ -476,7 +498,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         out.writeString(this.uuid, 2);
         out.writeString(this.name, 2, true);
         out.writeBool(this.muted);
-        out.writeBool(this.stopped);
+        out.writeBool(this.autoflagged);
+        out.writeNumber(this.unmarkTime, 13); // this will stop working in 2286!
         out.writeString(this.highlight, 2, true);
         out.writeArray(this.history, function (i, str) {
             str.writeString(i.action, 2);
@@ -635,22 +658,18 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var _a;
         (_a = this.getById(id)) === null || _a === void 0 ? void 0 : _a.addHistoryEntry(entry);
     };
-    FishPlayer.prototype.stop = function (by) {
-        this.stopped = true;
-        if (!this.connected())
-            return;
-        this.stopUnit();
-        this.updateName();
-        if (FishPlayer.checkedIps[this.player.ip()])
-            FishPlayer.checkedIps[this.player.ip()].moderated = true;
-        this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+    FishPlayer.prototype.marked = function () {
+        return this.unmarkTime > Date.now();
+    };
+    FishPlayer.prototype.stop = function (by, time) {
+        this.unmarkTime = Date.now() + time * 1000;
         if (by instanceof FishPlayer) {
             this.addHistoryEntry({
                 action: 'stopped',
                 by: by.name,
                 time: Date.now(),
             });
-            api.addStopped(this.uuid);
+            api.addStopped(this.uuid, this.unmarkTime);
         }
         else if (by === "vpn") {
             this.addHistoryEntry({
@@ -659,12 +678,19 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 time: Date.now(),
             });
         }
+        if (!this.connected())
+            return;
+        this.stopUnit();
+        this.updateName();
+        if (FishPlayer.checkedIps[this.player.ip()])
+            FishPlayer.checkedIps[this.player.ip()].moderated = true;
+        this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.free = function (by) {
-        if (!this.stopped)
+        if (!this.marked())
             return;
-        this.stopped = false;
+        this.unmarkTime = -1;
         this.updateName();
         this.forceRespawn();
         if (by instanceof FishPlayer) {
@@ -756,7 +782,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    FishPlayer.saveVersion = 2;
+    FishPlayer.saveVersion = 3;
     //Static transients
     FishPlayer.stats = {
         numIpsChecked: 0,

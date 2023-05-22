@@ -19,7 +19,7 @@ export function loadPacketHandlers(){
 	Vars.netServer.addPacketHandler("label", (player:mindustryPlayer, content:string) => {
 		try {
 			const fishP = FishPlayer.get(player);
-			if(fishP.stopped) return;
+			if(!fishP.hasPerm("play")) return;
 			const parts = content.split(',');
 			if(parts.length != 4){
 				player.kick(`\
@@ -67,7 +67,7 @@ if text length is above 41 you will be kicked`
 
 	Vars.netServer.addPacketHandler("lineEffect", (player:mindustryPlayer, content:string) => {
 		const fishP = FishPlayer.get(player);
-		if(fishP.stopped) return;
+		if(!fishP.hasPerm("play")) return;
 		try {
 			const parts = content.split(',');
 			if(parts.length != 5){
@@ -91,7 +91,7 @@ example: [5,5,100,100,Color.green].join(",")`
 
 	Vars.netServer.addPacketHandler("bulkLineEffect", (player:mindustryPlayer, content:string) => {
 		const fishP = FishPlayer.get(player);
-		if(fishP.stopped) return;
+		if(!fishP.hasPerm("play")) return;
 		try{
 			const parts = content.split('|');
 			if(!fishP.hasPerm("bulkLabelPacket") && parts.length > 10){
@@ -124,7 +124,7 @@ export const commands:FishCommandsList = {
 	packet_handler_last_accessed: {
 		args: [],
 		description: "Gives you the players and the packet handler which they last accessed",
-		perm: Perm.notGriefer,
+		perm: Perm.mod,
 		handler({output}){
 			let outputText = [""];
 			if(lastAccessedLabel && lastLabelText) outputText.push(`label: ${lastAccessedLabel.name} last text performed with it: ${lastLabelText}`);
@@ -141,7 +141,7 @@ export const commands:FishCommandsList = {
 	packet_handler_docs: {
 		description: "Documentation on how to use packet handlers that are in this server",
 		args: [],
-		perm: Perm.notGriefer,
+		perm: Perm.none,
 		handler({sender}){
 			const con = sender.player.con as NetConnection;
 			Call.infoMessage(con, "also keep in mind that T H E R E  I S   A   P A C K E T   S P A M   L I M I T");

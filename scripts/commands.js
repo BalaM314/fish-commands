@@ -48,13 +48,12 @@ var Perm = exports.Perm = /** @class */ (function () {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
     };
     Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
-    Perm.notGriefer = new Perm("player", function (fishP) { return !fishP.stopped || fishP.ranksAtLeast(ranks_1.Rank.mod); }, "[sky]");
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
-    Perm.member = new Perm("member", function (fishP) { return fishP.hasFlag("member") && !fishP.stopped; }, "[pink]", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
-    Perm.chat = new Perm("chat", function (fishP) { return !fishP.muted || fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.member = new Perm("member", function (fishP) { return fishP.hasFlag("member") && !fishP.marked(); }, "[pink]", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
+    Perm.chat = new Perm("chat", function (fishP) { return (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast(ranks_1.Rank.mod); });
     Perm.bypassChatFilter = new Perm("bypassChatFilter", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
-    Perm.play = new Perm("play", function (fishP) { return !fishP.stopped || fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.play = new Perm("play", function (fishP) { return (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast(ranks_1.Rank.mod); });
     Perm.seeErrorMessages = new Perm("seeErrorMessages", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
     Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.mod); });

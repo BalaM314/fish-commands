@@ -255,6 +255,7 @@ export function parseTimeString(str:string):number | null {
 		[/(\d+)h/, 3600],
 		[/(\d+)d/, 86400],
 		[/(\d+)w/, 604800],
+		[/forever/, 999999999999]
 	];
 	for(const [regex, mult] of formats){
 		if(regex.test(str)) return Number(regex.exec(str)![1]) * mult;

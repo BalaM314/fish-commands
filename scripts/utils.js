@@ -324,6 +324,7 @@ function parseTimeString(str) {
         [/(\d+)h/, 3600],
         [/(\d+)d/, 86400],
         [/(\d+)w/, 604800],
+        [/forever/, 999999999999]
     ];
     try {
         for (var formats_1 = __values(formats), formats_1_1 = formats_1.next(); !formats_1_1.done; formats_1_1 = formats_1.next()) {

@@ -41,7 +41,7 @@ export const commands: FishCommandsList = {
   unpause: {
     args: [],
     description: 'Unpauses the game.',
-    perm: Perm.notGriefer,
+    perm: Perm.play,
     handler() {
       Core.app.post(() => Vars.state.set(GameState.State.playing));
     },
@@ -50,7 +50,7 @@ export const commands: FishCommandsList = {
   tp: {
     args: ['player:player'],
     description: 'Teleport to another player.',
-    perm: Perm.notGriefer,
+    perm: Perm.play,
     handler({ args, sender, outputFail }) {
       if (sender.unit()?.spawnedByCore) {
         teleportPlayer(sender.player, args.player.player);
@@ -63,7 +63,7 @@ export const commands: FishCommandsList = {
   clean: {
     args: [],
     description: 'Removes all boulders from the map.',
-    perm: Perm.notGriefer,
+    perm: Perm.play,
     handler({ sender, outputSuccess, outputFail }) {
       if (Cleaner.clean(sender)) {
         outputSuccess(`Cleared the map of boulders.`);
@@ -76,7 +76,7 @@ export const commands: FishCommandsList = {
   die: {
     args: [],
     description: 'Commits die.',
-    perm: Perm.notGriefer,
+    perm: Perm.play,
     handler({ sender }) {
       sender.unit()?.kill();
     },
@@ -362,7 +362,7 @@ export const commands: FishCommandsList = {
   ohno: {
     args: [],
     description: 'Spawns an ohno.',
-    perm: Perm.notGriefer,
+    perm: Perm.play,
     handler({ sender, outputFail }) {
       const canSpawn = Ohnos.canSpawn(sender);
       if (canSpawn === true) {

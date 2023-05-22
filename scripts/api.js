@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
-// Add a player's uuid to the stopped api
-function addStopped(uuid) {
+/** Mark a player as stopped until time */
+function addStopped(uuid, time) {
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/addStopped"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
@@ -21,7 +21,7 @@ function addStopped(uuid) {
     }
 }
 exports.addStopped = addStopped;
-// Remove a player's uuid from the stopped api
+/** Mark a player as freed */
 function free(uuid) {
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/free"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
@@ -40,7 +40,7 @@ function free(uuid) {
     }
 }
 exports.free = free;
-// Check if player is stopped from API
+/** Gets player's unmark time */
 function getStopped(uuid, callback) {
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/getStopped"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')

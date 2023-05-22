@@ -62,14 +62,14 @@ var Cleaner = {
 exports.commands = __assign(__assign({ unpause: {
         args: [],
         description: 'Unpauses the game.',
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function () {
             Core.app.post(function () { return Vars.state.set(GameState.State.playing); });
         },
     }, tp: {
         args: ['player:player'],
         description: 'Teleport to another player.',
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
@@ -83,7 +83,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, clean: {
         args: [],
         description: 'Removes all boulders from the map.',
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (Cleaner.clean(sender)) {
@@ -96,7 +96,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, die: {
         args: [],
         description: 'Commits die.',
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var _b;
             var sender = _a.sender;
@@ -376,7 +376,7 @@ exports.commands = __assign(__assign({ unpause: {
     }, ohno: {
         args: [],
         description: 'Spawns an ohno.',
-        perm: commands_1.Perm.notGriefer,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail;
             var canSpawn = ohno_1.Ohnos.canSpawn(sender);

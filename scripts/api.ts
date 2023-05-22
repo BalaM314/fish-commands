@@ -1,7 +1,7 @@
 import { ip, getGamemode } from './config';
 
-// Add a player's uuid to the stopped api
-export function addStopped(uuid: string) {
+/** Mark a player as stopped until time */
+export function addStopped(uuid: string, time:number) {
 	const req = Http.post(`http://${ip}:5000/api/addStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -19,7 +19,7 @@ export function addStopped(uuid: string) {
 	}
 }
 
-// Remove a player's uuid from the stopped api
+/** Mark a player as freed */
 export function free(uuid: string) {
 	const req = Http.post(`http://${ip}:5000/api/free`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
@@ -38,8 +38,8 @@ export function free(uuid: string) {
 	}
 }
 
-// Check if player is stopped from API
-export function getStopped(uuid: string, callback: (stopped: boolean) => unknown) {
+/** Gets player's unmark time */
+export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 	const req = Http.post(`http://${ip}:5000/api/getStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
