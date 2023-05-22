@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.bannedNames = exports.bannedWords = exports.MUTED_PREFIX = exports.STOPPED_PREFIX = void 0;
+exports.localDebug = exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.bannedNames = exports.bannedWords = exports.MUTED_PREFIX = exports.STOPPED_PREFIX = void 0;
 exports.STOPPED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
@@ -94,3 +94,4 @@ exports.FishServers = {
 };
 var getGamemode = function () { return Vars.state.rules.mode().name(); };
 exports.getGamemode = getGamemode;
+exports.localDebug = new Fi("config/.debug").exists();

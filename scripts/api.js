@@ -4,6 +4,8 @@ exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMess
 var config_1 = require("./config");
 /** Mark a player as stopped until time */
 function addStopped(uuid, time) {
+    if (config_1.localDebug)
+        return;
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/addStopped"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
@@ -23,6 +25,8 @@ function addStopped(uuid, time) {
 exports.addStopped = addStopped;
 /** Mark a player as freed */
 function free(uuid) {
+    if (config_1.localDebug)
+        return;
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/free"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
@@ -42,6 +46,8 @@ function free(uuid) {
 exports.free = free;
 /** Gets player's unmark time */
 function getStopped(uuid, callback) {
+    if (config_1.localDebug)
+        return;
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/getStopped"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
@@ -80,6 +86,8 @@ function isVpn(ip, callback, callbackError) {
 exports.isVpn = isVpn;
 /**Send text to the moderation logs channel in Discord. */
 function sendModerationMessage(message) {
+    if (config_1.localDebug)
+        return;
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/mod-dump"), JSON.stringify({ message: message })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     try {
@@ -96,6 +104,8 @@ function sendModerationMessage(message) {
 exports.sendModerationMessage = sendModerationMessage;
 /**Get staff messages from discord. */
 function getStaffMessages(callback) {
+    if (config_1.localDebug)
+        return;
     var server = (0, config_1.getGamemode)();
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/getStaffMessages"), JSON.stringify({ server: server })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
@@ -120,6 +130,8 @@ exports.getStaffMessages = getStaffMessages;
 /**Send staff messages from server. */
 function sendStaffMessage(message, playerName, callback) {
     if (callback === void 0) { callback = function () { }; }
+    if (config_1.localDebug)
+        return;
     var server = (0, config_1.getGamemode)();
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/sendStaffMessage"), 
     // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one

@@ -139,6 +139,7 @@ declare class Command {
 
 declare class JavaFile {}
 declare class Fi {
+	constructor(path:string);
 	file(): JavaFile;
 	child(path:string): Fi;
 	exists(): boolean;

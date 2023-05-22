@@ -72,3 +72,4 @@ export const FishServers = {
 	sandbox: { ip: "162.248.102.204", port: "6567" },
 };
 export const getGamemode = () => Vars.state.rules.mode().name();
+export const localDebug = new Fi("config/.debug").exists();

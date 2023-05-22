@@ -1,7 +1,8 @@
-import { ip, getGamemode } from './config';
+import { ip, getGamemode, localDebug } from './config';
 
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {
+	if(localDebug) return;
 	const req = Http.post(`http://${ip}:5000/api/addStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -21,6 +22,7 @@ export function addStopped(uuid: string, time:number) {
 
 /** Mark a player as freed */
 export function free(uuid: string) {
+	if(localDebug) return;
 	const req = Http.post(`http://${ip}:5000/api/free`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -40,6 +42,7 @@ export function free(uuid: string) {
 
 /** Gets player's unmark time */
 export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
+	if(localDebug) return;
 	const req = Http.post(`http://${ip}:5000/api/getStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -75,6 +78,7 @@ export function isVpn(ip: string, callback: (isVpn: boolean) => unknown, callbac
 
 /**Send text to the moderation logs channel in Discord. */
 export function sendModerationMessage(message: string) {
+	if(localDebug) return;
 	const req = Http.post(`http://${ip}:5000/api/mod-dump`, JSON.stringify({ message })).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 
@@ -91,6 +95,7 @@ export function sendModerationMessage(message: string) {
 
 /**Get staff messages from discord. */
 export function getStaffMessages(callback: (messages: string) => unknown) {
+	if(localDebug) return;
   const server = getGamemode();
 	const req = Http.post(`http://${ip}:5000/api/getStaffMessages`, JSON.stringify({ server })).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
@@ -112,6 +117,7 @@ export function getStaffMessages(callback: (messages: string) => unknown) {
 
 /**Send staff messages from server. */
 export function sendStaffMessage(message: string, playerName: string, callback: (sent: boolean) => unknown = () => {}) {
+	if(localDebug) return;
   const server = getGamemode();
 	const req = Http.post(`http://${ip}:5000/api/sendStaffMessage`,
   // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one

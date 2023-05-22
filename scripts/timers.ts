@@ -1,5 +1,6 @@
 import { FishPlayer } from "./players";
 import { getStaffMessages } from './api'
+import * as config from "./config";
 
 
 export function initializeTimers(){
@@ -23,13 +24,10 @@ export function initializeTimers(){
 		0.15
 	);
 	//Staff chat
-	Timer.schedule(() => {
-		getStaffMessages((messages) => {
-			if (!messages.length) return;
-				FishPlayer.messageStaff(messages);
+	if(!config.localDebug)
+		Timer.schedule(() => {
+			getStaffMessages((messages) => {
+				if(messages.length) FishPlayer.messageStaff(messages);
 			})
-		},
-		5,
-		3
-	);
+		}, 5, 3);
 }

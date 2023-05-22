@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.initializeTimers = void 0;
 var players_1 = require("./players");
 var api_1 = require("./api");
+var config = require("./config");
 function initializeTimers() {
     //Autosave
     Timer.schedule(function () {
@@ -16,12 +17,12 @@ function initializeTimers() {
     //Trails
     Timer.schedule(function () { return players_1.FishPlayer.forEachPlayer(function (p) { return p.displayTrail(); }); }, 5, 0.15);
     //Staff chat
-    Timer.schedule(function () {
-        (0, api_1.getStaffMessages)(function (messages) {
-            if (!messages.length)
-                return;
-            players_1.FishPlayer.messageStaff(messages);
-        });
-    }, 5, 3);
+    if (!config.localDebug)
+        Timer.schedule(function () {
+            (0, api_1.getStaffMessages)(function (messages) {
+                if (messages.length)
+                    players_1.FishPlayer.messageStaff(messages);
+            });
+        }, 5, 3);
 }
 exports.initializeTimers = initializeTimers;
