@@ -139,3 +139,47 @@ export function sendStaffMessage(message: string, playerName: string, callback: 
 		Log.info('\n\nError occured when trying to send staff chat.\n\n');
 	}
 }
+
+export function ban({ip, uuid}: {ip?:string; uuid?:string;}, callback:(status:string) => unknown = () => {}){
+	if(localDebug) return;
+	const req = Http.post(`http://${ip}:5000/api/ban`, JSON.stringify({ip, uuid}))
+		.header('Content-Type', 'application/json')
+		.header('Accept', '*/*');
+	req.timeout = 10000;
+
+	try {
+		req.submit((response, exception) => {
+			//Log.info(response.getResultAsString());
+			if (exception || !response) {
+				Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
+			} else {
+				let str = response.getResultAsString();
+				if(str.length) callback(JSON.parse(str).data);
+			}
+		});
+	} catch (e) {
+		Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
+	}
+}
+
+/** Gets player's unmark time */
+export function getBanned({uuid, ip}:{uuid?:string, ip?:string}, callback:(banned:boolean) => unknown){
+	if(localDebug) return;
+	const req = Http.post(`http://${ip}:5000/api/checkIsBanned`, JSON.stringify({ ip, uuid }))
+		.header('Content-Type', 'application/json')
+		.header('Accept', '*/*');
+	req.timeout = 10000;
+
+	try {
+		req.submit((response, exception) => {
+			if (exception || !response) {
+				Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
+			} else {
+				let temp = response.getResultAsString();
+				if(temp.length) callback(JSON.parse(temp).data);
+			}
+		});
+	} catch (e) {
+		Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
+	}
+}

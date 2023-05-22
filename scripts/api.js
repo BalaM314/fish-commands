@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
+exports.getBanned = exports.ban = exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
 /** Mark a player as stopped until time */
 function addStopped(uuid, time) {
@@ -156,3 +156,56 @@ function sendStaffMessage(message, playerName, callback) {
     }
 }
 exports.sendStaffMessage = sendStaffMessage;
+function ban(_a, callback) {
+    var ip = _a.ip, uuid = _a.uuid;
+    if (callback === void 0) { callback = function () { }; }
+    if (config_1.localDebug)
+        return;
+    var req = Http.post("http://".concat(ip, ":5000/api/ban"), JSON.stringify({ ip: ip, uuid: uuid }))
+        .header('Content-Type', 'application/json')
+        .header('Accept', '*/*');
+    req.timeout = 10000;
+    try {
+        req.submit(function (response, exception) {
+            //Log.info(response.getResultAsString());
+            if (exception || !response) {
+                Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
+            }
+            else {
+                var str = response.getResultAsString();
+                if (str.length)
+                    callback(JSON.parse(str).data);
+            }
+        });
+    }
+    catch (e) {
+        Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
+    }
+}
+exports.ban = ban;
+/** Gets player's unmark time */
+function getBanned(_a, callback) {
+    var uuid = _a.uuid, ip = _a.ip;
+    if (config_1.localDebug)
+        return;
+    var req = Http.post("http://".concat(ip, ":5000/api/checkIsBanned"), JSON.stringify({ ip: ip, uuid: uuid }))
+        .header('Content-Type', 'application/json')
+        .header('Accept', '*/*');
+    req.timeout = 10000;
+    try {
+        req.submit(function (response, exception) {
+            if (exception || !response) {
+                Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
+            }
+            else {
+                var temp = response.getResultAsString();
+                if (temp.length)
+                    callback(JSON.parse(temp).data);
+            }
+        });
+    }
+    catch (e) {
+        Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
+    }
+}
+exports.getBanned = getBanned;
