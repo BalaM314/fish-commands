@@ -3,7 +3,7 @@ import { ip, getGamemode, localDebug } from './config';
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {
 	if(localDebug) return;
-	const req = Http.post(`http://${ip}:5000/api/addStopped`, JSON.stringify({ id: uuid }))
+	const req = Http.post(`http://${ip}:5000/api/addStopped`, JSON.stringify({ id: uuid, time }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
@@ -55,7 +55,7 @@ export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 			} else {
 				let temp = response.getResultAsString();
 				if (!temp.length) return false;
-				callback(JSON.parse(temp).data);
+				callback(JSON.parse(temp).time);
 			}
 		});
 	} catch (e) {

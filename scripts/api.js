@@ -6,7 +6,7 @@ var config_1 = require("./config");
 function addStopped(uuid, time) {
     if (config_1.localDebug)
         return;
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/addStopped"), JSON.stringify({ id: uuid }))
+    var req = Http.post("http://".concat(config_1.ip, ":5000/api/addStopped"), JSON.stringify({ id: uuid, time: time }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
@@ -61,7 +61,7 @@ function getStopped(uuid, callback) {
                 var temp = response.getResultAsString();
                 if (!temp.length)
                     return false;
-                callback(JSON.parse(temp).data);
+                callback(JSON.parse(temp).time);
             }
         });
     }
