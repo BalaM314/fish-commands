@@ -77,7 +77,7 @@ export const commands:FishConsoleCommandsList = {
 	all names used: ${playerInfo.names.map((n:string) => `&c"${n}"&fr`).items.join(', ')}
 	all IPs used: ${playerInfo.ips.map((n:string) => (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr').items.join(", ")}
 	joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times
-	rank: &c${player.rank.name}&fr${(player.marked() ? ", &lris marked&fr" : "") + (player.hasFlag("muted") ? ", &lris muted&fr" : "") + (player.hasFlag("member") ? ", &lmis member&fr" : "")}`
+	rank: &c${player.rank.name}&fr${(player.marked() ? ", &lris marked&fr" : "") + (player.muted ? ", &lris muted&fr" : "") + (player.hasFlag("member") ? ", &lmis member&fr" : "") + (player.autoflagged ? ", &lris autoflagged&fr" : "")}`
 				);
 			}
 			output(outputString.join("\n"));

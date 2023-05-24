@@ -250,9 +250,10 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     };
                     if (info.timesJoined <= 1) {
                         fishPlayer.autoflagged = true;
+                        fishPlayer.stopUnit();
                         (0, utils_1.logAction)("autoflagged", "AntiVPN", fishPlayer);
                         api.sendStaffMessage("Autoflagged player ".concat(player.name, " for suspected vpn!"), "AntiVPN");
-                        _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted."));
+                        _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent."));
                         Log.warn("Player ".concat(player.name, " (").concat(player.uuid(), ") was muted."));
                         (0, menus_1.menu)("Welcome to Fish Network!", "Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.", ["Close", "Discord"], fishPlayer, function (_a) {
                             var option = _a.option, sender = _a.sender;
@@ -260,6 +261,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                                 Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
                             }
                         }, false, function (o) { return o; });
+                        player.sendMessage("Welcome to Fish Network!\nHi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.");
                     }
                     else if (info.timesJoined < 5) {
                         _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
@@ -290,7 +292,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.onRespawn = function (player) {
         var fishP = this.get(player);
-        if (fishP.marked())
+        if (fishP.stelled())
             fishP.stopUnit();
     };
     FishPlayer.forEachPlayer = function (func) {
@@ -331,6 +333,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var prefix = '';
         if (this.marked())
             prefix += config.MARKED_PREFIX;
+        else if (this.autoflagged)
+            prefix += "[yellow]\u26A0[scarlet]Flagged[yellow]\u26A0[white]";
         if (this.muted)
             prefix += config.MUTED_PREFIX;
         try {
@@ -661,6 +665,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.marked = function () {
         return this.unmarkTime > Date.now();
     };
+    FishPlayer.prototype.stelled = function () {
+        return this.marked() || this.autoflagged;
+    };
     FishPlayer.prototype.stop = function (by, time) {
         this.unmarkTime = Date.now() + time * 1000;
         if (by instanceof FishPlayer) {
@@ -690,6 +697,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.free = function (by) {
         if (!this.marked())
             return;
+        this.autoflagged = false; //Might as well set autoflagged to false
         this.unmarkTime = -1;
         this.updateName();
         this.forceRespawn();
@@ -708,8 +716,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (this.muted)
             return;
         this.muted = true;
-        if (FishPlayer.checkedIps[this.player.ip()] !== false)
-            FishPlayer.checkedIps[this.player.ip()].moderated = true;
         this.updateName();
         this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
         if (by instanceof FishPlayer) {

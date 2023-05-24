@@ -23,6 +23,7 @@ export class Perm {
 	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
 	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast(Rank.mod));
 	static bypassChatFilter = new Perm("bypassChatFilter", fishP => fishP.ranksAtLeast(Rank.admin));
+	static seeMutedMessages = new Perm("seeMutedMessages", fishP => fishP.muted || fishP.autoflagged || fishP.ranksAtLeast(Rank.mod));
 	static play = new Perm("play", fishP => (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast(Rank.mod));
 	static seeErrorMessages = new Perm("seeErrorMessages", fishP => fishP.ranksAtLeast(Rank.admin));
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);

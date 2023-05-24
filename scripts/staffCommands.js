@@ -50,6 +50,8 @@ exports.commands = __assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (!args.player.muted && args.player.autoflagged)
+                (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is not muted, but they are autoflagged. You probably want to free them with /free."));
             if (!args.player.muted)
                 (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is not muted."));
             args.player.unmute(sender);

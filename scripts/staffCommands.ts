@@ -38,6 +38,7 @@ export const commands:FishCommandsList = {
 		description: 'Unmutes a player',
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess}){
+			if(!args.player.muted && args.player.autoflagged) fail(`Player "${args.player.cleanedName}" is not muted, but they are autoflagged. You probably want to free them with /free.`);
 			if(!args.player.muted) fail(`Player "${args.player.cleanedName}" is not muted.`);
 			args.player.unmute(sender);
 			logAction('unmuted', sender, args.player);

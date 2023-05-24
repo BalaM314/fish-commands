@@ -210,15 +210,17 @@ export class FishPlayer {
 					};
 					if(info.timesJoined <= 1){
 						fishPlayer.autoflagged = true;
+						fishPlayer.stopUnit();
 						logAction("autoflagged", "AntiVPN", fishPlayer);
 						api.sendStaffMessage(`Autoflagged player ${player.name} for suspected vpn!`, "AntiVPN");
-						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted.`);
+						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent.`);
 						Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`);
 						menu("Welcome to Fish Network!", `Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`, ["Close", "Discord"], fishPlayer, ({option, sender}) => {
 							if(option == "Discord"){
 								Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
 							}
 						}, false, o => o);
+						player.sendMessage(`Welcome to Fish Network!\nHi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`);
 					} else if(info.timesJoined < 5){
 						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
 					}
@@ -247,7 +249,7 @@ export class FishPlayer {
 	}
 	private static onRespawn(player:mindustryPlayer){
 		const fishP = this.get(player);
-		if(fishP.marked()) fishP.stopUnit();
+		if(fishP.stelled()) fishP.stopUnit();
 	}
 	static forEachPlayer(func:(player:FishPlayer) => unknown){
 		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
@@ -270,6 +272,7 @@ export class FishPlayer {
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
 		if(this.marked()) prefix += config.MARKED_PREFIX;
+		else if(this.autoflagged) prefix += "[yellow]\u26A0[scarlet]Flagged[yellow]\u26A0[white]";
 		if(this.muted) prefix += config.MUTED_PREFIX;
 		for(const flag of this.flags){
 			prefix += flag.prefix;
@@ -543,6 +546,9 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	marked():boolean {
 		return this.unmarkTime > Date.now();
 	}
+	stelled():boolean {
+		return this.marked() || this.autoflagged;
+	}
 	stop(by:FishPlayer | "api" | "vpn", time:number){
 		this.unmarkTime = Date.now() + time * 1000;
 		if(by instanceof FishPlayer){
@@ -568,6 +574,8 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	free(by:FishPlayer | "api"){
 		if(!this.marked()) return;
+
+		this.autoflagged = false; //Might as well set autoflagged to false
 		this.unmarkTime = -1;
 		this.updateName();
 		this.forceRespawn();
@@ -585,7 +593,6 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	mute(by:FishPlayer | "api" | "vpn"){
 		if(this.muted) return;
 		this.muted = true;
-		if(FishPlayer.checkedIps[this.player.ip()] !== false) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
 		this.updateName();
 		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
 		if(by instanceof FishPlayer){
