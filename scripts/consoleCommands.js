@@ -35,6 +35,7 @@ var commands_1 = require("./commands");
 var api_1 = require("./api");
 var fjsContext = require("./fjsContext");
 var globals_1 = require("./globals");
+var config = require("./config");
 exports.commands = {
     setrank: {
         args: ["player:player", "rank:string"],
@@ -269,6 +270,8 @@ exports.commands = {
             if (!commandsDir.exists()) {
                 (0, commands_1.fail)("Fish commands directory at path ".concat(commandsDir.absolutePath(), " does not exist!"));
             }
+            if (config.localDebug)
+                (0, commands_1.fail)("Cannot update in local debug mode.");
             output("Updating...");
             var gitProcess = new ProcessBuilder("git", "pull", "origin", (_b = args.branch) !== null && _b !== void 0 ? _b : "master")
                 .directory(commandsDir.file())

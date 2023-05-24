@@ -6,6 +6,7 @@ import { fail } from "./commands";
 import { addStopped } from "./api";
 import * as fjsContext from "./fjsContext";
 import { tileHistory } from "./globals";
+import * as config from "./config";
 
 
 export const commands:FishConsoleCommandsList = {
@@ -197,6 +198,7 @@ export const commands:FishConsoleCommandsList = {
 			if(!commandsDir.exists()){
 				fail(`Fish commands directory at path ${commandsDir.absolutePath()} does not exist!`);
 			}
+			if(config.localDebug) fail(`Cannot update in local debug mode.`);
 			output("Updating...");
 			const gitProcess = new ProcessBuilder("git", "pull", "origin", args.branch ?? "master")
 				.directory(commandsDir.file())
