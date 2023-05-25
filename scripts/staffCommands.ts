@@ -197,7 +197,6 @@ export const commands:FishCommandsList = {
 			menu("Stop", "Choose a player to mark", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
 				if(args.time == null){
 					menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, ({option: optionTime, sender}) => {
-						Log.info("hello?");
 						const time =
 							optionTime == "2 days" ? 172800 :
 							optionTime == "7 days" ? 604800 :

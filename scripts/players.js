@@ -639,7 +639,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.setFlag = function (flag_, value) {
-        Log.info("Setting ".concat(flag_, " to ").concat(value));
         var flag = flag_ instanceof ranks_1.RoleFlag ? flag_ : ranks_1.RoleFlag.getByName(flag_);
         if (flag) {
             if (value) {

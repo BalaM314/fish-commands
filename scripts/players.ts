@@ -530,7 +530,6 @@ We apologize for the inconvenience.`
 		FishPlayer.saveAll();
 	}
 	setFlag(flag_:RoleFlag | string, value:boolean){
-		Log.info(`Setting ${flag_} to ${value}`);
 		const flag = flag_ instanceof RoleFlag ? flag_ : RoleFlag.getByName(flag_);
 		if(flag){
 			if(value){

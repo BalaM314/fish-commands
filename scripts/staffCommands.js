@@ -214,7 +214,6 @@ exports.commands = __assign(__assign({ warn: {
                 if (args.time == null) {
                     (0, menus_1.menu)("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, function (_a) {
                         var optionTime = _a.option, sender = _a.sender;
-                        Log.info("hello?");
                         var time = optionTime == "2 days" ? 172800 :
                             optionTime == "7 days" ? 604800 :
                                 optionTime == "30 days" ? 2592000 :
