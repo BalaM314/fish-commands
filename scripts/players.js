@@ -232,8 +232,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             api.getStopped(player.uuid(), function (unmarked) {
                 fishPlayer.unmarkTime = unmarked;
+                fishPlayer.sendWelcomeMessage();
             });
         }
+        //check vpn, TODO refactor
+        //TODO fix issue; second player joining from a flagged ip will not get flagged due to bad caching; fix by moving cache to api.isVpn
         var ip = player.ip();
         var info = player.getInfo();
         if (!(ip in this.checkedIps)) {
@@ -404,6 +407,16 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.displayTrail = function () {
         if (this.trail)
             Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+    };
+    FishPlayer.prototype.sendWelcomeMessage = function () {
+        if (this.marked())
+            this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
+        else if (this.muted)
+            this.sendMessage("[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
+        else if (this.autoflagged)
+            this.sendMessage("[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
+        else
+            this.sendMessage("[gold]Welcome![]");
     };
     //#endregion
     //#region I/O
@@ -779,7 +792,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var messageReceived = false;
         Groups.player.forEach(function (pl) {
             var fishP = FishPlayer.get(pl);
-            if (fishP.ranksAtLeast(ranks_1.Rank.mod) || fishP.muted) {
+            if (fishP.hasPerm("seeMutedMessages")) {
                 pl.sendMessage(message);
                 messageReceived = true;
             }

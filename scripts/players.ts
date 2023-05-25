@@ -192,8 +192,12 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			api.getStopped(player.uuid(), (unmarked) => {
 				fishPlayer.unmarkTime = unmarked;
+				fishPlayer.sendWelcomeMessage();
 			});
 		}
+
+		//check vpn, TODO refactor
+		//TODO fix issue; second player joining from a flagged ip will not get flagged due to bad caching; fix by moving cache to api.isVpn
 		const ip = player.ip();
 		const info:mindustryPlayerData = player.getInfo();
 		if(!(ip in this.checkedIps)){
@@ -322,6 +326,23 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	displayTrail(){
 		if(this.trail) Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+	}
+	sendWelcomeMessage(){
+		if(this.marked()) this.sendMessage(
+`[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.
+To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
+We apologize for the inconvenience.`
+		); else if(this.muted) this.sendMessage(
+`[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.
+To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
+We apologize for the inconvenience.`
+		); else if(this.autoflagged) this.sendMessage(
+`[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.
+To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
+We apologize for the inconvenience.`
+		); else this.sendMessage(
+`[gold]Welcome![]`
+		);
 	}
 	//#endregion
 
@@ -667,7 +688,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		let messageReceived = false;
 		Groups.player.forEach((pl:mindustryPlayer) => {
 			const fishP = FishPlayer.get(pl);
-			if(fishP.ranksAtLeast(Rank.mod) || fishP.muted){
+			if(fishP.hasPerm("seeMutedMessages")){
 				pl.sendMessage(message);
 				messageReceived = true;
 			}
