@@ -121,6 +121,9 @@ export function getColor(input:string):Color | null {
 }
 
 export function nearbyEnemyTile(unit:Unit, dist:number){
+	//because the indexer is buggy
+	if(dist > 10) throw new Error(`nearbyEnemyTile(): dist (${dist}) is too high!`);
+
 	let x = Math.floor(unit.x / Vars.tilesize);
 	let y = Math.floor(unit.y / Vars.tilesize);
 	for(let i = -dist; i <= dist; i ++){

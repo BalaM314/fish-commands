@@ -152,6 +152,9 @@ function getColor(input) {
 }
 exports.getColor = getColor;
 function nearbyEnemyTile(unit, dist) {
+    //because the indexer is buggy
+    if (dist > 10)
+        throw new Error("nearbyEnemyTile(): dist (".concat(dist, ") is too high!"));
     var x = Math.floor(unit.x / Vars.tilesize);
     var y = Math.floor(unit.y / Vars.tilesize);
     for (var i = -dist; i <= dist; i++) {
