@@ -1,7 +1,7 @@
 import type { FishPlayerData, FlaggedIPData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
 import * as api from "./api";
-import { isCoreUnitType, logAction, setToArray, StringIO } from "./utils";
+import { formatTimeRelative, isCoreUnitType, logAction, setToArray, StringIO } from "./utils";
 import { Rank, RoleFlag } from "./ranks";
 import { menu } from "./menus";
 import { Perm, PermType } from "./commands";
@@ -331,6 +331,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		if(this.marked()) this.sendMessage(
 `[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.
 To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
+Your mark will expire automatically ${this.unmarkTime == 999999999999 ? "in [red]never[]" : `[green]${formatTimeRelative(this.unmarkTime)}[]`}.
 We apologize for the inconvenience.`
 		); else if(this.muted) this.sendMessage(
 `[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.
