@@ -59,6 +59,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
+        /** Used to freeze players when votekicking. */
+        this.frozen = false;
         this.uuid = (_k = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _k !== void 0 ? _k : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_l = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]";
         this.muted = muted;
@@ -723,6 +725,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             api.free(this.uuid);
         }
         FishPlayer.saveAll();
+    };
+    FishPlayer.prototype.freeze = function () {
+        this.frozen = true;
+        this.sendMessage("You have been temporarily frozen.");
+    };
+    FishPlayer.prototype.unfreeze = function () {
+        this.frozen = false;
     };
     FishPlayer.prototype.mute = function (by) {
         if (this.muted)

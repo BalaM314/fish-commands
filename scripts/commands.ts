@@ -28,6 +28,7 @@ export class Perm {
 	static seeErrorMessages = new Perm("seeErrorMessages", fishP => fishP.ranksAtLeast(Rank.admin));
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
 	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => fishP.ranksAtLeast(Rank.mod));
+	static bypassVoteFreeze = new Perm("bypassVoteFreeze", fishP => fishP.ranksAtLeast(Rank.trusted));
 	static changeTeam = new Perm("changeTeam", fishP => 
 		Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(Rank.trusted)
 			: Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast(Rank.admin)

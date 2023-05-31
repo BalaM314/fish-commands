@@ -36,6 +36,8 @@ export class FishPlayer {
 		color: Color;
 	} | null = null;
 	cleanedName:string;
+	/** Used to freeze players when votekicking. */
+	frozen:boolean = false;
 
 	//Stored data
 	uuid: string;
@@ -610,6 +612,13 @@ We apologize for the inconvenience.`
 			api.free(this.uuid);
 		}
 		FishPlayer.saveAll();
+	}
+	freeze(){
+		this.frozen = true;
+		this.sendMessage("You have been temporarily frozen.");
+	}
+	unfreeze(){
+		this.frozen = false;
 	}
 	mute(by:FishPlayer | "api" | "vpn"){
 		if(this.muted) return;

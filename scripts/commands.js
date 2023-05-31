@@ -58,6 +58,7 @@ var Perm = exports.Perm = /** @class */ (function () {
     Perm.seeErrorMessages = new Perm("seeErrorMessages", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
     Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.mod); });
+    Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.trusted); });
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
         return Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(ranks_1.Rank.trusted)
             : Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast(ranks_1.Rank.admin)
