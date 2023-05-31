@@ -247,7 +247,7 @@ exports.commands = __assign(__assign({ unpause: {
             if (args.name && isNaN(parseInt(args.name)) && !['mod', 'admin', 'member'].includes(args.name)) {
                 //name is not a number or a category, therefore it is probably a command name
                 if (args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))) {
-                    output("Help for command ".concat(args.name, ":\n  ").concat(allCommands[args.name].description, "\n  Usage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(' '), "\n  Permission required: ").concat(allCommands[args.name].perm.name));
+                    output("Help for command ".concat(args.name, ":\n\t").concat(allCommands[args.name].description, "\n\tUsage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(' '), "\n\tPermission required: ").concat(allCommands[args.name].perm.name).replace("\t", "    "));
                 }
                 else {
                     outputFail("Command \"".concat(args.name, "\" does not exist."));

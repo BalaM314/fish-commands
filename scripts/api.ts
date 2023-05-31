@@ -96,7 +96,7 @@ export function sendModerationMessage(message: string) {
 /**Get staff messages from discord. */
 export function getStaffMessages(callback: (messages: string) => unknown) {
 	if(localDebug) return;
-  const server = getGamemode();
+	const server = getGamemode();
 	const req = Http.post(`http://${ip}:5000/api/getStaffMessages`, JSON.stringify({ server })).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 
@@ -105,10 +105,10 @@ export function getStaffMessages(callback: (messages: string) => unknown) {
 			if (exception || !response) {
 				Log.info('\n\nError occured when trying to fetch staff chat.\n\n');
 			} else {
-        const temp = response.getResultAsString();
+				const temp = response.getResultAsString();
 				if (!temp.length) return false;
 				callback(JSON.parse(temp).messages);
-      }
+			}
 		});
 	} catch (e) {
 		Log.info('\n\nError occured when trying to fetch staff chat.\n\n');
@@ -118,11 +118,11 @@ export function getStaffMessages(callback: (messages: string) => unknown) {
 /**Send staff messages from server. */
 export function sendStaffMessage(message: string, playerName: string, callback: (sent: boolean) => unknown = () => {}) {
 	if(localDebug) return;
-  const server = getGamemode();
+	const server = getGamemode();
 	const req = Http.post(`http://${ip}:5000/api/sendStaffMessage`,
-  // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
-  JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server }))
-  .header('Content-Type', 'application/json').header('Accept', '*/*');
+	// need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
+	JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server }))
+	.header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 
 	try {
@@ -130,10 +130,10 @@ export function sendStaffMessage(message: string, playerName: string, callback: 
 			if (exception || !response) {
 				Log.info('\n\nError occured when trying to send staff chat.\n\n');
 			} else {
-        const temp = response.getResultAsString();
+				const temp = response.getResultAsString();
 				if (!temp.length) return false;
 				callback(JSON.parse(temp).data);
-      }
+			}
 		});
 	} catch (e) {
 		Log.info('\n\nError occured when trying to send staff chat.\n\n');
