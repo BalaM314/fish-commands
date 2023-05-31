@@ -394,8 +394,9 @@ export const commands:FishCommandsList = {
 	info: {
 		args: ["target:player"],
 		description: "Displays information about a player.",
-		perm: Perm.mod,
+		perm: Perm.none,
 		handler({sender, args, output}){
+			const info = sender.player.info as mindustryPlayerData;
 			output(
 `[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColors(args.target.name)})
 	[accent]Rank: ${args.target.rank.coloredName()}
@@ -403,7 +404,9 @@ export const commands:FishCommandsList = {
 	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
 	[accent]marked: ${args.target.marked() ? `until ${formatTimeRelative(args.target.unmarkTime)}` : "[green]false"}
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
-	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}`.replace(/\t/g, "    ")
+	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
+	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}`
+.replace(/\t/g, "    ")
 			);
 		}
 	}
