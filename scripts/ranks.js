@@ -16,6 +16,9 @@ var Rank = exports.Rank = /** @class */ (function () {
         var _a;
         return (_a = Rank.ranks[name]) !== null && _a !== void 0 ? _a : null;
     };
+    Rank.getByInput = function (input) {
+        return Object.values(Rank.ranks).filter(function (rank) { return rank.name.toLowerCase().includes(input.toLowerCase()); });
+    };
     Rank.prototype.coloredName = function () {
         return this.color + this.name + "[]";
     };
@@ -44,6 +47,9 @@ var RoleFlag = exports.RoleFlag = /** @class */ (function () {
     RoleFlag.getByName = function (name) {
         var _a;
         return (_a = RoleFlag.flags[name]) !== null && _a !== void 0 ? _a : null;
+    };
+    RoleFlag.getByInput = function (input) {
+        return Object.values(RoleFlag.flags).filter(function (flag) { return flag.name.toLowerCase().includes(input.toLowerCase()); });
     };
     RoleFlag.prototype.coloredName = function () {
         return this.color + this.name + "[]";

@@ -23,6 +23,9 @@ export class Rank {
 	static getByName(name:string):Rank | null {
 		return Rank.ranks[name] ?? null;
 	}
+	static getByInput(input:string):Rank[] {
+		return Object.values(Rank.ranks).filter(rank => rank.name.toLowerCase().includes(input.toLowerCase()));
+	}
 	coloredName(){
 		return this.color + this.name + "[]";
 	}
@@ -42,6 +45,9 @@ export class RoleFlag {
 	){RoleFlag.flags[name] = this;}
 	static getByName(name:string):RoleFlag | null {
 		return RoleFlag.flags[name] ?? null;
+	}
+	static getByInput(input:string):RoleFlag[] {
+		return Object.values(RoleFlag.flags).filter(flag => flag.name.toLowerCase().includes(input.toLowerCase()));
 	}
 	coloredName(){
 		return this.color + this.name + "[]";

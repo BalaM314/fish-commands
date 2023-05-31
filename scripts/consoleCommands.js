@@ -42,22 +42,28 @@ exports.commands = {
         description: "Set a player's rank.",
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
-            var rank = ranks_1.Rank.getByName(args.rank);
-            if (rank == null)
+            var ranks = ranks_1.Rank.getByInput(args.rank);
+            if (ranks.length == 0)
                 (0, commands_1.fail)("Unknown rank ".concat(args.rank));
+            if (ranks.length > 1)
+                (0, commands_1.fail)("Ambiguous rank ".concat(args.rank));
+            var rank = ranks[0];
             args.player.setRank(rank);
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), "console", args.player);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));
         }
     },
     setflag: {
-        args: ["player:player", "rank:string", "value:boolean"],
+        args: ["player:player", "role:string", "value:boolean"],
         description: "Set a player's role flags.",
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
-            var flag = ranks_1.RoleFlag.getByName(args.rank);
-            if (flag == null)
-                (0, commands_1.fail)("Unknown role flag ".concat(args.rank));
+            var flags = ranks_1.RoleFlag.getByInput(args.rank);
+            if (flags.length == 0)
+                (0, commands_1.fail)("Unknown role flag ".concat(args.role));
+            if (flags.length > 1)
+                (0, commands_1.fail)("Ambiguous role flag ".concat(args.role));
+            var flag = flags[0];
             args.player.setFlag(flag, args.value);
             (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), "console", args.player);
             outputSuccess("Set role flag ".concat(flag.color).concat(flag.name, "[] of player \"").concat(args.player.name, "\" to ").concat(args.value));

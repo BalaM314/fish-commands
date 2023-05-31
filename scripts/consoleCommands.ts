@@ -14,8 +14,10 @@ export const commands:FishConsoleCommandsList = {
 		args: ["player:player", "rank:string"],
 		description: "Set a player's rank.",
 		handler({args, outputSuccess}){
-			const rank = Rank.getByName(args.rank);
-			if(rank == null) fail(`Unknown rank ${args.rank}`);
+			const ranks = Rank.getByInput(args.rank);
+			if(ranks.length == 0) fail(`Unknown rank ${args.rank}`);
+			if(ranks.length > 1) fail(`Ambiguous rank ${args.rank}`);
+			const rank = ranks[0];
 
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, "console", args.player);
@@ -23,11 +25,13 @@ export const commands:FishConsoleCommandsList = {
 		}
 	},
 	setflag: {
-		args: ["player:player", "rank:string", "value:boolean"],
+		args: ["player:player", "role:string", "value:boolean"],
 		description: "Set a player's role flags.",
 		handler({args, outputSuccess}){
-			const flag = RoleFlag.getByName(args.rank);
-			if(flag == null) fail(`Unknown role flag ${args.rank}`);
+			const flags = RoleFlag.getByInput(args.rank);
+			if(flags.length == 0) fail(`Unknown role flag ${args.role}`);
+			if(flags.length > 1) fail(`Ambiguous role flag ${args.role}`);
+			const flag = flags[0];
 
 			args.player.setFlag(flag, args.value);
 			logAction(`set roleflag ${flag.name} to ${args.value} for`, "console", args.player);
