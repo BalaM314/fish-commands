@@ -36,6 +36,7 @@ var config_1 = require("./config");
 var ranks_1 = require("./ranks");
 var globals_1 = require("./globals");
 var api = require("./api");
+// import { votekickmanager } from './votes';
 function teleportPlayer(player, to) {
     player.unit().set(to.unit().x, to.unit().y);
     Call.setPosition(player.con, to.unit().x, to.unit().y);

@@ -7,6 +7,7 @@ import { FishServers } from './config';
 import { Rank, RoleFlag } from './ranks';
 import { recentWhispers } from './globals';
 import * as api from './api';
+// import { votekickmanager } from './votes';
 
 function teleportPlayer(player: mindustryPlayer, to: mindustryPlayer) {
 	player.unit().set(to.unit().x, to.unit().y);
@@ -411,4 +412,26 @@ export const commands: FishCommandsList = {
 			output(`Player ${args.player.cleanedName}'s rank is ${args.player.rank.color}${args.player.rank.name}[].`);
 		},
 	},
+
+	// votekick: {
+	//	 args: ["target:player"],
+	//	 description: "Starts a vote to kick a player.",
+	//	 perm: Perm.play,
+	//	 handler({args, sender}){
+	// 		if(votekickmanager.currentSession) fail(`There is already a votekick in progress.`);
+	// 		votekickmanager.start({
+	// 			initiator: sender,
+	// 			target: args.player
+	// 		});
+	//	 }
+	// },
+
+	// vote: {
+	//	 args: ["vote:boolean"],
+	//	 description: "Use /votekick instead.",
+	//	 perm: Perm.play,
+	//	 handler({sender, args}){
+	// 		votekickmanager.handleVote(sender, args ? 1 : -1);
+	//	 }
+	// }
 };

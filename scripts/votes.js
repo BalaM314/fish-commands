@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.votekickmanager = void 0;
 var players_1 = require("./players");
 var VoteManager = /** @class */ (function () {
     function VoteManager(onStart, onPass, onFail, getVotesToPass, allowNoVotes, timeout, endOnVoteReached) {
@@ -70,7 +71,7 @@ var VoteManager = /** @class */ (function () {
     };
     return VoteManager;
 }());
-var votekickmanager = new VoteManager(function (_a) {
+exports.votekickmanager = new VoteManager(function (_a) {
     var data = _a.data;
     if (!data.initiator.hasPerm("bypassVoteFreeze")) {
         data.initiator.freeze(); //TODO freeze
@@ -88,9 +89,9 @@ var votekickmanager = new VoteManager(function (_a) {
     data.initiator.unfreeze();
 }, undefined, true, 30, false);
 //test
-votekickmanager.start({
+exports.votekickmanager.start({
     initiator: players_1.FishPlayer.getByName("BalaM314"),
     target: players_1.FishPlayer.getByName("sussyGreefer"),
 });
-votekickmanager.handleVote(players_1.FishPlayer.getByName("Fish"), 1);
+exports.votekickmanager.handleVote(players_1.FishPlayer.getByName("Fish"), 1);
 // this should end the votekick

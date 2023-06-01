@@ -58,7 +58,7 @@ class VoteManager<Data> {
 	}
 }
 
-const votekickmanager = new VoteManager<{
+export const votekickmanager = new VoteManager<{
 	initiator:FishPlayer;
 	target:FishPlayer;
 }>(
