@@ -50,6 +50,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 
 		if(matchFilter(text) && !fishPlayer.hasPerm("bypassChatFilter")) text = `[#f456f]I really hope everyone is having a fun time :) <3`;
 
+		if(text.startsWith("./")) text = text.replace("./", "/");
+
 		if(!fishPlayer.hasPerm("chat")){
 			FishPlayer.messageMuted(player.name, text);
 			Log.info(`<muted>${player.name}: ${text}`);
