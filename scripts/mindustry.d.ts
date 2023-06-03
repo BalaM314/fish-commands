@@ -181,5 +181,6 @@ declare const Packets: {
 declare const ConstructBlock: {
 	ConstructBuild: any;
 }
+declare const Prop: any;
 
 declare function print(message:string):void;
