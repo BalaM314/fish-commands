@@ -328,20 +328,6 @@ exports.commands = {
             }
         }
     },
-    checkantivpn: {
-        args: [],
-        description: "Outputs VPN flag rate statistics.",
-        handler: function (_a) {
-            var output = _a.output;
-            output("&lgAntiVPN statistics&fr\nFlag rate: &c".concat(players_1.FishPlayer.stats.numIpsFlagged, "&fr / &c").concat(players_1.FishPlayer.stats.numIpsChecked, "&fr\n").concat(players_1.FishPlayer.stats.numIpsErrored, " errors\nList of flagged unmoderated ips:\n").concat(Object.entries(players_1.FishPlayer.checkedIps).filter(function (e) { return e[1] !== false && !e[1].moderated; }).map(function (_a) {
-                var _b = __read(_a, 2), ip = _b[0], data = _b[1];
-                return "&c".concat(ip, "&fr: name &c\"").concat(data.name, "\"&fr, uuid &c\"").concat(data.uuid, "\"&fr");
-            }).join("\n") || "none", "\nList of flagged moderated ips:\n").concat(Object.entries(players_1.FishPlayer.checkedIps).filter(function (e) { return e[1] !== false && e[1].moderated; }).map(function (_a) {
-                var _b = __read(_a, 2), ip = _b[0], data = _b[1];
-                return "&c".concat(ip, "&fr: name &c\"").concat(data.name, "\"&fr, uuid &c\"").concat(data.uuid, "\"&fr");
-            }).join("\n") || "none"));
-        }
-    },
     fjs: {
         args: ["js:string"],
         description: "Executes arbitrary javascript code, but has access to fish-commands's variables.",

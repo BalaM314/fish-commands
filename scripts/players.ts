@@ -18,8 +18,6 @@ export class FishPlayer {
 		numIpsFlagged: 0,
 		numIpsErrored: 0,
 	};
-	//Added temporarily as part of antiVPN testing.
-	static checkedIps:Record<string, false | FlaggedIPData> = {};
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -199,46 +197,36 @@ export class FishPlayer {
 		}
 
 		//check vpn, TODO refactor
-		//TODO fix issue; second player joining from a flagged ip will not get flagged due to bad caching; fix by moving cache to api.isVpn
 		const ip = player.ip();
 		const info:mindustryPlayerData = player.getInfo();
-		if(!(ip in this.checkedIps)){
-			api.isVpn(ip, isVpn => {
-				this.stats.numIpsChecked ++;
-				if(isVpn){
-					this.stats.numIpsFlagged ++;
-					Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${this.stats.numIpsFlagged}/${this.stats.numIpsChecked} (${this.stats.numIpsFlagged / this.stats.numIpsChecked})`);
-					this.checkedIps[ip] = {
-						ip,
-						uuid: player.uuid(),
-						name: player.name,
-						moderated: false,
-					};
-					if(info.timesJoined <= 1){
-						fishPlayer.autoflagged = true;
-						fishPlayer.stopUnit();
-						logAction("autoflagged", "AntiVPN", fishPlayer);
-						api.sendStaffMessage(`Autoflagged player ${player.name} for suspected vpn!`, "AntiVPN");
-						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent.`);
-						Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`);
-						menu("Welcome to Fish Network!", `Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`, ["Close", "Discord"], fishPlayer, ({option, sender}) => {
-							if(option == "Discord"){
-								Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
-							}
-						}, false, o => o);
-						player.sendMessage(`Welcome to Fish Network!\nHi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`);
-					} else if(info.timesJoined < 5){
-						this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
-					}
-				} else {
-					this.checkedIps[ip] = false;
+		api.isVpn(ip, isVpn => {
+			this.stats.numIpsChecked ++;
+			if(isVpn){
+				this.stats.numIpsFlagged ++;
+				Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${this.stats.numIpsFlagged}/${this.stats.numIpsChecked} (${this.stats.numIpsFlagged / this.stats.numIpsChecked})`);
+				if(info.timesJoined <= 1){
+					fishPlayer.autoflagged = true;
+					fishPlayer.stopUnit();
+					fishPlayer.updateName();
+					logAction("autoflagged", "AntiVPN", fishPlayer);
+					api.sendStaffMessage(`Autoflagged player ${player.name} for suspected vpn!`, "AntiVPN");
+					this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);
+					Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`);
+					menu("Welcome to Fish Network!", `Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`, ["Close", "Discord"], fishPlayer, ({option, sender}) => {
+						if(option == "Discord"){
+							Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+						}
+					}, false, o => o);
+					player.sendMessage(`Welcome to Fish Network!\nHi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`);
+				} else if(info.timesJoined < 5){
+					this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
 				}
-			}, err => {
-				Log.err(`Error while checking for VPN status of ip ${ip}!`);
-				Log.err(err);
-				this.stats.numIpsErrored ++;
-			});
-		}
+			}
+		}, err => {
+			Log.err(`Error while checking for VPN status of ip ${ip}!`);
+			Log.err(err);
+			this.stats.numIpsErrored ++;
+		});
 	}
 	/**Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
@@ -625,7 +613,6 @@ We apologize for the inconvenience.`
 		if(!this.connected()) return;
 		this.stopUnit();
 		this.updateName();
-		if(FishPlayer.checkedIps[this.player.ip()]) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
 		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
 		FishPlayer.saveAll();
 
