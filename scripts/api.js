@@ -61,7 +61,16 @@ function getStopped(uuid, callback) {
                 var temp = response.getResultAsString();
                 if (!temp.length)
                     return false;
-                callback(JSON.parse(temp).time);
+                var time = JSON.parse(temp).time;
+                if (isNaN(Number(time))) {
+                    Log.err("API IS BROKEN!!! Invalid unmark time \"".concat(time, "\": not a number"));
+                }
+                else if (time.toString().length > 13) {
+                    Log.err("API IS BROKEN!!! Invalid unmark time \"".concat(time, "\": too long"));
+                }
+                else {
+                    callback(Number(time));
+                }
             }
         });
     }

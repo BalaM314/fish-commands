@@ -41,7 +41,7 @@ export function free(uuid: string) {
 }
 
 /** Gets player's unmark time */
-export function getStopped(uuid: string, callback: (unmark:number | string) => unknown) {
+export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 	if(localDebug) return;
 	const req = Http.post(`http://${ip}:5000/api/getStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
@@ -53,9 +53,16 @@ export function getStopped(uuid: string, callback: (unmark:number | string) => u
 			if (exception || !response) {
 				Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
 			} else {
-				let temp = response.getResultAsString();
-				if (!temp.length) return false;
-				callback(JSON.parse(temp).time);
+				const temp = response.getResultAsString();
+				if(!temp.length) return false;
+				const time = JSON.parse(temp).time;
+				if(isNaN(Number(time))){
+					Log.err(`API IS BROKEN!!! Invalid unmark time "${time}": not a number`);
+				} else if(time.toString().length > 13){
+					Log.err(`API IS BROKEN!!! Invalid unmark time "${time}": too long`);
+				} else {
+					callback(Number(time));
+				}
 			}
 		});
 	} catch (e) {
