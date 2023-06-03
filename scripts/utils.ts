@@ -201,7 +201,9 @@ export class StringIO {
 		}
 	}
 	readNumber(size:number = 4){
-		return parseInt(this.read(size));
+		const data = this.read(size);
+		if(isNaN(Number(data))) throw new Error(`Attempted to read invalid number: ${data}`);
+		return Number(data);
 	}
 	writeNumber(num:number, size:number = 4){
 		if(typeof num != "number") throw new Error(`${num} was not a number!`);

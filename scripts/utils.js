@@ -250,7 +250,10 @@ var StringIO = /** @class */ (function () {
     };
     StringIO.prototype.readNumber = function (size) {
         if (size === void 0) { size = 4; }
-        return parseInt(this.read(size));
+        var data = this.read(size);
+        if (isNaN(Number(data)))
+            throw new Error("Attempted to read invalid number: ".concat(data));
+        return Number(data);
     };
     StringIO.prototype.writeNumber = function (num, size) {
         if (size === void 0) { size = 4; }
