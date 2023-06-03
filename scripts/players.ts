@@ -1,7 +1,7 @@
 import type { FishPlayerData, FlaggedIPData, mindustryPlayerData, PlayerHistoryEntry } from "./types";
 import * as config from "./config";
 import * as api from "./api";
-import { formatTimeRelative, isCoreUnitType, logAction, setToArray, StringIO } from "./utils";
+import { formatTimeRelative, isCoreUnitType, logAction, matchFilter, setToArray, StringIO } from "./utils";
 import { Rank, RoleFlag } from "./ranks";
 import { menu } from "./menus";
 import { Perm, PermType } from "./commands";
@@ -300,6 +300,13 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 				);
 				return false;
 			}
+		}
+		if(matchFilter(this.name)){
+			this.player.kick(
+`[scarlet]"${this.name}[scarlet]" is not an allowed name.
+
+If you are unable to change it, please download Mindustry from Steam or itch.io.`
+			);
 		}
 		return true;
 	}

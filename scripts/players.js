@@ -382,6 +382,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             }
             finally { if (e_5) throw e_5.error; }
         }
+        if ((0, utils_1.matchFilter)(this.name)) {
+            this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."));
+        }
         return true;
     };
     /**Checks if this player's USID is correct. */
