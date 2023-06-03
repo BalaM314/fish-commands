@@ -62,8 +62,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
-        if ((0, utils_1.matchFilter)(text) && !fishPlayer.hasPerm("bypassChatFilter"))
+        if ((0, utils_1.matchFilter)(text) && !fishPlayer.hasPerm("bypassChatFilter")) {
+            Log.info("Censored message from player ".concat(player.name, ": ").concat(text));
             text = "[#f456f]I really hope everyone is having a fun time :) <3";
+        }
         if (text.startsWith("./"))
             text = text.replace("./", "/");
         if (!fishPlayer.hasPerm("chat")) {

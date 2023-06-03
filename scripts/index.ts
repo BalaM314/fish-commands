@@ -48,7 +48,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
 		const fishPlayer = FishPlayer.get(player);
 
-		if(matchFilter(text) && !fishPlayer.hasPerm("bypassChatFilter")) text = `[#f456f]I really hope everyone is having a fun time :) <3`;
+		if(matchFilter(text) && !fishPlayer.hasPerm("bypassChatFilter")){
+			Log.info(`Censored message from player ${player.name}: ${text}`);
+			text = `[#f456f]I really hope everyone is having a fun time :) <3`;
+		}
 
 		if(text.startsWith("./")) text = text.replace("./", "/");
 
