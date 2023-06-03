@@ -193,8 +193,14 @@ export class FishPlayer {
 			fishPlayer.updateName();
 			fishPlayer.updateAdminStatus();
 			api.getStopped(player.uuid(), (unmarked) => {
-				fishPlayer.unmarkTime = unmarked;
-				fishPlayer.sendWelcomeMessage();
+				if(unmarked === player.uuid()){
+					Log.err("API IS BROKEN!!! getStopped return player's uuid!");
+				} else if(typeof unmarked === "string"){
+					Log.err("API IS BROKEN!!! getStopped returned string: " + unmarked);
+				} else {
+					fishPlayer.unmarkTime = unmarked;
+					fishPlayer.sendWelcomeMessage();
+				}
 			});
 		}
 
@@ -428,6 +434,7 @@ We apologize for the inconvenience.`
 		}
 	}
 	write(out:StringIO){
+		if(typeof this.unmarkTime === "string") this.unmarkTime = 0;
 		out.writeString(this.uuid, 2);
 		out.writeString(this.name, 2, true);
 		out.writeBool(this.muted);
