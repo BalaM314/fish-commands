@@ -300,9 +300,9 @@ export function parseTimeString(str:string):number | null {
 		[/(\d+)m/, 60],
 		[/(\d+)h/, 3600],
 		[/(\d+)d/, 86400],
-		[/(\d+)w/, 604800],
-		[/forever/, 999999999999]
+		[/(\d+)w/, 604800]
 	]).map(([regex, mult]) => [Pattern.compile(regex.source), mult] as const);
+	if(str == "forever") return 999999999999;
 	for(const [pattern, mult] of formats){
 		//rhino regex doesn't work
 		const matcher = pattern.matcher(str);

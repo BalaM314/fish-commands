@@ -369,12 +369,13 @@ function parseTimeString(str) {
         [/(\d+)m/, 60],
         [/(\d+)h/, 3600],
         [/(\d+)d/, 86400],
-        [/(\d+)w/, 604800],
-        [/forever/, 999999999999]
+        [/(\d+)w/, 604800]
     ].map(function (_a) {
         var _b = __read(_a, 2), regex = _b[0], mult = _b[1];
         return [Pattern.compile(regex.source), mult];
     });
+    if (str == "forever")
+        return 999999999999;
     try {
         for (var formats_1 = __values(formats), formats_1_1 = formats_1.next(); !formats_1_1.done; formats_1_1 = formats_1.next()) {
             var _b = __read(formats_1_1.value, 2), pattern_1 = _b[0], mult = _b[1];
