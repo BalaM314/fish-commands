@@ -127,9 +127,12 @@ exports.commands = __assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, sender = _a.sender;
-            var rank = ranks_1.Rank.getByName(args.rank);
-            if (rank == null)
+            var ranks = ranks_1.Rank.getByInput(args.rank);
+            if (ranks.length == 0)
                 (0, commands_1.fail)("Unknown rank ".concat(args.rank));
+            if (ranks.length > 1)
+                (0, commands_1.fail)("Ambiguous rank ".concat(args.rank));
+            var rank = ranks[0];
             if (rank.level >= sender.rank.level)
                 (0, commands_1.fail)("You do not have permission to promote players to rank \"".concat(rank.name, "\", because your current rank is \"").concat(sender.rank.name, "\""));
             if (!sender.canModerate(args.player))
@@ -144,7 +147,12 @@ exports.commands = __assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
-            var flag = ranks_1.RoleFlag.getByName(args.roleflag);
+            var flags = ranks_1.RoleFlag.getByInput(args.roleflag);
+            if (flags.length == 0)
+                (0, commands_1.fail)("Unknown roleflag ".concat(args.roleflag));
+            if (flags.length > 1)
+                (0, commands_1.fail)("Ambiguous roleflag ".concat(args.roleflag));
+            var flag = flags[0];
             if (flag == null)
                 (0, commands_1.fail)("Unknown role flag ".concat(args.roleflag));
             if (!sender.canModerate(args.player))

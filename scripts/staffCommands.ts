@@ -109,8 +109,10 @@ export const commands:FishCommandsList = {
 		description: "Set a player's rank.",
 		perm: Perm.mod,
 		handler({args, outputSuccess, sender}){
-			const rank = Rank.getByName(args.rank);
-			if(rank == null) fail(`Unknown rank ${args.rank}`);
+			const ranks = Rank.getByInput(args.rank);
+			if(ranks.length == 0) fail(`Unknown rank ${args.rank}`);
+			if(ranks.length > 1) fail(`Ambiguous rank ${args.rank}`);
+			const rank = ranks[0];
 			if(rank.level >= sender.rank.level)
 				fail(`You do not have permission to promote players to rank "${rank.name}", because your current rank is "${sender.rank.name}"`);
 			if(!sender.canModerate(args.player))
@@ -127,7 +129,10 @@ export const commands:FishCommandsList = {
 		description: "Set a player's role flags.",
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess}){
-			const flag = RoleFlag.getByName(args.roleflag);
+			const flags = RoleFlag.getByInput(args.roleflag);
+			if(flags.length == 0) fail(`Unknown roleflag ${args.roleflag}`);
+			if(flags.length > 1) fail(`Ambiguous roleflag ${args.roleflag}`);
+			const flag = flags[0];
 			if(flag == null) fail(`Unknown role flag ${args.roleflag}`);
 			if(!sender.canModerate(args.player))
 				fail(`You do not have permission to modify the role flags of player "${args.player.name}"`);
