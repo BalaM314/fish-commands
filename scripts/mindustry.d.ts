@@ -152,6 +152,8 @@ declare class Pattern {
 }
 declare class Matcher {
 	replaceAll(replacement:string):string;
+	matches():boolean;
+	group(index:number):string;
 }
 declare class Runtime {
 	static getRuntime():Runtime;

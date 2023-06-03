@@ -295,16 +295,21 @@ export function logAction(action: string, by: FishPlayer | string, to: FishPlaye
 
 /**@returns the number of seconds. */
 export function parseTimeString(str:string):number | null {
-	const formats:[RegExp, number][] = [
+	const formats = (<[RegExp, number][]>[
 		[/(\d+)s/, 1],
 		[/(\d+)m/, 60],
 		[/(\d+)h/, 3600],
 		[/(\d+)d/, 86400],
 		[/(\d+)w/, 604800],
 		[/forever/, 999999999999]
-	];
-	for(const [regex, mult] of formats){
-		if(regex.test(str)) return Number(regex.exec(str)![1]) * mult;
+	]).map(([regex, mult]) => [Pattern.compile(regex.source), mult] as const);
+	for(const [pattern, mult] of formats){
+		//rhino regex doesn't work
+		const matcher = pattern.matcher(str);
+		if(matcher.matches()){
+			const num = Number(matcher.group(1));
+			if(!isNaN(num)) return num * mult;
+		}
 	}
 	return null;
 }

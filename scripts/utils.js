@@ -371,12 +371,20 @@ function parseTimeString(str) {
         [/(\d+)d/, 86400],
         [/(\d+)w/, 604800],
         [/forever/, 999999999999]
-    ];
+    ].map(function (_a) {
+        var _b = __read(_a, 2), regex = _b[0], mult = _b[1];
+        return [Pattern.compile(regex.source), mult];
+    });
     try {
         for (var formats_1 = __values(formats), formats_1_1 = formats_1.next(); !formats_1_1.done; formats_1_1 = formats_1.next()) {
-            var _b = __read(formats_1_1.value, 2), regex = _b[0], mult = _b[1];
-            if (regex.test(str))
-                return Number(regex.exec(str)[1]) * mult;
+            var _b = __read(formats_1_1.value, 2), pattern_1 = _b[0], mult = _b[1];
+            //rhino regex doesn't work
+            var matcher = pattern_1.matcher(str);
+            if (matcher.matches()) {
+                var num = Number(matcher.group(1));
+                if (!isNaN(num))
+                    return num * mult;
+            }
         }
     }
     catch (e_2_1) { e_2 = { error: e_2_1 }; }
