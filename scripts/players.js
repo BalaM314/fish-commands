@@ -241,8 +241,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
                 else {
                     fishPlayer.unmarkTime = unmarked;
-                    fishPlayer.sendWelcomeMessage();
                 }
+                fishPlayer.sendWelcomeMessage();
             });
         }
         //check vpn, TODO refactor

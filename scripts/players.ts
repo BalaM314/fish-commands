@@ -199,8 +199,8 @@ export class FishPlayer {
 					Log.err("API IS BROKEN!!! getStopped returned string: " + unmarked);
 				} else {
 					fishPlayer.unmarkTime = unmarked;
-					fishPlayer.sendWelcomeMessage();
 				}
+				fishPlayer.sendWelcomeMessage();
 			});
 		}
 
