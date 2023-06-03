@@ -84,6 +84,8 @@ exports.commands = __assign(__assign({ warn: {
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800;
+            if (time > 999999999999)
+                (0, commands_1.fail)("Error: time too high.");
             args.player.stop(sender, time);
             (0, utils_1.logAction)('stopped', sender, args.player);
             Call.sendMessage("Player \"".concat(args.player.name, "\" has been marked for ").concat(args.time ? rawArgs[1] : "7 days", "."));

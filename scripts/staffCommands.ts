@@ -67,6 +67,7 @@ export const commands:FishCommandsList = {
 			if(args.player.marked()) fail(`Player "${args.player.name}" is already marked.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
 			const time = args.time ?? 604800;
+			if(time > 999999999999) fail(`Error: time too high.`);
 			args.player.stop(sender, time);
 			logAction('stopped', sender, args.player);
 			Call.sendMessage(`Player "${args.player.name}" has been marked for ${args.time ? rawArgs[1] : "7 days"}.`);
