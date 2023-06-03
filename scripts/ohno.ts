@@ -24,7 +24,7 @@ export const Ohnos = {
 		return true;
 	},
 	updateLength(){
-		this.ohnos = this.ohnos.filter(o => o && !o.dead);
+		this.ohnos = this.ohnos.filter(o => o && o.isAdded() && !o.dead);
 	},
 	killAll(){
 		this.ohnos.forEach(ohno => ohno?.kill?.());
