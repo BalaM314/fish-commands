@@ -251,6 +251,10 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.readNumber = function (size) {
         if (size === void 0) { size = 4; }
         var data = this.read(size);
+        if (Pattern.matches("^0*-\\d+$", data)) {
+            //negative numbers were incorrectly stored in previous versions
+            data = "-" + data.split("-")[1];
+        }
         if (isNaN(Number(data)))
             throw new Error("Attempted to read invalid number: ".concat(data));
         return Number(data);

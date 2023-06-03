@@ -201,7 +201,11 @@ export class StringIO {
 		}
 	}
 	readNumber(size:number = 4){
-		const data = this.read(size);
+		let data = this.read(size);
+		if(Pattern.matches("^0*-\\d+$", data)){
+			//negative numbers were incorrectly stored in previous versions
+			data = "-" + data.split("-")[1];
+		}
 		if(isNaN(Number(data))) throw new Error(`Attempted to read invalid number: ${data}`);
 		return Number(data);
 	}
