@@ -434,7 +434,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
         switch (version) {
             case 0:
                 return new this({
@@ -497,9 +497,38 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     usid: fishPlayerData.readString(2)
                 }, player);
             case 3:
-                return new this({
+                //Extremely cursed due to a catastrophic error
+                var dataPart1 = {
                     uuid: (_k = fishPlayerData.readString(2)) !== null && _k !== void 0 ? _k : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
                     name: (_l = fishPlayerData.readString(2)) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]",
+                    muted: fishPlayerData.readBool(),
+                    autoflagged: fishPlayerData.readBool()
+                };
+                var unmarkTime = void 0;
+                try {
+                    unmarkTime = fishPlayerData.readNumber(13);
+                }
+                catch (err) {
+                    Log.warn("Invalid stored unmark time: (".concat(err.message.split(": ")[1], ") Attempting repair..."));
+                    fishPlayerData.offset -= 13;
+                    var chars = fishPlayerData.read(24);
+                    if (chars !== dataPart1.uuid)
+                        throw new Error("Unable to repair data: next 24 chars ".concat(chars, " were not equal to uuid ").concat(dataPart1.uuid));
+                    Log.warn("Repaired stored data for ".concat(chars, "."));
+                    unmarkTime = -1; //the data is lost, set as default
+                }
+                return new this(__assign(__assign({}, dataPart1), { unmarkTime: unmarkTime, highlight: fishPlayerData.readString(2), history: fishPlayerData.readArray(function (str) {
+                        var _a, _b;
+                        return ({
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
+                            time: str.readNumber(15)
+                        });
+                    }), rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)), rank: (_m = fishPlayerData.readString(2)) !== null && _m !== void 0 ? _m : "", flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }), usid: fishPlayerData.readString(2) }), player);
+            case 4:
+                return new this({
+                    uuid: (_o = fishPlayerData.readString(2)) !== null && _o !== void 0 ? _o : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    name: (_p = fishPlayerData.readString(2)) !== null && _p !== void 0 ? _p : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool(),
                     unmarkTime: fishPlayerData.readNumber(13),
@@ -513,7 +542,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                         });
                     }),
                     rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_m = fishPlayerData.readString(2)) !== null && _m !== void 0 ? _m : "",
+                    rank: (_q = fishPlayerData.readString(2)) !== null && _q !== void 0 ? _q : "",
                     flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
                     usid: fishPlayerData.readString(2)
                 }, player);
@@ -831,7 +860,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    FishPlayer.saveVersion = 3;
+    FishPlayer.saveVersion = 4;
     //Static transients
     FishPlayer.stats = {
         numIpsChecked: 0,

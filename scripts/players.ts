@@ -10,7 +10,7 @@ import { Perm, PermType } from "./commands";
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 3;
+	static readonly saveVersion = 4;
 
 	//Static transients
 	static stats = {
@@ -413,6 +413,39 @@ We apologize for the inconvenience.`
 					usid: fishPlayerData.readString(2)
 				}, player);
 			case 3:
+				//Extremely cursed due to a catastrophic error
+				let dataPart1 = {
+					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					autoflagged: fishPlayerData.readBool()
+				};
+				let unmarkTime;
+				try {
+					unmarkTime = fishPlayerData.readNumber(13)
+				} catch(err){
+					Log.warn(`Invalid stored unmark time: (${(<Error>err).message.split(": ")[1]}) Attempting repair...`);
+					fishPlayerData.offset -= 13;
+					const chars = fishPlayerData.read(24);
+					if(chars !== dataPart1.uuid) throw new Error(`Unable to repair data: next 24 chars ${chars} were not equal to uuid ${dataPart1.uuid}`);
+					Log.warn(`Repaired stored data for ${chars}.`);
+					unmarkTime = -1; //the data is lost, set as default
+				}
+				return new this({
+					...dataPart1,
+					unmarkTime,
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2)
+				}, player);
+			case 4:
 				return new this({
 					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
 					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
