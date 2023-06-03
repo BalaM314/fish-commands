@@ -594,6 +594,18 @@ We apologize for the inconvenience.`
 		if(FishPlayer.checkedIps[this.player.ip()]) (FishPlayer.checkedIps[this.player.ip()] as any).moderated = true;
 		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
 		FishPlayer.saveAll();
+
+		//Set unmark timer
+		let oldUnmarkTime = this.unmarkTime;
+		Timer.schedule(() => {
+			//Use of this is safe because arrow functions do not create a new this context
+			if(this.unmarkTime === oldUnmarkTime){
+				//Only run the code if the unmark time hasn't changed
+				this.forceRespawn();
+				this.updateName();
+				this.sendMessage("[yellow]Your mark has automatically expired.");
+			}
+		}, time);
 	}
 	free(by:FishPlayer | "api"){
 		if(!this.marked()) return;

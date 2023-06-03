@@ -683,6 +683,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return this.marked() || this.autoflagged;
     };
     FishPlayer.prototype.stop = function (by, time) {
+        var _this = this;
         this.unmarkTime = Date.now() + time * 1000;
         if (by instanceof FishPlayer) {
             this.addHistoryEntry({
@@ -707,6 +708,17 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             FishPlayer.checkedIps[this.player.ip()].moderated = true;
         this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
         FishPlayer.saveAll();
+        //Set unmark timer
+        var oldUnmarkTime = this.unmarkTime;
+        Timer.schedule(function () {
+            //Use of this is safe because arrow functions do not create a new this context
+            if (_this.unmarkTime === oldUnmarkTime) {
+                //Only run the code if the unmark time hasn't changed
+                _this.forceRespawn();
+                _this.updateName();
+                _this.sendMessage("[yellow]Your mark has automatically expired.");
+            }
+        }, time);
     };
     FishPlayer.prototype.free = function (by) {
         if (!this.marked())
