@@ -204,6 +204,7 @@ export class StringIO {
 		return parseInt(this.read(size));
 	}
 	writeNumber(num:number, size:number = 4){
+		if(typeof num != "number") throw new Error(`${num} was not a number!`);
 		this.string += num.toString().padStart(size, "0");
 	}
 	readBool(){

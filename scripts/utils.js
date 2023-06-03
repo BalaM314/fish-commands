@@ -254,6 +254,8 @@ var StringIO = /** @class */ (function () {
     };
     StringIO.prototype.writeNumber = function (num, size) {
         if (size === void 0) { size = 4; }
+        if (typeof num != "number")
+            throw new Error("".concat(num, " was not a number!"));
         this.string += num.toString().padStart(size, "0");
     };
     StringIO.prototype.readBool = function () {
