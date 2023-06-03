@@ -30,8 +30,8 @@ const Cleaner = {
 			10
 		);
 		Vars.world.tiles.eachTile((t: Tile) => {
-			if ([107, 105, 109, 106, 111, 108, 112, 117, 115, 116, 110, 125, 124, 103, 113, 114, 122, 123].includes(t.block().id)) {
-				t.setNet(Blocks.air, Team.sharded, 0);
+			if (t.breakable() && t.block() instanceof Prop) {
+				t.removeNet();
 			}
 		});
 		return true;
