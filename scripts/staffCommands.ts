@@ -1,13 +1,13 @@
-import { Perm, fail } from "./commands";
+import { Perm, commandList, fail } from "./commands";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
-import type { FishCommandData, FishCommandsList, mindustryPlayerData } from "./types";
+import type { FishCommandData, mindustryPlayerData } from "./types";
 import { getTimeSinceText, setToArray, logAction, escapeStringColors, formatTimeRelative, colorBadBoolean } from "./utils";
 import { Ohnos } from "./ohno";
 import { Rank, RoleFlag } from "./ranks";
 import * as api from './api';
 
-export const commands:FishCommandsList = {
+export const commands = commandList({
 	warn: {
 		args: ['player:player', 'reason:string?'],
 		description: 'Warn a player.',
@@ -417,4 +417,4 @@ export const commands:FishCommandsList = {
 		}
 	}
 
-};
+});

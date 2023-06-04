@@ -1,4 +1,4 @@
-import { fail, formatArg, Perm } from './commands';
+import { commandList, fail, formatArg, Perm } from './commands';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
 import type { FishCommandsList } from './types';
@@ -38,7 +38,7 @@ const Cleaner = {
 	},
 };
 
-export const commands: FishCommandsList = {
+export const commands = commandList({
 	unpause: {
 		args: [],
 		description: 'Unpauses the game.',
@@ -434,4 +434,4 @@ export const commands: FishCommandsList = {
 	// 		votekickmanager.handleVote(sender, args ? 1 : -1);
 	//	 }
 	// }
-};
+});

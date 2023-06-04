@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
-exports.commands = {
+exports.commands = (0, commands_1.commandList)({
     pet: {
         args: ["name:string?"],
         description: 'Spawns a cool pet with a displayed name that follows you around.',
@@ -99,4 +99,4 @@ exports.commands = {
             }
         }
     }
-};
+});

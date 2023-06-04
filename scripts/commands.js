@@ -27,13 +27,19 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerConsole = exports.register = exports.fail = exports.formatArg = exports.Perm = exports.allCommands = void 0;
+exports.registerConsole = exports.register = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allCommands = void 0;
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
 var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"];
+/** Use this to get the correct type for command lists. */
+var commandList = function (list) { return list; };
+exports.commandList = commandList;
+/** Use this to get the correct type for command lists. */
+var consoleCommandList = function (list) { return list; };
+exports.consoleCommandList = consoleCommandList;
 /** Represents a permission that is required to do something. */
 var Perm = exports.Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {

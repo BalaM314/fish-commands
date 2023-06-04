@@ -32,7 +32,10 @@ type UnionToIntersection<U> = (
  * Returns the type of args given a union of the arg string types.
  * Example: given `"player:player?" | "force:boolean"` returns `{player: FishPlayer | null; force: boolean;}`
  **/
-type ArgsFromArgStringUnion<ArgStringUnion extends string> = UnionToIntersection<ObjectTypeFor<ArgStringUnion>>;
+type ArgsFromArgStringUnion<ArgStringUnion extends string> =
+	[ArgStringUnion] extends [never] ? Record<string, any> : //If any was passed, return Record<string, any>
+	0 extends (1 & ArgStringUnion) ? Record<string, any> : //If any was passed, return Record<string, any>
+	UnionToIntersection<ObjectTypeFor<ArgStringUnion>>;
 //Typescript distributes the generic across the union type, producing a union of all the objects types, then we convert the union to an intersection
 
 type ObjectTypeFor<ArgString> =
@@ -104,7 +107,6 @@ interface FishConsoleCommandData<ArgType extends string> {
 	handler: FishConsoleCommandRunner<ArgType>;
 }
 
-type FishConsoleCommandsList = Record<string, FishConsoleCommandData>;
 
 interface TileHistoryEntry {
 	name:string;

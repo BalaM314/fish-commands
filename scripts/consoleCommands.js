@@ -36,7 +36,7 @@ var api_1 = require("./api");
 var fjsContext = require("./fjsContext");
 var globals_1 = require("./globals");
 var config = require("./config");
-exports.commands = {
+exports.commands = (0, commands_1.consoleCommandList)({
     setrank: {
         args: ["player:player", "rank:string"],
         description: "Set a player's rank.",
@@ -355,4 +355,4 @@ exports.commands = {
             output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 10))), " KB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, "\nLength of tilelog entries: ").concat(Math.round(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0) / (Math.pow(2, 10))), " KB"));
         }
     }
-};
+});

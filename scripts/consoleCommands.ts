@@ -1,15 +1,15 @@
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
-import { FishConsoleCommandsList, FlaggedIPData, mindustryPlayerData } from "./types";
+import { FlaggedIPData, mindustryPlayerData } from "./types";
 import { logAction, setToArray, StringBuilder } from "./utils";
-import { fail } from "./commands";
+import { consoleCommandList, fail } from "./commands";
 import { addStopped } from "./api";
 import * as fjsContext from "./fjsContext";
 import { tileHistory } from "./globals";
 import * as config from "./config";
 
 
-export const commands:FishConsoleCommandsList = {
+export const commands = consoleCommandList({
 	setrank: {
 		args: ["player:player", "rank:string"],
 		description: "Set a player's rank.",
@@ -277,4 +277,4 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 			);
 		}
 	}
-};
+});

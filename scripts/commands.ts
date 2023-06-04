@@ -1,12 +1,24 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import type { CommandArg, FishCommandArgType, FishCommandsList, ClientCommandHandler, ServerCommandHandler, FishConsoleCommandsList, FishCommandData } from "./types";
+import type { CommandArg, FishCommandArgType, ClientCommandHandler, ServerCommandHandler,  FishCommandData, FishConsoleCommandData } from "./types";
 import { getTeam, parseTimeString } from "./utils";
 
-export const allCommands:Record<string, FishCommandData> = {};
+export const allCommands:Record<string, FishCommandData<any>> = {};
 const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
+
+/** Use this to get the correct type for command lists. */
+export const commandList = <A extends Record<string, string>>(list:{
+	//Store the mapping between commandname and ArgStringUnion in A
+	[K in keyof A]: FishCommandData<A[K]>;
+}):Record<string, FishCommandData<any>> => list;
+/** Use this to get the correct type for command lists. */
+export const consoleCommandList = <A extends Record<string, string>>(list:{
+	//Store the mapping between commandname and ArgStringUnion in A
+	[K in keyof A]: FishConsoleCommandData<A[K]>;
+}):Record<string, FishConsoleCommandData<any>> => list;
+
 
 //Cursed
 type SelectPerm<T> = T extends infer A ? (
@@ -158,7 +170,7 @@ function convertArgs(processedCmdArgs:CommandArg[], allowMenus:boolean):string {
 /**
  * Registers all commands in a list to a client command handler.
  **/
-export function register(commands:FishCommandsList, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
+export function register(commands:Record<string, FishCommandData<any>>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
 
 	for(const [name, data] of Object.entries(commands)){
 
@@ -219,7 +231,7 @@ export function register(commands:FishCommandsList, clientHandler:ClientCommandH
 	}
 }
 
-export function registerConsole(commands:FishConsoleCommandsList, serverHandler:ServerCommandHandler){
+export function registerConsole(commands:Record<string, FishConsoleCommandData<any>>, serverHandler:ServerCommandHandler){
 
 	for(const [name, data] of Object.entries(commands)){
 		//Cursed for of loop due to lack of object.entries

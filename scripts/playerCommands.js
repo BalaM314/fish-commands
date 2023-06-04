@@ -60,7 +60,7 @@ var Cleaner = {
         return true;
     },
 };
-exports.commands = __assign(__assign({ unpause: {
+exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
         description: 'Unpauses the game.',
         perm: commands_1.Perm.play,
@@ -422,4 +422,4 @@ exports.commands = __assign(__assign({ unpause: {
             var args = _a.args, output = _a.output;
             output("Player ".concat(args.player.cleanedName, "'s rank is ").concat(args.player.rank.color).concat(args.player.rank.name, "[]."));
         },
-    } });
+    } }));

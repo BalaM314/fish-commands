@@ -1,8 +1,8 @@
-import { Perm, fail } from "./commands";
+import { Perm, commandList, fail } from "./commands";
 import { FishPlayer } from "./players";
-import type { FishCommandsList } from "./types";
 
-export const commands:FishCommandsList = {
+
+export const commands = commandList({
 	pet: {
 		args: ["name:string?"],
 		description: 'Spawns a cool pet with a displayed name that follows you around.',
@@ -98,4 +98,4 @@ export const commands:FishCommandsList = {
 
 		}
 	}
-};
+});
