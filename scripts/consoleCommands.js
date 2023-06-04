@@ -296,21 +296,32 @@ exports.commands = {
         }
     },
     restart: {
-        args: ["areyousure:boolean?"],
+        args: ["immediate:boolean?"],
         description: "Restarts the server.",
         handler: function (_a) {
             var args = _a.args, output = _a.output;
-            if (!args.areyousure)
-                (0, commands_1.fail)("Are you sure?!!?!!11!!1");
-            output("Restarting...");
-            Core.settings.manualSave();
-            players_1.FishPlayer.saveAll();
-            var file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-            Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
-            Core.app.post(function () {
-                SaveIO.save(file);
-                Core.app.exit();
-            });
+            function restartLoop(sec) {
+                if (sec > 0) {
+                    Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
+                    Timer.schedule(function () { return restartLoop(sec - 1); }, 1);
+                }
+                else {
+                    output("Restarting...");
+                    Core.settings.manualSave();
+                    players_1.FishPlayer.saveAll();
+                    var file_1 = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+                    Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
+                    Core.app.post(function () {
+                        SaveIO.save(file_1);
+                        Core.app.exit();
+                    });
+                }
+            }
+            ;
+            Call.sendMessage("[green]Game saved.");
+            var time = args.immediate ? 0 : 10;
+            Log.info("Restarting in ".concat(time, " seconds..."));
+            restartLoop(time);
         }
     },
     rename: {

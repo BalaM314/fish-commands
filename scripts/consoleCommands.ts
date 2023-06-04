@@ -220,20 +220,29 @@ export const commands:FishConsoleCommandsList = {
 		}
 	},
 	restart: {
-		args: ["areyousure:boolean?"],
+		args: ["immediate:boolean?"],
 		description: "Restarts the server.",
 		handler({args, output}){
-			if(!args.areyousure) fail(`Are you sure?!!?!!11!!1`);
-			output(`Restarting...`);
-
-			Core.settings.manualSave();
-			FishPlayer.saveAll();
-			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-			Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
-			Core.app.post(() => {
-				SaveIO.save(file);
-				Core.app.exit();
-			});
+			function restartLoop(sec:number){
+				if(sec > 0){
+					Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);
+					Timer.schedule(() => restartLoop(sec - 1), 1);
+				} else {
+					output(`Restarting...`);
+					Core.settings.manualSave();
+					FishPlayer.saveAll();
+					const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+					Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
+					Core.app.post(() => {
+						SaveIO.save(file);
+						Core.app.exit();
+					});
+				}
+			};
+			Call.sendMessage(`[green]Game saved.`);
+			const time = args.immediate ? 0 : 10;
+			Log.info(`Restarting in ${time} seconds...`);
+			restartLoop(time);
 		}
 	},
 	rename: {

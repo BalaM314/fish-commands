@@ -30,7 +30,7 @@ exports.Ohnos = {
         return true;
     },
     updateLength: function () {
-        this.ohnos = this.ohnos.filter(function (o) { return o && !o.dead; });
+        this.ohnos = this.ohnos.filter(function (o) { return o && o.isAdded() && !o.dead; });
     },
     killAll: function () {
         this.ohnos.forEach(function (ohno) { var _a; return (_a = ohno === null || ohno === void 0 ? void 0 : ohno.kill) === null || _a === void 0 ? void 0 : _a.call(ohno); });
