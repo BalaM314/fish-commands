@@ -410,7 +410,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, output = _a.output;
-            var info = sender.player.info;
+            var info = args.target.player.info;
             output("[accent]Info for player \"".concat(args.target.player.name, "[accent]\" [gray](").concat((0, utils_1.escapeStringColors)(args.target.name), ")\n\t[accent]Rank: ").concat(args.target.rank.coloredName(), "\n\t[accent]Role flags: ").concat(Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), "\n\t[accent]Stopped: ").concat((0, utils_1.colorBadBoolean)(!args.target.hasPerm("play")), "\n\t[accent]marked: ").concat(args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", "\n\t[accent]muted: ").concat((0, utils_1.colorBadBoolean)(args.target.muted), "\n\t[accent]autoflagged: ").concat((0, utils_1.colorBadBoolean)(args.target.autoflagged), "\n\t[accent]times joined / kicked: ").concat(info.timesJoined, "/").concat(info.timesKicked)
                 .replace(/\t/g, "    "));
         }

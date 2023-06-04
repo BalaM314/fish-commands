@@ -403,7 +403,7 @@ export const commands = commandList({
 		description: "Displays information about a player.",
 		perm: Perm.none,
 		handler({sender, args, output}){
-			const info = sender.player.info as mindustryPlayerData;
+			const info = args.target.player.info as mindustryPlayerData;
 			output(
 `[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColors(args.target.name)})
 	[accent]Rank: ${args.target.rank.coloredName()}
