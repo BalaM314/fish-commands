@@ -285,7 +285,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 		let optionsList:mindustryPlayer[] = [];
 		//TODO Dubious implementation
 		switch(argToResolve.type){
-			case "player": (Groups.player as mindustryPlayer[]).forEach(player => optionsList.push(player)); break;
+			case "player": Groups.player.each(player => optionsList.push(player)); break;
 			default: throw new Error(`Unable to resolve arg of type ${argToResolve.type}`);
 		}
 		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, ({option}) => {

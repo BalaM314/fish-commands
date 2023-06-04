@@ -132,7 +132,7 @@ export const commands = consoleCommandList({
 				if(Vars.netServer.admins.isIDBanned(args.target)){
 					outputFail(`UUID &c"${args.target}"&fr is already banned.`);
 				} else {
-					const ip:string | null = Groups.player.find((p:mindustryPlayer) => args.target === p.uuid())?.ip();
+					const ip:string | null = Groups.player.find(p => args.target === p.uuid())?.ip();
 					Vars.netServer.admins.banPlayerID(args.target);
 					if(ip){
 						Vars.netServer.admins.banPlayerIP(ip);
@@ -156,7 +156,7 @@ export const commands = consoleCommandList({
 				}
 			}
 
-			Groups.player.each((player:mindustryPlayer) => {
+			Groups.player.each(player => {
 				if(Vars.netServer.admins.isIDBanned(player.uuid())){
 					addStopped(player.uuid(), 999999999999);
 					player.con.kick(Packets.KickReason.banned);

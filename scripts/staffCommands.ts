@@ -341,7 +341,7 @@ export const commands = commandList({
 		perm: Perm.admin,
 		handler({sender, outputFail, outputSuccess, execServer}){
 			let playerList:mindustryPlayer[] = [];
-			(Groups.player as mindustryPlayer[]).forEach(player => {
+			Groups.player.each(player => {
 				if(!player.admin) playerList.push(player);
 			});
 			menu(`IP BAN`, "Choose a player to IP ban.", playerList, sender, ({option}) => {

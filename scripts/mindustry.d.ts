@@ -52,7 +52,10 @@ type Effect = any;
 declare const Align: {
 	[index:string]: any;
 }
-declare const Groups: any;
+declare const Groups: {
+	player: EntityGroup<mindustryPlayer>;
+	unit: EntityGroup<Unit>;
+}
 declare class Vec2 {
 	constructor(x:number, y:number);
 }
@@ -106,6 +109,22 @@ declare const Http: {
 	get(url:string):HttpRequest;
 	get(url:string, callback:(res:HttpResponse) => unknown):void;
 }
+declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
+	items: T[];
+	size: number;
+	constructor();
+	constructor(capacity:number);
+	static with<T>(...items:T[]):Seq<T>;
+	static with<T>(items:Iterable<T>):Seq<T>;
+	contains(item:T):boolean;
+	contains(pred:(item:T) => boolean):boolean;
+	filter(pred:(item:T) => boolean):Seq<T>;
+	find(pred:(item:T) => boolean):T;
+	each(func:(item:T) => unknown);
+	isEmpty():boolean;
+	map<R>(mapFunc:(item:T) => R):Seq<R>;
+}
+
 declare class ObjectSet<T> {
 	size:number;
 	select(predicate:(item:T) => boolean):ObjectSet<T>;
@@ -115,6 +134,16 @@ declare class ObjectSet<T> {
 	isEmpty():boolean;
 	contains(item:T):boolean;
 	get(key:T):T;
+	first():T;
+}
+declare class EntityGroup<T> {
+	copy(seq:Seq<T>):Seq<T>;
+	each(func:(item:T) => unknown);
+	getByID(id:number):T;
+	isEmpty():boolean;
+	size():number;
+	contains(pred:(item:T) => boolean):boolean;
+	find(pred:(item:T) => boolean):T;
 	first():T;
 }
 

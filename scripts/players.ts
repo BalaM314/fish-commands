@@ -103,7 +103,7 @@ export class FishPlayer {
 	/**Returns the FishPlayer representing the first online player matching a given name. */
 	static getByName(name:string):FishPlayer | null {
 		if(name == "") return null;
-		const realPlayer = Groups.player.find((p:mindustryPlayer) => {
+		const realPlayer = Groups.player.find(p => {
 			return p.name === name ||
 				p.name.includes(name) ||
 				p.name.toLowerCase().includes(name.toLowerCase()) ||
@@ -116,15 +116,11 @@ export class FishPlayer {
 	
 	/**Returns the FishPlayers representing all online players matching a given name. */
 	static getAllByName(name:string, strict = true):FishPlayer[] {
-		let players:FishPlayer[] = [];
 		if(name == "") return [];
-		//Groups.player doesn't support filter
-		Groups.player.each((p:mindustryPlayer) => {
+		return Groups.player.copy(new Seq()).filter(p => {
 			const fishP = FishPlayer.get(p);
-			if(fishP.cleanedName.includes(name)) players.push(fishP);
-			else if(!strict && fishP.cleanedName.toLowerCase().includes(name)) players.push(fishP);
-		});
-		return players;
+			return fishP.cleanedName.includes(name) || (!strict && fishP.cleanedName.toLowerCase().includes(name));
+		}).items;
 	}
 	static getOneByString(str:string):FishPlayer | "none" | "multiple" {
 		if(str == "") return "none";
@@ -151,7 +147,7 @@ export class FishPlayer {
 	}
 	static getOneMindustryPlayerByName(str:string):mindustryPlayer | "none" | "multiple" {
 		if(str == "") return "none";
-		const players = setToArray(Groups.player as ObjectSet<mindustryPlayer>);
+		const players = Groups.player.copy(new Seq()).items;
 		let matchingPlayers:mindustryPlayer[];
 
 		const filters:((p:mindustryPlayer) => boolean)[] = [
@@ -261,7 +257,7 @@ export class FishPlayer {
 		this.cleanedName = Strings.stripColors(player.name);
 	}
 
-	/**Updates the mindustry player's name, using the prefixes of the current rank and (TODO) role flags. */
+	/**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
@@ -717,7 +713,7 @@ We apologize for the inconvenience.`
 	static messageStaff(arg1:string, arg2?:string):boolean {
 		const message = arg2 ? `[gray]<[cyan]staff[gray]>[white]${arg1}[green]: [cyan]${arg2}` : arg1;
 		let messageReceived = false;
-		Groups.player.forEach((pl:mindustryPlayer) => {
+		Groups.player.each(pl => {
 			const fishP = FishPlayer.get(pl);
 			if(fishP.ranksAtLeast(Rank.mod)){
 				pl.sendMessage(message);
@@ -735,7 +731,7 @@ We apologize for the inconvenience.`
 	static messageMuted(arg1:string, arg2?:string):boolean {
 		const message = arg2 ? `[gray]<[red]muted[gray]>[white]${arg1}[coral]: [lightgray]${arg2}` : arg1;
 		let messageReceived = false;
-		Groups.player.forEach((pl:mindustryPlayer) => {
+		Groups.player.each(pl => {
 			const fishP = FishPlayer.get(pl);
 			if(fishP.hasPerm("seeMutedMessages")){
 				pl.sendMessage(message);

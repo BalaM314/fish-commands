@@ -351,7 +351,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, execServer = _a.execServer;
             var playerList = [];
-            Groups.player.forEach(function (player) {
+            Groups.player.each(function (player) {
                 if (!player.admin)
                     playerList.push(player);
             });

@@ -348,7 +348,7 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
         //TODO Dubious implementation
         switch (argToResolve_1.type) {
             case "player":
-                Groups.player.forEach(function (player) { return optionsList_1.push(player); });
+                Groups.player.each(function (player) { return optionsList_1.push(player); });
                 break;
             default: throw new Error("Unable to resolve arg of type ".concat(argToResolve_1.type));
         }

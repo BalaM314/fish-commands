@@ -9,14 +9,14 @@ export const commands = commandList({
 		perm: Perm.member,
 		handler({args, sender, outputSuccess}){
 			if(!args.name){
-				const pet = Groups.unit.find((u:Unit) => u.id === sender.pet);
+				const pet = Groups.unit.find(u => u.id === sender.pet);
 				if(pet) pet.kill();
 				sender.pet = "";
 				outputSuccess("Your pet has been removed.");
 				return;
 			}
 			if(sender.pet !== ''){
-				const pet = Groups.unit.find((u:Unit) => u.id === sender.pet);
+				const pet = Groups.unit.find(u => u.id === sender.pet);
 				if(pet) pet.kill();
 				sender.pet = '';
 			}

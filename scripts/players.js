@@ -128,18 +128,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     /**Returns the FishPlayers representing all online players matching a given name. */
     FishPlayer.getAllByName = function (name, strict) {
         if (strict === void 0) { strict = true; }
-        var players = [];
         if (name == "")
             return [];
-        //Groups.player doesn't support filter
-        Groups.player.each(function (p) {
+        return Groups.player.copy(new Seq()).filter(function (p) {
             var fishP = FishPlayer.get(p);
-            if (fishP.cleanedName.includes(name))
-                players.push(fishP);
-            else if (!strict && fishP.cleanedName.toLowerCase().includes(name))
-                players.push(fishP);
-        });
-        return players;
+            return fishP.cleanedName.includes(name) || (!strict && fishP.cleanedName.toLowerCase().includes(name));
+        }).items;
     };
     FishPlayer.getOneByString = function (str) {
         var e_1, _a;
@@ -180,7 +174,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var e_2, _a;
         if (str == "")
             return "none";
-        var players = (0, utils_1.setToArray)(Groups.player);
+        var players = Groups.player.copy(new Seq()).items;
         var matchingPlayers;
         var filters = [
             function (p) { return p.name === str; },
@@ -319,7 +313,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         });
         this.cleanedName = Strings.stripColors(player.name);
     };
-    /**Updates the mindustry player's name, using the prefixes of the current rank and (TODO) role flags. */
+    /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
         var e_4, _a;
         if (!this.connected())
@@ -819,7 +813,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.messageStaff = function (arg1, arg2) {
         var message = arg2 ? "[gray]<[cyan]staff[gray]>[white]".concat(arg1, "[green]: [cyan]").concat(arg2) : arg1;
         var messageReceived = false;
-        Groups.player.forEach(function (pl) {
+        Groups.player.each(function (pl) {
             var fishP = FishPlayer.get(pl);
             if (fishP.ranksAtLeast(ranks_1.Rank.mod)) {
                 pl.sendMessage(message);
@@ -831,7 +825,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.messageMuted = function (arg1, arg2) {
         var message = arg2 ? "[gray]<[red]muted[gray]>[white]".concat(arg1, "[coral]: [lightgray]").concat(arg2) : arg1;
         var messageReceived = false;
-        Groups.player.forEach(function (pl) {
+        Groups.player.each(function (pl) {
             var fishP = FishPlayer.get(pl);
             if (fishP.hasPerm("seeMutedMessages")) {
                 pl.sendMessage(message);
