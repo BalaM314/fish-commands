@@ -54,14 +54,23 @@ export const commands = commandList({
 	},
 
 	highlight: {
-		args: ['color:string'],
+		args: ['color:string?'],
 		description: 'Makes your chat text colored by default.',
 		perm: Perm.member,
-		handler({args, sender, outputFail}){
-			if(Strings.stripColors(args.color) == ""){
+		handler({args, sender, outputFail, outputSuccess}){
+			if(args.color == null){
+				if(sender.highlight != null){
+					sender.highlight = null;
+					outputSuccess("Cleared your highlight.");
+				} else {
+					outputFail("No highlight to clear.");
+				}
+			} else if(Strings.stripColors(args.color) == ""){
 				sender.highlight = args.color;
+				outputSuccess(`Set highlight to ${args.color.replace("[","").replace("]","")}.`);
 			} else if(Strings.stripColors(`[${args.color}]`) == ""){
 				sender.highlight = `[${args.color}]`;
+				outputSuccess(`Set highlight to ${args.color}.`);
 			} else {
 				outputFail(`[yellow]"${args.color}[yellow]" was not a valid color!`);
 			}

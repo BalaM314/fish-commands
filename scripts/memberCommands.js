@@ -52,16 +52,27 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     highlight: {
-        args: ['color:string'],
+        args: ['color:string?'],
         description: 'Makes your chat text colored by default.',
         perm: commands_1.Perm.member,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
-            if (Strings.stripColors(args.color) == "") {
+            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            if (args.color == null) {
+                if (sender.highlight != null) {
+                    sender.highlight = null;
+                    outputSuccess("Cleared your highlight.");
+                }
+                else {
+                    outputFail("No highlight to clear.");
+                }
+            }
+            else if (Strings.stripColors(args.color) == "") {
                 sender.highlight = args.color;
+                outputSuccess("Set highlight to ".concat(args.color.replace("[", "").replace("]", ""), "."));
             }
             else if (Strings.stripColors("[".concat(args.color, "]")) == "") {
                 sender.highlight = "[".concat(args.color, "]");
+                outputSuccess("Set highlight to ".concat(args.color, "."));
             }
             else {
                 outputFail("[yellow]\"".concat(args.color, "[yellow]\" was not a valid color!"));
