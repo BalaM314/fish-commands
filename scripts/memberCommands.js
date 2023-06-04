@@ -58,7 +58,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if (Strings.stripColors(args.color) == "") {
-                sender.highlight = args[0];
+                sender.highlight = args.color;
             }
             else if (Strings.stripColors("[".concat(args.color, "]")) == "") {
                 sender.highlight = "[".concat(args.color, "]");

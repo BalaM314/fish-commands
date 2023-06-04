@@ -95,7 +95,7 @@ export const commands = commandList({
 		}
 	},
 
-	...Object.fromEntries(["admin", "mod"].map<[string, FishCommandData]>(n => [n, {
+	...Object.fromEntries(["admin", "mod"].map<[string, FishCommandData<never>]>(n => [n, {
 		args: [],
 		description: "This command was moved to /setrank.",
 		perm: Perm.mod,
@@ -406,7 +406,7 @@ export const commands = commandList({
 			output(
 `[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColors(args.target.name)})
 	[accent]Rank: ${args.target.rank.coloredName()}
-	[accent]Role flags: ${Array.from(args.target.flags as RoleFlag[]).map(f => f.coloredName()).join(" ")}
+	[accent]Role flags: ${Array.from(args.target.flags).map(f => f.coloredName()).join(" ")}
 	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
 	[accent]marked: ${args.target.marked() ? `until ${formatTimeRelative(args.target.unmarkTime)}` : "[green]false"}
 	[accent]muted: ${colorBadBoolean(args.target.muted)}

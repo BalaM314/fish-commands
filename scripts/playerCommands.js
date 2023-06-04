@@ -347,13 +347,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
             //overload 2: type specified
             var trailTypes = {
-                1: 'fluxVapor',
-                2: 'overclocked',
-                3: 'overdriven',
-                4: 'shieldBreak',
-                5: 'upgradeCoreBloom',
-                6: 'electrified',
-                7: 'unitDust',
+                "1": 'fluxVapor',
+                "2": 'overclocked',
+                "3": 'overdriven',
+                "4": 'shieldBreak',
+                "5": 'upgradeCoreBloom',
+                "6": 'electrified',
+                "7": 'unitDust',
             };
             var selectedType = trailTypes[args.type];
             if (!selectedType) {

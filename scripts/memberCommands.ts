@@ -59,7 +59,7 @@ export const commands = commandList({
 		perm: Perm.member,
 		handler({args, sender, outputFail}){
 			if(Strings.stripColors(args.color) == ""){
-				sender.highlight = args[0];
+				sender.highlight = args.color;
 			} else if(Strings.stripColors(`[${args.color}]`) == ""){
 				sender.highlight = `[${args.color}]`;
 			} else {
@@ -91,7 +91,7 @@ export const commands = commandList({
 						if(!fishP.rainbow) return;
 						sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.name);
 						rainbowLoop(index + 1, fishP);
-					}, args.speed / 5);
+					}, args.speed! / 5);
 				}
 				rainbowLoop(0, sender);
 			}

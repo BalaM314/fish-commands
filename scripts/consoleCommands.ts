@@ -28,7 +28,7 @@ export const commands = consoleCommandList({
 		args: ["player:player", "role:string", "value:boolean"],
 		description: "Set a player's role flags.",
 		handler({args, outputSuccess}){
-			const flags = RoleFlag.getByInput(args.rank);
+			const flags = RoleFlag.getByInput(args.role);
 			if(flags.length == 0) fail(`Unknown role flag ${args.role}`);
 			if(flags.length > 1) fail(`Ambiguous role flag ${args.role}`);
 			const flag = flags[0];

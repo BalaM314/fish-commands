@@ -38,8 +38,9 @@ declare class Team {
 	static malis:Team;
 	static green:Team;
 	static blue:Team;
+	name:string;
 }
-type Team = any;
+
 declare const StatusEffects: {
 	[index:string]: StatusEffect;
 }

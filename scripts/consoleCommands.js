@@ -58,7 +58,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Set a player's role flags.",
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
-            var flags = ranks_1.RoleFlag.getByInput(args.rank);
+            var flags = ranks_1.RoleFlag.getByInput(args.role);
             if (flags.length == 0)
                 (0, commands_1.fail)("Unknown role flag ".concat(args.role));
             if (flags.length > 1)

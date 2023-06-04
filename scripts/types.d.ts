@@ -62,7 +62,7 @@ interface FishCommandRunner<ArgType extends string> {
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
 		/**List of every registered command, including this one. */
-		allCommands:FishCommandsList;
+		allCommands:Record<string, FishCommandData<any>>;
 	}): unknown;
 }
 

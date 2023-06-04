@@ -1,7 +1,6 @@
 import { commandList, fail, formatArg, Perm } from './commands';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
-import type { FishCommandsList } from './types';
 import { capitalizeText, getColor, StringBuilder, to2DArray } from './utils';
 import { FishServers } from './config';
 import { Rank, RoleFlag } from './ranks';
@@ -328,13 +327,13 @@ export const commands = commandList({
 
 			//overload 2: type specified
 			const trailTypes = {
-				1: 'fluxVapor',
-				2: 'overclocked',
-				3: 'overdriven',
-				4: 'shieldBreak',
-				5: 'upgradeCoreBloom',
-				6: 'electrified',
-				7: 'unitDust',
+				"1": 'fluxVapor',
+				"2": 'overclocked',
+				"3": 'overdriven',
+				"4": 'shieldBreak',
+				"5": 'upgradeCoreBloom',
+				"6": 'electrified',
+				"7": 'unitDust',
 			};
 
 			const selectedType = trailTypes[args.type as keyof typeof trailTypes] as string | undefined;

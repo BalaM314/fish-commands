@@ -137,7 +137,7 @@ function loadPacketHandlers() {
     // too real perhap?
 }
 exports.loadPacketHandlers = loadPacketHandlers;
-exports.commands = {
+exports.commands = (0, commands_1.commandList)({
     packet_handler_last_accessed: {
         args: [],
         description: "Gives you the players and the packet handler which they last accessed",
@@ -182,4 +182,4 @@ exports.commands = {
             Call.infoMessage(con, "bulkLineEffect - Call.serverPacketReliable(\"bulkLineEffect\",[startX,startY,endX,endY,color].join(\",\")+\"|\"+[startX,startY,endX,endY,color].join(\",\")+\"|\"))) - lineEffect but seperated by | so packet spam won't be a problem, can only contain 10 effects");
         }
     }
-};
+});

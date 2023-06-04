@@ -3,10 +3,9 @@
  * the code style was AAAAAAAAAAAA, see 59bf37bc10cc13a9c1f294ca8d91b0a99be41e62 -BalaM314
  */
 
-import { Perm } from "./commands";
+import { Perm, commandList } from "./commands";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import type { FishCommandsList } from "./types";
 
 let lastLabelText = "";
 let lastAccessedBulkLabel:FishPlayer | null = null;
@@ -120,7 +119,7 @@ example: [5,5,100,100,Color.green].join(",")`
 	
 }
 
-export const commands:FishCommandsList = {
+export const commands = commandList({
 	packet_handler_last_accessed: {
 		args: [],
 		description: "Gives you the players and the packet handler which they last accessed",
@@ -159,4 +158,4 @@ export const commands:FishCommandsList = {
 
 		}
 	}
-};
+});
