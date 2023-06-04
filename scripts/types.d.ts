@@ -5,26 +5,52 @@ import type { CommandArgType, Perm, fail } from "./commands";
 type FishCommandArgType = string | number | FishPlayer | Team | boolean | null;
 type MenuListener = (player:mindustryPlayer, option:number) => void;
 
-type ArgsFromArgData<Args extends PreprocessedCommandArgs> = {
-	[K in keyof Args]: (
-		Args[K]["type"] extends "string" ? string :
-		Args[K]["type"] extends "boolean" ? boolean :
-		Args[K]["type"] extends "number" ? number :
-		Args[K]["type"] extends "time" ? number :
-		Args[K]["type"] extends "player" ? FishPlayer :
-		Args[K]["type"] extends "exactPlayer" ? FishPlayer :
-		never
-	) | (Args[K]["optional"] extends true ? null : never);
-};
+/** Returns the type for an arg type string. Example: returns `number` for "time". */
+type TypeOfArgType<T> =
+	T extends "string" ? string :
+	T extends "boolean" ? boolean :
+	T extends "number" ? number :
+	T extends "time" ? number :
+	T extends "team" ? Team :
+	T extends "player" ? FishPlayer :
+	T extends "exactPlayer" ? FishPlayer :
+	never;
 
-interface FishCommandRunner {
+//TLDR: Yeet U through a wormhole, then back through the same wormhole, and it comes out the other side as an intersection type
+type UnionToIntersection<U> = (
+	(
+		//(U extends any) triggers the distributive conditional type behavior
+		//The conditional type is distributed across the members of the union
+		//so this makes `Cons<U1> | Cons<U2> | Cons<U3>`
+		U extends any ? (_: U) => void : never
+		//Then when infer is used to extract the parameter of Cons, it must be something that satisfies all the function types
+		//which is an intersection of the types
+	) extends (_: infer I) => void ? I : never
+) extends infer O ? {[K in keyof O] : O[K]} : never; //This doesn't change the actual type, but makes vscode display it nicely
+
+/**
+ * Returns the type of args given a union of the arg string types.
+ * Example: given `"player:player?" | "force:boolean"` returns `{player: FishPlayer | null; force: boolean;}`
+ **/
+type ArgsFromArgStringUnion<ArgStringUnion extends string> = UnionToIntersection<ObjectTypeFor<ArgStringUnion>>;
+//Typescript distributes the generic across the union type, producing a union of all the objects types, then we convert the union to an intersection
+
+type ObjectTypeFor<ArgString> =
+	ArgString extends `${string}?` //Check if it's optional
+	//It is optional
+	? ArgString extends `${infer N}:${infer T}?` //Use inferred template literal types to extract the name into N and the type string into T
+		? {[_ in N]: TypeOfArgType<T> | null} : never //Make an object, using TypeOfArgType to turn "player" into FishPlayer
+	//It isn't optional
+	: ArgString extends `${infer N}:${infer T}` //Same as above, but without the `| null`
+		? {[_ in N]: TypeOfArgType<T>} : never;
+
+
+interface FishCommandRunner<ArgType extends string> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
 		rawArgs:(string | undefined)[];
-		/**Formatted and parsed args. Access an argument by name, like python's keyword args. Example: `args.player.mod = true`. An argument can only be null if it was optional, otherwise the command will error before the handler runs. */
-		args:Record<string, any>;//TODO maybe get this with an abominable conditional type?
-		//having to manually cast the args is super annoying
-		//but if I leave it as any it causes bugs
+		/**Formatted and parsed args. Access an argument by name, like python's keyword args. Example: `args.player.setRank(Rank.mod);`. An argument can only be null if it was optional, otherwise the command will error before the handler runs. */
+		args:ArgsFromArgStringUnion<ArgType>;
 		/**The player who ran the command. */
 		sender:FishPlayer;
 		outputSuccess:(message:string) => void;
@@ -37,14 +63,17 @@ interface FishCommandRunner {
 	}): unknown;
 }
 
-interface FishConsoleCommandRunner {
+interface FishConsoleCommandRunner<ArgType extends string> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
 		rawArgs:(string | undefined)[];
-		/**Formatted and parsed args. Access an argument by name, like python's keyword args. Example: `args.player.mod = true`. An argument can only be null if it was optional, otherwise the command will error before the handler runs. */
-		args:Record<string, any>;//TODO maybe get this with an abominable conditional type?
-		//having to manually cast the args is super annoying
-		//but if I leave it as any it causes bugs
+		/**
+		 * Formatted and parsed args.
+		 * Access an argument by name, like python's keyword args.
+		 * Example: `args.player.mod = true`.
+		 * An argument can only be null if it was optional, otherwise the command will error before the handler runs.
+		 **/
+		args:ArgsFromArgStringUnion<ArgType>;
 		outputSuccess:(message:string) => void;
 		outputFail:(message:string) => void;
 		output:(message:string) => void;
@@ -53,25 +82,28 @@ interface FishConsoleCommandRunner {
 	}): unknown;
 }
 
-interface FishCommandData {
+interface FishCommandData<ArgType extends string> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
-	args: string[];
+	args: ArgType[];
 	description: string;
-	/**Permission level required for players to run this command. If the player does not have this permission, the handler is not run and an error message is printed. */
+	/**
+	 * Permission level required for players to run this command.
+	 * If the player does not have this permission, the handler is not run and an error message is printed.
+	 **/
 	perm: Perm;
 	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
-	handler: FishCommandRunner;
+	handler: FishCommandRunner<ArgType>;
 	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
 	isHidden?: boolean;
 }
-interface FishConsoleCommandData {
+interface FishConsoleCommandData<ArgType extends string> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
-	args: string[];
+	args: ArgType[];
 	description: string;
-	handler: FishConsoleCommandRunner;
+	handler: FishConsoleCommandRunner<ArgType>;
 }
-type FishCommandsList = Record<string, FishCommandData>;
+
 type FishConsoleCommandsList = Record<string, FishConsoleCommandData>;
 
 interface TileHistoryEntry {
