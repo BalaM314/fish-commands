@@ -1,7 +1,6 @@
-import { bannedWords, substitutions, getGamemode } from "./config";
 import * as api from './api';
+import { bannedWords, getGamemode, substitutions } from "./config";
 import { FishPlayer } from "./players";
-import { mindustryPlayerData } from "./types";
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }

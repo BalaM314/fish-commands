@@ -1,11 +1,11 @@
+import * as api from './api';
 import { commandList, fail, formatArg, Perm } from './commands';
+import { FishServers } from './config';
+import { recentWhispers } from './globals';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
-import { capitalizeText, getColor, StringBuilder, to2DArray } from './utils';
-import { FishServers } from './config';
 import { Rank, RoleFlag } from './ranks';
-import { recentWhispers } from './globals';
-import * as api from './api';
+import { capitalizeText, getColor, StringBuilder, to2DArray } from './utils';
 // import { votekickmanager } from './votes';
 
 function teleportPlayer(player: mindustryPlayer, to: mindustryPlayer) {

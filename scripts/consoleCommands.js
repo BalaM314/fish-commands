@@ -28,14 +28,14 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
+var api_1 = require("./api");
+var commands_1 = require("./commands");
+var config = require("./config");
+var fjsContext = require("./fjsContext");
+var globals_1 = require("./globals");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
-var commands_1 = require("./commands");
-var api_1 = require("./api");
-var fjsContext = require("./fjsContext");
-var globals_1 = require("./globals");
-var config = require("./config");
 exports.commands = (0, commands_1.consoleCommandList)({
     setrank: {
         args: ["player:player", "rank:string"],

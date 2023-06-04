@@ -1,4 +1,4 @@
-import { ip, getGamemode, localDebug } from './config';
+import { getGamemode, ip, localDebug } from './config';
 
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {

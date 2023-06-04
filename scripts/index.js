@@ -30,17 +30,17 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("./utils");
-var players_1 = require("./players");
-var ohno_1 = require("./ohno");
-var timers = require("./timers");
 var commands = require("./commands");
-var menus = require("./menus");
-var staffCommands = require("./staffCommands");
-var playerCommands = require("./playerCommands");
-var memberCommands = require("./memberCommands");
 var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
+var memberCommands = require("./memberCommands");
+var menus = require("./menus");
+var ohno_1 = require("./ohno");
+var playerCommands = require("./playerCommands");
+var players_1 = require("./players");
+var staffCommands = require("./staffCommands");
+var timers = require("./timers");
+var utils_1 = require("./utils");
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });

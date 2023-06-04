@@ -5,7 +5,6 @@
 
 import { Perm, commandList } from "./commands";
 import { FishPlayer } from "./players";
-import { Rank } from "./ranks";
 
 let lastLabelText = "";
 let lastAccessedBulkLabel:FishPlayer | null = null;

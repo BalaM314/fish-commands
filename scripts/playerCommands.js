@@ -28,14 +28,14 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
+var api = require("./api");
 var commands_1 = require("./commands");
+var config_1 = require("./config");
+var globals_1 = require("./globals");
 var ohno_1 = require("./ohno");
 var players_1 = require("./players");
-var utils_1 = require("./utils");
-var config_1 = require("./config");
 var ranks_1 = require("./ranks");
-var globals_1 = require("./globals");
-var api = require("./api");
+var utils_1 = require("./utils");
 // import { votekickmanager } from './votes';
 function teleportPlayer(player, to) {
     player.unit().set(to.unit().x, to.unit().y);

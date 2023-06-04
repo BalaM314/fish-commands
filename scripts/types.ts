@@ -1,12 +1,12 @@
+import type { CommandArgType, Perm } from "./commands";
 import type { FishPlayer } from "./players";
-import type { CommandArgType, Perm, fail } from "./commands";
 
 
-type FishCommandArgType = string | number | FishPlayer | Team | boolean | null;
-type MenuListener = (player:mindustryPlayer, option:number) => void;
+export type FishCommandArgType = string | number | FishPlayer | Team | boolean | null;
+export type MenuListener = (player:mindustryPlayer, option:number) => void;
 
 /** Returns the type for an arg type string. Example: returns `number` for "time". */
-type TypeOfArgType<T> =
+export type TypeOfArgType<T> =
 	T extends "string" ? string :
 	T extends "boolean" ? boolean :
 	T extends "number" ? number :
@@ -17,7 +17,7 @@ type TypeOfArgType<T> =
 	never;
 
 //TLDR: Yeet U through a wormhole, then back through the same wormhole, and it comes out the other side as an intersection type
-type UnionToIntersection<U> = (
+export type UnionToIntersection<U> = (
 	(
 		//(U extends any) triggers the distributive conditional type behavior
 		//The conditional type is distributed across the members of the union
@@ -32,13 +32,13 @@ type UnionToIntersection<U> = (
  * Returns the type of args given a union of the arg string types.
  * Example: given `"player:player?" | "force:boolean"` returns `{player: FishPlayer | null; force: boolean;}`
  **/
-type ArgsFromArgStringUnion<ArgStringUnion extends string> =
+export type ArgsFromArgStringUnion<ArgStringUnion extends string> =
 	[ArgStringUnion] extends [never] ? Record<string, any> : //If any was passed, return Record<string, any>
 	0 extends (1 & ArgStringUnion) ? Record<string, any> : //If any was passed, return Record<string, any>
 	UnionToIntersection<ObjectTypeFor<ArgStringUnion>>;
 //Typescript distributes the generic across the union type, producing a union of all the objects types, then we convert the union to an intersection
 
-type ObjectTypeFor<ArgString> =
+export type ObjectTypeFor<ArgString> =
 	ArgString extends `${string}?` //Check if it's optional
 	//It is optional
 	? ArgString extends `${infer N}:${infer T}?` //Use inferred template literal types to extract the name into N and the type string into T
@@ -48,7 +48,7 @@ type ObjectTypeFor<ArgString> =
 		? {[_ in N]: TypeOfArgType<T>} : never;
 
 
-interface FishCommandRunner<ArgType extends string> {
+export interface FishCommandRunner<ArgType extends string> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
 		rawArgs:(string | undefined)[];
@@ -66,7 +66,7 @@ interface FishCommandRunner<ArgType extends string> {
 	}): unknown;
 }
 
-interface FishConsoleCommandRunner<ArgType extends string> {
+export interface FishConsoleCommandRunner<ArgType extends string> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
 		rawArgs:(string | undefined)[];
@@ -85,7 +85,7 @@ interface FishConsoleCommandRunner<ArgType extends string> {
 	}): unknown;
 }
 
-interface FishCommandData<ArgType extends string> {
+export interface FishCommandData<ArgType extends string> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
 	description: string;
@@ -100,7 +100,7 @@ interface FishCommandData<ArgType extends string> {
 	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
 	isHidden?: boolean;
 }
-interface FishConsoleCommandData<ArgType extends string> {
+export interface FishConsoleCommandData<ArgType extends string> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
 	description: string;
@@ -108,7 +108,7 @@ interface FishConsoleCommandData<ArgType extends string> {
 }
 
 
-interface TileHistoryEntry {
+export interface TileHistoryEntry {
 	name:string;
 	action:string;
 	type:string;
@@ -116,7 +116,7 @@ interface TileHistoryEntry {
 }
 
 
-interface FishPlayerData {
+export interface FishPlayerData {
 	uuid: string;
 	name: string;
 	muted: boolean;
@@ -134,54 +134,39 @@ interface FishPlayerData {
 	usid: string | null;
 }
 
-interface PlayerHistoryEntry {
+export interface PlayerHistoryEntry {
 	action:string;
 	by:string;
 	time:number;
 }
-interface mindustryPlayerData {
-	/**uuid */
-	id: string;
-	lastName: string;
-	lastIP: string;
-	ips: Seq<string>;
-	names: Seq<string>;
-	adminUsid: string | null;
-	timesKicked: number;
-	timesJoined: number;
-	admin: boolean;
-	banned: boolean;
-	lastKicked: number;
-	plainLastName(): string;
-}
 
-interface ClientCommandHandler {
+export interface ClientCommandHandler {
 	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => unknown):void;
 	removeCommand(name:string):void;
 }
 
-interface ServerCommandHandler {
+export interface ServerCommandHandler {
 	/**Executes a server console command. */
 	handleMessage(command:string):void;
 	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => unknown):void;
 	removeCommand(name:string):void;
 }
 
-interface PreprocessedCommandArg {
+export interface PreprocessedCommandArg {
 	type: CommandArgType;
 	/**Whether the argument is optional (and may be null) */
 	optional?: boolean;
 }
 
-type PreprocessedCommandArgs = Record<string, PreprocessedCommandArg>;
+export type PreprocessedCommandArgs = Record<string, PreprocessedCommandArg>;
 
-interface CommandArg {
+export interface CommandArg {
 	name: string;
 	type: CommandArgType;
 	isOptional: boolean;
 }
 
-interface FlaggedIPData {
+export interface FlaggedIPData {
 	name: string;
 	uuid: string;
 	ip: string;

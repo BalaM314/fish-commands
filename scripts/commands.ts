@@ -1,7 +1,10 @@
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import type { CommandArg, FishCommandArgType, ClientCommandHandler, ServerCommandHandler,  FishCommandData, FishConsoleCommandData } from "./types";
+import type {
+	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
+	ServerCommandHandler
+} from "./types";
 import { getTeam, parseTimeString } from "./utils";
 
 export const allCommands:Record<string, FishCommandData<any>> = {};

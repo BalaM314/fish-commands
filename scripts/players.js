@@ -39,12 +39,12 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FishPlayer = void 0;
-var config = require("./config");
 var api = require("./api");
-var utils_1 = require("./utils");
-var ranks_1 = require("./ranks");
-var menus_1 = require("./menus");
 var commands_1 = require("./commands");
+var config = require("./config");
+var menus_1 = require("./menus");
+var ranks_1 = require("./ranks");
+var utils_1 = require("./utils");
 var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, 

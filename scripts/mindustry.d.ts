@@ -216,3 +216,19 @@ declare const ConstructBlock: {
 declare const Prop: any;
 
 declare function print(message:string):void;
+
+interface mindustryPlayerData {
+	/**uuid */
+	id: string;
+	lastName: string;
+	lastIP: string;
+	ips: Seq<string>;
+	names: Seq<string>;
+	adminUsid: string | null;
+	timesKicked: number;
+	timesJoined: number;
+	admin: boolean;
+	banned: boolean;
+	lastKicked: number;
+	plainLastName(): string;
+}

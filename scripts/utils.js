@@ -28,8 +28,8 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
-var config_1 = require("./config");
 var api = require("./api");
+var config_1 = require("./config");
 var players_1 = require("./players");
 function logg(msg) { Call.sendMessage(msg); }
 exports.logg = logg;

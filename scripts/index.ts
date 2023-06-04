@@ -2,21 +2,17 @@
  * This used to be main.js but was renamed to index.js due to rhino issue
  */
 
-import { StringIO, getTimeSinceText, matchFilter } from "./utils";
-import { FishPlayer } from './players';
-import { Ohnos } from "./ohno";
-import { Perm } from "./commands";
-import * as timers from './timers';
-import * as config from './config';
 import * as commands from './commands';
-import * as menus from "./menus";
-import * as staffCommands from './staffCommands';
-import * as playerCommands from './playerCommands';
-import * as memberCommands from './memberCommands';
 import * as consoleCommands from "./consoleCommands";
-import * as packetHandlers from "./packetHandlers";
 import { tileHistory } from "./globals";
-import { Rank } from "./ranks";
+import * as memberCommands from './memberCommands';
+import * as menus from "./menus";
+import { Ohnos } from "./ohno";
+import * as playerCommands from './playerCommands';
+import { FishPlayer } from './players';
+import * as staffCommands from './staffCommands';
+import * as timers from './timers';
+import { StringIO, getTimeSinceText, matchFilter } from "./utils";
 
 
 
