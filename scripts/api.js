@@ -66,7 +66,7 @@ function getStopped(uuid, callback) {
                     Log.err("API IS BROKEN!!! Invalid unmark time \"".concat(time, "\": not a number"));
                 }
                 else if (time.toString().length > 13) {
-                    Log.err("API IS BROKEN!!! Invalid unmark time \"".concat(time, "\": too long"));
+                    callback(config_1.maxTime);
                 }
                 else {
                     callback(Number(time));

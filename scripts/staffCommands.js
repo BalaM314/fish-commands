@@ -13,6 +13,7 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");
+var config_1 = require("./config");
 var menus_1 = require("./menus");
 var ohno_1 = require("./ohno");
 var players_1 = require("./players");
@@ -83,11 +84,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
-            var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800;
-            if (time > 999999999999)
+            var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
+            if (time + Date.now() > config_1.maxTime)
                 (0, commands_1.fail)("Error: time too high.");
             args.player.stop(sender, time);
-            (0, utils_1.logAction)('stopped', sender, args.player, undefined, time * 1000);
+            (0, utils_1.logAction)('stopped', sender, args.player, undefined, time);
             Call.sendMessage("Player \"".concat(args.player.name, "\" has been marked for ").concat(args.time ? rawArgs[1] : "7 days", "."));
         }
     }, free: {
@@ -185,7 +186,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 if (info != null) {
                     var fishP = players_1.FishPlayer.getFromInfo(info);
                     if (sender.canModerate(fishP, true)) {
-                        fishP.stop(sender, (_b = args.time) !== null && _b !== void 0 ? _b : 604800);
+                        fishP.stop(sender, (_b = args.time) !== null && _b !== void 0 ? _b : 604800000);
                         (0, utils_1.logAction)('stopped', sender, info);
                         outputSuccess("Player \"".concat(info.lastName, "\" was marked."));
                     }
@@ -224,10 +225,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 if (args.time == null) {
                     (0, menus_1.menu)("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, function (_a) {
                         var optionTime = _a.option, sender = _a.sender;
-                        var time = optionTime == "2 days" ? 172800 :
-                            optionTime == "7 days" ? 604800 :
-                                optionTime == "30 days" ? 2592000 :
-                                    999999999999;
+                        var time = optionTime == "2 days" ? 172800000 :
+                            optionTime == "7 days" ? 604800000 :
+                                optionTime == "30 days" ? 2592000000 :
+                                    (config_1.maxTime - Date.now() - 10000);
                         stop(optionPlayer, time);
                     }, false);
                 }

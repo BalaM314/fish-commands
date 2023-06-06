@@ -157,7 +157,7 @@ export const commands = consoleCommandList({
 
 			Groups.player.each(player => {
 				if(Vars.netServer.admins.isIDBanned(player.uuid())){
-					addStopped(player.uuid(), 999999999999);
+					addStopped(player.uuid(), config.maxTime);
 					player.con.kick(Packets.KickReason.banned);
 					Call.sendMessage(`[scarlet] Player [yellow]${player.name} [scarlet] has been whacked.`);
 				}

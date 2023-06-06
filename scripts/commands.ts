@@ -120,9 +120,9 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				outputArgs[cmdArg.name] = number;
 				break;
 			case "time":
-				const seconds = parseTimeString(args[i]);
-				if(seconds == null) return {error: `Invalid time string "${args[i]}"`};
-				outputArgs[cmdArg.name] = seconds;
+				const milliseconds = parseTimeString(args[i]);
+				if(milliseconds == null) return {error: `Invalid time string "${args[i]}"`};
+				outputArgs[cmdArg.name] = milliseconds;
 				break;
 			case "string":
 				outputArgs[cmdArg.name] = args[i];

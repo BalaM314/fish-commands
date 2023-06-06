@@ -1,4 +1,5 @@
 import { Perm, commandList, fail } from "./commands";
+import { maxTime } from "./config";
 import { menu } from './menus';
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
@@ -67,10 +68,10 @@ export const commands = commandList({
 		handler({args, rawArgs, sender}){
 			if(args.player.marked()) fail(`Player "${args.player.name}" is already marked.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
-			const time = args.time ?? 604800;
-			if(time > 999999999999) fail(`Error: time too high.`);
+			const time = args.time ?? 604800000;
+			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
 			args.player.stop(sender, time);
-			logAction('stopped', sender, args.player, undefined, time * 1000);
+			logAction('stopped', sender, args.player, undefined, time);
 			Call.sendMessage(`Player "${args.player.name}" has been marked for ${args.time ? rawArgs[1] : "7 days"}.`);
 		}
 	},
@@ -168,7 +169,7 @@ export const commands = commandList({
 				if(info != null){
 					const fishP = FishPlayer.getFromInfo(info);
 					if(sender.canModerate(fishP, true)){
-						fishP.stop(sender, args.time ?? 604800);
+						fishP.stop(sender, args.time ?? 604800000);
 						logAction('stopped', sender, info);
 						outputSuccess(`Player "${info.lastName}" was marked.`);
 					} else {
@@ -205,10 +206,10 @@ export const commands = commandList({
 				if(args.time == null){
 					menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, ({option: optionTime, sender}) => {
 						const time =
-							optionTime == "2 days" ? 172800 :
-							optionTime == "7 days" ? 604800 :
-							optionTime == "30 days" ? 2592000 :
-							999999999999;
+							optionTime == "2 days" ? 172800000 :
+							optionTime == "7 days" ? 604800000 :
+							optionTime == "30 days" ? 2592000000 :
+							(maxTime - Date.now() - 10000);
 						stop(optionPlayer, time);
 					}, false);
 				} else {

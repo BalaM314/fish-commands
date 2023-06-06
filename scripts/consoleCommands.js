@@ -217,7 +217,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }
             Groups.player.each(function (player) {
                 if (Vars.netServer.admins.isIDBanned(player.uuid())) {
-                    (0, api_1.addStopped)(player.uuid(), 999999999999);
+                    (0, api_1.addStopped)(player.uuid(), config.maxTime);
                     player.con.kick(Packets.KickReason.banned);
                     Call.sendMessage("[scarlet] Player [yellow]".concat(player.name, " [scarlet] has been whacked."));
                 }

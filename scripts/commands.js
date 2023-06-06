@@ -142,10 +142,10 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     outputArgs[cmdArg.name] = number;
                     break;
                 case "time":
-                    var seconds = (0, utils_1.parseTimeString)(args[i]);
-                    if (seconds == null)
+                    var milliseconds = (0, utils_1.parseTimeString)(args[i]);
+                    if (milliseconds == null)
                         return { error: "Invalid time string \"".concat(args[i], "\"") };
-                    outputArgs[cmdArg.name] = seconds;
+                    outputArgs[cmdArg.name] = milliseconds;
                     break;
                 case "string":
                     outputArgs[cmdArg.name] = args[i];

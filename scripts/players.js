@@ -398,7 +398,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.sendWelcomeMessage = function () {
         if (this.marked())
-            this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nYour mark will expire automatically ").concat(this.unmarkTime == 999999999999 ? "in [red]never[]" : "[green]".concat((0, utils_1.formatTimeRelative)(this.unmarkTime), "[]"), ".\nWe apologize for the inconvenience."));
+            this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nYour mark will expire automatically ").concat(this.unmarkTime == config.maxTime ? "in [red]never[]" : "[green]".concat((0, utils_1.formatTimeRelative)(this.unmarkTime), "[]"), ".\nWe apologize for the inconvenience."));
         else if (this.muted)
             this.sendMessage("[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
         else if (this.autoflagged)
@@ -701,7 +701,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.stop = function (by, time) {
         var _this = this;
-        this.unmarkTime = Date.now() + time * 1000;
+        this.unmarkTime = Date.now() + time;
         if (by instanceof FishPlayer) {
             this.addHistoryEntry({
                 action: 'stopped',

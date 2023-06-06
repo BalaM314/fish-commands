@@ -372,7 +372,7 @@ function parseTimeString(str) {
         return [Pattern.compile(regex.source), mult];
     });
     if (str == "forever")
-        return 999999999999;
+        return (config_1.maxTime - Date.now() - 10000);
     try {
         for (var formats_1 = __values(formats), formats_1_1 = formats_1.next(); !formats_1_1.done; formats_1_1 = formats_1.next()) {
             var _b = __read(formats_1_1.value, 2), pattern_1 = _b[0], mult = _b[1];
@@ -381,7 +381,7 @@ function parseTimeString(str) {
             if (matcher.matches()) {
                 var num = Number(matcher.group(1));
                 if (!isNaN(num))
-                    return num * mult;
+                    return (num * mult) * 1000;
             }
         }
     }

@@ -1,4 +1,4 @@
-import { getGamemode, ip, localDebug } from './config';
+import { getGamemode, ip, localDebug, maxTime } from './config';
 
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {
@@ -59,7 +59,7 @@ export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 				if(isNaN(Number(time))){
 					Log.err(`API IS BROKEN!!! Invalid unmark time "${time}": not a number`);
 				} else if(time.toString().length > 13){
-					Log.err(`API IS BROKEN!!! Invalid unmark time "${time}": too long`);
+					callback(maxTime);
 				} else {
 					callback(Number(time));
 				}

@@ -324,7 +324,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		if(this.marked()) this.sendMessage(
 `[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.
 To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
-Your mark will expire automatically ${this.unmarkTime == 999999999999 ? "in [red]never[]" : `[green]${formatTimeRelative(this.unmarkTime)}[]`}.
+Your mark will expire automatically ${this.unmarkTime == config.maxTime ? "in [red]never[]" : `[green]${formatTimeRelative(this.unmarkTime)}[]`}.
 We apologize for the inconvenience.`
 		); else if(this.muted) this.sendMessage(
 `[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.
@@ -598,7 +598,7 @@ We apologize for the inconvenience.`
 		return this.marked() || this.autoflagged;
 	}
 	stop(by:FishPlayer | "api" | "vpn", time:number){
-		this.unmarkTime = Date.now() + time * 1000;
+		this.unmarkTime = Date.now() + time;
 		if(by instanceof FishPlayer){
 			this.addHistoryEntry({
 				action: 'stopped',

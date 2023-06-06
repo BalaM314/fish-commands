@@ -1,5 +1,5 @@
 import * as api from './api';
-import { bannedWords, getGamemode, substitutions } from "./config";
+import { bannedWords, getGamemode, maxTime, substitutions } from "./config";
 import { FishPlayer } from "./players";
 
 export function logg(msg:string){ Call.sendMessage(msg); }
@@ -299,13 +299,13 @@ export function parseTimeString(str:string):number | null {
 		[/(\d+)d/, 86400],
 		[/(\d+)w/, 604800]
 	]).map(([regex, mult]) => [Pattern.compile(regex.source), mult] as const);
-	if(str == "forever") return 999999999999;
+	if(str == "forever") return (maxTime - Date.now() - 10000);
 	for(const [pattern, mult] of formats){
 		//rhino regex doesn't work
 		const matcher = pattern.matcher(str);
 		if(matcher.matches()){
 			const num = Number(matcher.group(1));
-			if(!isNaN(num)) return num * mult;
+			if(!isNaN(num)) return (num * mult) * 1000;
 		}
 	}
 	return null;

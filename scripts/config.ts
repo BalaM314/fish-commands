@@ -4,6 +4,7 @@ export const bannedWords:[word:string, whitelist:string[]][] = (
 	(words:(string | string[])[]) =>
 		words.map(word => typeof word == "string" ? [word, []] : [word[0], word.slice(1)])
 )([
+	"uwu",
 	"nig"+"ger", "nig" + "ga", "re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "skyscraper", "skystone"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter",
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
 	["fa"+"g", "fage"],
@@ -74,3 +75,4 @@ export const FishServers = {
 };
 export const getGamemode = () => Vars.state.rules.mode().name();
 export const localDebug = new Fi("config/.debug").exists();
+export const maxTime = 9999999999999;
