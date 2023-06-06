@@ -87,7 +87,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             if (time > 999999999999)
                 (0, commands_1.fail)("Error: time too high.");
             args.player.stop(sender, time);
-            (0, utils_1.logAction)('stopped', sender, args.player);
+            (0, utils_1.logAction)('stopped', sender, args.player, undefined, time * 1000);
             Call.sendMessage("Player \"".concat(args.player.name, "\" has been marked for ").concat(args.time ? rawArgs[1] : "7 days", "."));
         }
     }, free: {

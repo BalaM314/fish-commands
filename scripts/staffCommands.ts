@@ -70,7 +70,7 @@ export const commands = commandList({
 			const time = args.time ?? 604800;
 			if(time > 999999999999) fail(`Error: time too high.`);
 			args.player.stop(sender, time);
-			logAction('stopped', sender, args.player);
+			logAction('stopped', sender, args.player, undefined, time * 1000);
 			Call.sendMessage(`Player "${args.player.name}" has been marked for ${args.time ? rawArgs[1] : "7 days"}.`);
 		}
 	},

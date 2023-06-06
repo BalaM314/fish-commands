@@ -98,8 +98,10 @@ function isVpn(ip, callback, callbackError) {
 exports.isVpn = isVpn;
 /**Send text to the moderation logs channel in Discord. */
 function sendModerationMessage(message) {
-    if (config_1.localDebug)
+    if (config_1.localDebug) {
+        Log.info("Sent moderation log message: ".concat(message));
         return;
+    }
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/mod-dump"), JSON.stringify({ message: message })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     try {
