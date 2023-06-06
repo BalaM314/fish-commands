@@ -48,7 +48,7 @@ export function getTimeSinceText(old:number){
 	return timeSince;
 };
 
-export function formatTimeRelative(time:number){
+export function formatTimeRelative(time:number, raw?:boolean){
 	const difference = Math.abs(time - Date.now());
 
 	const months = Math.floor(difference / (30 * 24 * 60 * 60 * 1000));
@@ -58,7 +58,7 @@ export function formatTimeRelative(time:number){
 	const seconds = Math.floor((difference % (60 * 1000)) / (1000));
 
 	if(time > Date.now())
-		return "in " + [
+		return (raw ? "" : "in ") + [
 			months && `${months} months`,
 			days && `${days} days`,
 			hours && `${hours} hours`,
@@ -66,13 +66,13 @@ export function formatTimeRelative(time:number){
 			seconds && `${seconds} seconds`,
 		].filter(s => s).join(", ");
 	else
-		return "in " + [
+		return [
 			months && `${months} months`,
 			days && `${days} days`,
 			hours && `${hours} hours`,
 			minutes && `${minutes} minutes`,
 			seconds && `${seconds} seconds`,
-		].filter(s => s).join(", ");
+		].filter(s => s).join(", ") + (raw ? "" : " ago");
 
 };
 
@@ -272,7 +272,7 @@ export function matchFilter(text:string):boolean {
 	return false;
 }
 
-export function logAction(action: string, by: FishPlayer | string, to: FishPlayer | mindustryPlayerData) {
+export function logAction(action: string, by: FishPlayer | string, to: FishPlayer | mindustryPlayerData, reason?:string, duration?:number) {
 	let name:string, uuid:string, ip:string;
 	let actor:string = typeof by === "string" ? by : by.name;
 	if(to instanceof FishPlayer){
@@ -285,7 +285,7 @@ export function logAction(action: string, by: FishPlayer | string, to: FishPlaye
 		ip = to.lastIP;
 	}
 	api.sendModerationMessage(
-`${actor} ${action} ${name}
+`${actor} ${action} ${name} ${duration ? `for ${formatTimeRelative(duration, true)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
 **Server:** ${getGamemode()}
 **uuid:** \`${uuid}\`
 **ip**: \`${ip}\``

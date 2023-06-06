@@ -77,7 +77,7 @@ function getTimeSinceText(old) {
 }
 exports.getTimeSinceText = getTimeSinceText;
 ;
-function formatTimeRelative(time) {
+function formatTimeRelative(time, raw) {
     var difference = Math.abs(time - Date.now());
     var months = Math.floor(difference / (30 * 24 * 60 * 60 * 1000));
     var days = Math.floor((difference % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
@@ -85,7 +85,7 @@ function formatTimeRelative(time) {
     var minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
     var seconds = Math.floor((difference % (60 * 1000)) / (1000));
     if (time > Date.now())
-        return "in " + [
+        return (raw ? "" : "in ") + [
             months && "".concat(months, " months"),
             days && "".concat(days, " days"),
             hours && "".concat(hours, " hours"),
@@ -93,13 +93,13 @@ function formatTimeRelative(time) {
             seconds && "".concat(seconds, " seconds"),
         ].filter(function (s) { return s; }).join(", ");
     else
-        return "in " + [
+        return [
             months && "".concat(months, " months"),
             days && "".concat(days, " days"),
             hours && "".concat(hours, " hours"),
             minutes && "".concat(minutes, " minutes"),
             seconds && "".concat(seconds, " seconds"),
-        ].filter(function (s) { return s; }).join(", ");
+        ].filter(function (s) { return s; }).join(", ") + (raw ? "" : " ago");
 }
 exports.formatTimeRelative = formatTimeRelative;
 ;
@@ -345,7 +345,7 @@ function matchFilter(text) {
     return false;
 }
 exports.matchFilter = matchFilter;
-function logAction(action, by, to) {
+function logAction(action, by, to, reason, duration) {
     var name, uuid, ip;
     var actor = typeof by === "string" ? by : by.name;
     if (to instanceof players_1.FishPlayer) {
@@ -358,7 +358,7 @@ function logAction(action, by, to) {
         uuid = to.id;
         ip = to.lastIP;
     }
-    api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
+    api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTimeRelative(duration, true), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
 }
 exports.logAction = logAction;
 /**@returns the number of seconds. */
