@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var players_1 = require("./players");
@@ -77,32 +77,29 @@ function getTimeSinceText(old) {
 }
 exports.getTimeSinceText = getTimeSinceText;
 ;
+function formatTime(time) {
+    var months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
+    var days = Math.floor((time % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+    var hours = Math.floor((time % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    var minutes = Math.floor((time % (60 * 60 * 1000)) / (60 * 1000));
+    var seconds = Math.floor((time % (60 * 1000)) / (1000));
+    return [
+        months && "".concat(months, " months"),
+        days && "".concat(days, " days"),
+        hours && "".concat(hours, " hours"),
+        minutes && "".concat(minutes, " minutes"),
+        seconds && "".concat(seconds, " seconds"),
+    ].filter(function (s) { return s; }).join(", ");
+}
+exports.formatTime = formatTime;
 function formatTimeRelative(time, raw) {
     var difference = Math.abs(time - Date.now());
-    var months = Math.floor(difference / (30 * 24 * 60 * 60 * 1000));
-    var days = Math.floor((difference % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
-    var hours = Math.floor((difference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-    var minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
-    var seconds = Math.floor((difference % (60 * 1000)) / (1000));
     if (time > Date.now())
-        return (raw ? "" : "in ") + [
-            months && "".concat(months, " months"),
-            days && "".concat(days, " days"),
-            hours && "".concat(hours, " hours"),
-            minutes && "".concat(minutes, " minutes"),
-            seconds && "".concat(seconds, " seconds"),
-        ].filter(function (s) { return s; }).join(", ");
+        return (raw ? "" : "in ") + formatTime(difference);
     else
-        return [
-            months && "".concat(months, " months"),
-            days && "".concat(days, " days"),
-            hours && "".concat(hours, " hours"),
-            minutes && "".concat(minutes, " minutes"),
-            seconds && "".concat(seconds, " seconds"),
-        ].filter(function (s) { return s; }).join(", ") + (raw ? "" : " ago");
+        return formatTime(difference) + (raw ? "" : " ago");
 }
 exports.formatTimeRelative = formatTimeRelative;
-;
 function colorBoolean(val) {
     return val ? "[green]true[]" : "[red]false[]";
 }
@@ -358,7 +355,7 @@ function logAction(action, by, to, reason, duration) {
         uuid = to.id;
         ip = to.lastIP;
     }
-    api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTimeRelative(duration, true), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
+    api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
 }
 exports.logAction = logAction;
 /**@returns the number of seconds. */

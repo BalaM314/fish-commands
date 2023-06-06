@@ -48,33 +48,31 @@ export function getTimeSinceText(old:number){
 	return timeSince;
 };
 
+export function formatTime(time:number){
+
+	const months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
+	const days = Math.floor((time % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+	const hours = Math.floor((time % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+	const minutes = Math.floor((time % (60 * 60 * 1000)) / (60 * 1000));
+	const seconds = Math.floor((time % (60 * 1000)) / (1000));
+
+	return [
+		months && `${months} months`,
+		days && `${days} days`,
+		hours && `${hours} hours`,
+		minutes && `${minutes} minutes`,
+		seconds && `${seconds} seconds`,
+	].filter(s => s).join(", ")
+}
+
 export function formatTimeRelative(time:number, raw?:boolean){
 	const difference = Math.abs(time - Date.now());
 
-	const months = Math.floor(difference / (30 * 24 * 60 * 60 * 1000));
-	const days = Math.floor((difference % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
-	const hours = Math.floor((difference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-	const minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
-	const seconds = Math.floor((difference % (60 * 1000)) / (1000));
-
 	if(time > Date.now())
-		return (raw ? "" : "in ") + [
-			months && `${months} months`,
-			days && `${days} days`,
-			hours && `${hours} hours`,
-			minutes && `${minutes} minutes`,
-			seconds && `${seconds} seconds`,
-		].filter(s => s).join(", ");
+		return (raw ? "" : "in ") + formatTime(difference);
 	else
-		return [
-			months && `${months} months`,
-			days && `${days} days`,
-			hours && `${hours} hours`,
-			minutes && `${minutes} minutes`,
-			seconds && `${seconds} seconds`,
-		].filter(s => s).join(", ") + (raw ? "" : " ago");
-
-};
+		return formatTime(difference) + (raw ? "" : " ago");
+}
 
 export function colorBoolean(val:boolean){
 	return val ? `[green]true[]` : `[red]false[]`
@@ -285,7 +283,7 @@ export function logAction(action: string, by: FishPlayer | string, to: FishPlaye
 		ip = to.lastIP;
 	}
 	api.sendModerationMessage(
-`${actor} ${action} ${name} ${duration ? `for ${formatTimeRelative(duration, true)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
+`${actor} ${action} ${name} ${duration ? `for ${formatTime(duration)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
 **Server:** ${getGamemode()}
 **uuid:** \`${uuid}\`
 **ip**: \`${ip}\``
