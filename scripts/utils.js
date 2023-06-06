@@ -78,6 +78,8 @@ function getTimeSinceText(old) {
 exports.getTimeSinceText = getTimeSinceText;
 ;
 function formatTime(time) {
+    if (config_1.maxTime - (time + Date.now()) < 20000)
+        return "forever";
     var months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
     var days = Math.floor((time % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
     var hours = Math.floor((time % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));

@@ -89,7 +89,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 (0, commands_1.fail)("Error: time too high.");
             args.player.stop(sender, time);
             (0, utils_1.logAction)('stopped', sender, args.player, undefined, time);
-            Call.sendMessage("Player \"".concat(args.player.name, "\" has been marked for ").concat(args.time ? rawArgs[1] : "7 days", "."));
+            Call.sendMessage("[orange]Player \"".concat(args.player.name, "[orange]\" has been marked for ").concat((0, utils_1.formatTime)(time), "."));
         }
     }, free: {
         args: ['player:player'],
@@ -183,12 +183,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var admins = Vars.netServer.admins;
             if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)) {
                 var info = admins.getInfoOptional(args.name);
+                var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
                 if (info != null) {
                     var fishP = players_1.FishPlayer.getFromInfo(info);
                     if (sender.canModerate(fishP, true)) {
-                        fishP.stop(sender, (_b = args.time) !== null && _b !== void 0 ? _b : 604800000);
+                        fishP.stop(sender, time);
                         (0, utils_1.logAction)('stopped', sender, info);
-                        outputSuccess("Player \"".concat(info.lastName, "\" was marked."));
+                        outputSuccess("Player \"".concat(info.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(time), "."));
                     }
                     else {
                         outputFail("You do not have permission to stop this player.");
@@ -214,7 +215,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 if (sender.canModerate(fishP, true)) {
                     fishP.stop(sender, time);
                     (0, utils_1.logAction)('stopped', sender, option);
-                    outputSuccess("Player \"".concat(option.lastName, "\" was marked."));
+                    outputSuccess("Player \"".concat(option.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(time), "."));
                 }
                 else {
                     outputFail("You do not have permission to stop this player.");

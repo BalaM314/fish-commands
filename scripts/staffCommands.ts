@@ -6,7 +6,8 @@ import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
 import {
-	colorBadBoolean, escapeStringColors, formatTimeRelative, getTimeSinceText, logAction, setToArray
+	colorBadBoolean, escapeStringColors, formatTime, formatTimeRelative, getTimeSinceText, logAction,
+	setToArray
 } from "./utils";
 
 export const commands = commandList({
@@ -72,7 +73,7 @@ export const commands = commandList({
 			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
 			args.player.stop(sender, time);
 			logAction('stopped', sender, args.player, undefined, time);
-			Call.sendMessage(`Player "${args.player.name}" has been marked for ${args.time ? rawArgs[1] : "7 days"}.`);
+			Call.sendMessage(`[orange]Player "${args.player.name}[orange]" has been marked for ${formatTime(time)}.`);
 		}
 	},
 
@@ -166,12 +167,13 @@ export const commands = commandList({
 
 			if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)){
 				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
+				const time = args.time ?? 604800000;
 				if(info != null){
 					const fishP = FishPlayer.getFromInfo(info);
 					if(sender.canModerate(fishP, true)){
-						fishP.stop(sender, args.time ?? 604800000);
+						fishP.stop(sender, time);
 						logAction('stopped', sender, info);
-						outputSuccess(`Player "${info.lastName}" was marked.`);
+						outputSuccess(`Player "${info.lastName}" was marked for ${formatTime(time)}.`);
 					} else {
 						outputFail(`You do not have permission to stop this player.`);
 					}
@@ -196,7 +198,7 @@ export const commands = commandList({
 				if(sender.canModerate(fishP, true)){
 					fishP.stop(sender, time);
 					logAction('stopped', sender, option);
-					outputSuccess(`Player "${option.lastName}" was marked.`);
+					outputSuccess(`Player "${option.lastName}" was marked for ${formatTime(time)}.`);
 				} else {
 					outputFail(`You do not have permission to stop this player.`);
 				}
