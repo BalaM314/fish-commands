@@ -733,7 +733,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 _this.updateName();
                 _this.sendMessage("[yellow]Your mark has automatically expired.");
             }
-        }, time);
+        }, time / 1000);
     };
     FishPlayer.prototype.free = function (by) {
         if (!this.marked())

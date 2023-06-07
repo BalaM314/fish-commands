@@ -626,7 +626,7 @@ We apologize for the inconvenience.`
 				this.updateName();
 				this.sendMessage("[yellow]Your mark has automatically expired.");
 			}
-		}, time);
+		}, time / 1000);
 	}
 	free(by:FishPlayer | "api"){
 		if(!this.marked()) return;
