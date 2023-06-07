@@ -218,7 +218,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     //Contains methods that handle an event and must be called by other code (usually through Events.on).
     /**Must be run on PlayerJoinEvent. */
     FishPlayer.onPlayerJoin = function (player) {
-        var _this = this;
         var _a;
         var _b, _c;
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
@@ -231,40 +230,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 fishPlayer.sendWelcomeMessage();
                 fishPlayer.updateName();
             });
+            fishPlayer.checkVPN();
         }
-        //check vpn, TODO refactor
-        var ip = player.ip();
-        var info = player.getInfo();
-        api.isVpn(ip, function (isVpn) {
-            _this.stats.numIpsChecked++;
-            if (isVpn) {
-                _this.stats.numIpsFlagged++;
-                Log.warn("IP ".concat(ip, " was flagged as VPN. Flag rate: ").concat(_this.stats.numIpsFlagged, "/").concat(_this.stats.numIpsChecked, " (").concat(_this.stats.numIpsFlagged / _this.stats.numIpsChecked, ")"));
-                if (info.timesJoined <= 1) {
-                    fishPlayer.autoflagged = true;
-                    fishPlayer.stopUnit();
-                    fishPlayer.updateName();
-                    (0, utils_1.logAction)("autoflagged", "AntiVPN", fishPlayer);
-                    api.sendStaffMessage("Autoflagged player ".concat(player.name, " for suspected vpn!"), "AntiVPN");
-                    _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
-                    Log.warn("Player ".concat(player.name, " (").concat(player.uuid(), ") was muted."));
-                    (0, menus_1.menu)("Welcome to Fish Network!", "Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.", ["Close", "Discord"], fishPlayer, function (_a) {
-                        var option = _a.option, sender = _a.sender;
-                        if (option == "Discord") {
-                            Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
-                        }
-                    }, false, function (o) { return o; });
-                    player.sendMessage("Welcome to Fish Network!\nHi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.");
-                }
-                else if (info.timesJoined < 5) {
-                    _this.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(player.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
-                }
-            }
-        }, function (err) {
-            Log.err("Error while checking for VPN status of ip ".concat(ip, "!"));
-            Log.err(err);
-            _this.stats.numIpsErrored++;
-        });
     };
     /**Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
@@ -354,6 +321,38 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             Vars.netServer.admins.unAdminPlayer(this.uuid);
             this.player.admin = false;
         }
+    };
+    FishPlayer.prototype.checkVPN = function () {
+        var _this = this;
+        var ip = this.player.ip();
+        var info = this.player.getInfo();
+        api.isVpn(ip, function (isVpn) {
+            if (isVpn) {
+                Log.warn("IP ".concat(ip, " was flagged as VPN. Flag rate: ").concat(FishPlayer.stats.numIpsFlagged, "/").concat(FishPlayer.stats.numIpsChecked, " (").concat(100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked, "%)"));
+                if (info.timesJoined <= 1) {
+                    _this.autoflagged = true;
+                    _this.stopUnit();
+                    _this.updateName();
+                    (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);
+                    api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
+                    FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
+                    Log.warn("Player ".concat(_this.name, " (").concat(_this.uuid, ") was autoflagged."));
+                    (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be a [pink]bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "Discord"], _this, function (_a) {
+                        var option = _a.option, sender = _a.sender;
+                        if (option == "Discord") {
+                            Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+                        }
+                    }, false);
+                    _this.sendMessage("[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be a [pink]bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");
+                }
+                else if (info.timesJoined < 5) {
+                    FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
+                }
+            }
+        }, function (err) {
+            Log.err("Error while checking for VPN status of ip ".concat(ip, "!"));
+            Log.err(err);
+        });
     };
     FishPlayer.prototype.validate = function () {
         return this.checkName() && this.checkUsid();

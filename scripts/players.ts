@@ -191,39 +191,8 @@ export class FishPlayer {
 				fishPlayer.sendWelcomeMessage();
 				fishPlayer.updateName();
 			});
+			fishPlayer.checkVPN();
 		}
-
-		//check vpn, TODO refactor
-		const ip = player.ip();
-		const info:mindustryPlayerData = player.getInfo();
-		api.isVpn(ip, isVpn => {
-			this.stats.numIpsChecked ++;
-			if(isVpn){
-				this.stats.numIpsFlagged ++;
-				Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${this.stats.numIpsFlagged}/${this.stats.numIpsChecked} (${this.stats.numIpsFlagged / this.stats.numIpsChecked})`);
-				if(info.timesJoined <= 1){
-					fishPlayer.autoflagged = true;
-					fishPlayer.stopUnit();
-					fishPlayer.updateName();
-					logAction("autoflagged", "AntiVPN", fishPlayer);
-					api.sendStaffMessage(`Autoflagged player ${player.name} for suspected vpn!`, "AntiVPN");
-					this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);
-					Log.warn(`Player ${player.name} (${player.uuid()}) was muted.`);
-					menu("Welcome to Fish Network!", `Hi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`, ["Close", "Discord"], fishPlayer, ({option, sender}) => {
-						if(option == "Discord"){
-							Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
-						}
-					}, false, o => o);
-					player.sendMessage(`Welcome to Fish Network!\nHi there! You have been automatically stopped and muted because we've found something to be a bit sus. You can still talk to staff and request to be freed. Join our Discord to request a staff member come online if none are on.`);
-				} else if(info.timesJoined < 5){
-					this.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${player.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
-				}
-			}
-		}, err => {
-			Log.err(`Error while checking for VPN status of ip ${ip}!`);
-			Log.err(err);
-			this.stats.numIpsErrored ++;
-		});
 	}
 	/**Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
@@ -282,6 +251,33 @@ export class FishPlayer {
 			Vars.netServer.admins.unAdminPlayer(this.uuid);
 			this.player.admin = false;
 		}
+	}
+	checkVPN(){
+		const ip = this.player.ip();
+		const info:mindustryPlayerData = this.player.getInfo();
+		api.isVpn(ip, isVpn => {if(isVpn){
+			Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${FishPlayer.stats.numIpsFlagged}/${FishPlayer.stats.numIpsChecked} (${100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked}%)`);
+			if(info.timesJoined <= 1){
+				this.autoflagged = true;
+				this.stopUnit();
+				this.updateName();
+				logAction("autoflagged", "AntiVPN", this);
+				api.sendStaffMessage(`Autoflagged player ${this.name} for suspected vpn!`, "AntiVPN");
+				FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);
+				Log.warn(`Player ${this.name} (${this.uuid}) was autoflagged.`);
+				menu("[gold]Welcome to Fish Network!", `[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be a [pink]bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`, ["Close", "Discord"], this, ({option, sender}) => {
+					if(option == "Discord"){
+						Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+					}
+				}, false);
+				this.sendMessage(`[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be a [pink]bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`);
+			} else if(info.timesJoined < 5){
+				FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
+			}
+		}}, err => {
+			Log.err(`Error while checking for VPN status of ip ${ip}!`);
+			Log.err(err);
+		});
 	}
 	validate(){
 		return this.checkName() && this.checkUsid();

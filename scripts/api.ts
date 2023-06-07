@@ -1,4 +1,5 @@
 import { getGamemode, ip, localDebug, maxTime } from './config';
+import { FishPlayer } from './players';
 
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {
@@ -78,7 +79,11 @@ export function isVpn(ip: string, callback: (isVpn: boolean) => unknown, callbac
 		Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, (res) => {
 			const data = res.getResultAsString();
 			const json = JSON.parse(data);
-			callback(cachedIps[ip] = json.proxy || json.hosting);
+			const isVpn = json.proxy || json.hosting;
+			cachedIps[ip] = isVpn;
+			FishPlayer.stats.numIpsChecked ++;
+			if(isVpn) FishPlayer.stats.numIpsFlagged ++;
+			callback(isVpn);
 		});
 	} catch (err) {
 		callbackError?.(err);

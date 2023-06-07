@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBanned = exports.ban = exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
+var players_1 = require("./players");
 /** Mark a player as stopped until time */
 function addStopped(uuid, time) {
     if (config_1.localDebug)
@@ -88,7 +89,12 @@ function isVpn(ip, callback, callbackError) {
         Http.get("http://ip-api.com/json/".concat(ip, "?fields=proxy,hosting"), function (res) {
             var data = res.getResultAsString();
             var json = JSON.parse(data);
-            callback(cachedIps[ip] = json.proxy || json.hosting);
+            var isVpn = json.proxy || json.hosting;
+            cachedIps[ip] = isVpn;
+            players_1.FishPlayer.stats.numIpsChecked++;
+            if (isVpn)
+                players_1.FishPlayer.stats.numIpsFlagged++;
+            callback(isVpn);
         });
     }
     catch (err) {
