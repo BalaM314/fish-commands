@@ -229,6 +229,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             api.getStopped(player.uuid(), function (unmarked) {
                 fishPlayer.unmarkTime = unmarked;
                 fishPlayer.sendWelcomeMessage();
+                fishPlayer.updateName();
             });
         }
         //check vpn, TODO refactor

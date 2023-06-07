@@ -189,6 +189,7 @@ export class FishPlayer {
 			api.getStopped(player.uuid(), (unmarked) => {
 				fishPlayer.unmarkTime = unmarked;
 				fishPlayer.sendWelcomeMessage();
+				fishPlayer.updateName();
 			});
 		}
 
