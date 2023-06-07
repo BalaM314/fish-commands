@@ -102,7 +102,7 @@ exports.commands = (0, commands_1.commandList)({
                     Timer.schedule(function () {
                         if (!fishP.rainbow)
                             return;
-                        sender.player.name = colors_1[index % colors_1.length] + Strings.stripColors(sender.name);
+                        sender.player.name = colors_1[index % colors_1.length] + Strings.stripColors(sender.player.name);
                         rainbowLoop_1(index + 1, fishP);
                     }, args.speed / 5);
                 };

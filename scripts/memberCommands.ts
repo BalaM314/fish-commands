@@ -98,7 +98,7 @@ export const commands = commandList({
 				const rainbowLoop = function(index:number, fishP:FishPlayer){
 					Timer.schedule(() => {
 						if(!fishP.rainbow) return;
-						sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.name);
+						sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.player.name);
 						rainbowLoop(index + 1, fishP);
 					}, args.speed! / 5);
 				}
