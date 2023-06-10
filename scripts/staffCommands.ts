@@ -159,7 +159,7 @@ export const commands = commandList({
 	},
 
 	stop_offline: {
-		args: ["name:string", "time:time?"],
+		args: ["time:time?", "name:string"],
 		description: "Stops an offline player.",
 		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess}){

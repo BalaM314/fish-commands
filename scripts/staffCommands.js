@@ -174,7 +174,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             output("[orange]You massacred [cyan]".concat(numOhnos, "[] helpless ohno crawlers."));
         }
     }, stop_offline: {
-        args: ["name:string", "time:time?"],
+        args: ["time:time?", "name:string"],
         description: "Stops an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
