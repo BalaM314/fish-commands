@@ -352,9 +352,16 @@ export const commands = commandList({
 				if(option.admin){
 					outputFail(`Cannot ip ban an admin.`);
 				} else {
-					execServer(`ban ip ${option.ip()}`);
-					logAction("ip-banned", sender, option.getInfo());
-					outputSuccess(`IP-banned player ${option.name}.`);
+					menu("Confirm", `Are you sure you want to IP-ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
+						if(confirm == "Yes"){
+							execServer(`ban ip ${option.ip()}`);
+							Log.info(`${option.ip()} was banned.`);
+							logAction("ip-banned", sender, option.getInfo());
+							outputSuccess(`IP-banned player ${option.name}.`);
+						} else {
+							outputFail("Cancelled.");
+						}
+					}, false);
 				}
 			}, true, opt => opt.name);
 		}

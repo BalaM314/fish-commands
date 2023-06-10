@@ -363,9 +363,18 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     outputFail("Cannot ip ban an admin.");
                 }
                 else {
-                    execServer("ban ip ".concat(option.ip()));
-                    (0, utils_1.logAction)("ip-banned", sender, option.getInfo());
-                    outputSuccess("IP-banned player ".concat(option.name, "."));
+                    (0, menus_1.menu)("Confirm", "Are you sure you want to IP-ban ".concat(option.name, "?"), ["Yes", "Cancel"], sender, function (_a) {
+                        var confirm = _a.option;
+                        if (confirm == "Yes") {
+                            execServer("ban ip ".concat(option.ip()));
+                            Log.info("".concat(option.ip(), " was banned."));
+                            (0, utils_1.logAction)("ip-banned", sender, option.getInfo());
+                            outputSuccess("IP-banned player ".concat(option.name, "."));
+                        }
+                        else {
+                            outputFail("Cancelled.");
+                        }
+                    }, false);
                 }
             }, true, function (opt) { return opt.name; });
         }
