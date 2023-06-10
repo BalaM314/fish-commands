@@ -276,11 +276,11 @@ export function logAction(action: string, by: FishPlayer | string, to: FishPlaye
 	let name:string, uuid:string, ip:string;
 	let actor:string = typeof by === "string" ? by : by.name;
 	if(to instanceof FishPlayer){
-		name = escapeTextDiscord(to.cleanedName);
+		name = escapeTextDiscord(to.name);
 		uuid = to.uuid;
 		ip = to.player.ip();
 	} else {
-		name = escapeTextDiscord(to.plainLastName());
+		name = escapeTextDiscord(to.lastName);
 		uuid = to.id;
 		ip = to.lastIP;
 	}

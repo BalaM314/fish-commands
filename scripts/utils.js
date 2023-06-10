@@ -348,12 +348,12 @@ function logAction(action, by, to, reason, duration) {
     var name, uuid, ip;
     var actor = typeof by === "string" ? by : by.name;
     if (to instanceof players_1.FishPlayer) {
-        name = escapeTextDiscord(to.cleanedName);
+        name = escapeTextDiscord(to.name);
         uuid = to.uuid;
         ip = to.player.ip();
     }
     else {
-        name = escapeTextDiscord(to.plainLastName());
+        name = escapeTextDiscord(to.lastName);
         uuid = to.id;
         ip = to.lastIP;
     }
