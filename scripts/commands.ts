@@ -77,7 +77,32 @@ export function formatArg(a:string){
 	return brackets[0] + a.split(":")[0] + brackets[1];
 }
 
-/**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
+/** Joins multi-word arguments that have been groups with quotes. Ex: turns [`"a`, `b"`] into [`a b`]*/
+function joinArgs(rawArgs:string[]){
+	let outputArgs = [];
+	let groupedArg:string[] | null = null;
+	for(let arg of rawArgs){
+		if(arg.startsWith(`"`) && groupedArg == null){
+			groupedArg = [];
+		}
+		if(groupedArg){
+			groupedArg.push(arg);
+			if(arg.endsWith(`"`)){
+				outputArgs.push(groupedArg.join(" ").slice(1, -1));
+				groupedArg = null;
+			}
+		} else {
+			outputArgs.push(arg);
+		}
+	}
+	if(groupedArg != null){
+		//return `Unterminated string literal.`;
+		outputArgs.push(groupedArg.join(" "));
+	}
+	return outputArgs;
+}
+
+/**Takes a list of joined args passed to the command, and processes it, turning it into a kwargs style object. */
 function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:boolean = true):{
 	processedArgs: Record<string, FishCommandArgType>;
 	unresolvedArgs: CommandArg[];
@@ -184,7 +209,7 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 			name,
 			convertArgs(processedCmdArgs, true),
 			data.description,
-			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[], sender:mindustryPlayer) => {
+			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (unjoinedRawArgs:string[], sender:mindustryPlayer) => {
 				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
@@ -196,6 +221,7 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 
 				//closure over processedCmdArgs, should be fine
 				//Process the args
+				const rawArgs = joinArgs(unjoinedRawArgs);
 				const output = processArgs(rawArgs, processedCmdArgs);
 				if("error" in output){
 					//if args are invalid

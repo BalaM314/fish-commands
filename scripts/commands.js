@@ -94,9 +94,45 @@ function formatArg(a) {
     return brackets[0] + a.split(":")[0] + brackets[1];
 }
 exports.formatArg = formatArg;
-/**Takes a list of args passed to the command, and processes it, turning it into a kwargs style object. */
-function processArgs(args, processedCmdArgs, allowMenus) {
+/** Joins multi-word arguments that have been groups with quotes. Ex: turns [`"a`, `b"`] into [`a b`]*/
+function joinArgs(rawArgs) {
     var e_1, _a;
+    var outputArgs = [];
+    var groupedArg = null;
+    try {
+        for (var rawArgs_1 = __values(rawArgs), rawArgs_1_1 = rawArgs_1.next(); !rawArgs_1_1.done; rawArgs_1_1 = rawArgs_1.next()) {
+            var arg = rawArgs_1_1.value;
+            if (arg.startsWith("\"") && groupedArg == null) {
+                groupedArg = [];
+            }
+            if (groupedArg) {
+                groupedArg.push(arg);
+                if (arg.endsWith("\"")) {
+                    outputArgs.push(groupedArg.join(" ").slice(1, -1));
+                    groupedArg = null;
+                }
+            }
+            else {
+                outputArgs.push(arg);
+            }
+        }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (rawArgs_1_1 && !rawArgs_1_1.done && (_a = rawArgs_1.return)) _a.call(rawArgs_1);
+        }
+        finally { if (e_1) throw e_1.error; }
+    }
+    if (groupedArg != null) {
+        //return `Unterminated string literal.`;
+        outputArgs.push(groupedArg.join(" "));
+    }
+    return outputArgs;
+}
+/**Takes a list of joined args passed to the command, and processes it, turning it into a kwargs style object. */
+function processArgs(args, processedCmdArgs, allowMenus) {
+    var e_2, _a;
     if (allowMenus === void 0) { allowMenus = true; }
     var outputArgs = {};
     var unresolvedArgs = [];
@@ -178,12 +214,12 @@ function processArgs(args, processedCmdArgs, allowMenus) {
             }
         }
     }
-    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    catch (e_2_1) { e_2 = { error: e_2_1 }; }
     finally {
         try {
             if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
         }
-        finally { if (e_1) throw e_1.error; }
+        finally { if (e_2) throw e_2.error; }
     }
     return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
@@ -218,12 +254,12 @@ function convertArgs(processedCmdArgs, allowMenus) {
  * Registers all commands in a list to a client command handler.
  **/
 function register(commands, clientHandler, serverHandler) {
-    var e_2, _a;
+    var e_3, _a;
     var _loop_1 = function (name, data) {
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
-        clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs, sender) {
+        clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
                 var _a;
                 var fishSender = players_1.FishPlayer.get(sender);
                 //Verify authorization
@@ -234,6 +270,7 @@ function register(commands, clientHandler, serverHandler) {
                 }
                 //closure over processedCmdArgs, should be fine
                 //Process the args
+                var rawArgs = joinArgs(unjoinedRawArgs);
                 var output = processArgs(rawArgs, processedCmdArgs);
                 if ("error" in output) {
                     //if args are invalid
@@ -276,17 +313,17 @@ function register(commands, clientHandler, serverHandler) {
             _loop_1(name, data);
         }
     }
-    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
     finally {
         try {
             if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
         }
-        finally { if (e_2) throw e_2.error; }
+        finally { if (e_3) throw e_3.error; }
     }
 }
 exports.register = register;
 function registerConsole(commands, serverHandler) {
-    var e_3, _a;
+    var e_4, _a;
     var _loop_2 = function (name, data) {
         //Cursed for of loop due to lack of object.entries
         //Process the args
@@ -328,12 +365,12 @@ function registerConsole(commands, serverHandler) {
             _loop_2(name, data);
         }
     }
-    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+    catch (e_4_1) { e_4 = { error: e_4_1 }; }
     finally {
         try {
             if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
         }
-        finally { if (e_3) throw e_3.error; }
+        finally { if (e_4) throw e_4.error; }
     }
 }
 exports.registerConsole = registerConsole;
