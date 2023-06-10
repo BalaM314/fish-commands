@@ -181,6 +181,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             var admins = Vars.netServer.admins;
+            var maxPlayers = 60;
             if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)) {
                 var info = admins.getInfoOptional(args.name);
                 var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
@@ -198,7 +199,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 return;
             }
             var possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));
-            if (possiblePlayers.length > 20) {
+            if (possiblePlayers.length > maxPlayers) {
                 var exactPlayers = (0, utils_1.setToArray)(admins.findByName(args.name));
                 if (exactPlayers.length > 0) {
                     possiblePlayers = exactPlayers;

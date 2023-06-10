@@ -164,6 +164,7 @@ export const commands = commandList({
 		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess}){
 			const admins = Vars.netServer.admins;
+			const maxPlayers = 60;
 
 			if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)){
 				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
@@ -182,7 +183,7 @@ export const commands = commandList({
 			}
 
 			let possiblePlayers:mindustryPlayerData[] = setToArray(admins.searchNames(args.name));
-			if(possiblePlayers.length > 20){
+			if(possiblePlayers.length > maxPlayers){
 				let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<mindustryPlayerData>);
 				if(exactPlayers.length > 0){
 					possiblePlayers = exactPlayers;
