@@ -183,6 +183,8 @@ exports.setToArray = setToArray;
 function getTeam(team) {
     if (team in Team && Team[team] instanceof Team)
         return Team[team];
+    else if (!isNaN(Number(team.slice(1))) && Number(team.slice(1)) <= 255 && Number(team.slice(1)) >= 0)
+        return Team.all[Number(team.slice(1))];
     return null;
 }
 exports.getTeam = getTeam;

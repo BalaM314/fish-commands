@@ -149,7 +149,8 @@ export function setToArray<T>(set:ObjectSet<T>):T[] {
 }
 
 export function getTeam(team:string):Team | null {
-	if(team in Team && Team[team as keyof typeof Team] instanceof Team) return Team[team as keyof typeof Team];
+	if(team in Team && Team[team as keyof typeof Team] instanceof Team) return Team[team as keyof typeof Team] as Team;
+	else if(!isNaN(Number(team.slice(1))) && Number(team.slice(1)) <= 255 && Number(team.slice(1)) >= 0) return Team.all[Number(team.slice(1))];
 	return null;
 }
 
