@@ -301,6 +301,11 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 If you are unable to change it, please download Mindustry from Steam or itch.io.`
 			);
 		}
+		if(Strings.stripColors(this.name).replace(/ /g, "").length == 0){
+			this.player.kick(
+`[scarlet]"${this.name.replace(/\[/g, "[[")}[scarlet]" is not an allowed name. Please change it.`
+			);
+		}
 		return true;
 	}
 	/**Checks if this player's USID is correct. */
