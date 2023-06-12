@@ -219,7 +219,7 @@ export const commands = consoleCommandList({
 		}
 	},
 	restart: {
-		args: ["immediate:boolean?"],
+		args: ["time:number?"],
 		description: "Restarts the server.",
 		handler({args, output}){
 			function restartLoop(sec:number){
@@ -239,7 +239,8 @@ export const commands = consoleCommandList({
 				}
 			};
 			Call.sendMessage(`[green]Game saved.`);
-			const time = args.immediate ? 0 : 10;
+			const time = args.time ?? 10;
+			if(time < 0 || time > 100) Log.info(`Invalid time: out of valid range.`);
 			Log.info(`Restarting in ${time} seconds...`);
 			restartLoop(time);
 		}

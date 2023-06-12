@@ -296,9 +296,10 @@ exports.commands = (0, commands_1.consoleCommandList)({
         }
     },
     restart: {
-        args: ["immediate:boolean?"],
+        args: ["time:number?"],
         description: "Restarts the server.",
         handler: function (_a) {
+            var _b;
             var args = _a.args, output = _a.output;
             function restartLoop(sec) {
                 if (sec > 0) {
@@ -319,7 +320,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }
             ;
             Call.sendMessage("[green]Game saved.");
-            var time = args.immediate ? 0 : 10;
+            var time = (_b = args.time) !== null && _b !== void 0 ? _b : 10;
+            if (time < 0 || time > 100)
+                Log.info("Invalid time: out of valid range.");
             Log.info("Restarting in ".concat(time, " seconds..."));
             restartLoop(time);
         }
