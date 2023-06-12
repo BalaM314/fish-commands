@@ -176,12 +176,12 @@ function sendStaffMessage(message, playerName, callback) {
     }
 }
 exports.sendStaffMessage = sendStaffMessage;
-function ban(_a, callback) {
-    var ip = _a.ip, uuid = _a.uuid;
+/** Bans the provided ip and/or uuid. */
+function ban(data, callback) {
     if (callback === void 0) { callback = function () { }; }
     if (config_1.localDebug)
         return;
-    var req = Http.post("http://".concat(ip, ":5000/api/ban"), JSON.stringify({ ip: ip, uuid: uuid }))
+    var req = Http.post("http://".concat(config_1.ip, ":5000/api/ban"), JSON.stringify(data))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
@@ -203,12 +203,11 @@ function ban(_a, callback) {
     }
 }
 exports.ban = ban;
-/** Gets player's unmark time */
-function getBanned(_a, callback) {
-    var uuid = _a.uuid, ip = _a.ip;
+/** Gets if either the provided uuid or ip is banned. */
+function getBanned(data, callback) {
     if (config_1.localDebug)
         return;
-    var req = Http.post("http://".concat(ip, ":5000/api/checkIsBanned"), JSON.stringify({ ip: ip, uuid: uuid }))
+    var req = Http.post("http://".concat(config_1.ip, ":5000/api/checkIsBanned"), JSON.stringify(data))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;

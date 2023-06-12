@@ -157,9 +157,10 @@ export function sendStaffMessage(message: string, playerName: string, callback: 
 	}
 }
 
-export function ban({ip, uuid}: {ip?:string; uuid?:string;}, callback:(status:string) => unknown = () => {}){
+/** Bans the provided ip and/or uuid. */
+export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) => unknown = () => {}){
 	if(localDebug) return;
-	const req = Http.post(`http://${ip}:5000/api/ban`, JSON.stringify({ip, uuid}))
+	const req = Http.post(`http://${ip}:5000/api/ban`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
@@ -179,10 +180,10 @@ export function ban({ip, uuid}: {ip?:string; uuid?:string;}, callback:(status:st
 	}
 }
 
-/** Gets player's unmark time */
-export function getBanned({uuid, ip}:{uuid?:string, ip?:string}, callback:(banned:boolean) => unknown){
+/** Gets if either the provided uuid or ip is banned. */
+export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:boolean) => unknown){
 	if(localDebug) return;
-	const req = Http.post(`http://${ip}:5000/api/checkIsBanned`, JSON.stringify({ ip, uuid }))
+	const req = Http.post(`http://${ip}:5000/api/checkIsBanned`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
