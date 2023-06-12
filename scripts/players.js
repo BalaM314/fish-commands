@@ -144,11 +144,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var filters = [
             function (p) { return p.uuid === str; },
             function (p) { return p.player.id.toString() === str; },
-            function (p) { return p.name === str; },
-            function (p) { return p.cleanedName === str; },
+            function (p) { return p.name.toLowerCase() === str.toLowerCase(); },
+            // p => p.cleanedName === str,
             function (p) { return p.cleanedName.toLowerCase() === str.toLowerCase(); },
-            function (p) { return p.name.includes(str); },
-            function (p) { return p.cleanedName.includes(str); },
+            function (p) { return p.name.toLowerCase().includes(str.toLowerCase()); },
+            // p => p.cleanedName.includes(str),
             function (p) { return p.cleanedName.toLowerCase().includes(str.toLowerCase()); },
         ];
         try {
@@ -178,9 +178,10 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var matchingPlayers;
         var filters = [
             function (p) { return p.name === str; },
-            function (p) { return Strings.stripColors(p.name) === str; },
+            // p => Strings.stripColors(p.name) === str,
             function (p) { return Strings.stripColors(p.name).toLowerCase() === str.toLowerCase(); },
-            function (p) { return p.name.includes(str); },
+            // p => p.name.includes(str),
+            function (p) { return p.name.toLowerCase().includes(str.toLowerCase()); },
             function (p) { return Strings.stripColors(p.name).includes(str); },
             function (p) { return Strings.stripColors(p.name).toLowerCase().includes(str.toLowerCase()); },
         ];

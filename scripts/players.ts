@@ -130,11 +130,11 @@ export class FishPlayer {
 		const filters:((p:FishPlayer) => boolean)[] = [
 			p => p.uuid === str,
 			p => p.player.id.toString() === str,
-			p => p.name === str,
-			p => p.cleanedName === str,
+			p => p.name.toLowerCase() === str.toLowerCase(),
+			// p => p.cleanedName === str,
 			p => p.cleanedName.toLowerCase() === str.toLowerCase(),
-			p => p.name.includes(str),
-			p => p.cleanedName.includes(str),
+			p => p.name.toLowerCase().includes(str.toLowerCase()),
+			// p => p.cleanedName.includes(str),
 			p => p.cleanedName.toLowerCase().includes(str.toLowerCase()),
 		];
 
@@ -152,9 +152,10 @@ export class FishPlayer {
 
 		const filters:((p:mindustryPlayer) => boolean)[] = [
 			p => p.name === str,
-			p => Strings.stripColors(p.name) === str,
+			// p => Strings.stripColors(p.name) === str,
 			p => Strings.stripColors(p.name).toLowerCase() === str.toLowerCase(),
-			p => p.name.includes(str),
+			// p => p.name.includes(str),
+			p => p.name.toLowerCase().includes(str.toLowerCase()),
 			p => Strings.stripColors(p.name).includes(str),
 			p => Strings.stripColors(p.name).toLowerCase().includes(str.toLowerCase()),
 		];
