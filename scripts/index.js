@@ -51,8 +51,10 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         uuid: e.packet.uuid
     }, function (banned) {
         if (banned) {
-            Log.info("&lrSynced ban of ".concat(e.packet.uuid, "/").concat(e.con.address, "."));
-            e.con.kick(Packets.KickReason.banned);
+            Log.info("&lrSynced ban of ".concat(e.packet.uuid, "/").concat(e.connection.address, "."));
+            e.connection.kick(Packets.KickReason.banned);
+            Vars.netServer.admins.banPlayerIP(e.connection.address);
+            Vars.netServer.admins.banPlayerID(e.packet.uuid);
         }
     });
 });

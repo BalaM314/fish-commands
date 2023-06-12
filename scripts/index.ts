@@ -27,8 +27,10 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		uuid: e.packet.uuid
 	}, (banned) => {
 		if(banned){
-			Log.info(`&lrSynced ban of ${e.packet.uuid}/${e.con.address}.`);
-			e.con.kick(Packets.KickReason.banned);
+			Log.info(`&lrSynced ban of ${e.packet.uuid}/${e.connection.address}.`);
+			e.connection.kick(Packets.KickReason.banned);
+			Vars.netServer.admins.banPlayerIP(e.connection.address);
+			Vars.netServer.admins.banPlayerID(e.packet.uuid);
 		}
 	});
 });
