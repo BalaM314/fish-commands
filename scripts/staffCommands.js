@@ -12,6 +12,7 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
+var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
 var menus_1 = require("./menus");
@@ -368,6 +369,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                         var confirm = _a.option;
                         if (confirm == "Yes") {
                             execServer("ban ip ".concat(option.ip()));
+                            api.ban({ ip: option.ip() });
                             Log.info("".concat(option.ip(), " was banned."));
                             (0, utils_1.logAction)("ip-banned", sender, option.getInfo());
                             outputSuccess("IP-banned player ".concat(option.name, "."));

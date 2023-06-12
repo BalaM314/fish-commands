@@ -1,4 +1,4 @@
-import { addStopped } from "./api";
+import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
 import * as fjsContext from "./fjsContext";
@@ -121,23 +121,28 @@ export const commands = consoleCommandList({
 		handler({args, output, outputFail}){
 			if(Pattern.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", args.target)){
 				//target is an ip
+				api.ban({ip: args.target});
 				if(Vars.netServer.admins.isIPBanned(args.target)){
-					outputFail(`IP &c"${args.target}"&fr is already banned.`);
+					output(`IP &c"${args.target}"&fr is already banned. Ban was synced to other servers.`);
 				} else {
 					Vars.netServer.admins.banPlayerIP(args.target);
-					output(`&lrIP &c"${args.target}" &lrwas banned.`);
+					output(`&lrIP &c"${args.target}" &lrwas banned. Ban was synced to other servers.`);
 				}
 			} else if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)){
+				api.addStopped(args.target, config.maxTime);
 				if(Vars.netServer.admins.isIDBanned(args.target)){
-					outputFail(`UUID &c"${args.target}"&fr is already banned.`);
+					api.ban({uuid: args.target});
+					output(`UUID &c"${args.target}"&fr is already banned. Ban was synced to other servers.`);
 				} else {
 					const ip:string | null = Groups.player.find(p => args.target === p.uuid())?.ip();
 					Vars.netServer.admins.banPlayerID(args.target);
 					if(ip){
 						Vars.netServer.admins.banPlayerIP(ip);
-						output(`&lrUUID &c"${args.target}" &lrwas banned. IP &c"${ip}"&lr was banned.`);
+						api.ban({uuid: args.target, ip});
+						output(`&lrUUID &c"${args.target}" &lrwas banned. IP &c"${ip}"&lr was banned. Ban was synced to other servers.`);
 					} else {
-						output(`&lrUUID &c"${args.target}" &lrwas banned. Unable to determine ip!.`);
+						api.ban({uuid: args.target});
+						output(`&lrUUID &c"${args.target}" &lrwas banned. Ban was synced to other servers. Unable to determine ip!.`);
 					}
 				}
 			} else {
@@ -151,13 +156,15 @@ export const commands = consoleCommandList({
 					const uuid = player.uuid();
 					Vars.netServer.admins.banPlayerID(uuid);
 					Vars.netServer.admins.banPlayerIP(ip);
-					output(`&lrIP &c"${ip}"&lr was banned. UUID &c"${uuid}"&lr was banned.`);
+					api.ban({uuid, ip});
+					api.addStopped(player.uuid(), config.maxTime);
+					output(`&lrIP &c"${ip}"&lr was banned. UUID &c"${uuid}"&lr was banned. Ban was synced to other servers.`);
 				}
 			}
 
 			Groups.player.each(player => {
 				if(Vars.netServer.admins.isIDBanned(player.uuid())){
-					addStopped(player.uuid(), config.maxTime);
+					api.addStopped(player.uuid(), config.maxTime);
 					player.con.kick(Packets.KickReason.banned);
 					Call.sendMessage(`[scarlet] Player [yellow]${player.name} [scarlet] has been whacked.`);
 				}

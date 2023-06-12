@@ -28,7 +28,7 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
-var api_1 = require("./api");
+var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
 var fjsContext = require("./fjsContext");
@@ -175,27 +175,32 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var args = _a.args, output = _a.output, outputFail = _a.outputFail;
             if (Pattern.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", args.target)) {
                 //target is an ip
+                api.ban({ ip: args.target });
                 if (Vars.netServer.admins.isIPBanned(args.target)) {
-                    outputFail("IP &c\"".concat(args.target, "\"&fr is already banned."));
+                    output("IP &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
                 }
                 else {
                     Vars.netServer.admins.banPlayerIP(args.target);
-                    output("&lrIP &c\"".concat(args.target, "\" &lrwas banned."));
+                    output("&lrIP &c\"".concat(args.target, "\" &lrwas banned. Ban was synced to other servers."));
                 }
             }
             else if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)) {
+                api.addStopped(args.target, config.maxTime);
                 if (Vars.netServer.admins.isIDBanned(args.target)) {
-                    outputFail("UUID &c\"".concat(args.target, "\"&fr is already banned."));
+                    api.ban({ uuid: args.target });
+                    output("UUID &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
                 }
                 else {
                     var ip = (_b = Groups.player.find(function (p) { return args.target === p.uuid(); })) === null || _b === void 0 ? void 0 : _b.ip();
                     Vars.netServer.admins.banPlayerID(args.target);
                     if (ip) {
                         Vars.netServer.admins.banPlayerIP(ip);
-                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. IP &c\"").concat(ip, "\"&lr was banned."));
+                        api.ban({ uuid: args.target, ip: ip });
+                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. IP &c\"").concat(ip, "\"&lr was banned. Ban was synced to other servers."));
                     }
                     else {
-                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. Unable to determine ip!."));
+                        api.ban({ uuid: args.target });
+                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. Ban was synced to other servers. Unable to determine ip!."));
                     }
                 }
             }
@@ -212,12 +217,14 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     var uuid = player.uuid();
                     Vars.netServer.admins.banPlayerID(uuid);
                     Vars.netServer.admins.banPlayerIP(ip);
-                    output("&lrIP &c\"".concat(ip, "\"&lr was banned. UUID &c\"").concat(uuid, "\"&lr was banned."));
+                    api.ban({ uuid: uuid, ip: ip });
+                    api.addStopped(player.uuid(), config.maxTime);
+                    output("&lrIP &c\"".concat(ip, "\"&lr was banned. UUID &c\"").concat(uuid, "\"&lr was banned. Ban was synced to other servers."));
                 }
             }
             Groups.player.each(function (player) {
                 if (Vars.netServer.admins.isIDBanned(player.uuid())) {
-                    (0, api_1.addStopped)(player.uuid(), config.maxTime);
+                    api.addStopped(player.uuid(), config.maxTime);
                     player.con.kick(Packets.KickReason.banned);
                     Call.sendMessage("[scarlet] Player [yellow]".concat(player.name, " [scarlet] has been whacked."));
                 }

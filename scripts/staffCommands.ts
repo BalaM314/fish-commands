@@ -1,3 +1,4 @@
+import * as api from "./api";
 import { Perm, commandList, fail } from "./commands";
 import { maxTime } from "./config";
 import { menu } from './menus';
@@ -356,6 +357,7 @@ export const commands = commandList({
 					menu("Confirm", `Are you sure you want to IP-ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
 						if(confirm == "Yes"){
 							execServer(`ban ip ${option.ip()}`);
+							api.ban({ip: option.ip()});
 							Log.info(`${option.ip()} was banned.`);
 							logAction("ip-banned", sender, option.getInfo());
 							outputSuccess(`IP-banned player ${option.name}.`);
