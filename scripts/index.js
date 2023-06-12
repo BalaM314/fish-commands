@@ -47,7 +47,7 @@ Events.on(EventType.PlayerJoin, function (e) {
 });
 Events.on(EventType.ConnectPacketEvent, function (e) {
     api.getBanned({
-        ip: e.con.address,
+        ip: e.connection.address,
         uuid: e.packet.uuid
     }, function (banned) {
         if (banned) {
