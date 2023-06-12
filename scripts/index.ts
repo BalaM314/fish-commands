@@ -2,6 +2,7 @@
  * This used to be main.js but was renamed to index.js due to rhino issue
  */
 
+import * as api from './api';
 import * as commands from './commands';
 import * as consoleCommands from "./consoleCommands";
 import { tileHistory } from "./globals";
@@ -19,6 +20,17 @@ import { StringIO, getTimeSinceText, matchFilter } from "./utils";
 
 Events.on(EventType.PlayerJoin, (e) => {
 	FishPlayer.onPlayerJoin(e.player);
+});
+Events.on(EventType.ConnectPacketEvent, (e) => {
+	api.getBanned({
+		ip: e.con.address,
+		uuid: e.packet.uuid
+	}, (banned) => {
+		if(banned){
+			Log.info(`&lrSynced ban of ${e.packet.uuid}/${e.con.address}.`);
+			e.con.kick(Packets.KickReason.banned);
+		}
+	});
 });
 Events.on(EventType.UnitChangeEvent, (e) => {
 	FishPlayer.onUnitChange(e.player, e.unit);

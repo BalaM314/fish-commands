@@ -30,6 +30,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var api = require("./api");
 var commands = require("./commands");
 var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
@@ -43,6 +44,17 @@ var timers = require("./timers");
 var utils_1 = require("./utils");
 Events.on(EventType.PlayerJoin, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
+});
+Events.on(EventType.ConnectPacketEvent, function (e) {
+    api.getBanned({
+        ip: e.con.address,
+        uuid: e.packet.uuid
+    }, function (banned) {
+        if (banned) {
+            Log.info("&lrSynced ban of ".concat(e.packet.uuid, "/").concat(e.con.address, "."));
+            e.con.kick(Packets.KickReason.banned);
+        }
+    });
 });
 Events.on(EventType.UnitChangeEvent, function (e) {
     players_1.FishPlayer.onUnitChange(e.player, e.unit);
