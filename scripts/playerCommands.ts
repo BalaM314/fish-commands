@@ -154,7 +154,7 @@ export const commands = commandList({
 	s: {
 		args: ['message:string'],
 		description: `Sends a message to staff only.`,
-		perm: Perm.none,
+		perm: Perm.chat,
 		handler({ sender, args, outputSuccess, outputFail }) {
 			api.sendStaffMessage(args.message, sender.name, (sent) => {
 				if (!sender.ranksAtLeast(Rank.mod)) {

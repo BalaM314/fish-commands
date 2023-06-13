@@ -174,7 +174,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
 }))), { s: {
         args: ['message:string'],
         description: "Sends a message to staff only.",
-        perm: commands_1.Perm.none,
+        perm: commands_1.Perm.chat,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             api.sendStaffMessage(args.message, sender.name, function (sent) {
