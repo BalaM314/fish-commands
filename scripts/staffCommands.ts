@@ -64,17 +64,17 @@ export const commands = commandList({
 	},
 
 	stop: {
-		args: ['player:player', "time:time?"],
+		args: ['player:player', "time:time?", "message:string?"],
 		description: 'Stops a player.',
 		perm: Perm.mod,
-		handler({args, rawArgs, sender}){
+		handler({args, sender}){
 			if(args.player.marked()) fail(`Player "${args.player.name}" is already marked.`);
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
 			const time = args.time ?? 604800000;
 			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
-			args.player.stop(sender, time);
-			logAction('stopped', sender, args.player, undefined, time);
-			Call.sendMessage(`[orange]Player "${args.player.name}[orange]" has been marked for ${formatTime(time)}.`);
+			args.player.stop(sender, time, args.message ?? undefined);
+			logAction('stopped', sender, args.player, args.message ?? undefined, time);
+			Call.sendMessage(`[orange]Player "${args.player.name}[orange]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
 		}
 	},
 

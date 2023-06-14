@@ -703,7 +703,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.stelled = function () {
         return this.marked() || this.autoflagged;
     };
-    FishPlayer.prototype.stop = function (by, time) {
+    FishPlayer.prototype.stop = function (by, time, message) {
         var _this = this;
         this.unmarkTime = Date.now() + time;
         if (by instanceof FishPlayer) {
@@ -725,7 +725,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             return;
         this.stopUnit();
         this.updateName();
-        this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+        this.sendMessage(message
+            ? "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]".concat(message, "[]")
+            : "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+        if (time < 3600000) {
+            //less than one hour
+            this.sendMessage("[yellow]Your mark will expire in ".concat((0, utils_1.formatTime)(time), "."));
+        }
         FishPlayer.saveAll();
         //Set unmark timer
         var oldUnmarkTime = this.unmarkTime;

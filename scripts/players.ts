@@ -4,7 +4,7 @@ import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishPlayerData, PlayerHistoryEntry } from "./types";
-import { StringIO, formatTimeRelative, isCoreUnitType, logAction, matchFilter } from "./utils";
+import { StringIO, formatTime, formatTimeRelative, isCoreUnitType, logAction, matchFilter } from "./utils";
 
 
 export class FishPlayer {
@@ -600,7 +600,7 @@ We apologize for the inconvenience.`
 	stelled():boolean {
 		return this.marked() || this.autoflagged;
 	}
-	stop(by:FishPlayer | "api" | "vpn", time:number){
+	stop(by:FishPlayer | "api" | "vpn", time:number, message?:string){
 		this.unmarkTime = Date.now() + time;
 		if(by instanceof FishPlayer){
 			this.addHistoryEntry({
@@ -619,7 +619,14 @@ We apologize for the inconvenience.`
 		if(!this.connected()) return;
 		this.stopUnit();
 		this.updateName();
-		this.sendMessage("[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+		this.sendMessage(
+			message
+			? `[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]${message}[]`
+			: `[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.`);
+		if(time < 3600000){
+			//less than one hour
+			this.sendMessage(`[yellow]Your mark will expire in ${formatTime(time)}.`);
+		}
 		FishPlayer.saveAll();
 
 		//Set unmark timer

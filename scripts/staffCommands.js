@@ -75,12 +75,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
     }, stop: {
-        args: ['player:player', "time:time?"],
+        args: ['player:player', "time:time?", "message:string?"],
         description: 'Stops a player.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var _b;
-            var args = _a.args, rawArgs = _a.rawArgs, sender = _a.sender;
+            var _b, _c, _d;
+            var args = _a.args, sender = _a.sender;
             if (args.player.marked())
                 (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
             if (!sender.canModerate(args.player, false))
@@ -88,9 +88,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
             if (time + Date.now() > config_1.maxTime)
                 (0, commands_1.fail)("Error: time too high.");
-            args.player.stop(sender, time);
-            (0, utils_1.logAction)('stopped', sender, args.player, undefined, time);
-            Call.sendMessage("[orange]Player \"".concat(args.player.name, "[orange]\" has been marked for ").concat((0, utils_1.formatTime)(time), "."));
+            args.player.stop(sender, time, (_c = args.message) !== null && _c !== void 0 ? _c : undefined);
+            (0, utils_1.logAction)('stopped', sender, args.player, (_d = args.message) !== null && _d !== void 0 ? _d : undefined, time);
+            Call.sendMessage("[orange]Player \"".concat(args.player.name, "[orange]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
         }
     }, free: {
         args: ['player:player'],
