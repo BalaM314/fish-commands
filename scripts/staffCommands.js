@@ -183,20 +183,21 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
             var admins = Vars.netServer.admins;
             var maxPlayers = 60;
+            function stop(option, time) {
+                var fishP = players_1.FishPlayer.getFromInfo(option);
+                if (sender.canModerate(fishP, true)) {
+                    fishP.stop(sender, time);
+                    (0, utils_1.logAction)('stopped', sender, option, undefined, time);
+                    outputSuccess("Player \"".concat(option.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(time), "."));
+                }
+                else {
+                    outputFail("You do not have permission to stop this player.");
+                }
+            }
             if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)) {
                 var info = admins.getInfoOptional(args.name);
-                var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
-                if (info != null) {
-                    var fishP = players_1.FishPlayer.getFromInfo(info);
-                    if (sender.canModerate(fishP, true)) {
-                        fishP.stop(sender, time);
-                        (0, utils_1.logAction)('stopped', sender, info);
-                        outputSuccess("Player \"".concat(info.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(time), "."));
-                    }
-                    else {
-                        outputFail("You do not have permission to stop this player.");
-                    }
-                }
+                if (info != null)
+                    stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : 604800000);
                 return;
             }
             var possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));
@@ -211,17 +212,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             }
             else if (possiblePlayers.length == 0) {
                 (0, commands_1.fail)("No players with that name were found.");
-            }
-            function stop(option, time) {
-                var fishP = players_1.FishPlayer.getFromInfo(option);
-                if (sender.canModerate(fishP, true)) {
-                    fishP.stop(sender, time);
-                    (0, utils_1.logAction)('stopped', sender, option);
-                    outputSuccess("Player \"".concat(option.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(time), "."));
-                }
-                else {
-                    outputFail("You do not have permission to stop this player.");
-                }
             }
             (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (_a) {
                 var optionPlayer = _a.option, sender = _a.sender;

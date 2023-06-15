@@ -166,20 +166,22 @@ export const commands = commandList({
 		handler({args, sender, outputFail, outputSuccess}){
 			const admins = Vars.netServer.admins;
 			const maxPlayers = 60;
-
+			
+			function stop(option:mindustryPlayerData, time:number){
+				const fishP = FishPlayer.getFromInfo(option);
+				if(sender.canModerate(fishP, true)){
+					fishP.stop(sender, time);
+					logAction('stopped', sender, option, undefined, time);
+					outputSuccess(`Player "${option.lastName}" was marked for ${formatTime(time)}.`);
+				} else {
+					outputFail(`You do not have permission to stop this player.`);
+				}
+			}
+			
 			if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)){
 				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
-				const time = args.time ?? 604800000;
-				if(info != null){
-					const fishP = FishPlayer.getFromInfo(info);
-					if(sender.canModerate(fishP, true)){
-						fishP.stop(sender, time);
-						logAction('stopped', sender, info);
-						outputSuccess(`Player "${info.lastName}" was marked for ${formatTime(time)}.`);
-					} else {
-						outputFail(`You do not have permission to stop this player.`);
-					}
-				}
+				if(info != null)
+					stop(info, args.time ?? 604800000);
 				return;
 			}
 
@@ -195,16 +197,6 @@ export const commands = commandList({
 				fail("No players with that name were found.");
 			}
 
-			function stop(option:mindustryPlayerData, time:number){
-				const fishP = FishPlayer.getFromInfo(option);
-				if(sender.canModerate(fishP, true)){
-					fishP.stop(sender, time);
-					logAction('stopped', sender, option);
-					outputSuccess(`Player "${option.lastName}" was marked for ${formatTime(time)}.`);
-				} else {
-					outputFail(`You do not have permission to stop this player.`);
-				}
-			}
 
 			menu("Stop", "Choose a player to mark", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
 				if(args.time == null){
