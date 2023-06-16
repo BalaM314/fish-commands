@@ -167,8 +167,8 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     break;
                 case "team":
                     var team = (0, utils_1.getTeam)(args[i]);
-                    if (team == null)
-                        return { error: "\"".concat(args[i], "\" is not a valid team name.") };
+                    if (typeof team == "string")
+                        return { error: team };
                     outputArgs[cmdArg.name] = team;
                     break;
                 case "number":

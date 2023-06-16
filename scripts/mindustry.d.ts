@@ -39,6 +39,7 @@ declare class Team {
 	static green:Team;
 	static blue:Team;
 	static all:Team[];
+	static baseTeams:Team[];
 	name:string;
 }
 

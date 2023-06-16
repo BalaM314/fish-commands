@@ -148,10 +148,18 @@ export function setToArray<T>(set:ObjectSet<T>):T[] {
 	return array;
 }
 
-export function getTeam(team:string):Team | null {
+export function getTeam(team:string):Team | string {
 	if(team in Team && Team[team as keyof typeof Team] instanceof Team) return Team[team as keyof typeof Team] as Team;
-	else if(!isNaN(Number(team.slice(1))) && Number(team.slice(1)) <= 255 && Number(team.slice(1)) >= 0) return Team.all[Number(team.slice(1))];
-	return null;
+	else if(Team.baseTeams.find(t => t.name.includes(team.toLowerCase()))) return Team.baseTeams.find(t => t.name.includes(team.toLowerCase()))!;
+	else if(!isNaN(Number(team))) return `"${team}" is not a valid team string. Did you mean "#${team}"?`;
+	else if(!isNaN(Number(team.slice(1)))){
+		const num = Number(team.slice(1));
+		if(num <= 255 && num >= 0 && Number.isInteger(num))
+			return Team.all[Number(team.slice(1))];
+		else
+			return `Team ${team} is outside the valid range (integers 0-255).`;
+	}
+	return `"${team}" is not a valid team string.`;
 }
 
 

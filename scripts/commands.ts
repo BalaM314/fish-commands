@@ -136,7 +136,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				break;
 			case "team":
 				const team = getTeam(args[i]);
-				if(team == null) return {error: `"${args[i]}" is not a valid team name.`};
+				if(typeof team == "string") return {error: team};
 				outputArgs[cmdArg.name] = team;
 				break;
 			case "number":

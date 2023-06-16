@@ -183,9 +183,18 @@ exports.setToArray = setToArray;
 function getTeam(team) {
     if (team in Team && Team[team] instanceof Team)
         return Team[team];
-    else if (!isNaN(Number(team.slice(1))) && Number(team.slice(1)) <= 255 && Number(team.slice(1)) >= 0)
-        return Team.all[Number(team.slice(1))];
-    return null;
+    else if (Team.baseTeams.find(function (t) { return t.name.includes(team.toLowerCase()); }))
+        return Team.baseTeams.find(function (t) { return t.name.includes(team.toLowerCase()); });
+    else if (!isNaN(Number(team)))
+        return "\"".concat(team, "\" is not a valid team string. Did you mean \"#").concat(team, "\"?");
+    else if (!isNaN(Number(team.slice(1)))) {
+        var num = Number(team.slice(1));
+        if (num <= 255 && num >= 0 && Number.isInteger(num))
+            return Team.all[Number(team.slice(1))];
+        else
+            return "Team ".concat(team, " is outside the valid range (integers 0-255).");
+    }
+    return "\"".concat(team, "\" is not a valid team string.");
 }
 exports.getTeam = getTeam;
 var StringBuilder = /** @class */ (function () {
