@@ -310,7 +310,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var args = _a.args, output = _a.output;
             function restartLoop(sec) {
                 if (sec > 0) {
-                    Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
+                    if (sec < 15 || sec % 5 == 0)
+                        Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
                     Timer.schedule(function () { return restartLoop(sec - 1); }, 1);
                 }
                 else {
@@ -326,7 +327,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 }
             }
             ;
-            Call.sendMessage("[green]Game saved.");
+            Call.sendMessage("[green]Game saved. Server restart queued. Estimated downtime: 9 seconds.");
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 10;
             if (time < 0 || time > 100)
                 Log.info("Invalid time: out of valid range.");

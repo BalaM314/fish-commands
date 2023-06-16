@@ -231,7 +231,7 @@ export const commands = consoleCommandList({
 		handler({args, output}){
 			function restartLoop(sec:number){
 				if(sec > 0){
-					Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);
+					if(sec < 15 || sec % 5 == 0) Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);
 					Timer.schedule(() => restartLoop(sec - 1), 1);
 				} else {
 					output(`Restarting...`);
@@ -245,7 +245,7 @@ export const commands = consoleCommandList({
 					});
 				}
 			};
-			Call.sendMessage(`[green]Game saved.`);
+			Call.sendMessage(`[green]Game saved. Server restart queued. Estimated downtime: 9 seconds.`);
 			const time = args.time ?? 10;
 			if(time < 0 || time > 100) Log.info(`Invalid time: out of valid range.`);
 			Log.info(`Restarting in ${time} seconds...`);
