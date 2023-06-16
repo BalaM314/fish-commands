@@ -2,7 +2,7 @@ import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
 import * as fjsContext from "./fjsContext";
-import { tileHistory } from "./globals";
+import { fishState, tileHistory } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
 import { logAction, setToArray } from "./utils";
@@ -247,8 +247,9 @@ export const commands = consoleCommandList({
 			};
 			Call.sendMessage(`[green]Game saved. Server restart queued. Estimated downtime: 9 seconds.`);
 			const time = args.time ?? 10;
-			if(time < 0 || time > 100) Log.info(`Invalid time: out of valid range.`);
+			if(time < 0 || time > 100) fail(`Invalid time: out of valid range.`);
 			Log.info(`Restarting in ${time} seconds...`);
+			fishState.restarting = true;
 			restartLoop(time);
 		}
 	},

@@ -330,8 +330,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
             Call.sendMessage("[green]Game saved. Server restart queued. Estimated downtime: 9 seconds.");
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 10;
             if (time < 0 || time > 100)
-                Log.info("Invalid time: out of valid range.");
+                (0, commands_1.fail)("Invalid time: out of valid range.");
             Log.info("Restarting in ".concat(time, " seconds..."));
+            globals_1.fishState.restarting = true;
             restartLoop(time);
         }
     },
