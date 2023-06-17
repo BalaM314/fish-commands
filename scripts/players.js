@@ -703,9 +703,25 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.stelled = function () {
         return this.marked() || this.autoflagged;
     };
-    FishPlayer.prototype.stop = function (by, time, message) {
+    /**Sets the unmark time but doesn't stop the player's unit or send them a message. */
+    FishPlayer.prototype.updateStopTime = function (time) {
         var _this = this;
         this.unmarkTime = Date.now() + time;
+        FishPlayer.saveAll();
+        //Set unmark timer
+        var oldUnmarkTime = this.unmarkTime;
+        Timer.schedule(function () {
+            //Use of this is safe because arrow functions do not create a new this context
+            if (_this.unmarkTime === oldUnmarkTime && _this.connected()) {
+                //Only run the code if the unmark time hasn't changed
+                _this.forceRespawn();
+                _this.updateName();
+                _this.sendMessage("[yellow]Your mark has automatically expired.");
+            }
+        }, time / 1000);
+    };
+    FishPlayer.prototype.stop = function (by, time, message) {
+        this.updateStopTime(time);
         if (by instanceof FishPlayer) {
             this.addHistoryEntry({
                 action: 'stopped',
@@ -732,18 +748,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             //less than one hour
             this.sendMessage("[yellow]Your mark will expire in ".concat((0, utils_1.formatTime)(time), "."));
         }
-        FishPlayer.saveAll();
-        //Set unmark timer
-        var oldUnmarkTime = this.unmarkTime;
-        Timer.schedule(function () {
-            //Use of this is safe because arrow functions do not create a new this context
-            if (_this.unmarkTime === oldUnmarkTime) {
-                //Only run the code if the unmark time hasn't changed
-                _this.forceRespawn();
-                _this.updateName();
-                _this.sendMessage("[yellow]Your mark has automatically expired.");
-            }
-        }, time / 1000);
     };
     FishPlayer.prototype.free = function (by) {
         if (!this.marked())

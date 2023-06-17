@@ -80,9 +80,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b, _c, _d;
-            var args = _a.args, sender = _a.sender;
-            if (args.player.marked())
-                (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (args.player.marked()) {
+                //overload: overwrite stoptime
+                if (!args.time)
+                    (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
+                var previousTime = (0, utils_1.formatTimeRelative)(args.player.unmarkTime, true);
+                args.player.updateStopTime(args.time);
+                outputSuccess("Player \"".concat(args.player.cleanedName, "\"'s stop time has been updated to ").concat((0, utils_1.formatTime)(args.time), " (was ").concat(previousTime, ")."));
+                return;
+            }
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;

@@ -600,8 +600,24 @@ We apologize for the inconvenience.`
 	stelled():boolean {
 		return this.marked() || this.autoflagged;
 	}
-	stop(by:FishPlayer | "api" | "vpn", time:number, message?:string){
+	/**Sets the unmark time but doesn't stop the player's unit or send them a message. */
+	updateStopTime(time:number):void {
 		this.unmarkTime = Date.now() + time;
+		FishPlayer.saveAll();
+		//Set unmark timer
+		let oldUnmarkTime = this.unmarkTime;
+		Timer.schedule(() => {
+			//Use of this is safe because arrow functions do not create a new this context
+			if(this.unmarkTime === oldUnmarkTime && this.connected()){
+				//Only run the code if the unmark time hasn't changed
+				this.forceRespawn();
+				this.updateName();
+				this.sendMessage("[yellow]Your mark has automatically expired.");
+			}
+		}, time / 1000);
+	}
+	stop(by:FishPlayer | "api" | "vpn", time:number, message?:string){
+		this.updateStopTime(time);
 		if(by instanceof FishPlayer){
 			this.addHistoryEntry({
 				action: 'stopped',
@@ -627,19 +643,7 @@ We apologize for the inconvenience.`
 			//less than one hour
 			this.sendMessage(`[yellow]Your mark will expire in ${formatTime(time)}.`);
 		}
-		FishPlayer.saveAll();
 
-		//Set unmark timer
-		let oldUnmarkTime = this.unmarkTime;
-		Timer.schedule(() => {
-			//Use of this is safe because arrow functions do not create a new this context
-			if(this.unmarkTime === oldUnmarkTime){
-				//Only run the code if the unmark time hasn't changed
-				this.forceRespawn();
-				this.updateName();
-				this.sendMessage("[yellow]Your mark has automatically expired.");
-			}
-		}, time / 1000);
 	}
 	free(by:FishPlayer | "api"){
 		if(!this.marked()) return;

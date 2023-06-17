@@ -67,8 +67,17 @@ export const commands = commandList({
 		args: ['player:player', "time:time?", "message:string?"],
 		description: 'Stops a player.',
 		perm: Perm.mod,
-		handler({args, sender}){
-			if(args.player.marked()) fail(`Player "${args.player.name}" is already marked.`);
+		handler({args, sender, outputSuccess}){
+			if(args.player.marked()){
+				//overload: overwrite stoptime
+				if(!args.time) fail(`Player "${args.player.name}" is already marked.`);
+				const previousTime = formatTimeRelative(args.player.unmarkTime, true);
+				args.player.updateStopTime(args.time);
+				outputSuccess(`Player "${args.player.cleanedName}"'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
+
+				return;
+			}
+
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
 			const time = args.time ?? 604800000;
 			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
