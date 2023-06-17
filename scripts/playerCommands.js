@@ -42,24 +42,6 @@ function teleportPlayer(player, to) {
     Call.setPosition(player.con, to.unit().x, to.unit().y);
     Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
 }
-var Cleaner = {
-    lastCleaned: 0,
-    cooldown: 10000,
-    clean: function (user) {
-        if (Time.millis() - this.lastCleaned < this.cooldown)
-            return false;
-        this.lastCleaned = Time.millis();
-        Timer.schedule(function () {
-            Call.sound(user.con, Sounds.rockBreak, 1, 1, 0);
-        }, 0, 0.05, 10);
-        Vars.world.tiles.eachTile(function (t) {
-            if (t.breakable() && t.block() instanceof Prop) {
-                t.removeNet();
-            }
-        });
-        return true;
-    },
-};
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
         description: 'Unpauses the game.',
@@ -86,14 +68,17 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Removes all boulders from the map.',
         perm: commands_1.Perm.play,
         handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            if (Cleaner.clean(sender)) {
-                outputSuccess("Cleared the map of boulders.");
-            }
-            else {
-                outputFail("This command was run recently and is on cooldown.");
-            }
-        },
+            var sender = _a.sender, outputSuccess = _a.outputSuccess, lastUsedSuccessfully = _a.lastUsedSuccessfully;
+            if (Date.now() - lastUsedSuccessfully > 100000)
+                (0, commands_1.fail)("This command was run recently and is on cooldown.");
+            Timer.schedule(function () { return Call.sound(sender.con, Sounds.rockBreak, 1, 1, 0); }, 0, 0.05, 10);
+            Vars.world.tiles.eachTile(function (t) {
+                if (t.breakable() && t.block() instanceof Prop) {
+                    t.removeNet();
+                }
+            });
+            outputSuccess("Cleared the map of boulders.");
+        }
     }, die: {
         args: [],
         description: 'Commits die.',
@@ -176,11 +161,18 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: "Sends a message to staff only.",
         perm: commands_1.Perm.chat,
         handler: function (_a) {
-            var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, output = _a.output, outputFail = _a.outputFail, lastUsedSender = _a.lastUsedSender;
+            if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
+                if (Date.now() - lastUsedSender < 2000)
+                    (0, commands_1.fail)("This command was used recently and is on cooldown.");
+                if (Date.now() - lastUsedSender < 5000)
+                    output("[orange]Misuse of this command may result in a mute.");
+            }
             api.sendStaffMessage(args.message, sender.name, function (sent) {
                 if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
-                    if (sent)
-                        outputSuccess("Message sent to all staff.");
+                    if (sent) {
+                        outputSuccess("Message sent to [orange]all online staff.");
+                    }
                     else {
                         var wasReceived = players_1.FishPlayer.messageStaff(sender.player.name, args.message);
                         if (wasReceived)

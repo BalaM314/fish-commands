@@ -14,29 +14,6 @@ function teleportPlayer(player: mindustryPlayer, to: mindustryPlayer) {
 	Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
 }
 
-const Cleaner = {
-	lastCleaned: 0,
-	cooldown: 10000,
-	clean(user: FishPlayer) {
-		if (Time.millis() - this.lastCleaned < this.cooldown) return false;
-		this.lastCleaned = Time.millis();
-		Timer.schedule(
-			() => {
-				Call.sound(user.con, Sounds.rockBreak, 1, 1, 0);
-			},
-			0,
-			0.05,
-			10
-		);
-		Vars.world.tiles.eachTile((t: Tile) => {
-			if (t.breakable() && t.block() instanceof Prop) {
-				t.removeNet();
-			}
-		});
-		return true;
-	},
-};
-
 export const commands = commandList({
 	unpause: {
 		args: [],
@@ -64,13 +41,19 @@ export const commands = commandList({
 		args: [],
 		description: 'Removes all boulders from the map.',
 		perm: Perm.play,
-		handler({ sender, outputSuccess, outputFail }) {
-			if (Cleaner.clean(sender)) {
-				outputSuccess(`Cleared the map of boulders.`);
-			} else {
-				outputFail(`This command was run recently and is on cooldown.`);
-			}
-		},
+		handler({sender, outputSuccess, lastUsedSuccessfully}){
+			if(Date.now() - lastUsedSuccessfully > 100000) fail(`This command was run recently and is on cooldown.`);
+			Timer.schedule(
+				() => Call.sound(sender.con, Sounds.rockBreak, 1, 1, 0),
+				0, 0.05, 10
+			);
+			Vars.world.tiles.eachTile((t:Tile) => {
+				if(t.breakable() && t.block() instanceof Prop){
+					t.removeNet();
+				}
+			});
+			outputSuccess(`Cleared the map of boulders.`);
+		}
 	},
 
 	die: {
@@ -155,13 +138,18 @@ export const commands = commandList({
 		args: ['message:string'],
 		description: `Sends a message to staff only.`,
 		perm: Perm.chat,
-		handler({ sender, args, outputSuccess, outputFail }) {
+		handler({ sender, args, outputSuccess, output, outputFail, lastUsedSender }){
+			if(!sender.ranksAtLeast(Rank.mod)){
+				if(Date.now() - lastUsedSender < 2000) fail(`This command was used recently and is on cooldown.`);
+				if(Date.now() - lastUsedSender < 5000) output(`[orange]Misuse of this command may result in a mute.`);
+			}
 			api.sendStaffMessage(args.message, sender.name, (sent) => {
-				if (!sender.ranksAtLeast(Rank.mod)) {
-					if (sent) outputSuccess(`Message sent to all staff.`);
-					else {
+				if(!sender.ranksAtLeast(Rank.mod)){
+					if(sent){
+						outputSuccess(`Message sent to [orange]all online staff.`);
+					} else {
 						const wasReceived = FishPlayer.messageStaff(sender.player.name, args.message);
-						if (wasReceived) outputSuccess(`Message sent to staff.`);
+						if(wasReceived) outputSuccess(`Message sent to staff.`);
 						else outputFail(`No staff were online to receive your message.`);
 					}
 				}
