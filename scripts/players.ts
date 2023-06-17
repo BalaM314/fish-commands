@@ -603,6 +603,7 @@ We apologize for the inconvenience.`
 	/**Sets the unmark time but doesn't stop the player's unit or send them a message. */
 	updateStopTime(time:number):void {
 		this.unmarkTime = Date.now() + time;
+		api.addStopped(this.uuid, this.unmarkTime);
 		FishPlayer.saveAll();
 		//Set unmark timer
 		let oldUnmarkTime = this.unmarkTime;

@@ -707,6 +707,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.updateStopTime = function (time) {
         var _this = this;
         this.unmarkTime = Date.now() + time;
+        api.addStopped(this.uuid, this.unmarkTime);
         FishPlayer.saveAll();
         //Set unmark timer
         var oldUnmarkTime = this.unmarkTime;
