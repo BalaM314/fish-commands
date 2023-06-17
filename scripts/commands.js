@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -33,6 +44,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
+var globalUsageData = {};
 var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
@@ -279,20 +291,32 @@ function register(commands, clientHandler, serverHandler) {
                 }
                 //Recursively resolve unresolved args (such as players that need to be determined through a menu)
                 resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
+                    var _a;
                     //Run the command handler
+                    var usageData = fishSender.getUsageData(name);
+                    var failed = false;
                     try {
                         data.handler({
                             rawArgs: rawArgs,
                             args: output.processedArgs,
                             sender: fishSender,
-                            outputFail: function (message) { return outputFail(message, sender); },
+                            outputFail: function (message) { outputFail(message, sender); failed = true; },
                             outputSuccess: function (message) { return outputSuccess(message, sender); },
                             output: function (message) { return outputMessage(message, sender); },
                             execServer: function (command) { return serverHandler.handleMessage(command); },
+                            lastUsedSender: usageData.lastUsed,
+                            lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
+                            lastUsedSuccessfully: ((_a = globalUsageData[name]) !== null && _a !== void 0 ? _a : (globalUsageData[name] = { lastUsed: -1, lastUsedSuccessfully: -1 })).lastUsedSuccessfully,
                             allCommands: exports.allCommands
                         });
+                        //Update usage data
+                        if (!failed) {
+                            usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();
+                        }
+                        usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();
                     }
                     catch (err) {
+                        usageData.lastUsed = Date.now();
                         if (err instanceof CommandError) {
                             //If the error is a command error, then just outputFail
                             outputFail(err.message, sender);
@@ -330,6 +354,8 @@ function registerConsole(commands, serverHandler) {
         var processedCmdArgs = data.args.map(processArgString);
         serverHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
         serverHandler.register(name, convertArgs(processedCmdArgs, false), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs) {
+                var _a;
+                var _b;
                 //closure over processedCmdArgs, should be fine
                 //Process the args
                 var output = processArgs(rawArgs, processedCmdArgs, false);
@@ -338,19 +364,18 @@ function registerConsole(commands, serverHandler) {
                     Log.warn(output.error);
                     return;
                 }
+                var usageData = ((_a = globalUsageData[_b = "_console_" + name]) !== null && _a !== void 0 ? _a : (globalUsageData[_b] = { lastUsed: -1, lastUsedSuccessfully: -1 }));
                 try {
-                    data.handler({
-                        rawArgs: rawArgs,
-                        args: output.processedArgs,
-                        outputFail: function (message) { return Log.err("".concat(message)); },
-                        outputSuccess: function (message) { return Log.info("".concat(message)); },
-                        output: function (message) { return Log.info(message); },
-                        execServer: function (command) { return serverHandler.handleMessage(command); },
-                    });
+                    var failed_1 = false;
+                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, outputFail: function (message) { Log.err("".concat(message)); failed_1 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); } }, usageData));
+                    usageData.lastUsed = Date.now();
+                    if (!failed_1)
+                        usageData.lastUsedSuccessfully = Date.now();
                 }
                 catch (err) {
+                    usageData.lastUsed = Date.now();
                     if (err instanceof CommandError) {
-                        Log.warn("\u26A0 ".concat(err.message));
+                        Log.warn("".concat(err.message));
                     }
                     else {
                         Log.err("&lrAn error occured while executing the command!&fr");

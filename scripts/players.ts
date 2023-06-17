@@ -36,6 +36,10 @@ export class FishPlayer {
 	cleanedName:string;
 	/** Used to freeze players when votekicking. */
 	frozen:boolean = false;
+	usageData: Record<string, {
+		lastUsed: number;
+		lastUsedSuccessfully: number;
+	}> = {};
 
 	//Stored data
 	uuid: string;
@@ -579,6 +583,12 @@ We apologize for the inconvenience.`
 	forceRespawn(){
 		this.player.clearUnit();
 		this.player.checkSpawn();
+	}
+	getUsageData(command:string){
+		return this.usageData[command] ??= {
+			lastUsed: -1,
+			lastUsedSuccessfully: -1,
+		};
 	}
 	//#endregion
 

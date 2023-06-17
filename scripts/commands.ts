@@ -8,6 +8,10 @@ import type {
 import { getTeam, parseTimeString } from "./utils";
 
 export const allCommands:Record<string, FishCommandData<any>> = {};
+const globalUsageData:Record<string, {
+	lastUsed: number;
+	lastUsedSuccessfully: number;
+}> = {};
 const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
@@ -232,18 +236,29 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 				//Recursively resolve unresolved args (such as players that need to be determined through a menu)
 				resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, () => {
 					//Run the command handler
+					const usageData = fishSender.getUsageData(name);
+					let failed = false;
 					try {
 						data.handler({
 							rawArgs,
 							args: output.processedArgs,
 							sender: fishSender,
-							outputFail: message => outputFail(message, sender),
+							outputFail: message => {outputFail(message, sender); failed = true;},
 							outputSuccess: message => outputSuccess(message, sender),
 							output: message => outputMessage(message, sender),
 							execServer: command => serverHandler.handleMessage(command),
+							lastUsedSender: usageData.lastUsed,
+							lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
+							lastUsedSuccessfully: (globalUsageData[name] ??= {lastUsed: -1, lastUsedSuccessfully: -1}).lastUsedSuccessfully,
 							allCommands
 						});
+						//Update usage data
+						if(!failed){
+							usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();
+						}
+						usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();
 					} catch(err){
+						usageData.lastUsed = Date.now();
 						if(err instanceof CommandError){
 							//If the error is a command error, then just outputFail
 							outputFail(err.message, sender);
@@ -283,18 +298,24 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 					return;
 				}
 				
+				const usageData = (globalUsageData["_console_" + name] ??= {lastUsed: -1, lastUsedSuccessfully: -1});
 				try {
+					let failed = false;
 					data.handler({
 						rawArgs,
 						args: output.processedArgs,
-						outputFail: message => Log.err(`${message}`),
+						outputFail: message => {Log.err(`${message}`); failed = true;},
 						outputSuccess: message => Log.info(`${message}`),
 						output: message => Log.info(message),
 						execServer: command => serverHandler.handleMessage(command),
+						...usageData
 					});
+					usageData.lastUsed = Date.now();
+					if(!failed) usageData.lastUsedSuccessfully = Date.now();
 				} catch(err){
+					usageData.lastUsed = Date.now();
 					if(err instanceof CommandError){
-						Log.warn(`⚠ ${err.message}`);
+						Log.warn(`${err.message}`);
 					} else {
 						Log.err("&lrAn error occured while executing the command!&fr");
 						Log.err(err as any);

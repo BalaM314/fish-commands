@@ -63,6 +63,12 @@ export interface FishCommandRunner<ArgType extends string> {
 		execServer:(message:string) => void;
 		/**List of every registered command, including this one. */
 		allCommands:Record<string, FishCommandData<any>>;
+		/**Timestamp of the last time this command was run successfully by any player. */
+		lastUsedSuccessfully:number;
+		/**Timestamp of the last time this command was run by the current sender. */
+		lastUsedSender:number;
+		/**Timestamp of the last time this command was run succesfully by the current sender. */
+		lastUsedSuccessfullySender:number;
 	}): unknown;
 }
 
@@ -82,6 +88,10 @@ export interface FishConsoleCommandRunner<ArgType extends string> {
 		output:(message:string) => void;
 		/**Executes a server console command. Do not commit recursion as that will cause a crash.*/
 		execServer:(message:string) => void;
+		/**Timestamp of the last time this command was run. */
+		lastUsed:number;
+		/**Timestamp of the last time this command was run succesfully. */
+		lastUsedSuccessfully:number;
 	}): unknown;
 }
 
