@@ -175,7 +175,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var e_2, _a;
         if (str == "")
             return "none";
-        var players = Groups.player.copy(new Seq()).items;
+        var players = (0, utils_1.setToArray)(Groups.player);
         var matchingPlayers;
         var filters = [
             function (p) { return p.name === str; },

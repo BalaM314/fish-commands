@@ -4,7 +4,7 @@ import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishPlayerData, PlayerHistoryEntry } from "./types";
-import { StringIO, formatTime, formatTimeRelative, isCoreUnitType, logAction, matchFilter } from "./utils";
+import { StringIO, formatTime, formatTimeRelative, isCoreUnitType, logAction, matchFilter, setToArray } from "./utils";
 
 
 export class FishPlayer {
@@ -151,7 +151,7 @@ export class FishPlayer {
 	}
 	static getOneMindustryPlayerByName(str:string):mindustryPlayer | "none" | "multiple" {
 		if(str == "") return "none";
-		const players = Groups.player.copy(new Seq()).items;
+		const players = setToArray(Groups.player);
 		let matchingPlayers:mindustryPlayer[];
 
 		const filters:((p:mindustryPlayer) => boolean)[] = [
