@@ -4,7 +4,7 @@ import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishPlayerData, PlayerHistoryEntry } from "./types";
-import { StringIO, formatTime, formatTimeRelative, isCoreUnitType, logAction, matchFilter, setToArray } from "./utils";
+import { StringIO, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, setToArray } from "./utils";
 
 
 export class FishPlayer {
@@ -236,6 +236,7 @@ export class FishPlayer {
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
+		if(isImpersonator(this.name)) prefix += "[scarlet]SUSSY IMPOSTOR[]";
 		if(this.marked()) prefix += config.MARKED_PREFIX;
 		else if(this.autoflagged) prefix += "[yellow]\u26A0[scarlet]Flagged[yellow]\u26A0[white]";
 		if(this.muted) prefix += config.MUTED_PREFIX;

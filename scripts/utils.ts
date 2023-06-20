@@ -281,6 +281,15 @@ export function matchFilter(text:string):boolean {
 	return false;
 }
 
+export function isImpersonator(name:string):boolean {
+	//Replace substitutions
+	const replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
+	if(replacedText.includes("server")) return true; //name contains server
+	
+	if(/^[ ]*<.{1,3}>/.test(replacedText)) return true; //name starts with <c>, fake role prefix
+	return false;
+}
+
 export function logAction(action: string, by: FishPlayer | string, to: FishPlayer | mindustryPlayerData, reason?:string, duration?:number) {
 	let name:string, uuid:string, ip:string;
 	let actor:string = typeof by === "string" ? by : by.name;

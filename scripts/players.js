@@ -289,6 +289,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
+        if ((0, utils_1.isImpersonator)(this.name))
+            prefix += "[scarlet]SUSSY IMPOSTOR[]";
         if (this.marked())
             prefix += config.MARKED_PREFIX;
         else if (this.autoflagged)

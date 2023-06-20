@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var players_1 = require("./players");
@@ -355,6 +355,16 @@ function matchFilter(text) {
     return false;
 }
 exports.matchFilter = matchFilter;
+function isImpersonator(name) {
+    //Replace substitutions
+    var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
+    if (replacedText.includes("server"))
+        return true; //name contains server
+    if (/^[ ]*<.{1,3}>/.test(replacedText))
+        return true; //name starts with <c>, fake role prefix
+    return false;
+}
+exports.isImpersonator = isImpersonator;
 function logAction(action, by, to, reason, duration) {
     var name, uuid, ip;
     var actor = typeof by === "string" ? by : by.name;
