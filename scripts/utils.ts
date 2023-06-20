@@ -285,8 +285,7 @@ export function isImpersonator(name:string):boolean {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
 	if(replacedText.includes("server")) return true; //name contains server
-	
-	if(/^[ ]*<.{1,3}>/.test(replacedText)) return true; //name starts with <c>, fake role prefix
+	if(Pattern.matches("^[ ]*<.{1,3}>[\\s\\S]*", replacedText)) return true; //name starts with <c>, fake role prefix
 	return false;
 }
 

@@ -360,7 +360,7 @@ function isImpersonator(name) {
     var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
     if (replacedText.includes("server"))
         return true; //name contains server
-    if (/^[ ]*<.{1,3}>/.test(replacedText))
+    if (Pattern.matches("^[ ]*<.{1,3}>[\\s\\S]*", replacedText))
         return true; //name starts with <c>, fake role prefix
     return false;
 }
