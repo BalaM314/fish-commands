@@ -213,6 +213,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     outputFail("Name &c\"".concat(args.target, "\"&fr could refer to more than one player."));
                 }
                 else {
+                    if (player.admin)
+                        (0, commands_1.fail)("Player &c\"".concat(player.name, "\"&fr is an admin, you probably don't want to ban them."));
                     var ip = player.ip();
                     var uuid = player.uuid();
                     Vars.netServer.admins.banPlayerID(uuid);

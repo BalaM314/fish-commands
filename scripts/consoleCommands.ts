@@ -152,6 +152,7 @@ export const commands = consoleCommandList({
 				} else if(player === "multiple"){
 					outputFail(`Name &c"${args.target}"&fr could refer to more than one player.`);
 				} else {
+					if(player.admin) fail(`Player &c"${player.name}"&fr is an admin, you probably don't want to ban them.`);
 					const ip = player.ip();
 					const uuid = player.uuid();
 					Vars.netServer.admins.banPlayerID(uuid);
