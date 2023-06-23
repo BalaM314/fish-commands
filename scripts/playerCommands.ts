@@ -42,7 +42,7 @@ export const commands = commandList({
 		description: 'Removes all boulders from the map.',
 		perm: Perm.play,
 		handler({sender, outputSuccess, lastUsedSuccessfully}){
-			if(Date.now() - lastUsedSuccessfully > 100000) fail(`This command was run recently and is on cooldown.`);
+			if(Date.now() - lastUsedSuccessfully < 100000) fail(`This command was run recently and is on cooldown.`);
 			Timer.schedule(
 				() => Call.sound(sender.con, Sounds.rockBreak, 1, 1, 0),
 				0, 0.05, 10

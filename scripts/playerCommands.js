@@ -69,7 +69,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.play,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess, lastUsedSuccessfully = _a.lastUsedSuccessfully;
-            if (Date.now() - lastUsedSuccessfully > 100000)
+            if (Date.now() - lastUsedSuccessfully < 100000)
                 (0, commands_1.fail)("This command was run recently and is on cooldown.");
             Timer.schedule(function () { return Call.sound(sender.con, Sounds.rockBreak, 1, 1, 0); }, 0, 0.05, 10);
             Vars.world.tiles.eachTile(function (t) {
