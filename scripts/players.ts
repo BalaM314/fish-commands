@@ -40,6 +40,7 @@ export class FishPlayer {
 		lastUsed: number;
 		lastUsedSuccessfully: number;
 	}> = {};
+	lastJoined:number = -1;
 
 	//Stored data
 	uuid: string;
@@ -230,6 +231,7 @@ export class FishPlayer {
 			if(!f.peristent) this.flags.delete(f);
 		});
 		this.cleanedName = Strings.stripColors(player.name);
+		this.lastJoined = Date.now();
 	}
 
 	/**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */

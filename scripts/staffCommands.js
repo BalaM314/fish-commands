@@ -220,6 +220,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             else if (possiblePlayers.length == 0) {
                 (0, commands_1.fail)("No players with that name were found.");
             }
+            function score(data) {
+                var fishP = players_1.FishPlayer.getById(data.id);
+                if (fishP)
+                    return fishP.lastJoined;
+                return -data.timesJoined;
+            }
+            possiblePlayers.sort(function (a, b) { return score(b) - score(a); });
             (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (_a) {
                 var optionPlayer = _a.option, sender = _a.sender;
                 if (args.time == null) {

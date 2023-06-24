@@ -205,6 +205,12 @@ export const commands = commandList({
 			} else if(possiblePlayers.length == 0){
 				fail("No players with that name were found.");
 			}
+			function score(data:mindustryPlayerData){
+				const fishP = FishPlayer.getById(data.id);
+				if(fishP) return fishP.lastJoined;
+				return - data.timesJoined;
+			}
+			possiblePlayers.sort((a, b) => score(b) - score(a));
 
 
 			menu("Stop", "Choose a player to mark", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
