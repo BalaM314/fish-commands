@@ -140,7 +140,7 @@ declare class ObjectSet<T> {
 }
 declare class EntityGroup<T> {
 	copy(seq:Seq<T>):Seq<T>;
-	each(func:(item:T) => unknown);
+	each(func:(item:T) => unknown):void;
 	getByID(id:number):T;
 	isEmpty():boolean;
 	size():number;

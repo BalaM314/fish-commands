@@ -132,10 +132,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (strict === void 0) { strict = true; }
         if (name == "")
             return [];
-        return Groups.player.copy(new Seq()).filter(function (p) {
+        var output = [];
+        Groups.player.each(function (p) {
             var fishP = FishPlayer.get(p);
-            return fishP.cleanedName.includes(name) || (!strict && fishP.cleanedName.toLowerCase().includes(name));
-        }).items;
+            if (fishP.connected() && fishP.cleanedName.includes(name) || (!strict && fishP.cleanedName.toLowerCase().includes(name)))
+                output.push(fishP);
+        });
+        return output;
     };
     FishPlayer.getOneByString = function (str) {
         var e_1, _a;

@@ -122,10 +122,13 @@ export class FishPlayer {
 	/**Returns the FishPlayers representing all online players matching a given name. */
 	static getAllByName(name:string, strict = true):FishPlayer[] {
 		if(name == "") return [];
-		return Groups.player.copy(new Seq()).filter(p => {
+		const output:FishPlayer[] = [];
+		Groups.player.each(p => {
 			const fishP = FishPlayer.get(p);
-			return fishP.cleanedName.includes(name) || (!strict && fishP.cleanedName.toLowerCase().includes(name));
-		}).items;
+			if(fishP.connected() && fishP.cleanedName.includes(name) || (!strict && fishP.cleanedName.toLowerCase().includes(name)))
+				output.push(fishP);
+		});
+		return output;
 	}
 	static getOneByString(str:string):FishPlayer | "none" | "multiple" {
 		if(str == "") return "none";
