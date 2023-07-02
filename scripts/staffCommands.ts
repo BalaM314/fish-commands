@@ -433,6 +433,7 @@ export const commands = commandList({
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
 	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
 	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
+	[accent]Names used: [[${info.names.map(escapeStringColors).items.join(", ")}]
 ` + (sender.ranksAtLeast(Rank.admin) ? 
 `	[#C30202]UUID: ${args.target.uuid}
 	[#C30202]IP: ${args.target.player.ip()}
