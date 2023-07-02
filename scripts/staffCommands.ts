@@ -420,20 +420,24 @@ export const commands = commandList({
 
 	info: {
 		args: ["target:player"],
-		description: "Displays information about a player.",
+		description: "Displays information about an online player. See also /infos",
 		perm: Perm.none,
 		handler({sender, args, output}){
 			const info = args.target.player.info as mindustryPlayerData;
 			output(
-`[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColors(args.target.name)})
+(`[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColors(args.target.name)}) (${args.target.player.id})
 	[accent]Rank: ${args.target.rank.coloredName()}
 	[accent]Role flags: ${Array.from(args.target.flags).map(f => f.coloredName()).join(" ")}
 	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
 	[accent]marked: ${args.target.marked() ? `until ${formatTimeRelative(args.target.unmarkTime)}` : "[green]false"}
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
 	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
-	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}`
-.replace(/\t/g, "    ")
+	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
+` + (sender.ranksAtLeast(Rank.admin) ? 
+`	[#C30202]UUID: ${args.target.uuid}
+	[#C30202]IP: ${args.target.player.ip()}
+	` : "")
+).replace(/\t/g, "    ")
 			);
 		}
 	}
