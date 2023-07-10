@@ -30,23 +30,6 @@ export function memoize<T>(callback: () => T, dep:unknown[], id:number | string)
 	return storedValues[id].value as T;
 }
 
-/**
- * Returns the amount of time passed since the old time in a readable format.
- */
-export function getTimeSinceText(old:number){
-	const timePassed = Date.now() - old;
-
-	const hours = Math.floor((timePassed / (1000 * 60 * 60)) % 24);
-	const minutes = Math.floor(timePassed / 60000);
-	const seconds = Math.floor((timePassed % 60000) / 1000);
-
-	let timeSince = '';
-	if(hours) timeSince += `[green]${hours} [lightgray]hrs, `;
-	if(minutes) timeSince += `[green]${minutes} [lightgray]mins, `;
-	timeSince += `[green]${seconds} [lightgray]secs ago.`;
-
-	return timeSince;
-};
 
 export function formatTime(time:number){
 

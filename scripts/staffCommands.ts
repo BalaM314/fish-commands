@@ -7,7 +7,7 @@ import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
 import {
-	colorBadBoolean, escapeStringColors, formatTime, formatTimeRelative, getTimeSinceText, logAction,
+	colorBadBoolean, escapeStringColors, formatTime, formatTimeRelative, logAction,
 	setToArray
 } from "./utils";
 
@@ -277,7 +277,7 @@ export const commands = commandList({
 				output(
 					`[yellow]_______________Player history_______________\n\n` +
 					(args.player as FishPlayer).history.map(e =>
-						`${e.by} [yellow]${e.action} ${args.player.name} [white]${getTimeSinceText(e.time)}`
+						`${e.by} [yellow]${e.action} ${args.player.name} [white]${formatTimeRelative(e.time)}`
 					).join("\n")
 				);
 			} else {

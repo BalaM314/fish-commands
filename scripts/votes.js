@@ -35,7 +35,7 @@ var VoteManager = /** @class */ (function () {
             return; //no votes are not allowed
         if (!this.currentSession)
             return; //no active vote session
-        this.currentSession.votes[player.uuid] = (vote == 1);
+        this.currentSession.votes[player.uuid] = vote;
         //maybe end the votekick
         if (this.endOnVoteReached && this.checkPass())
             this.pass();
@@ -67,7 +67,7 @@ var VoteManager = /** @class */ (function () {
         this.currentSession = null;
     };
     VoteManager.totalVotes = function (session) {
-        return Object.values(session.votes).reduce(function (acc, a) { return acc + (a ? 1 : -1); }, 0);
+        return Object.values(session.votes).reduce(function (acc, a) { return acc + a; }, 0);
     };
     return VoteManager;
 }());

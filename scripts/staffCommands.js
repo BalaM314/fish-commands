@@ -288,7 +288,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             if (args.player.history && args.player.history.length > 0) {
                 output("[yellow]_______________Player history_______________\n\n" +
                     args.player.history.map(function (e) {
-                        return "".concat(e.by, " [yellow]").concat(e.action, " ").concat(args.player.name, " [white]").concat((0, utils_1.getTimeSinceText)(e.time));
+                        return "".concat(e.by, " [yellow]").concat(e.action, " ").concat(args.player.name, " [white]").concat((0, utils_1.formatTimeRelative)(e.time));
                     }).join("\n"));
             }
             else {

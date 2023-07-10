@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.getTimeSinceText = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var players_1 = require("./players");
@@ -59,24 +59,6 @@ function memoize(callback, dep, id) {
     return storedValues[id].value;
 }
 exports.memoize = memoize;
-/**
- * Returns the amount of time passed since the old time in a readable format.
- */
-function getTimeSinceText(old) {
-    var timePassed = Date.now() - old;
-    var hours = Math.floor((timePassed / (1000 * 60 * 60)) % 24);
-    var minutes = Math.floor(timePassed / 60000);
-    var seconds = Math.floor((timePassed % 60000) / 1000);
-    var timeSince = '';
-    if (hours)
-        timeSince += "[green]".concat(hours, " [lightgray]hrs, ");
-    if (minutes)
-        timeSince += "[green]".concat(minutes, " [lightgray]mins, ");
-    timeSince += "[green]".concat(seconds, " [lightgray]secs ago.");
-    return timeSince;
-}
-exports.getTimeSinceText = getTimeSinceText;
-;
 function formatTime(time) {
     if (config_1.maxTime - (time + Date.now()) < 20000)
         return "forever";

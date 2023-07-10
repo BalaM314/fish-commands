@@ -205,7 +205,7 @@ Events.on(EventType.TapEvent, function (e) {
                 type: d.readString(2),
             }); }, 1); }) : [];
             realP.sendMessage(history.map(function (e) {
-                return "".concat(e.name, " [yellow]").concat(e.action, " a ").concat(e.type, " ").concat((0, utils_1.getTimeSinceText)(e.time));
+                return "".concat(e.name, " [yellow]").concat(e.action, " a ").concat(e.type, " ").concat((0, utils_1.formatTimeRelative)(e.time));
             }).join('\n'));
         }
         if (fishP.tilelog === "once")

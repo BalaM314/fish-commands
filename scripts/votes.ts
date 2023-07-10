@@ -1,7 +1,8 @@
 import { FishPlayer } from "./players";
 
 interface VoteSession<Data> {
-	votes: Record<string, boolean>;
+	/** Mapping between uuid and vote */
+	votes: Record<string, 1 | -1>;
 	data: Data;
 }
 
@@ -29,7 +30,7 @@ class VoteManager<Data> {
 	handleVote(player:FishPlayer, vote:1 | -1){
 		if(vote == -1 && !this.allowNoVotes) return; //no votes are not allowed
 		if(!this.currentSession) return; //no active vote session
-		this.currentSession.votes[player.uuid] = (vote == 1);
+		this.currentSession.votes[player.uuid] = vote;
 		//maybe end the votekick
 		if(this.endOnVoteReached && this.checkPass()) this.pass();
 	}
@@ -54,7 +55,7 @@ class VoteManager<Data> {
 		this.currentSession = null;
 	}
 	static totalVotes(session:VoteSession<unknown>){
-		return Object.values(session.votes).reduce((acc, a) => acc + (a ? 1 : -1), 0);
+		return Object.values(session.votes).reduce((acc, a) => acc + a, 0);
 	}
 }
 

@@ -13,7 +13,7 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, getTimeSinceText, matchFilter } from "./utils";
+import { StringIO, formatTimeRelative, matchFilter } from "./utils";
 
 
 
@@ -192,7 +192,7 @@ Events.on(EventType.TapEvent, (e) => {
 				type: d.readString(2),
 			}), 1)) : [];
 			realP.sendMessage(history.map(e =>
-				`${e.name} [yellow]${e.action} a ${e.type} ${getTimeSinceText(e.time)}`
+				`${e.name} [yellow]${e.action} a ${e.type} ${formatTimeRelative(e.time)}`
 			).join('\n'));
 		}
 		if(fishP.tilelog === "once") fishP.tilelog = null;
