@@ -24,7 +24,7 @@ exports.runJS = function(input){
 	try {
 		const output = eval(input);
 		if(output instanceof Array){
-			Log.info("[" + output.join(", ") + "]");
+			Log.info("&cArray: [&fr" + output.join(", ") + "&c]&fr");
 		} else if(output === undefined){
 			Log.info("undefined");
 		} else {
