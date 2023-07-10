@@ -1,22 +1,25 @@
 const api = require("./api");
 const commands = require("./commands");
 const config = require("./config");
-const consoleCommands = require("./consoleCommands");
+const { commands: consoleCommands } = require("./consoleCommands");
 const globals = require("./globals");
-const memberCommands = require("./api");
+const { commands: memberCommands } = require("./memberCommands");
 const menus = require("./menus");
 const ohno = require("./ohno");
 const packetHandlers = require("./packetHandlers");
-const playerCommands = require("./playerCommands");
+const { commands: playerCommands } = require("./playerCommands");
 const players = require("./players");
 const ranks = require("./ranks");
-const staffCommands = require("./staffCommands");
+const { commands: staffCommands } = require("./staffCommands");
 const timers = require("./timers");
 const utils = require("./utils");
 
 const { Perm, allCommands } = commands;
 const { FishPlayer } = players;
-const { Ranks } = ranks;
+const { Ranks, RoleFlag } = ranks;
+const { menu } = menus;
+const { Ohnos } = ohno;
+Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 
 function $(input){
 	if(typeof input == "string"){
