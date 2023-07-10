@@ -12,7 +12,7 @@ export const bannedWords:[word:string, whitelist:string[]][] = (
 ]);
 export const bannedNames = ['goldberg', 'eshay', "VALVE"];
 export const substitutions:Record<string, string> = Object.fromEntries(Object.entries({
-	"a":["а","ą","ẚ","ạ","ḁ","ä","α"],
+	"a":["а","ą","ẚ","ạ","ḁ","ä","α","@"],
 	"b":["ḃ","ḇ","ḃ","ɓ","ƅ"],
 	"c":["с","ⅽ","ç","ς","ċ"],
 	"d":["ⅾ","ḋ","ḑ","ď","ḓ","ḍ","ḏ","ɗ","₫","ɖ","ժ"],
