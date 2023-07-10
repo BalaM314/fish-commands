@@ -14,11 +14,18 @@ const staffCommands = require("./staffCommands");
 const timers = require("./timers");
 const utils = require("./utils");
 
-const { Perm } = commands;
+const { Perm, allCommands } = commands;
 const { FishPlayer } = players;
 const { Ranks } = ranks;
 
-
+function $(input){
+	if(typeof input == "string"){
+		if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
+			return FishPlayer.getById(input);
+		}
+	}
+	return null;
+}
 
 exports.runJS = function(input){
 	try {
