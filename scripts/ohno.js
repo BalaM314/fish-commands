@@ -25,8 +25,7 @@ exports.Ohnos = {
             return "Sorry, the max number of ohno units has been reached.";
         if ((0, utils_1.nearbyEnemyTile)(player.unit(), 6) != null)
             return "Too close to an enemy tile!";
-        if (Date.now() - this.lastSpawned < 3000)
-            return "This command is currently on cooldown.";
+        // if(Date.now() - this.lastSpawned < 3000) return `This command is currently on cooldown.`;
         return true;
     },
     updateLength: function () {
