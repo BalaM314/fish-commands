@@ -5,7 +5,8 @@ export const bannedWords:[word:string, whitelist:string[]][] = (
 		words.map(word => typeof word == "string" ? [word, []] : [word[0], word.slice(1)])
 )([
 	"uwu",
-	"nig"+"ger", "nig" + "ga", "re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "skyscraper", "skystone"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter",
+	"nig"+"ger", "nig" + "ga", "niger",
+	"re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter",
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
 	["fa"+"g", "fage"],
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
@@ -16,7 +17,7 @@ export const substitutions:Record<string, string> = Object.fromEntries(Object.en
 	"b":["ḃ","ḇ","ḃ","ɓ","ƅ"],
 	"c":["с","ⅽ","ç","ς","ċ"],
 	"d":["ⅾ","ḋ","ḑ","ď","ḓ","ḍ","ḏ","ɗ","₫","ɖ","ժ"],
-	"e":["е","ḛ","ē","ḗ","ȩ","ё","ě","ȅ","ϵ","ε","ɛ"],
+	"e":["е","ḛ","ē","ḗ","ȩ","ё","ě","ȅ","ϵ","ε","ɛ","3"],
 	"f":["ḟ","ғ","ƒ"],
 	"g":["ց","ģ","ǵ","ɠ","ğ","ĝ","ǥ","ḡ"],
 	"h":["ḣ","ȟ","ḥ","ḫ","հ","ի","ḩ","ɦ","ḧ","ḣ","ɦ","ẖ","ħ"],
@@ -26,7 +27,7 @@ export const substitutions:Record<string, string> = Object.fromEntries(Object.en
 	"l":["ⅼ","ḽ","ḻ","ľ","ŀ","ļ","ḹ","ł","Ί","Ì","Í","Î","Ï","Ĩ","Ī","Ĭ","Į","İ","Ɩ","Ȉ","Ȋ","Ι","Ϊ","І","Ї","Ӏ","ӏ","Ḭ","Ỉ","Ἰ","Ἱ","Ῐ","Ῑ","Ὶ","ǐ"],
 	"m":["ⅿ","ṃ","ɱ","ṁ","ḿ"],
 	"n":["n","ñ","ń","ņ","ň","ŉ","ǹ","ή","η","ո","ռ","ր","ṅ","ṇ"],
-	"o":["o","ò","ộ","ớ","ờ","ở","ỡ","ợ","ὀ","ὁ","ὂ","ὃ","ὄ","ὅ","ὸ","ό","σ","๐","ö","ō","ŏ","ő","ơ","ǒ"],
+	"o":["o","ò","ộ","ớ","ờ","ở","ỡ","ợ","ὀ","ὁ","ὂ","ὃ","ὄ","ὅ","ὸ","ό","σ","๐","ö","ō","ŏ","ő","ơ","ǒ","0"],
 	"p":["p","ρ","р","ҏ","ṕ","ṗ","ῤ","ῥ","⍴"],
 	"q":["ԛ","գ","զ","q","գ","զ"],
 	"r":["ŕ","ŗ","ř","ȑ","ȓ","ɼ","ɽ","г","ѓ","ґ","ӷ","ṙ","ṛ","ṝ"],
