@@ -111,7 +111,7 @@ export function nearbyEnemyTile(unit:Unit, dist:number){
 	for(let i = -dist; i <= dist; i ++){
 		for(let j = -dist; j <= dist; j ++){
 			let build = Vars.world.build(x + i, y + j);
-			if(build && build.team != unit.team) return build;
+			if(build && build.team != unit.team && build.team != Team.derelict) return build;
 		}
 	}
 	return null;

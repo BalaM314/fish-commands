@@ -141,7 +141,7 @@ function nearbyEnemyTile(unit, dist) {
     for (var i = -dist; i <= dist; i++) {
         for (var j = -dist; j <= dist; j++) {
             var build = Vars.world.build(x + i, y + j);
-            if (build && build.team != unit.team)
+            if (build && build.team != unit.team && build.team != Team.derelict)
                 return build;
         }
     }
