@@ -124,10 +124,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  */
 function addToTileHistory(e:any){
 
-	let pos:string, name:string, action:string, type:string, time:number = Date.now();
+	let pos:string, uuid:string, action:string, type:string, time:number = Date.now();
 	if(e instanceof EventType.BlockBuildBeginEvent){
 		pos = e.tile.x + ',' + e.tile.y;
-		name = e.unit?.player?.name ?? e.unit?.type.name ?? "unknown unit";
+		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
 		if(e.breaking){
 			action = "broke";
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
@@ -137,23 +137,23 @@ function addToTileHistory(e:any){
 		}
 	} else if(e instanceof EventType.ConfigEvent){
 		pos = e.tile.tile.x + ',' + e.tile.tile.y;
-		name = e.player?.name ?? "unknown";
+		uuid = e.player?.uuid() ?? "unknown";
 		action = "configured";
 		type = e.tile.tile.block().name;
-	} else if(e instanceof Object && "pos" in e && "name" in e && "action" in e && "type" in e){
-		({pos, name, action, type} = e);
+	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
+		({pos, uuid, action, type} = e);
 	} else return;
 
 	//Decode
 	let existingData = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
 		action: d.readString(2),
-		name: d.readString(),
+		uuid: d.readString(2),
 		time: d.readNumber(16),
 		type: d.readString(2),
 	}), 1)) : [];
 
 	existingData.push({
-		action, name, time, type
+		action, uuid, time, type
 	});
 	if(existingData.length >= 9){
 		existingData = existingData.splice(0, 9);
@@ -162,7 +162,7 @@ function addToTileHistory(e:any){
 	//Encode
 	tileHistory[pos] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
 		str.writeString(el.action, 2);
-		str.writeString(el.name);
+		str.writeString(el.uuid, 2);
 		str.writeNumber(el.time, 16);
 		str.writeString(el.type, 2);
 	}, 1));
@@ -177,23 +177,24 @@ Events.on(EventType.TapEvent, (e) => {
 		e.player.sendMessage(e.tile.block().id);
 		fishP.tileId = false;
 	} else if(fishP.tilelog){
-		const realP = e.player;
 		const tile = e.tile;
 		const pos = tile.x + ',' + tile.y;
 		if(!tileHistory[pos]){
-			realP.sendMessage(
+			fishP.sendMessage(
 				`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`
 			);
 		} else {
 			const history = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
 				action: d.readString(2),
-				name: d.readString(),
+				uuid: d.readString(2)!,
 				time: d.readNumber(16),
 				type: d.readString(2),
 			}), 1)) : [];
-			realP.sendMessage(history.map(e =>
-				`${e.name} [yellow]${e.action} a ${e.type} ${formatTimeRelative(e.time)}`
-			).join('\n'));
+			if(fishP.hasPerm("viewUUIDs")){
+				fishP.sendMessage(history.map(e =>
+					`[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] [cyan]${e.action}[] a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+				).join('\n'));
+			}
 		}
 		if(fishP.tilelog === "once") fishP.tilelog = null;
 	}

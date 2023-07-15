@@ -74,6 +74,7 @@ var Perm = exports.Perm = /** @class */ (function () {
     Perm.seeMutedMessages = new Perm("seeMutedMessages", function (fishP) { return fishP.muted || fishP.autoflagged || fishP.ranksAtLeast(ranks_1.Rank.mod); });
     Perm.play = new Perm("play", function (fishP) { return (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast(ranks_1.Rank.mod); });
     Perm.seeErrorMessages = new Perm("seeErrorMessages", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
+    Perm.viewUUIDs = new Perm("viewUUIDs", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
     Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.mod); });
     Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.trusted); });

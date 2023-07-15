@@ -133,10 +133,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
  */
 function addToTileHistory(e) {
     var _a, _b, _c, _d, _e, _f, _g;
-    var pos, name, action, type, time = Date.now();
+    var pos, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         pos = e.tile.x + ',' + e.tile.y;
-        name = (_e = (_c = (_b = (_a = e.unit) === null || _a === void 0 ? void 0 : _a.player) === null || _b === void 0 ? void 0 : _b.name) !== null && _c !== void 0 ? _c : (_d = e.unit) === null || _d === void 0 ? void 0 : _d.type.name) !== null && _e !== void 0 ? _e : "unknown unit";
+        uuid = (_e = (_c = (_b = (_a = e.unit) === null || _a === void 0 ? void 0 : _a.player) === null || _b === void 0 ? void 0 : _b.uuid()) !== null && _c !== void 0 ? _c : (_d = e.unit) === null || _d === void 0 ? void 0 : _d.type.name) !== null && _e !== void 0 ? _e : "unknown";
         if (e.breaking) {
             action = "broke";
             type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
@@ -148,25 +148,25 @@ function addToTileHistory(e) {
     }
     else if (e instanceof EventType.ConfigEvent) {
         pos = e.tile.tile.x + ',' + e.tile.tile.y;
-        name = (_g = (_f = e.player) === null || _f === void 0 ? void 0 : _f.name) !== null && _g !== void 0 ? _g : "unknown";
+        uuid = (_g = (_f = e.player) === null || _f === void 0 ? void 0 : _f.uuid()) !== null && _g !== void 0 ? _g : "unknown";
         action = "configured";
         type = e.tile.tile.block().name;
     }
-    else if (e instanceof Object && "pos" in e && "name" in e && "action" in e && "type" in e) {
-        (pos = e.pos, name = e.name, action = e.action, type = e.type);
+    else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
+        (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
     }
     else
         return;
     //Decode
     var existingData = globals_1.tileHistory[pos] ? utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
         action: d.readString(2),
-        name: d.readString(),
+        uuid: d.readString(2),
         time: d.readNumber(16),
         type: d.readString(2),
     }); }, 1); }) : [];
     existingData.push({
         action: action,
-        name: name,
+        uuid: uuid,
         time: time,
         type: type
     });
@@ -176,7 +176,7 @@ function addToTileHistory(e) {
     //Encode
     globals_1.tileHistory[pos] = utils_1.StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
         str.writeString(el.action, 2);
-        str.writeString(el.name);
+        str.writeString(el.uuid, 2);
         str.writeNumber(el.time, 16);
         str.writeString(el.type, 2);
     }, 1); });
@@ -191,22 +191,21 @@ Events.on(EventType.TapEvent, function (e) {
         fishP.tileId = false;
     }
     else if (fishP.tilelog) {
-        var realP = e.player;
         var tile = e.tile;
         var pos = tile.x + ',' + tile.y;
         if (!globals_1.tileHistory[pos]) {
-            realP.sendMessage("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
+            fishP.sendMessage("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
         }
         else {
             var history = globals_1.tileHistory[pos] ? utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
                 action: d.readString(2),
-                name: d.readString(),
+                uuid: d.readString(2),
                 time: d.readNumber(16),
                 type: d.readString(2),
             }); }, 1); }) : [];
-            realP.sendMessage(history.map(function (e) {
-                return "".concat(e.name, " [yellow]").concat(e.action, " a ").concat(e.type, " ").concat((0, utils_1.formatTimeRelative)(e.time));
-            }).join('\n'));
+            if (fishP.hasPerm("viewUUIDs")) {
+                fishP.sendMessage(history.map(function (e) { var _a; return "[yellow]".concat((_a = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[] [cyan]").concat(e.action, "[] a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time)); }).join('\n'));
+            }
         }
         if (fishP.tilelog === "once")
             fishP.tilelog = null;
