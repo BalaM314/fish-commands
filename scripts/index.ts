@@ -122,11 +122,19 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.
  */
+
+function getTileHistory(pos:string):string | undefined {
+	const data = tileHistory[pos];
+	if(data && Pattern.matches("\\d+,\\d+", data))
+		return tileHistory[data];
+	else return data;
+}
+
 function addToTileHistory(e:any){
 
-	let pos:string, uuid:string, action:string, type:string, time:number = Date.now();
+	let tile:Tile, pos:string, uuid:string, action:string, type:string, time:number = Date.now();
 	if(e instanceof EventType.BlockBuildBeginEvent){
-		pos = e.tile.x + ',' + e.tile.y;
+		pos = e.tile.x + ',' + e.tile.y; tile = e.tile;
 		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
 		if(e.breaking){
 			action = "broke";
@@ -136,16 +144,22 @@ function addToTileHistory(e:any){
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
 		}
 	} else if(e instanceof EventType.ConfigEvent){
-		pos = e.tile.tile.x + ',' + e.tile.tile.y;
+		pos = e.tile.tile.x + ',' + e.tile.tile.y; tile = e.tile.tile;
 		uuid = e.player?.uuid() ?? "unknown";
 		action = "configured";
-		type = e.tile.tile.block().name;
+		type = e.tile.block.name;
+	} else if(e instanceof EventType.BuildRotateEvent){
+		pos = e.build.tile.x + ',' + e.build.tile.y; tile = e.build.tile;
+		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
+		action = "rotated";
+		type = e.build.block.name;
 	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
 		({pos, uuid, action, type} = e);
+		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]);
 	} else return;
 
 	//Decode
-	let existingData = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
+	let existingData = getTileHistory(pos) ? StringIO.read(getTileHistory(pos)!, str => str.readArray(d => ({
 		action: d.readString(2),
 		uuid: d.readString(2),
 		time: d.readNumber(16),
@@ -158,7 +172,10 @@ function addToTileHistory(e:any){
 	if(existingData.length >= 9){
 		existingData = existingData.splice(0, 9);
 	}
-
+	
+	tile.getLinkedTiles((t:Tile) => {
+		tileHistory[t.x + ',' + t.y] = pos;
+	})
 	//Encode
 	tileHistory[pos] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
 		str.writeString(el.action, 2);
@@ -169,6 +186,7 @@ function addToTileHistory(e:any){
 };
 
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
+Events.on(EventType.BuildRotateEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);
 
 Events.on(EventType.TapEvent, (e) => {
@@ -179,22 +197,22 @@ Events.on(EventType.TapEvent, (e) => {
 	} else if(fishP.tilelog){
 		const tile = e.tile;
 		const pos = tile.x + ',' + tile.y;
-		if(!tileHistory[pos]){
+		if(!getTileHistory(pos)){
 			fishP.sendMessage(
 				`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`
 			);
 		} else {
-			const history = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
+			const history = StringIO.read(getTileHistory(pos)!, str => str.readArray(d => ({
 				action: d.readString(2),
 				uuid: d.readString(2)!,
 				time: d.readNumber(16),
 				type: d.readString(2),
-			}), 1)) : [];
-			if(fishP.hasPerm("viewUUIDs")){
-				fishP.sendMessage(history.map(e =>
-					`[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] [cyan]${e.action}[] a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-				).join('\n'));
-			}
+			}), 1));
+			fishP.sendMessage(history.map(e =>
+				fishP.hasPerm("viewUUIDs")
+				? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] [cyan]${e.action}[] a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+				: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} [cyan]${e.action}[] a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+			).join('\n'));
 		}
 		if(fishP.tilelog === "once") fishP.tilelog = null;
 	}

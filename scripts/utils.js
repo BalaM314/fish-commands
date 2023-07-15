@@ -77,7 +77,7 @@ function formatTime(time) {
 }
 exports.formatTime = formatTime;
 function formatTimeRelative(time, raw) {
-    var difference = (Math.abs(time - Date.now()));
+    var difference = Math.abs(time - Date.now());
     if (difference < 1000)
         return "just now";
     else if (time > Date.now())
