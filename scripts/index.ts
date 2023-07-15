@@ -210,8 +210,8 @@ Events.on(EventType.TapEvent, (e) => {
 			}), 1));
 			fishP.sendMessage(history.map(e =>
 				fishP.hasPerm("viewUUIDs")
-				? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] [cyan]${e.action}[] a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-				: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} [cyan]${e.action}[] a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+				? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+				: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
 			).join('\n'));
 		}
 		if(fishP.tilelog === "once") fishP.tilelog = null;

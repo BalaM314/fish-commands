@@ -227,8 +227,8 @@ Events.on(EventType.TapEvent, function (e) {
             fishP.sendMessage(history.map(function (e) {
                 var _a, _b;
                 return fishP.hasPerm("viewUUIDs")
-                    ? "[yellow]".concat((_a = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[] [cyan]").concat(e.action, "[] a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
-                    : "[yellow]".concat((_b = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " [cyan]").concat(e.action, "[] a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time));
+                    ? "[yellow]".concat((_a = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
+                    : "[yellow]".concat((_b = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time));
             }).join('\n'));
         }
         if (fishP.tilelog === "once")

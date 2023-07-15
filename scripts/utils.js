@@ -284,7 +284,14 @@ var StringIO = /** @class */ (function () {
     };
     StringIO.read = function (data, func) {
         var str = new StringIO(data);
-        return func(str);
+        try {
+            return func(str);
+        }
+        catch (err) {
+            Log.err("Error while reading compressed data!");
+            Log.err(data);
+            throw err;
+        }
     };
     StringIO.write = function (data, func) {
         var str = new StringIO();

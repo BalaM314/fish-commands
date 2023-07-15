@@ -229,7 +229,13 @@ export class StringIO {
 	}
 	static read<T>(data:string, func:(str:StringIO) => T):T {
 		const str = new StringIO(data);
-		return func(str);
+		try {
+			return func(str);
+		} catch(err){
+			Log.err(`Error while reading compressed data!`);
+			Log.err(data);
+			throw err;
+		}
 	}
 	static write<T>(data:T, func:(str:StringIO, data:T) => unknown):string {
 		const str = new StringIO();
