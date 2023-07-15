@@ -24,7 +24,7 @@ exports.bannedWords = (function (words) {
 })([
     "uwu",
     "nig" + "ger", "nig" + "ga", "niger",
-    "re" + "tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys"], "co" + "ck", "co" + "ck sucker", "iamasussyimposter",
+    "re" + "tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co" + "ck", "co" + "ck sucker", "iamasussyimposter",
     ["rape", "grape", "therap", "drape", "scrape", "trapez"],
     ["fa" + "g", "fage"],
     "porn", "ur gay", "your gay", "youre gay", "you're gay"
