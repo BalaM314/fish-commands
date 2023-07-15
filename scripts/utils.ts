@@ -51,9 +51,11 @@ export function formatTime(time:number){
 }
 
 export function formatTimeRelative(time:number, raw?:boolean){
-	const difference = Math.abs(time - Date.now());
+	const difference = (Math.abs(time - Date.now()));
 
-	if(time > Date.now())
+	if(difference < 1000)
+		return "just now";
+	else if(time > Date.now())
 		return (raw ? "" : "in ") + formatTime(difference);
 	else
 		return formatTime(difference) + (raw ? "" : " ago");
