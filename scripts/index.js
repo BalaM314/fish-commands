@@ -131,18 +131,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
  * Keeps track of any action performed on a tile for use in /tilelog
  * command.
  */
-function getTileHistory(pos) {
-    var data = globals_1.tileHistory[pos];
-    if (data && Pattern.matches("\\d+,\\d+", data))
-        return globals_1.tileHistory[data];
-    else
-        return data;
-}
 function addToTileHistory(e) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
-    var tile, pos, uuid, action, type, time = Date.now();
+    var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
-        pos = e.tile.x + ',' + e.tile.y;
         tile = e.tile;
         uuid = (_e = (_c = (_b = (_a = e.unit) === null || _a === void 0 ? void 0 : _a.player) === null || _b === void 0 ? void 0 : _b.uuid()) !== null && _c !== void 0 ? _c : (_d = e.unit) === null || _d === void 0 ? void 0 : _d.type.name) !== null && _e !== void 0 ? _e : "unknown";
         if (e.breaking) {
@@ -155,51 +147,49 @@ function addToTileHistory(e) {
         }
     }
     else if (e instanceof EventType.ConfigEvent) {
-        pos = e.tile.tile.x + ',' + e.tile.tile.y;
         tile = e.tile.tile;
         uuid = (_g = (_f = e.player) === null || _f === void 0 ? void 0 : _f.uuid()) !== null && _g !== void 0 ? _g : "unknown";
         action = "configured";
         type = e.tile.block.name;
     }
     else if (e instanceof EventType.BuildRotateEvent) {
-        pos = e.build.tile.x + ',' + e.build.tile.y;
         tile = e.build.tile;
         uuid = (_m = (_k = (_j = (_h = e.unit) === null || _h === void 0 ? void 0 : _h.player) === null || _j === void 0 ? void 0 : _j.uuid()) !== null && _k !== void 0 ? _k : (_l = e.unit) === null || _l === void 0 ? void 0 : _l.type.name) !== null && _m !== void 0 ? _m : "unknown";
         action = "rotated";
         type = e.build.block.name;
     }
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
+        var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
         tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]);
     }
     else
         return;
-    //Decode
-    var existingData = getTileHistory(pos) ? utils_1.StringIO.read(getTileHistory(pos), function (str) { return str.readArray(function (d) { return ({
-        action: d.readString(2),
-        uuid: d.readString(2),
-        time: d.readNumber(16),
-        type: d.readString(2),
-    }); }, 1); }) : [];
-    existingData.push({
-        action: action,
-        uuid: uuid,
-        time: time,
-        type: type
-    });
-    if (existingData.length >= 9) {
-        existingData = existingData.splice(0, 9);
-    }
     tile.getLinkedTiles(function (t) {
-        globals_1.tileHistory[t.x + ',' + t.y] = pos;
+        var pos = "".concat(t.x, ",").concat(t.y);
+        var existingData = globals_1.tileHistory[pos] ? utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
+            action: d.readString(2),
+            uuid: d.readString(2),
+            time: d.readNumber(16),
+            type: d.readString(2),
+        }); }, 1); }) : [];
+        existingData.push({
+            action: action,
+            uuid: uuid,
+            time: time,
+            type: type
+        });
+        if (existingData.length >= 9) {
+            existingData = existingData.splice(0, 9);
+        }
+        //Write
+        globals_1.tileHistory[t.x + ',' + t.y] = utils_1.StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
+            str.writeString(el.action, 2);
+            str.writeString(el.uuid, 2);
+            str.writeNumber(el.time, 16);
+            str.writeString(el.type, 2);
+        }, 1); });
     });
-    //Encode
-    globals_1.tileHistory[pos] = utils_1.StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
-        str.writeString(el.action, 2);
-        str.writeString(el.uuid, 2);
-        str.writeNumber(el.time, 16);
-        str.writeString(el.type, 2);
-    }, 1); });
 }
 ;
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
@@ -214,11 +204,11 @@ Events.on(EventType.TapEvent, function (e) {
     else if (fishP.tilelog) {
         var tile = e.tile;
         var pos = tile.x + ',' + tile.y;
-        if (!getTileHistory(pos)) {
+        if (!globals_1.tileHistory[pos]) {
             fishP.sendMessage("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
         }
         else {
-            var history = utils_1.StringIO.read(getTileHistory(pos), function (str) { return str.readArray(function (d) { return ({
+            var history = utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
                 action: d.readString(2),
                 uuid: d.readString(2),
                 time: d.readNumber(16),

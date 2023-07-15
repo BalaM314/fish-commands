@@ -123,18 +123,11 @@ Events.on(EventType.ServerLoadEvent, (e) => {
  * command.
  */
 
-function getTileHistory(pos:string):string | undefined {
-	const data = tileHistory[pos];
-	if(data && Pattern.matches("\\d+,\\d+", data))
-		return tileHistory[data];
-	else return data;
-}
-
 function addToTileHistory(e:any){
 
-	let tile:Tile, pos:string, uuid:string, action:string, type:string, time:number = Date.now();
+	let tile:Tile, uuid:string, action:string, type:string, time:number = Date.now();
 	if(e instanceof EventType.BlockBuildBeginEvent){
-		pos = e.tile.x + ',' + e.tile.y; tile = e.tile;
+		tile = e.tile;
 		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
 		if(e.breaking){
 			action = "broke";
@@ -144,45 +137,45 @@ function addToTileHistory(e:any){
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
 		}
 	} else if(e instanceof EventType.ConfigEvent){
-		pos = e.tile.tile.x + ',' + e.tile.tile.y; tile = e.tile.tile;
+		tile = e.tile.tile;
 		uuid = e.player?.uuid() ?? "unknown";
 		action = "configured";
 		type = e.tile.block.name;
 	} else if(e instanceof EventType.BuildRotateEvent){
-		pos = e.build.tile.x + ',' + e.build.tile.y; tile = e.build.tile;
+		tile = e.build.tile;
 		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
 		action = "rotated";
 		type = e.build.block.name;
 	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
+		let pos;
 		({pos, uuid, action, type} = e);
 		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]);
 	} else return;
 
-	//Decode
-	let existingData = getTileHistory(pos) ? StringIO.read(getTileHistory(pos)!, str => str.readArray(d => ({
-		action: d.readString(2),
-		uuid: d.readString(2),
-		time: d.readNumber(16),
-		type: d.readString(2),
-	}), 1)) : [];
-
-	existingData.push({
-		action, uuid, time, type
-	});
-	if(existingData.length >= 9){
-		existingData = existingData.splice(0, 9);
-	}
-	
 	tile.getLinkedTiles((t:Tile) => {
-		tileHistory[t.x + ',' + t.y] = pos;
-	})
-	//Encode
-	tileHistory[pos] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
-		str.writeString(el.action, 2);
-		str.writeString(el.uuid, 2);
-		str.writeNumber(el.time, 16);
-		str.writeString(el.type, 2);
-	}, 1));
+		const pos = `${t.x},${t.y}`;
+		let existingData = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
+			action: d.readString(2),
+			uuid: d.readString(2),
+			time: d.readNumber(16),
+			type: d.readString(2),
+		}), 1)) : [];
+	
+		existingData.push({
+			action, uuid, time, type
+		});
+		if(existingData.length >= 9){
+			existingData = existingData.splice(0, 9);
+		}
+		//Write
+		tileHistory[t.x + ',' + t.y] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
+			str.writeString(el.action, 2);
+			str.writeString(el.uuid, 2);
+			str.writeNumber(el.time, 16);
+			str.writeString(el.type, 2);
+		}, 1));
+	});
+	
 };
 
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
@@ -197,12 +190,12 @@ Events.on(EventType.TapEvent, (e) => {
 	} else if(fishP.tilelog){
 		const tile = e.tile;
 		const pos = tile.x + ',' + tile.y;
-		if(!getTileHistory(pos)){
+		if(!tileHistory[pos]){
 			fishP.sendMessage(
 				`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`
 			);
 		} else {
-			const history = StringIO.read(getTileHistory(pos)!, str => str.readArray(d => ({
+			const history = StringIO.read(tileHistory[pos]!, str => str.readArray(d => ({
 				action: d.readString(2),
 				uuid: d.readString(2)!,
 				time: d.readNumber(16),
