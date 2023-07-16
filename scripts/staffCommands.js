@@ -443,8 +443,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var y = args.y ? (args.y * 8) : sender.player.y;
             var unit = args.type.spawn(sender.team(), x, y);
             spawnedUnits.push(unit);
-            (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(x / 8, ", ").concat(y / 8), sender);
-            outputSuccess("Spawned unit ".concat(args.type.name, " at ").concat(x / 8, ", ").concat(y / 8));
+            (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
+            outputSuccess("Spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)));
         }
     }, setblock: {
         args: ["x:number", "y:number", "block:block", "team:team?", "rotation:number?"],

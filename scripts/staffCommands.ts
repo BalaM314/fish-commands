@@ -454,8 +454,8 @@ export const commands = commandList({
 			const y = args.y ? (args.y * 8) : sender.player.y;
 			const unit = args.type.spawn(sender.team(), x, y);
 			spawnedUnits.push(unit);
-			logAction(`spawned unit ${args.type.name} at ${x / 8}, ${y / 8}`, sender);
-			outputSuccess(`Spawned unit ${args.type.name} at ${x / 8}, ${y / 8}`);
+			logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
+			outputSuccess(`Spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`);
 		}
 	},
 	setblock: {
