@@ -81,32 +81,32 @@ exports.commands = (0, commands_1.commandList)({
     },
     rainbow: {
         args: ["speed:number?"],
-        description: 'make your name change colors.',
+        description: 'Make your name change colors.',
         perm: commands_1.Perm.member,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var colors = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
+            function rainbowLoop(index, fishP) {
+                Timer.schedule(function () {
+                    if (!fishP.rainbow)
+                        return;
+                    sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.player.name);
+                    rainbowLoop(index + 1, fishP);
+                }, args.speed / 5);
+            }
             if (!args.speed) {
-                sender.updateName();
                 sender.rainbow = null;
+                sender.updateName();
+                outputSuccess("Turned off rainbow.");
             }
             else {
                 if (args.speed > 10 || args.speed <= 0 || !Number.isInteger(args.speed)) {
-                    (0, commands_1.fail)('Speed must be a number between 0 and 10.');
+                    (0, commands_1.fail)('Speed must be an integer between 0 and 10.');
                 }
-                (_b = sender.rainbow) !== null && _b !== void 0 ? _b : (sender.rainbow = {
-                    speed: args.speed,
-                });
-                var colors_1 = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
-                var rainbowLoop_1 = function (index, fishP) {
-                    Timer.schedule(function () {
-                        if (!fishP.rainbow)
-                            return;
-                        sender.player.name = colors_1[index % colors_1.length] + Strings.stripColors(sender.player.name);
-                        rainbowLoop_1(index + 1, fishP);
-                    }, args.speed / 5);
-                };
-                rainbowLoop_1(0, sender);
+                (_b = sender.rainbow) !== null && _b !== void 0 ? _b : (sender.rainbow = { speed: args.speed });
+                rainbowLoop(0, sender);
+                outputSuccess("Activated rainbow name mode with speed ".concat(args.speed));
             }
         }
     }

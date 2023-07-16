@@ -79,30 +79,30 @@ export const commands = commandList({
 
 	rainbow: {
 		args: ["speed:number?"],
-		description: 'make your name change colors.',
+		description: 'Make your name change colors.',
 		perm: Perm.member,
-		handler({args, sender}){
+		handler({args, sender, outputSuccess}){
+			const colors = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
+			function rainbowLoop(index:number, fishP:FishPlayer){
+				Timer.schedule(() => {
+					if(!fishP.rainbow) return;
+					sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.player.name);
+					rainbowLoop(index + 1, fishP);
+				}, args.speed! / 5);
+			}
 
 			if(!args.speed){
-				sender.updateName();
 				sender.rainbow = null;
+				sender.updateName();
+				outputSuccess("Turned off rainbow.");
 			} else {
 				if(args.speed > 10 || args.speed <= 0 || !Number.isInteger(args.speed)){
-					fail('Speed must be a number between 0 and 10.');
+					fail('Speed must be an integer between 0 and 10.');
 				}
 	
-				sender.rainbow ??= {
-					speed: args.speed,
-				};
-				const colors = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
-				const rainbowLoop = function(index:number, fishP:FishPlayer){
-					Timer.schedule(() => {
-						if(!fishP.rainbow) return;
-						sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.player.name);
-						rainbowLoop(index + 1, fishP);
-					}, args.speed! / 5);
-				}
+				sender.rainbow ??= { speed: args.speed };
 				rainbowLoop(0, sender);
+				outputSuccess(`Activated rainbow name mode with speed ${args.speed}`);
 			}
 
 		}
