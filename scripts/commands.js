@@ -231,13 +231,17 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     if (!(0, utils_1.isBuildable)(block))
                         return { error: "Block \"".concat(args[i], "\" is not buildable.") };
                     outputArgs[cmdArg.name] = block;
+                    break;
                 case "unittype":
                     var unit = Vars.content.unit(args[i]);
                     if (unit == null)
                         return { error: "Invalid unit type \"".concat(args[i], "\"") };
                     if (unit instanceof MissileUnitType)
                         return { error: "Unit type \"".concat(args[i], "\" is a missile unit.") };
+                    if (unit.internal)
+                        return { error: "Unit type \"".concat(args[i], "\" is internal.") };
                     outputArgs[cmdArg.name] = unit;
+                    break;
             }
         }
     }

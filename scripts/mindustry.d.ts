@@ -238,6 +238,7 @@ declare class UnitType {
 	spawn(team:Team, x:number, y:number):Unit;
 	health: number;
 	hidden: boolean;
+	internal: boolean;
 	name: string;
 }
 declare class MissileUnitType extends UnitType {}
