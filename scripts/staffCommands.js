@@ -446,6 +446,21 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             (0, utils_1.logAction)("Spawned unit ".concat(args.type.name, " at ").concat(x / 8, ", ").concat(y / 8), sender);
             outputSuccess("Spawned unit ".concat(args.type.name, " at ").concat(x / 8, ", ").concat(y / 8));
         }
+    }, setblock: {
+        args: ["x:number", "y:number", "block:block", "team:team?", "rotation:number?"],
+        description: "Sets the block at a location.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var _b, _c;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
+            var tile = Vars.world.tile(args.x, args.y);
+            if (args.rotation != null && (args.rotation < 0 || args.rotation > 3))
+                (0, commands_1.fail)("Invalid rotation ".concat(args.rotation));
+            if (tile == null)
+                (0, commands_1.fail)("Position ".concat(args.x, ", ").concat(args.y, " is out of bounds."));
+            tile.setNet(args.block, team, (_c = args.rotation) !== null && _c !== void 0 ? _c : 0);
+        }
     }, exterminate: {
         args: [],
         description: "Removes all spawned units.",
