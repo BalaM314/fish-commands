@@ -454,7 +454,7 @@ export const commands = commandList({
 			const y = args.y ? (args.y * 8) : sender.player.y;
 			const unit = args.type.spawn(sender.team(), x, y);
 			spawnedUnits.push(unit);
-			logAction(`Spawned unit ${args.type.name} at ${x / 8}, ${y / 8}`, sender);
+			logAction(`spawned unit ${args.type.name} at ${x / 8}, ${y / 8}`, sender);
 			outputSuccess(`Spawned unit ${args.type.name} at ${x / 8}, ${y / 8}`);
 		}
 	},
@@ -462,13 +462,14 @@ export const commands = commandList({
 		args: ["x:number", "y:number", "block:block", "team:team?", "rotation:number?"],
 		description: "Sets the block at a location.",
 		perm: Perm.admin,
-		handler({args, sender, outputSuccess, outputFail}){
+		handler({args, sender, outputSuccess}){
 			const team = args.team ?? sender.team();
 			const tile = Vars.world.tile(args.x, args.y);
 			if(args.rotation != null && (args.rotation < 0 || args.rotation > 3)) fail(`Invalid rotation ${args.rotation}`)
 			if(tile == null)
 				fail(`Position ${args.x}, ${args.y} is out of bounds.`);
 			tile.setNet(args.block, team, args.rotation ?? 0);
+			outputSuccess(`Set block at ${args.x}, ${args.y} to ${args.block.name}`);
 		}
 	},
 	exterminate: {

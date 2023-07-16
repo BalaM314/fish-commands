@@ -297,14 +297,14 @@ export function logAction(action:string, by:FishPlayer | string, to?:FishPlayer 
 		}
 		api.sendModerationMessage(
 `${actor} ${action} ${name} ${duration ? `for ${formatTime(duration)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
-	**Server:** ${getGamemode()}
-	**uuid:** \`${uuid}\`
-	**ip**: \`${ip}\``
+**Server:** ${getGamemode()}
+**uuid:** \`${uuid}\`
+**ip**: \`${ip}\``
 		);
 	} else {
 		api.sendModerationMessage(
 `${(by as FishPlayer).cleanedName} ${action}
-	**Server:** ${getGamemode()}`
+**Server:** ${getGamemode()}`
 		);
 	}
 }
