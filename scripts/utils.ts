@@ -280,24 +280,33 @@ export function isImpersonator(name:string):boolean {
 	return false;
 }
 
-export function logAction(action: string, by: FishPlayer | string, to: FishPlayer | mindustryPlayerData, reason?:string, duration?:number) {
-	let name:string, uuid:string, ip:string;
-	let actor:string = typeof by === "string" ? by : by.name;
-	if(to instanceof FishPlayer){
-		name = escapeTextDiscord(to.name);
-		uuid = to.uuid;
-		ip = to.player.ip();
-	} else {
-		name = escapeTextDiscord(to.lastName);
-		uuid = to.id;
-		ip = to.lastIP;
-	}
-	api.sendModerationMessage(
+export function logAction(action:string, by:FishPlayer):void;
+export function logAction(action:string, by:FishPlayer | string, to:FishPlayer | mindustryPlayerData, reason?:string, duration?:number):void;
+export function logAction(action:string, by:FishPlayer | string, to?:FishPlayer | mindustryPlayerData, reason?:string, duration?:number) {
+	if(to){
+		let name:string, uuid:string, ip:string;
+		let actor:string = typeof by === "string" ? by : by.name;
+		if(to instanceof FishPlayer){
+			name = escapeTextDiscord(to.name);
+			uuid = to.uuid;
+			ip = to.player.ip();
+		} else {
+			name = escapeTextDiscord(to.lastName);
+			uuid = to.id;
+			ip = to.lastIP;
+		}
+		api.sendModerationMessage(
 `${actor} ${action} ${name} ${duration ? `for ${formatTime(duration)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
-**Server:** ${getGamemode()}
-**uuid:** \`${uuid}\`
-**ip**: \`${ip}\``
-	);
+	**Server:** ${getGamemode()}
+	**uuid:** \`${uuid}\`
+	**ip**: \`${ip}\``
+		);
+	} else {
+		api.sendModerationMessage(
+`${(by as FishPlayer).cleanedName} ${action}
+	**Server:** ${getGamemode()}`
+		);
+	}
 }
 
 /**@returns the number of seconds. */

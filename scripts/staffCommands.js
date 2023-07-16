@@ -20,6 +20,7 @@ var ohno_1 = require("./ohno");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
+var spawnedUnits = [];
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         args: ['player:player', 'reason:string?'],
         description: 'Warn a player.',
@@ -431,5 +432,34 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var info = args.target.player.info;
             output(("[accent]Info for player \"".concat(args.target.player.name, "[accent]\" [gray](").concat((0, utils_1.escapeStringColors)(args.target.name), ") (").concat(args.target.player.id, ")\n\t[accent]Rank: ").concat(args.target.rank.coloredName(), "\n\t[accent]Role flags: ").concat(Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), "\n\t[accent]Stopped: ").concat((0, utils_1.colorBadBoolean)(!args.target.hasPerm("play")), "\n\t[accent]marked: ").concat(args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", "\n\t[accent]muted: ").concat((0, utils_1.colorBadBoolean)(args.target.muted), "\n\t[accent]autoflagged: ").concat((0, utils_1.colorBadBoolean)(args.target.autoflagged), "\n\t[accent]times joined / kicked: ").concat(info.timesJoined, "/").concat(info.timesKicked, "\n\t[accent]Names used: [[").concat(info.names.map(utils_1.escapeStringColors).items.join(", "), "]\n") + (sender.ranksAtLeast(ranks_1.Rank.admin) ?
                 "\t[#C30202]UUID: ".concat(args.target.uuid, "\n\t[#C30202]IP: ").concat(args.target.player.ip(), "\n\t") : "")).replace(/\t/g, "    "));
+        }
+    }, spawn: {
+        args: ["type:unittype", "x:number?", "y:number?"],
+        description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess;
+            var x = args.x ? (args.x * 8) : sender.player.x;
+            var y = args.y ? (args.y * 8) : sender.player.y;
+            var unit = args.type.spawn(sender.team(), x, y);
+            spawnedUnits.push(unit);
+            (0, utils_1.logAction)("Spawned unit ".concat(args.type.name, " at ").concat(x / 8, ", ").concat(y / 8), sender);
+            outputSuccess("Spawned unit ".concat(args.type.name, " at ").concat(x / 8, ", ").concat(y / 8));
+        }
+    }, exterminate: {
+        args: [],
+        description: "Removes all spawned units.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var numKilled = 0;
+            spawnedUnits.forEach(function (u) {
+                if (u.isAdded() && !u.dead) {
+                    u.kill();
+                    numKilled++;
+                }
+            });
+            (0, utils_1.logAction)("Exterminated ".concat(numKilled, " units"), sender);
+            outputSuccess("Exterminated ".concat(numKilled, " units."));
         }
     } }));

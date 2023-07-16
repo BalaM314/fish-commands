@@ -11,6 +11,8 @@ import {
 	setToArray
 } from "./utils";
 
+const spawnedUnits:Unit[] = [];
+
 export const commands = commandList({
 	warn: {
 		args: ['player:player', 'reason:string?'],
@@ -440,6 +442,36 @@ export const commands = commandList({
 	` : "")
 ).replace(/\t/g, "    ")
 			);
+		}
+	},
+
+	spawn: {
+		args: ["type:unittype", "x:number?", "y:number?"],
+		description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
+		perm: Perm.admin,
+		handler({sender, args, outputSuccess}){
+			const x = args.x ? (args.x * 8) : sender.player.x;
+			const y = args.y ? (args.y * 8) : sender.player.y;
+			const unit = args.type.spawn(sender.team(), x, y);
+			spawnedUnits.push(unit);
+			logAction(`Spawned unit ${args.type.name} at ${x / 8}, ${y / 8}`, sender);
+			outputSuccess(`Spawned unit ${args.type.name} at ${x / 8}, ${y / 8}`);
+		}
+	},
+	exterminate: {
+		args: [],
+		description: "Removes all spawned units.",
+		perm: Perm.admin,
+		handler({sender, outputSuccess}){
+			let numKilled = 0;
+			spawnedUnits.forEach(u => {
+				if(u.isAdded() && !u.dead){
+					u.kill();
+					numKilled ++;
+				}
+			});
+			logAction(`Exterminated ${numKilled} units`, sender);
+			outputSuccess(`Exterminated ${numKilled} units.`);
 		}
 	}
 
