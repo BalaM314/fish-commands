@@ -1,11 +1,12 @@
 import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
+import { maxTime } from "./config";
 import * as fjsContext from "./fjsContext";
 import { fishState, tileHistory } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
-import { logAction, setToArray } from "./utils";
+import { formatTime, formatTimeRelative, logAction, setToArray } from "./utils";
 
 
 export const commands = consoleCommandList({
@@ -285,5 +286,26 @@ Number of cached fish players: ${Object.keys(FishPlayer.cachedPlayers).length}
 Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, a) => acc + a.length, 0) / (2 ** 10))} KB`
 			);
 		}
-	}
+	},
+	stop: {
+		args: ['player:player', "time:time?", "message:string?"],
+		description: 'Stops a player.',
+		handler({args, outputSuccess}){
+			if(args.player.marked()){
+				//overload: overwrite stoptime
+				if(!args.time) fail(`Player "${args.player.name}" is already marked.`);
+				const previousTime = formatTimeRelative(args.player.unmarkTime, true);
+				args.player.updateStopTime(args.time);
+				outputSuccess(`Player "${args.player.cleanedName}"'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
+
+				return;
+			}
+
+			const time = args.time ?? 604800000;
+			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
+			args.player.stop("console", time, args.message ?? undefined);
+			logAction('stopped', "console", args.player, args.message ?? undefined, time);
+			Call.sendMessage(`[scarlet]Player "${args.player.name}[scarlet]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
+		}
+	},
 });

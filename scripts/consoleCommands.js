@@ -31,6 +31,7 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
+var config_1 = require("./config");
 var fjsContext = require("./fjsContext");
 var globals_1 = require("./globals");
 var players_1 = require("./players");
@@ -368,5 +369,28 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var output = _a.output;
             output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 10))), " KB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, "\nLength of tilelog entries: ").concat(Math.round(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0) / (Math.pow(2, 10))), " KB"));
         }
-    }
+    },
+    stop: {
+        args: ['player:player', "time:time?", "message:string?"],
+        description: 'Stops a player.',
+        handler: function (_a) {
+            var _b, _c, _d;
+            var args = _a.args, outputSuccess = _a.outputSuccess;
+            if (args.player.marked()) {
+                //overload: overwrite stoptime
+                if (!args.time)
+                    (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
+                var previousTime = (0, utils_1.formatTimeRelative)(args.player.unmarkTime, true);
+                args.player.updateStopTime(args.time);
+                outputSuccess("Player \"".concat(args.player.cleanedName, "\"'s stop time has been updated to ").concat((0, utils_1.formatTime)(args.time), " (was ").concat(previousTime, ")."));
+                return;
+            }
+            var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
+            if (time + Date.now() > config_1.maxTime)
+                (0, commands_1.fail)("Error: time too high.");
+            args.player.stop("console", time, (_c = args.message) !== null && _c !== void 0 ? _c : undefined);
+            (0, utils_1.logAction)('stopped', "console", args.player, (_d = args.message) !== null && _d !== void 0 ? _d : undefined, time);
+            Call.sendMessage("[scarlet]Player \"".concat(args.player.name, "[scarlet]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
+        }
+    },
 });
