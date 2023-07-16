@@ -21,14 +21,19 @@ const { menu } = menus;
 const { Ohnos } = ohno;
 Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 
-function $(input){
-	if(typeof input == "string"){
-		if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
-			return FishPlayer.getById(input);
+const $ = Object.assign(
+	function $(input){
+		if(typeof input == "string"){
+			if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
+				return FishPlayer.getById(input);
+			}
 		}
+		return null;
+	},
+	{
+		sussy: true
 	}
-	return null;
-}
+);
 
 exports.runJS = function(input){
 	try {
