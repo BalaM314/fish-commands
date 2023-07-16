@@ -2,7 +2,7 @@ import type { CommandArgType, Perm } from "./commands";
 import type { FishPlayer } from "./players";
 
 
-export type FishCommandArgType = string | number | FishPlayer | Team | boolean | null;
+export type FishCommandArgType = string | number | FishPlayer | Team | boolean | null | UnitType | Block;
 export type MenuListener = (player:mindustryPlayer, option:number) => void;
 
 /** Returns the type for an arg type string. Example: returns `number` for "time". */
@@ -14,6 +14,8 @@ export type TypeOfArgType<T> =
 	T extends "team" ? Team :
 	T extends "player" ? FishPlayer :
 	T extends "exactPlayer" ? FishPlayer :
+	T extends "unittype" ? UnitType :
+	T extends "block" ? Block :
 	never;
 
 //TLDR: Yeet U through a wormhole, then back through the same wormhole, and it comes out the other side as an intersection type

@@ -22,7 +22,6 @@ type MenuListener = (player:Player, option:number) => unknown;
 declare const UnitTypes: {
 	[index:string]: UnitType;
 }
-type UnitType = any;
 declare const Sounds: {
 	[index:string]: Sound;
 }
@@ -212,8 +211,8 @@ declare const Packets: {
 	KickReason: any;
 };
 
-declare const ConstructBlock: {
-	ConstructBuild: any;
+declare class ConstructBlock {
+	static ConstructBuild: any;
 }
 declare const Prop: any;
 
@@ -234,3 +233,10 @@ interface mindustryPlayerData {
 	lastKicked: number;
 	plainLastName(): string;
 }
+
+declare class UnitType {
+	spawn(team:Team, x:number, y:number):Unit;
+	health: number;
+	hidden: boolean;
+}
+declare class MissileUnitType extends UnitType {}

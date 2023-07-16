@@ -343,3 +343,7 @@ export function serverRestartLoop(sec:number){
 	}
 }
 
+export function isBuildable(block:Block){
+	return block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock);
+}
+

@@ -5,14 +5,14 @@ import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
 	ServerCommandHandler
 } from "./types";
-import { getTeam, parseTimeString } from "./utils";
+import { getTeam, isBuildable, parseTimeString } from "./utils";
 
 export const allCommands:Record<string, FishCommandData<any>> = {};
 const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
 }> = {};
-const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 /** Use this to get the correct type for command lists. */
@@ -164,6 +164,16 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 					default: return {error: `Argument ${args[i]} is not a boolean. Try "true" or "false".`};
 				}
 				break;
+			case "block":
+				const block = Vars.content.block(args[i]) as Block;
+				if(block == null) return {error: `Invalid block "${args[i]}"`};
+				if(!isBuildable(block)) return {error: `Block "${args[i]}" is not buildable.`};
+				outputArgs[cmdArg.name] = block;
+			case "unittype":
+				const unit = Vars.content.unit(args[i]) as UnitType;
+				if(unit == null) return {error: `Invalid unit type "${args[i]}"`};
+				if(unit instanceof MissileUnitType) return {error: `Unit type "${args[i]}" is a missile unit.`};
+				outputArgs[cmdArg.name] = unit;
 		}
 	}
 	return {processedArgs: outputArgs, unresolvedArgs};

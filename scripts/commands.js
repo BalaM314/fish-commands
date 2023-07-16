@@ -45,7 +45,7 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
 var globalUsageData = {};
-var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time"];
+var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block"];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
 exports.commandList = commandList;
@@ -224,6 +224,20 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                         default: return { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") };
                     }
                     break;
+                case "block":
+                    var block = Vars.content.block(args[i]);
+                    if (block == null)
+                        return { error: "Invalid block \"".concat(args[i], "\"") };
+                    if (!(0, utils_1.isBuildable)(block))
+                        return { error: "Block \"".concat(args[i], "\" is not buildable.") };
+                    outputArgs[cmdArg.name] = block;
+                case "unittype":
+                    var unit = Vars.content.unit(args[i]);
+                    if (unit == null)
+                        return { error: "Invalid unit type \"".concat(args[i], "\"") };
+                    if (unit instanceof MissileUnitType)
+                        return { error: "Unit type \"".concat(args[i], "\" is a missile unit.") };
+                    outputArgs[cmdArg.name] = unit;
             }
         }
     }
