@@ -633,22 +633,16 @@ We apologize for the inconvenience.`
 			}
 		}, time / 1000);
 	}
-	stop(by:FishPlayer | "api" | "vpn", time:number, message?:string){
+	stop(by:FishPlayer | "api" | string, time:number, message?:string){
 		this.updateStopTime(time);
-		if(by instanceof FishPlayer){
-			this.addHistoryEntry({
-				action: 'stopped',
-				by: by.name,
-				time: Date.now(),
-			});
+		if(by !== "api"){
 			api.addStopped(this.uuid, this.unmarkTime);
-		} else if(by === "vpn"){
-			this.addHistoryEntry({
-				action: 'stopped',
-				by,
-				time: Date.now(),
-			});
 		}
+		this.addHistoryEntry({
+			action: 'stopped',
+			by: by instanceof FishPlayer ? by.name : by,
+			time: Date.now(),
+		});
 		if(!this.connected()) return;
 		this.stopUnit();
 		this.updateName();
@@ -662,22 +656,22 @@ We apologize for the inconvenience.`
 		}
 
 	}
-	free(by:FishPlayer | "api"){
+	free(by:FishPlayer | "api" | string){
 		if(!this.marked()) return;
 
 		this.autoflagged = false; //Might as well set autoflagged to false
 		this.unmarkTime = -1;
 		this.updateName();
 		this.forceRespawn();
-		if(by instanceof FishPlayer){
-			this.sendMessage('[yellow]Looks like someone had mercy on you.');
-			this.addHistoryEntry({
-				action: 'freed',
-				by: by.name,
-				time: Date.now(),
-			});
+		this.sendMessage('[yellow]Looks like someone had mercy on you.');
+		if(by !== "api"){
 			api.free(this.uuid);
 		}
+		this.addHistoryEntry({
+			action: 'freed',
+			by: by instanceof FishPlayer ? by.name : by,
+			time: Date.now(),
+		});
 		FishPlayer.saveAll();
 	}
 	freeze(){
@@ -687,24 +681,16 @@ We apologize for the inconvenience.`
 	unfreeze(){
 		this.frozen = false;
 	}
-	mute(by:FishPlayer | "api" | "vpn"){
+	mute(by:FishPlayer | "api" | string){
 		if(this.muted) return;
 		this.muted = true;
 		this.updateName();
 		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
-		if(by instanceof FishPlayer){
-			this.addHistoryEntry({
-				action: 'muted',
-				by: by.name,
-				time: Date.now(),
-			});
-		} else if(by === "vpn"){
-			this.addHistoryEntry({
-				action: 'muted',
-				by: by,
-				time: Date.now(),
-			});
-		}
+		this.addHistoryEntry({
+			action: 'muted',
+			by: by instanceof FishPlayer ? by.name : by,
+			time: Date.now(),
+		});
 		FishPlayer.saveAll();
 	}
 	unmute(by:FishPlayer | "api" | "vpn"){
@@ -712,13 +698,11 @@ We apologize for the inconvenience.`
 		this.muted = false;
 		this.updateName();
 		this.sendMessage(`[green]You have been unmuted.`);
-		if(by instanceof FishPlayer){
-			this.addHistoryEntry({
-				action: 'unmuted',
-				by: by.name,
-				time: Date.now(),
-			});
-		}
+		this.addHistoryEntry({
+			action: 'muted',
+			by: by instanceof FishPlayer ? by.name : by,
+			time: Date.now(),
+		});
 		FishPlayer.saveAll();
 	}
 

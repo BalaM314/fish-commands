@@ -739,21 +739,14 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.stop = function (by, time, message) {
         this.updateStopTime(time);
-        if (by instanceof FishPlayer) {
-            this.addHistoryEntry({
-                action: 'stopped',
-                by: by.name,
-                time: Date.now(),
-            });
+        if (by !== "api") {
             api.addStopped(this.uuid, this.unmarkTime);
         }
-        else if (by === "vpn") {
-            this.addHistoryEntry({
-                action: 'stopped',
-                by: by,
-                time: Date.now(),
-            });
-        }
+        this.addHistoryEntry({
+            action: 'stopped',
+            by: by instanceof FishPlayer ? by.name : by,
+            time: Date.now(),
+        });
         if (!this.connected())
             return;
         this.stopUnit();
@@ -773,15 +766,15 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.unmarkTime = -1;
         this.updateName();
         this.forceRespawn();
-        if (by instanceof FishPlayer) {
-            this.sendMessage('[yellow]Looks like someone had mercy on you.');
-            this.addHistoryEntry({
-                action: 'freed',
-                by: by.name,
-                time: Date.now(),
-            });
+        this.sendMessage('[yellow]Looks like someone had mercy on you.');
+        if (by !== "api") {
             api.free(this.uuid);
         }
+        this.addHistoryEntry({
+            action: 'freed',
+            by: by instanceof FishPlayer ? by.name : by,
+            time: Date.now(),
+        });
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.freeze = function () {
@@ -797,20 +790,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.muted = true;
         this.updateName();
         this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
-        if (by instanceof FishPlayer) {
-            this.addHistoryEntry({
-                action: 'muted',
-                by: by.name,
-                time: Date.now(),
-            });
-        }
-        else if (by === "vpn") {
-            this.addHistoryEntry({
-                action: 'muted',
-                by: by,
-                time: Date.now(),
-            });
-        }
+        this.addHistoryEntry({
+            action: 'muted',
+            by: by instanceof FishPlayer ? by.name : by,
+            time: Date.now(),
+        });
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.unmute = function (by) {
@@ -819,13 +803,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.muted = false;
         this.updateName();
         this.sendMessage("[green]You have been unmuted.");
-        if (by instanceof FishPlayer) {
-            this.addHistoryEntry({
-                action: 'unmuted',
-                by: by.name,
-                time: Date.now(),
-            });
-        }
+        this.addHistoryEntry({
+            action: 'muted',
+            by: by instanceof FishPlayer ? by.name : by,
+            time: Date.now(),
+        });
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.stopUnit = function () {
