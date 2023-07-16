@@ -325,3 +325,21 @@ export function parseTimeString(str:string):number | null {
 export function escapeStringColors(str:string):string {
 	return str.replace(/\[/g, "[[");
 }
+
+export function serverRestartLoop(sec:number){
+	if(sec > 0){
+		if(sec < 15 || sec % 5 == 0) Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);
+		Timer.schedule(() => serverRestartLoop(sec - 1), 1);
+	} else {
+		Log.info(`Restarting...`);
+		Core.settings.manualSave();
+		FishPlayer.saveAll();
+		const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+		Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
+		Core.app.post(() => {
+			SaveIO.save(file);
+			Core.app.exit();
+		});
+	}
+}
+

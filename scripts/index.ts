@@ -5,7 +5,7 @@
 import * as api from './api';
 import * as commands from './commands';
 import * as consoleCommands from "./consoleCommands";
-import { tileHistory } from "./globals";
+import { fishState, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
 import * as menus from "./menus";
 import { Ohnos } from "./ohno";
@@ -13,7 +13,7 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, formatTimeRelative, matchFilter } from "./utils";
+import { StringIO, formatTimeRelative, matchFilter, serverRestartLoop } from "./utils";
 
 
 
@@ -216,6 +216,10 @@ Events.on(EventType.GameOverEvent, (e) => {
 	for(const [key, value] of Object.entries(tileHistory)){
 		tileHistory[key] = null!;
 		delete tileHistory[key];
+	}
+	if(fishState.restarting){
+		Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---`);
+		serverRestartLoop(10);
 	}
 });
 

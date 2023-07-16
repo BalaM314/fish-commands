@@ -311,32 +311,26 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args, output = _a.output;
-            function restartLoop(sec) {
-                if (sec > 0) {
-                    if (sec < 15 || sec % 5 == 0)
-                        Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
-                    Timer.schedule(function () { return restartLoop(sec - 1); }, 1);
+            if (Vars.state.rules.mode().name() == "pvp") {
+                if (args.time === -1) {
+                    Log.info("&rRestarting in 15 seconds (this will interrupt the current PVP match).&fr");
+                    Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---");
+                    (0, utils_1.serverRestartLoop)(15);
                 }
                 else {
-                    output("Restarting...");
-                    Core.settings.manualSave();
-                    players_1.FishPlayer.saveAll();
-                    var file_1 = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-                    Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
-                    Core.app.post(function () {
-                        SaveIO.save(file_1);
-                        Core.app.exit();
-                    });
+                    Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart queued. The server will restart after the current match is over.[]\n[accent]---[[[coral]+++[]]---");
+                    Log.info("PVP detected, restart will occur at the end of the current match. Run \"restart -1\" to override, but &rthat would interrupt the current pvp match, and players would lose their teams.&fr");
+                    globals_1.fishState.restarting = true;
                 }
             }
-            ;
-            Call.sendMessage("[green]Game saved. Server restart queued. Estimated downtime: 9 seconds.");
-            var time = (_b = args.time) !== null && _b !== void 0 ? _b : 10;
-            if (time < 0 || time > 100)
-                (0, commands_1.fail)("Invalid time: out of valid range.");
-            Log.info("Restarting in ".concat(time, " seconds..."));
-            globals_1.fishState.restarting = true;
-            restartLoop(time);
+            else {
+                Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds, and all progress will be saved.[]\n[accent]---[[[coral]+++[]]---");
+                var time = (_b = args.time) !== null && _b !== void 0 ? _b : 10;
+                if (time < 0 || time > 100)
+                    (0, commands_1.fail)("Invalid time: out of valid range.");
+                Log.info("Restarting in ".concat(time, " seconds..."));
+                (0, utils_1.serverRestartLoop)(time);
+            }
         }
     },
     rename: {
@@ -370,7 +364,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 10))), " KB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, "\nLength of tilelog entries: ").concat(Math.round(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0) / (Math.pow(2, 10))), " KB"));
         }
     },
-    stop: {
+    stopplayer: {
         args: ['player:player', "time:time?", "message:string?"],
         description: 'Stops a player.',
         handler: function (_a) {

@@ -6,7 +6,7 @@ import * as fjsContext from "./fjsContext";
 import { fishState, tileHistory } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
-import { formatTime, formatTimeRelative, logAction, setToArray } from "./utils";
+import { formatTime, formatTimeRelative, logAction, serverRestartLoop, setToArray } from "./utils";
 
 
 export const commands = consoleCommandList({
@@ -231,28 +231,23 @@ export const commands = consoleCommandList({
 		args: ["time:number?"],
 		description: "Restarts the server.",
 		handler({args, output}){
-			function restartLoop(sec:number){
-				if(sec > 0){
-					if(sec < 15 || sec % 5 == 0) Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);
-					Timer.schedule(() => restartLoop(sec - 1), 1);
+			if(Vars.state.rules.mode().name() == "pvp"){
+				if(args.time === -1){
+					Log.info(`&rRestarting in 15 seconds (this will interrupt the current PVP match).&fr`);
+					Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---`);
+					serverRestartLoop(15);
 				} else {
-					output(`Restarting...`);
-					Core.settings.manualSave();
-					FishPlayer.saveAll();
-					const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-					Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
-					Core.app.post(() => {
-						SaveIO.save(file);
-						Core.app.exit();
-					});
+					Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart queued. The server will restart after the current match is over.[]\n[accent]---[[[coral]+++[]]---`);
+					Log.info(`PVP detected, restart will occur at the end of the current match. Run "restart -1" to override, but &rthat would interrupt the current pvp match, and players would lose their teams.&fr`);
+					fishState.restarting = true;
 				}
-			};
-			Call.sendMessage(`[green]Game saved. Server restart queued. Estimated downtime: 9 seconds.`);
-			const time = args.time ?? 10;
-			if(time < 0 || time > 100) fail(`Invalid time: out of valid range.`);
-			Log.info(`Restarting in ${time} seconds...`);
-			fishState.restarting = true;
-			restartLoop(time);
+			} else {
+				Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds, and all progress will be saved.[]\n[accent]---[[[coral]+++[]]---`);
+				const time = args.time ?? 10;
+				if(time < 0 || time > 100) fail(`Invalid time: out of valid range.`);
+				Log.info(`Restarting in ${time} seconds...`);
+				serverRestartLoop(time);
+			}
 		}
 	},
 	rename: {
@@ -287,7 +282,7 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 			);
 		}
 	},
-	stop: {
+	stopplayer: {
 		args: ['player:player', "time:time?", "message:string?"],
 		description: 'Stops a player.',
 		handler({args, outputSuccess}){

@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.serverRestartLoop = exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var players_1 = require("./players");
@@ -414,3 +414,22 @@ function escapeStringColors(str) {
     return str.replace(/\[/g, "[[");
 }
 exports.escapeStringColors = escapeStringColors;
+function serverRestartLoop(sec) {
+    if (sec > 0) {
+        if (sec < 15 || sec % 5 == 0)
+            Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
+        Timer.schedule(function () { return serverRestartLoop(sec - 1); }, 1);
+    }
+    else {
+        Log.info("Restarting...");
+        Core.settings.manualSave();
+        players_1.FishPlayer.saveAll();
+        var file_1 = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+        Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
+        Core.app.post(function () {
+            SaveIO.save(file_1);
+            Core.app.exit();
+        });
+    }
+}
+exports.serverRestartLoop = serverRestartLoop;
