@@ -42,7 +42,7 @@ var players_1 = require("./players");
 var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
-Events.on(EventType.PlayerJoin, function (e) {
+Events.on(EventType.PlayerConnect, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
 Events.on(EventType.ConnectPacketEvent, function (e) {
