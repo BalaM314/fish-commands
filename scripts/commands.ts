@@ -5,7 +5,7 @@ import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
 	ServerCommandHandler
 } from "./types";
-import { getTeam, isBuildable, parseTimeString } from "./utils";
+import { getBlock, getTeam, getUnitType, isBuildable, parseTimeString } from "./utils";
 
 export const allCommands:Record<string, FishCommandData<any>> = {};
 const globalUsageData:Record<string, {
@@ -165,16 +165,13 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				}
 				break;
 			case "block":
-				const block = Vars.content.block(args[i]) as Block;
-				if(block == null) return {error: `Invalid block "${args[i]}"`};
-				if(!isBuildable(block)) return {error: `Block "${args[i]}" is not buildable.`};
+				const block = getBlock(args[i]);
+				if(typeof block == "string") return {error: block};
 				outputArgs[cmdArg.name] = block;
 				break;
 			case "unittype":
-				const unit = Vars.content.unit(args[i]) as UnitType;
-				if(unit == null) return {error: `Invalid unit type "${args[i]}"`};
-				if(unit instanceof MissileUnitType) return {error: `Unit type "${args[i]}" is a missile unit.`};
-				if(unit.internal) return {error: `Unit type "${args[i]}" is internal.`};
+				const unit = getUnitType(args[i]);
+				if(typeof unit == "string") return {error: unit};
 				outputArgs[cmdArg.name] = unit;
 				break;
 		}

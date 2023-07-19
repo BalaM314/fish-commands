@@ -356,3 +356,22 @@ export function isBuildable(block:Block){
 	return block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock);
 }
 
+export function getUnitType(type:string):Unit | string {
+	validUnits ??= Vars.content.units().select((u:UnitType) => !(u instanceof MissileUnitType || u.internal));
+	let temp;
+	if(temp = validUnits!.find(u => u.name == type)) return temp;
+	else if(temp = validUnits!.find((t:UnitType) => t.name.includes(type.toLowerCase()))) return temp;
+	return `"${type}" is not a valid unit type.`;
+}
+
+let buildableBlocks:Seq<Block> | null = null;
+let validUnits:Seq<UnitType> | null = null;
+
+export function getBlock(block:string):Block | string {
+	buildableBlocks ??= Vars.content.blocks().select(isBuildable);
+	if(block in Blocks && Blocks[block] instanceof Block && isBuildable(Blocks[block])) return Blocks[block];
+	else if(buildableBlocks!.find((t:Block) => t.name.includes(block.toLowerCase()))) return buildableBlocks!.find((t:Block) => t.name.includes(block.toLowerCase()))!;
+	else if(buildableBlocks!.find((t:Block) => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")))) return buildableBlocks!.find((t:Block) => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")))!;
+	else if(block.includes("airblast")) return Blocks.blastDrill;
+	return `"${block}" is not a valid block.`;
+}

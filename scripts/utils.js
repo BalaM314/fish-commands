@@ -27,7 +27,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var players_1 = require("./players");
@@ -442,3 +442,28 @@ function isBuildable(block) {
     return block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock);
 }
 exports.isBuildable = isBuildable;
+function getUnitType(type) {
+    validUnits !== null && validUnits !== void 0 ? validUnits : (validUnits = Vars.content.units().select(function (u) { return !(u instanceof MissileUnitType || u.internal); }));
+    var temp;
+    if (temp = validUnits.find(function (u) { return u.name == type; }))
+        return temp;
+    else if (temp = validUnits.find(function (t) { return t.name.includes(type.toLowerCase()); }))
+        return temp;
+    return "\"".concat(type, "\" is not a valid unit type.");
+}
+exports.getUnitType = getUnitType;
+var buildableBlocks = null;
+var validUnits = null;
+function getBlock(block) {
+    buildableBlocks !== null && buildableBlocks !== void 0 ? buildableBlocks : (buildableBlocks = Vars.content.blocks().select(isBuildable));
+    if (block in Blocks && Blocks[block] instanceof Block && isBuildable(Blocks[block]))
+        return Blocks[block];
+    else if (buildableBlocks.find(function (t) { return t.name.includes(block.toLowerCase()); }))
+        return buildableBlocks.find(function (t) { return t.name.includes(block.toLowerCase()); });
+    else if (buildableBlocks.find(function (t) { return t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")); }))
+        return buildableBlocks.find(function (t) { return t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")); });
+    else if (block.includes("airblast"))
+        return Blocks.blastDrill;
+    return "\"".concat(block, "\" is not a valid block.");
+}
+exports.getBlock = getBlock;

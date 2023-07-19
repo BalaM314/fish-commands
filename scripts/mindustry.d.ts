@@ -29,7 +29,10 @@ type Sound = any;
 declare const Blocks: {
 	[index:string]: Block;
 }
-type Block = any;
+declare class Block {
+	name: string;
+	buildType: Building;
+}
 declare class Team {
 	static derelict:Team;
 	static sharded:Team;

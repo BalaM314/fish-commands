@@ -225,21 +225,15 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     }
                     break;
                 case "block":
-                    var block = Vars.content.block(args[i]);
-                    if (block == null)
-                        return { error: "Invalid block \"".concat(args[i], "\"") };
-                    if (!(0, utils_1.isBuildable)(block))
-                        return { error: "Block \"".concat(args[i], "\" is not buildable.") };
+                    var block = (0, utils_1.getBlock)(args[i]);
+                    if (typeof block == "string")
+                        return { error: block };
                     outputArgs[cmdArg.name] = block;
                     break;
                 case "unittype":
-                    var unit = Vars.content.unit(args[i]);
-                    if (unit == null)
-                        return { error: "Invalid unit type \"".concat(args[i], "\"") };
-                    if (unit instanceof MissileUnitType)
-                        return { error: "Unit type \"".concat(args[i], "\" is a missile unit.") };
-                    if (unit.internal)
-                        return { error: "Unit type \"".concat(args[i], "\" is internal.") };
+                    var unit = (0, utils_1.getUnitType)(args[i]);
+                    if (typeof unit == "string")
+                        return { error: unit };
                     outputArgs[cmdArg.name] = unit;
                     break;
             }
