@@ -214,7 +214,7 @@ Events.on(EventType.TapEvent, function (e) {
                 time: d.readNumber(16),
                 type: d.readString(2),
             }); }, 1); });
-            fishP.sendMessage(history.map(function (e) {
+            fishP.sendMessage("[yellow]Tile history for tile (".concat(tile.x, ", ").concat(tile.y, "):\n") + history.map(function (e) {
                 var _a, _b;
                 return fishP.hasPerm("viewUUIDs")
                     ? "[yellow]".concat((_a = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
