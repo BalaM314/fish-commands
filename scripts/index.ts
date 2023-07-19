@@ -18,7 +18,7 @@ import { StringIO, formatTimeRelative, matchFilter, serverRestartLoop } from "./
 
 
 
-Events.on(EventType.PlayerJoin, (e) => {
+Events.on(EventType.PlayerConnect, (e) => {
 	FishPlayer.onPlayerJoin(e.player);
 });
 Events.on(EventType.ConnectPacketEvent, (e) => {
