@@ -29,7 +29,7 @@ exports.bannedWords = (function (words) {
     ["fa" + "g", "fage"],
     "porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
-exports.bannedNames = ['goldberg', 'eshay', "VALVE"];
+exports.bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];
 exports.substitutions = Object.fromEntries(Object.entries({
     "a": ["а", "ą", "ẚ", "ạ", "ḁ", "ä", "α", "@"],
     "b": ["ḃ", "ḇ", "ḃ", "ɓ", "ƅ"],
