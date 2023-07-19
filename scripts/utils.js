@@ -357,7 +357,10 @@ function isImpersonator(name) {
 }
 exports.isImpersonator = isImpersonator;
 function logAction(action, by, to, reason, duration) {
-    if (to) {
+    if (by === undefined) {
+        api.sendModerationMessage("".concat(action, "\n**Server:** ").concat((0, config_1.getGamemode)()));
+    }
+    else if (to) {
         var name = void 0, uuid = void 0, ip = void 0;
         var actor = typeof by === "string" ? by : by.name;
         if (to instanceof players_1.FishPlayer) {

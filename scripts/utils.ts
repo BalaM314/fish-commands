@@ -280,10 +280,16 @@ export function isImpersonator(name:string):boolean {
 	return false;
 }
 
+export function logAction(action:string):void;
 export function logAction(action:string, by:FishPlayer):void;
 export function logAction(action:string, by:FishPlayer | string, to:FishPlayer | mindustryPlayerData, reason?:string, duration?:number):void;
-export function logAction(action:string, by:FishPlayer | string, to?:FishPlayer | mindustryPlayerData, reason?:string, duration?:number) {
-	if(to){
+export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer | mindustryPlayerData, reason?:string, duration?:number) {
+	if(by === undefined){
+		api.sendModerationMessage(
+`${action}
+**Server:** ${getGamemode()}`
+		);
+	} else if(to){
 		let name:string, uuid:string, ip:string;
 		let actor:string = typeof by === "string" ? by : by.name;
 		if(to instanceof FishPlayer){

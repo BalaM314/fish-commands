@@ -123,6 +123,7 @@ export const commands = consoleCommandList({
 			if(Pattern.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", args.target)){
 				//target is an ip
 				api.ban({ip: args.target});
+				logAction(`console ip-whacked ${args.target}`);
 				if(Vars.netServer.admins.isIPBanned(args.target)){
 					output(`IP &c"${args.target}"&fr is already banned. Ban was synced to other servers.`);
 				} else {
@@ -130,6 +131,7 @@ export const commands = consoleCommandList({
 					output(`&lrIP &c"${args.target}" &lrwas banned. Ban was synced to other servers.`);
 				}
 			} else if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)){
+				logAction(`console whacked ${args.target}`);
 				api.addStopped(args.target, config.maxTime);
 				if(Vars.netServer.admins.isIDBanned(args.target)){
 					api.ban({uuid: args.target});
@@ -158,6 +160,7 @@ export const commands = consoleCommandList({
 					const uuid = player.uuid();
 					Vars.netServer.admins.banPlayerID(uuid);
 					Vars.netServer.admins.banPlayerIP(ip);
+					logAction(`console whacked ${Strings.stripColors(player.name)} (\`${uuid}\`/\`${ip}\`)`);
 					api.ban({uuid, ip});
 					api.addStopped(player.uuid(), config.maxTime);
 					output(`&lrIP &c"${ip}"&lr was banned. UUID &c"${uuid}"&lr was banned. Ban was synced to other servers.`);

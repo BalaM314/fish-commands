@@ -177,6 +177,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             if (Pattern.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", args.target)) {
                 //target is an ip
                 api.ban({ ip: args.target });
+                (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
                 if (Vars.netServer.admins.isIPBanned(args.target)) {
                     output("IP &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
                 }
@@ -186,6 +187,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 }
             }
             else if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)) {
+                (0, utils_1.logAction)("console whacked ".concat(args.target));
                 api.addStopped(args.target, config.maxTime);
                 if (Vars.netServer.admins.isIDBanned(args.target)) {
                     api.ban({ uuid: args.target });
@@ -220,6 +222,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     var uuid = player.uuid();
                     Vars.netServer.admins.banPlayerID(uuid);
                     Vars.netServer.admins.banPlayerIP(ip);
+                    (0, utils_1.logAction)("console whacked ".concat(Strings.stripColors(player.name), " (`").concat(uuid, "`/`").concat(ip, "`)"));
                     api.ban({ uuid: uuid, ip: ip });
                     api.addStopped(player.uuid(), config.maxTime);
                     output("&lrIP &c\"".concat(ip, "\"&lr was banned. UUID &c\"").concat(uuid, "\"&lr was banned. Ban was synced to other servers."));
