@@ -74,7 +74,7 @@ export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 let cachedIps:Record<string, boolean | undefined> = {};
 /**Make an API request to see if an IP is likely VPN. */
 export function isVpn(ip: string, callback: (isVpn: boolean) => unknown, callbackError?: (errorMessage: any) => unknown) {
-	if(ip in cachedIps) callback(cachedIps[ip]!);
+	if(ip in cachedIps) return callback(cachedIps[ip]!);
 	try {
 		Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, (res) => {
 			const data = res.getResultAsString();

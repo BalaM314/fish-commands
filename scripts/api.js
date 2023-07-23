@@ -84,7 +84,7 @@ var cachedIps = {};
 /**Make an API request to see if an IP is likely VPN. */
 function isVpn(ip, callback, callbackError) {
     if (ip in cachedIps)
-        callback(cachedIps[ip]);
+        return callback(cachedIps[ip]);
     try {
         Http.get("http://ip-api.com/json/".concat(ip, "?fields=proxy,hosting"), function (res) {
             var data = res.getResultAsString();
