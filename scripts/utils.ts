@@ -381,3 +381,11 @@ export function getBlock(block:string):Block | string {
 	else if(block.includes("airblast")) return Blocks.blastDrill;
 	return `"${block}" is not a valid block.`;
 }
+
+export function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
+	Timer.schedule(() => {
+		player.unit().set(to.unit().x, to.unit().y);
+		Call.setPosition(player.con, to.unit().x, to.unit().y);
+		Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
+	}, 0, 0.016, 10);
+}

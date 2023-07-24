@@ -37,11 +37,6 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 // import { votekickmanager } from './votes';
-function teleportPlayer(player, to) {
-    player.unit().set(to.unit().x, to.unit().y);
-    Call.setPosition(player.con, to.unit().x, to.unit().y);
-    Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
-}
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
         description: 'Unpauses the game.',
@@ -57,7 +52,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var _b;
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
             if ((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore) {
-                teleportPlayer(sender.player, args.player.player);
+                (0, utils_1.teleportPlayer)(sender.player, args.player.player);
             }
             else {
                 outputFail("Can only teleport while in a core unit.");

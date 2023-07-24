@@ -5,14 +5,9 @@ import { recentWhispers } from './globals';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
-import { capitalizeText, getColor, StringBuilder, to2DArray } from './utils';
+import { capitalizeText, getColor, StringBuilder, teleportPlayer, to2DArray } from './utils';
 // import { votekickmanager } from './votes';
 
-function teleportPlayer(player: mindustryPlayer, to: mindustryPlayer) {
-	player.unit().set(to.unit().x, to.unit().y);
-	Call.setPosition(player.con, to.unit().x, to.unit().y);
-	Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
-}
 
 export const commands = commandList({
 	unpause: {
