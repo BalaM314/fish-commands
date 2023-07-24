@@ -12,7 +12,7 @@ export const bannedWords:[word:string, whitelist:string[]][] = (
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
 export const bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];
-export const adminNames = ["fish", "balam314", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
+export const adminNames = ["fish", "balame14", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 export const substitutions:Record<string, string> = Object.fromEntries(Object.entries({
 	"a":["а","ą","ẚ","ạ","ḁ","ä","α","@"],
 	"b":["ḃ","ḇ","ḃ","ɓ","ƅ"],
