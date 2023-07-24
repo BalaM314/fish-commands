@@ -294,7 +294,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
-        if ((0, utils_1.isImpersonator)(this.name))
+        if ((0, utils_1.isImpersonator)(this.name, this.ranksAtLeast(ranks_1.Rank.admin)))
             prefix += "[scarlet]SUSSY IMPOSTOR[]";
         if (this.marked())
             prefix += config.MARKED_PREFIX;

@@ -346,13 +346,15 @@ function matchFilter(text) {
     return false;
 }
 exports.matchFilter = matchFilter;
-function isImpersonator(name) {
+function isImpersonator(name, isStaff) {
     //Replace substitutions
     var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
     if (replacedText.includes("server"))
         return true; //name contains server
     if (Pattern.matches("^[ ]*<.{1,3}>[\\s\\S]*", replacedText))
         return true; //name starts with <c>, fake role prefix
+    if (!isStaff && config_1.adminNames.includes(replacedText.trim()))
+        return true;
     return false;
 }
 exports.isImpersonator = isImpersonator;

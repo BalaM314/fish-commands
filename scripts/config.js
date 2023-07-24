@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.maxTime = exports.localDebug = exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.bannedNames = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.maxTime = exports.localDebug = exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.adminNames = exports.bannedNames = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
@@ -30,6 +30,7 @@ exports.bannedWords = (function (words) {
     "porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
 exports.bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];
+exports.adminNames = ["fish", "balam314", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 exports.substitutions = Object.fromEntries(Object.entries({
     "a": ["а", "ą", "ẚ", "ạ", "ḁ", "ä", "α", "@"],
     "b": ["ḃ", "ḇ", "ḃ", "ɓ", "ƅ"],

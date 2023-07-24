@@ -1,6 +1,7 @@
 import * as api from './api';
-import { bannedWords, getGamemode, maxTime, substitutions } from "./config";
+import { adminNames, bannedWords, getGamemode, maxTime, substitutions } from "./config";
 import { FishPlayer } from "./players";
+import { Rank } from './ranks';
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -272,11 +273,12 @@ export function matchFilter(text:string):boolean {
 	return false;
 }
 
-export function isImpersonator(name:string):boolean {
+export function isImpersonator(name:string, isStaff:boolean):boolean {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
 	if(replacedText.includes("server")) return true; //name contains server
 	if(Pattern.matches("^[ ]*<.{1,3}>[\\s\\S]*", replacedText)) return true; //name starts with <c>, fake role prefix
+	if(!isStaff && adminNames.includes(replacedText.trim())) return true;
 	return false;
 }
 
