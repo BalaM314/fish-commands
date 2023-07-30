@@ -321,10 +321,10 @@ function matchFilter(text) {
     //Replace substitutions
     var replacedText = Strings.stripColors(text).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
     var _loop_1 = function (word, whitelist) {
-        if (replacedText.includes(word)) {
+        if (word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)) {
             var moreReplacedText_1 = replacedText;
             whitelist.forEach(function (w) { return moreReplacedText_1 = moreReplacedText_1.replace(new RegExp(w, "g"), ""); });
-            if (moreReplacedText_1.includes(word))
+            if (word instanceof RegExp ? word.test(moreReplacedText_1) : moreReplacedText_1.includes(word))
                 return { value: true };
         }
     };

@@ -20,13 +20,14 @@ exports.maxTime = exports.localDebug = exports.getGamemode = exports.FishServers
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
-    return words.map(function (word) { return typeof word == "string" ? [word, []] : [word[0], word.slice(1)]; });
+    return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([
     "uwu",
     "nig" + "ger", "nig" + "ga", "niger",
     "re" + "tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co" + "ck", "co" + "ck sucker", "iamasussyimposter",
     ["rape", "grape", "therap", "drape", "scrape", "trapez"],
     ["fa" + "g", "fage"],
+    /\bcum\b/,
     "porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
 exports.bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];

@@ -264,10 +264,10 @@ export function matchFilter(text:string):boolean {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(text).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
 	for(const [word, whitelist] of bannedWords){
-		if(replacedText.includes(word)){
+		if(word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)){
 			let moreReplacedText = replacedText;
 			whitelist.forEach(w => moreReplacedText = moreReplacedText.replace(new RegExp(w, "g"), ""));
-			if(moreReplacedText.includes(word)) return true;
+			if(word instanceof RegExp ? word.test(moreReplacedText) : moreReplacedText.includes(word)) return true;
 		}
 	}
 	return false;

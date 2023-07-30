@@ -1,14 +1,15 @@
 export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 export const MUTED_PREFIX = '[white](muted)';
-export const bannedWords:[word:string, whitelist:string[]][] = (
-	(words:(string | string[])[]) =>
-		words.map(word => typeof word == "string" ? [word, []] : [word[0], word.slice(1)])
+export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
+	(words:(string | string[] | RegExp)[]) =>
+		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
 	"uwu",
 	"nig"+"ger", "nig" + "ga", "niger",
 	"re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter",
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
 	["fa"+"g", "fage"],
+	/\bcum\b/,
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
 export const bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];
