@@ -85,11 +85,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var args = _a.args, output = _a.output;
             var infoList = (0, utils_1.setToArray)(Vars.netServer.admins.findByName(args.player));
             if (infoList.length == 0)
-                (0, commands_1.fail)("Nobody with that name could be found.");
+                (0, commands_1.fail)("No players found.");
             var outputString = [""];
             var _loop_1 = function (playerInfo) {
                 var fishP = players_1.FishPlayer.getById(playerInfo.id);
-                outputString.push("Trace info for player &y".concat(playerInfo.id, "&fr / &c\"").concat(Strings.stripColors(playerInfo.lastName), "\" &lk(").concat(playerInfo.lastName, ")&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times\n\tUSID: &c").concat((fishP === null || fishP === void 0 ? void 0 : fishP.usid) ? "\"".concat(fishP.usid, "\"") : "unknown", "&fr"));
+                outputString.push("Trace info for player &y".concat(playerInfo.id, "&fr / &c\"").concat(Strings.stripColors(playerInfo.lastName), "\" &lk(").concat(playerInfo.lastName, ")&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times")
+                    + (fishP ? "\tUSID: &c".concat(fishP.usid, "&fr\n\tRank: &c").concat(fishP.rank, "&fr\n\tMarked: ").concat(fishP.marked() ? "&runtil ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)) : fishP.autoflagged ? "&rautoflagged" : "&gfalse", "&fr\n\tMuted: &c").concat(fishP.muted, "&fr")
+                        : ""));
             };
             try {
                 for (var infoList_1 = __values(infoList), infoList_1_1 = infoList_1.next(); !infoList_1_1.done; infoList_1_1 = infoList_1.next()) {

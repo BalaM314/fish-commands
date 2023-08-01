@@ -50,7 +50,7 @@ export const commands = consoleCommandList({
 		description: "Find player info(s). Displays all names and ips of a player.",
 		handler({args, output}){
 			const infoList = setToArray(Vars.netServer.admins.findByName(args.player) as ObjectSet<mindustryPlayerData>);
-			if(infoList.length == 0) fail(`Nobody with that name could be found.`);
+			if(infoList.length == 0) fail(`No players found.`);
 			let outputString:string[] = [""];
 			for(const playerInfo of infoList){
 				const fishP = FishPlayer.getById(playerInfo.id);
@@ -58,8 +58,13 @@ export const commands = consoleCommandList({
 `Trace info for player &y${playerInfo.id}&fr / &c"${Strings.stripColors(playerInfo.lastName)}" &lk(${playerInfo.lastName})&fr
 	all names used: ${playerInfo.names.map((n:string) => `&c"${n}"&fr`).items.join(', ')}
 	all IPs used: ${playerInfo.ips.map((n:string) => (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr').items.join(", ")}
-	joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times
-	USID: &c${fishP?.usid ? `"${fishP.usid}"` : "unknown"}&fr`
+	joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times`
++ (fishP ? `\
+	USID: &c${fishP.usid}&fr
+	Rank: &c${fishP.rank}&fr
+	Marked: ${fishP.marked() ? `&runtil ${formatTimeRelative(fishP.unmarkTime)}` : fishP.autoflagged ? "&rautoflagged" : "&gfalse"}&fr
+	Muted: &c${fishP.muted}&fr`
+: "")
 				);
 			}
 			output(outputString.join("\n"));
