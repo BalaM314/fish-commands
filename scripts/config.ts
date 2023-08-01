@@ -12,6 +12,12 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	/\bcum\b/,
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
+export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
+	(words:(string | string[] | RegExp)[]) =>
+		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
+)([
+	"fu"+"ck", ["sh"+"it", "harshit"],
+]);
 export const bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];
 export const adminNames = ["fish", "balame14", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 export const substitutions:Record<string, string> = Object.fromEntries(Object.entries({

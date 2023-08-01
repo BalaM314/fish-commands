@@ -316,8 +316,9 @@ function escapeTextDiscord(text) {
     return pattern.matcher(text).replaceAll("\\\\$1");
 }
 exports.escapeTextDiscord = escapeTextDiscord;
-function matchFilter(text) {
+function matchFilter(text, strict) {
     var e_1, _a;
+    if (strict === void 0) { strict = false; }
     //Replace substitutions
     var replacedText = Strings.stripColors(text).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
     var _loop_1 = function (word, whitelist) {
@@ -329,8 +330,8 @@ function matchFilter(text) {
         }
     };
     try {
-        for (var bannedWords_1 = __values(config_1.bannedWords), bannedWords_1_1 = bannedWords_1.next(); !bannedWords_1_1.done; bannedWords_1_1 = bannedWords_1.next()) {
-            var _b = __read(bannedWords_1_1.value, 2), word = _b[0], whitelist = _b[1];
+        for (var _b = __values(config_1.bannedWords.concat(strict ? config_1.bannedInNamesWords : [])), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var _d = __read(_c.value, 2), word = _d[0], whitelist = _d[1];
             var state_1 = _loop_1(word, whitelist);
             if (typeof state_1 === "object")
                 return state_1.value;
@@ -339,7 +340,7 @@ function matchFilter(text) {
     catch (e_1_1) { e_1 = { error: e_1_1 }; }
     finally {
         try {
-            if (bannedWords_1_1 && !bannedWords_1_1.done && (_a = bannedWords_1.return)) _a.call(bannedWords_1);
+            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
         }
         finally { if (e_1) throw e_1.error; }
     }

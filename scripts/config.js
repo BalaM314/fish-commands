@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.maxTime = exports.localDebug = exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.adminNames = exports.bannedNames = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.maxTime = exports.localDebug = exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.adminNames = exports.bannedNames = exports.bannedInNamesWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
@@ -29,6 +29,11 @@ exports.bannedWords = (function (words) {
     ["fa" + "g", "fage"],
     /\bcum\b/,
     "porn", "ur gay", "your gay", "youre gay", "you're gay"
+]);
+exports.bannedInNamesWords = (function (words) {
+    return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
+})([
+    "fu" + "ck", ["sh" + "it", "harshit"],
 ]);
 exports.bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];
 exports.adminNames = ["fish", "balame14", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];

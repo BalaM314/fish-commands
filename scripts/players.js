@@ -373,7 +373,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             for (var _b = __values(config.bannedNames), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var bannedName = _c.value;
                 if (this.name.toLowerCase().includes(bannedName.toLowerCase())) {
-                    this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."));
+                    this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
                     return false;
                 }
             }
@@ -385,11 +385,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             }
             finally { if (e_5) throw e_5.error; }
         }
-        if ((0, utils_1.matchFilter)(this.name)) {
-            this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."));
+        if ((0, utils_1.matchFilter)(this.name, true)) {
+            this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
         if (Strings.stripColors(this.name).replace(/ /g, "").length == 0) {
-            this.player.kick("[scarlet]\"".concat((0, utils_1.escapeStringColors)(this.name), "[scarlet]\" is not an allowed name. Please change it."));
+            this.player.kick("[scarlet]\"".concat((0, utils_1.escapeStringColors)(this.name), "[scarlet]\" is not an allowed name. Please change it."), 1);
         }
         return true;
     };
@@ -398,7 +398,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (this.usid != null && this.usid != "" && this.player.usid() != this.usid) {
             Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
             if (this.ranksAtLeast(ranks_1.Rank.trusted)) {
-                this.player.kick("Authorization failure!");
+                this.player.kick("Authorization failure!", 1);
             }
             return false;
         }

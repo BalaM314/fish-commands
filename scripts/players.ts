@@ -301,21 +301,21 @@ export class FishPlayer {
 `[scarlet]"${this.name}[scarlet]" is not an allowed name.
 
 If you are unable to change it, please download Mindustry from Steam or itch.io.`
-				);
+				, 1);
 				return false;
 			}
 		}
-		if(matchFilter(this.name)){
+		if(matchFilter(this.name, true)){
 			this.player.kick(
 `[scarlet]"${this.name}[scarlet]" is not an allowed name.
 
 If you are unable to change it, please download Mindustry from Steam or itch.io.`
-			);
+			, 1);
 		}
 		if(Strings.stripColors(this.name).replace(/ /g, "").length == 0){
 			this.player.kick(
 `[scarlet]"${escapeStringColors(this.name)}[scarlet]" is not an allowed name. Please change it.`
-			);
+			, 1);
 		}
 		return true;
 	}
@@ -324,7 +324,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		if(this.usid != null && this.usid != "" && this.player.usid() != this.usid){
 			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r`);
 			if(this.ranksAtLeast(Rank.trusted)){
-				this.player.kick(`Authorization failure!`);
+				this.player.kick(`Authorization failure!`, 1);
 			}
 			return false;
 		}

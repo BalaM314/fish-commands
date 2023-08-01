@@ -1,5 +1,5 @@
 import * as api from './api';
-import { adminNames, bannedWords, getGamemode, maxTime, substitutions } from "./config";
+import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, substitutions } from "./config";
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
 
@@ -260,10 +260,10 @@ export function escapeTextDiscord(text:string):string {
 	return pattern.matcher(text).replaceAll("\\\\$1");
 }
 
-export function matchFilter(text:string):boolean {
+export function matchFilter(text:string, strict = false):boolean {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(text).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
-	for(const [word, whitelist] of bannedWords){
+	for(const [word, whitelist] of bannedWords.concat(strict ? bannedInNamesWords : [])){
 		if(word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)){
 			let moreReplacedText = replacedText;
 			whitelist.forEach(w => moreReplacedText = moreReplacedText.replace(new RegExp(w, "g"), ""));
@@ -272,6 +272,8 @@ export function matchFilter(text:string):boolean {
 	}
 	return false;
 }
+
+
 
 export function isImpersonator(name:string, isStaff:boolean):boolean {
 	//Replace substitutions
