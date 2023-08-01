@@ -571,6 +571,10 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
             return player.write(out);
         });
+        if (out.string.length > 65000) {
+            Log.err("&r!!!!\n!!!!\nUNABLE TO SAVE PLAYER DATA!!!!\n!!!!\n!!!!&fr");
+            return;
+        }
         Core.settings.put('fish', out.string);
         Core.settings.manualSave();
     };

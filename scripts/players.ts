@@ -491,6 +491,10 @@ We apologize for the inconvenience.`
 				.filter(([uuid, fishP]) => fishP.shouldCache()),
 			([uuid, player]) => player.write(out)
 		);
+		if(out.string.length > 65000){
+			Log.err("&r!!!!\n!!!!\nUNABLE TO SAVE PLAYER DATA!!!!\n!!!!\n!!!!&fr");
+			return;
+		}
 		Core.settings.put('fish', out.string);
 		Core.settings.manualSave();
 	}
