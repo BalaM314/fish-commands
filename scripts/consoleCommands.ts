@@ -61,7 +61,7 @@ export const commands = consoleCommandList({
 	joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times`
 + (fishP ? `\
 	USID: &c${fishP.usid}&fr
-	Rank: &c${fishP.rank}&fr
+	Rank: &c${fishP.rank.name}&fr
 	Marked: ${fishP.marked() ? `&runtil ${formatTimeRelative(fishP.unmarkTime)}` : fishP.autoflagged ? "&rautoflagged" : "&gfalse"}&fr
 	Muted: &c${fishP.muted}&fr`
 : "")
