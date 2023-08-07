@@ -195,7 +195,7 @@ export const commands = consoleCommandList({
 	},
 	clearstoredusids: {
 		args: ["areyousure:boolean?", "areyoureallysure:boolean?", "areyoureallyreallysure:boolean?"],
-		description: "Removes every stored USID.",
+		description: "Removes every stored USID. NOT RECOMMENDED.",
 		handler({args, output}){
 			if(args.areyousure && args.areyoureallysure && args.areyoureallyreallysure){
 				let total = 0;

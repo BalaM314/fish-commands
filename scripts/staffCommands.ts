@@ -343,9 +343,7 @@ export const commands = commandList({
 		description: "Sets a player's member status.",
 		perm: Perm.admin,
 		handler({args, outputSuccess}){
-			(args.player as FishPlayer).setFlag("member", args.value);
-			args.player.updateName();
-			FishPlayer.saveAll();
+			args.player.setFlag("member", args.value);
 			outputSuccess(`Set membership status of player "${args.player.name}" to ${args.value}.`);
 		}
 	},
@@ -355,10 +353,7 @@ export const commands = commandList({
 		description: "Bans a player's IP.",
 		perm: Perm.admin,
 		handler({sender, outputFail, outputSuccess, execServer}){
-			let playerList:mindustryPlayer[] = [];
-			Groups.player.each(player => {
-				if(!player.admin) playerList.push(player);
-			});
+			const playerList = setToArray(Groups.player);
 			menu(`IP BAN`, "Choose a player to IP ban.", playerList, sender, ({option}) => {
 				if(option.admin){
 					outputFail(`Cannot ip ban an admin.`);

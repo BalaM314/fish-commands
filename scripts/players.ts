@@ -583,6 +583,7 @@ We apologize for the inconvenience.`
 				this.flags.delete(flag);
 			}
 			this.updateName();
+			FishPlayer.saveAll();
 		}
 	}
 	hasFlag(flagName:string){

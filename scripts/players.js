@@ -683,6 +683,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 this.flags.delete(flag);
             }
             this.updateName();
+            FishPlayer.saveAll();
         }
     };
     FishPlayer.prototype.hasFlag = function (flagName) {

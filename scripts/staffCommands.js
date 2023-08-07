@@ -349,8 +349,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess;
             args.player.setFlag("member", args.value);
-            args.player.updateName();
-            players_1.FishPlayer.saveAll();
             outputSuccess("Set membership status of player \"".concat(args.player.name, "\" to ").concat(args.value, "."));
         }
     }, ipban: {
@@ -359,11 +357,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, execServer = _a.execServer;
-            var playerList = [];
-            Groups.player.each(function (player) {
-                if (!player.admin)
-                    playerList.push(player);
-            });
+            var playerList = (0, utils_1.setToArray)(Groups.player);
             (0, menus_1.menu)("IP BAN", "Choose a player to IP ban.", playerList, sender, function (_a) {
                 var option = _a.option;
                 if (option.admin) {

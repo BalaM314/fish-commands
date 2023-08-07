@@ -253,7 +253,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
     },
     clearstoredusids: {
         args: ["areyousure:boolean?", "areyoureallysure:boolean?", "areyoureallyreallysure:boolean?"],
-        description: "Removes every stored USID.",
+        description: "Removes every stored USID. NOT RECOMMENDED.",
         handler: function (_a) {
             var e_3, _b;
             var args = _a.args, output = _a.output;
