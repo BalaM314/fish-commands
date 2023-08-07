@@ -1,3 +1,4 @@
+import { uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
@@ -12,7 +13,7 @@ const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
 }> = {};
-const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 /** Use this to get the correct type for command lists. */
@@ -173,6 +174,10 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				const unit = getUnitType(args[i]);
 				if(typeof unit == "string") return {error: unit};
 				outputArgs[cmdArg.name] = unit;
+				break;
+			case "uuid":
+				if(!uuidPattern.test(args[i])) return {error: `Invalid uuid string ${args[i]}`};
+				outputArgs[cmdArg.name] = args[i];
 				break;
 		}
 	}

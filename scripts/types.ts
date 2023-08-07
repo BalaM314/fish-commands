@@ -16,6 +16,7 @@ export type TypeOfArgType<T> =
 	T extends "exactPlayer" ? FishPlayer :
 	T extends "unittype" ? UnitType :
 	T extends "block" ? Block :
+	T extends "uuid" ? string :
 	never;
 
 //TLDR: Yeet U through a wormhole, then back through the same wormhole, and it comes out the other side as an intersection type

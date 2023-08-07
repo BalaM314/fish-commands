@@ -39,13 +39,14 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerConsole = exports.register = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allCommands = void 0;
+var globals_1 = require("./globals");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
 var globalUsageData = {};
-var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block"];
+var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid"];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
 exports.commandList = commandList;
@@ -235,6 +236,11 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     if (typeof unit == "string")
                         return { error: unit };
                     outputArgs[cmdArg.name] = unit;
+                    break;
+                case "uuid":
+                    if (!globals_1.uuidPattern.test(args[i]))
+                        return { error: "Invalid uuid string ".concat(args[i]) };
+                    outputArgs[cmdArg.name] = args[i];
                     break;
             }
         }
