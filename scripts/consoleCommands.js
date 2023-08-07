@@ -90,7 +90,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var _loop_1 = function (playerInfo) {
                 var fishP = players_1.FishPlayer.getById(playerInfo.id);
                 outputString.push("Trace info for player &y".concat(playerInfo.id, "&fr / &c\"").concat(Strings.stripColors(playerInfo.lastName), "\" &lk(").concat(playerInfo.lastName, ")&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times")
-                    + (fishP ? "\tUSID: &c".concat(fishP.usid, "&fr\n\tRank: &c").concat(fishP.rank.name, "&fr\n\tMarked: ").concat(fishP.marked() ? "&runtil ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)) : fishP.autoflagged ? "&rautoflagged" : "&gfalse", "&fr\n\tMuted: &c").concat(fishP.muted, "&fr")
+                    + (fishP ? "\n\tUSID: &c".concat(fishP.usid, "&fr\n\tRank: &c").concat(fishP.rank.name, "&fr\n\tMarked: ").concat(fishP.marked() ? "&runtil ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)) : fishP.autoflagged ? "&rautoflagged" : "&gfalse", "&fr\n\tMuted: &c").concat(fishP.muted, "&fr")
                         : ""));
             };
             try {
@@ -283,7 +283,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
     },
     resetauth: {
         args: ["player:string"],
-        description: "Removes the USID of the player provided, use this if they are getting kicked with the message \"Authorization failure!\". Specify \"last\"",
+        description: "Removes the USID of the player provided, use this if they are getting kicked with the message \"Authorization failure!\". Specify \"last\" to use the last player that got kicked.",
         handler: function (_a) {
             var _b, _c;
             var args = _a.args, outputSuccess = _a.outputSuccess;

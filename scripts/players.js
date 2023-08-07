@@ -334,7 +334,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.checkVPN = function () {
         var _this = this;
         var ip = this.player.ip();
-        var info = this.player.getInfo();
+        var info = this.info();
         api.isVpn(ip, function (isVpn) {
             if (isVpn) {
                 Log.warn("IP ".concat(ip, " was flagged as VPN. Flag rate: ").concat(FishPlayer.stats.numIpsFlagged, "/").concat(FishPlayer.stats.numIpsChecked, " (").concat(100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked, "%)"));
@@ -664,6 +664,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    FishPlayer.prototype.info = function () {
+        return Vars.netServer.admins.getInfo(this.uuid);
+    };
     FishPlayer.prototype.sendMessage = function (message) {
         var _a;
         return (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);

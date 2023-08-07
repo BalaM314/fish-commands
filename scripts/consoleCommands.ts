@@ -59,7 +59,7 @@ export const commands = consoleCommandList({
 	all names used: ${playerInfo.names.map((n:string) => `&c"${n}"&fr`).items.join(', ')}
 	all IPs used: ${playerInfo.ips.map((n:string) => (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr').items.join(", ")}
 	joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times`
-+ (fishP ? `\
++ (fishP ? `
 	USID: &c${fishP.usid}&fr
 	Rank: &c${fishP.rank.name}&fr
 	Marked: ${fishP.marked() ? `&runtil ${formatTimeRelative(fishP.unmarkTime)}` : fishP.autoflagged ? "&rautoflagged" : "&gfalse"}&fr
@@ -212,7 +212,7 @@ export const commands = consoleCommandList({
 	},
 	resetauth: {
 		args: ["player:string"],
-		description: `Removes the USID of the player provided, use this if they are getting kicked with the message "Authorization failure!". Specify "last"`,
+		description: `Removes the USID of the player provided, use this if they are getting kicked with the message "Authorization failure!". Specify "last" to use the last player that got kicked.`,
 		handler({args, outputSuccess}){
 			const player =
 				args.player == "last" ? (FishPlayer.lastAuthKicked ?? fail(`Nobody has been kicked for authorization failure since the last restart.`)) :

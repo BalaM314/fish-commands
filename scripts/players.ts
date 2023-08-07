@@ -266,7 +266,7 @@ export class FishPlayer {
 	}
 	checkVPN(){
 		const ip = this.player.ip();
-		const info:mindustryPlayerData = this.player.getInfo();
+		const info:mindustryPlayerData = this.info()!;
 		api.isVpn(ip, isVpn => {if(isVpn){
 			Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${FishPlayer.stats.numIpsFlagged}/${FishPlayer.stats.numIpsChecked} (${100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked}%)`);
 			if(info.timesJoined <= 1){
@@ -565,6 +565,9 @@ We apologize for the inconvenience.`
 	}
 	get con():NetConnection {
 		return this.player?.con;
+	}
+	info():mindustryPlayerData {
+		return Vars.netServer.admins.getInfo(this.uuid);
 	}
 	sendMessage(message:string){
 		return this.player?.sendMessage(message);
