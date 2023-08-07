@@ -26,5 +26,12 @@ Array.prototype.flat = function(depth){
 		acc.concat(Array.isArray(item) ? item.flat(depth - 1) : item)
 	, []) : this;
 }
+//Fix rhino regex
+if(/ae?a/.test("aeea")){
+	RegExp.prototype.test = function(input){
+		//overwrite with java regex
+		return java.util.regex.Pattern.compile(this.source).matcher(input).find();
+	};
+}
 
 require("index");
