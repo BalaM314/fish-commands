@@ -193,7 +193,7 @@ export const commands = consoleCommandList({
 			}
 		}
 	},
-	clearstoredusids: {
+	clearallstoredusids: {
 		args: ["areyousure:boolean?", "areyoureallysure:boolean?", "areyoureallyreallysure:boolean?"],
 		description: "Removes every stored USID. NOT RECOMMENDED.",
 		handler({args, output}){
@@ -208,6 +208,22 @@ export const commands = consoleCommandList({
 			} else {
 				output(`Are you sure?!?!?!?!?!!`);
 			}
+		}
+	},
+	resetauth: {
+		args: ["player:string"],
+		description: `Removes the USID of the player provided, use this if they are getting kicked with the message "Authorization failure!". Specify "last"`,
+		handler({args, outputSuccess}){
+			const player =
+				args.player == "last" ? (FishPlayer.lastAuthKicked ?? fail(`Nobody has been kicked for authorization failure since the last restart.`)) :
+				FishPlayer.getById(args.player) ?? fail(
+					Vars.netServer.admins.getInfoOptional(args.player)
+					? `Player ${args.player} has joined the server, but their info was not cached, most likely because they have no rank, so there is no stored USID.`
+					: `Unknown player ${args.player}`
+				);
+			const oldusid = player.usid;
+			player.usid = null;
+			outputSuccess(`Removed the usid of player ${player.name}/${player.uuid} (was ${oldusid})`);
 		}
 	},
 	update: {

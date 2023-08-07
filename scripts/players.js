@@ -399,6 +399,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
             if (this.ranksAtLeast(ranks_1.Rank.trusted)) {
                 this.player.kick("Authorization failure!", 1);
+                FishPlayer.lastAuthKicked = this;
             }
             return false;
         }
@@ -861,5 +862,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         numIpsFlagged: 0,
         numIpsErrored: 0,
     };
+    FishPlayer.lastAuthKicked = null;
     return FishPlayer;
 }());

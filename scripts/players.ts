@@ -18,6 +18,7 @@ export class FishPlayer {
 		numIpsFlagged: 0,
 		numIpsErrored: 0,
 	};
+	static lastAuthKicked:FishPlayer | null = null;
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -325,6 +326,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r`);
 			if(this.ranksAtLeast(Rank.trusted)){
 				this.player.kick(`Authorization failure!`, 1);
+				FishPlayer.lastAuthKicked = this;
 			}
 			return false;
 		}

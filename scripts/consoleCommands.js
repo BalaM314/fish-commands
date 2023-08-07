@@ -251,7 +251,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }
         }
     },
-    clearstoredusids: {
+    clearallstoredusids: {
         args: ["areyousure:boolean?", "areyoureallysure:boolean?", "areyoureallyreallysure:boolean?"],
         description: "Removes every stored USID. NOT RECOMMENDED.",
         handler: function (_a) {
@@ -279,6 +279,21 @@ exports.commands = (0, commands_1.consoleCommandList)({
             else {
                 output("Are you sure?!?!?!?!?!!");
             }
+        }
+    },
+    resetauth: {
+        args: ["player:string"],
+        description: "Removes the USID of the player provided, use this if they are getting kicked with the message \"Authorization failure!\". Specify \"last\"",
+        handler: function (_a) {
+            var _b, _c;
+            var args = _a.args, outputSuccess = _a.outputSuccess;
+            var player = args.player == "last" ? ((_b = players_1.FishPlayer.lastAuthKicked) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("Nobody has been kicked for authorization failure since the last restart.")) :
+                (_c = players_1.FishPlayer.getById(args.player)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(Vars.netServer.admins.getInfoOptional(args.player)
+                    ? "Player ".concat(args.player, " has joined the server, but their info was not cached, most likely because they have no rank, so there is no stored USID.")
+                    : "Unknown player ".concat(args.player));
+            var oldusid = player.usid;
+            player.usid = null;
+            outputSuccess("Removed the usid of player ".concat(player.name, "/").concat(player.uuid, " (was ").concat(oldusid, ")"));
         }
     },
     update: {
