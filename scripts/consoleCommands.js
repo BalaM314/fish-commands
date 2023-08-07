@@ -176,7 +176,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args, output = _a.output, outputFail = _a.outputFail;
-            if (Pattern.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", args.target)) {
+            if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
                 api.ban({ ip: args.target });
                 (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
@@ -188,7 +188,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     output("&lrIP &c\"".concat(args.target, "\" &lrwas banned. Ban was synced to other servers."));
                 }
             }
-            else if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)) {
+            else if (globals_1.uuidPattern.test(args.target)) {
                 (0, utils_1.logAction)("console whacked ".concat(args.target));
                 api.addStopped(args.target, config.maxTime);
                 if (Vars.netServer.admins.isIDBanned(args.target)) {

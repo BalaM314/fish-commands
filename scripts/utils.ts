@@ -196,7 +196,7 @@ export class StringIO {
 	}
 	readNumber(size:number = 4){
 		let data = this.read(size);
-		if(Pattern.matches("^0*-\\d+$", data)){
+		if(/^0*-\d+$/.test(data)){
 			//negative numbers were incorrectly stored in previous versions
 			data = "-" + data.split("-")[1];
 		}
@@ -279,7 +279,7 @@ export function isImpersonator(name:string, isStaff:boolean):boolean {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
 	if(replacedText.includes("server")) return true; //name contains server
-	if(Pattern.matches("^[ ]*<.{1,3}>[\\s\\S]*", replacedText)) return true; //name starts with <c>, fake role prefix
+	if(/^[ ]*<.{1,3}>/.test(replacedText)) return true; //name starts with <c>, fake role prefix
 	if(!isStaff && adminNames.includes(replacedText.trim())) return true;
 	return false;
 }

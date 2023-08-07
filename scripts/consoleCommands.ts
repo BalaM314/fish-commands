@@ -3,7 +3,7 @@ import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
 import { maxTime } from "./config";
 import * as fjsContext from "./fjsContext";
-import { fishState, tileHistory } from "./globals";
+import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
 import { formatTime, formatTimeRelative, logAction, serverRestartLoop, setToArray } from "./utils";
@@ -125,7 +125,7 @@ export const commands = consoleCommandList({
 		args: ["target:string"],
 		description: "Whacks (ipbans) a player.",
 		handler({args, output, outputFail}){
-			if(Pattern.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", args.target)){
+			if(ipPattern.test(args.target)){
 				//target is an ip
 				api.ban({ip: args.target});
 				logAction(`console ip-whacked ${args.target}`);
@@ -135,7 +135,7 @@ export const commands = consoleCommandList({
 					Vars.netServer.admins.banPlayerIP(args.target);
 					output(`&lrIP &c"${args.target}" &lrwas banned. Ban was synced to other servers.`);
 				}
-			} else if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.target)){
+			} else if(uuidPattern.test(args.target)){
 				logAction(`console whacked ${args.target}`);
 				api.addStopped(args.target, config.maxTime);
 				if(Vars.netServer.admins.isIDBanned(args.target)){

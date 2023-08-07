@@ -245,7 +245,7 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.readNumber = function (size) {
         if (size === void 0) { size = 4; }
         var data = this.read(size);
-        if (Pattern.matches("^0*-\\d+$", data)) {
+        if (/^0*-\d+$/.test(data)) {
             //negative numbers were incorrectly stored in previous versions
             data = "-" + data.split("-")[1];
         }
@@ -352,7 +352,7 @@ function isImpersonator(name, isStaff) {
     var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
     if (replacedText.includes("server"))
         return true; //name contains server
-    if (Pattern.matches("^[ ]*<.{1,3}>[\\s\\S]*", replacedText))
+    if (/^[ ]*<.{1,3}>/.test(replacedText))
         return true; //name starts with <c>, fake role prefix
     if (!isStaff && config_1.adminNames.includes(replacedText.trim()))
         return true;

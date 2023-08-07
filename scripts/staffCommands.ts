@@ -1,6 +1,7 @@
 import * as api from "./api";
 import { Perm, commandList, fail } from "./commands";
 import { maxTime } from "./config";
+import { uuidPattern } from "./globals";
 import { menu } from './menus';
 import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
@@ -189,7 +190,7 @@ export const commands = commandList({
 				}
 			}
 			
-			if(Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)){
+			if(uuidPattern.test(args.name)){
 				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
 				if(info != null)
 					stop(info, args.time ?? 604800000);

@@ -15,6 +15,7 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
+var globals_1 = require("./globals");
 var menus_1 = require("./menus");
 var ohno_1 = require("./ohno");
 var players_1 = require("./players");
@@ -202,7 +203,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     outputFail("You do not have permission to stop this player.");
                 }
             }
-            if (Pattern.matches("[a-zA-Z0-9+/]{22}==", args.name)) {
+            if (globals_1.uuidPattern.test(args.name)) {
                 var info = admins.getInfoOptional(args.name);
                 if (info != null)
                     stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : 604800000);
