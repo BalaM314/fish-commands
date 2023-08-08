@@ -50,6 +50,7 @@ export type ObjectTypeFor<ArgString> =
 	: ArgString extends `${infer N}:${infer T}` //Same as above, but without the `| null`
 		? {[_ in N]: TypeOfArgType<T>} : never;
 
+type TapHandleMode = "off" | "once" | "on";
 
 export interface FishCommandRunner<ArgType extends string> {
 	(_:{
@@ -64,6 +65,8 @@ export interface FishCommandRunner<ArgType extends string> {
 		output:(message:string) => void;
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
+		/**Call this function to set tap handling mode. */
+		handleTaps:(mode:TapHandleMode) => void;
 		/**List of every registered command, including this one. */
 		allCommands:Record<string, FishCommandData<any>>;
 		/**Timestamp of the last time this command was run successfully by any player. */
@@ -98,6 +101,15 @@ export interface FishConsoleCommandRunner<ArgType extends string> {
 	}): unknown;
 }
 
+export interface TapHandler<ArgType extends string> {
+	(_:{
+		/**Last args used to call the parent command. **/
+		args:ArgsFromArgStringUnion<ArgType>;
+		x:number;
+		y:number;
+	}):unknown;
+}
+
 export interface FishCommandData<ArgType extends string> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
@@ -110,6 +122,7 @@ export interface FishCommandData<ArgType extends string> {
 	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
 	handler: FishCommandRunner<ArgType>;
+	tapped?: TapHandler<ArgType>;
 	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
 	isHidden?: boolean;
 }
