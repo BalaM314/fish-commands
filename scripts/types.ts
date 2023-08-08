@@ -92,7 +92,7 @@ export interface FishConsoleCommandRunner<ArgType extends string> {
 		outputSuccess:(message:string) => void;
 		outputFail:(message:string) => void;
 		output:(message:string) => void;
-		/**Executes a server console command. Do not commit recursion as that will cause a crash.*/
+		/**Executes a server console command. Be careful to not commit recursion as that will cause a crash.*/
 		execServer:(message:string) => void;
 		/**Timestamp of the last time this command was run. */
 		lastUsed:number;
@@ -105,8 +105,21 @@ export interface TapHandler<ArgType extends string> {
 	(_:{
 		/**Last args used to call the parent command. **/
 		args:ArgsFromArgStringUnion<ArgType>;
+		sender:FishPlayer;
 		x:number;
 		y:number;
+		tile:Tile;
+		output:(message:string) => void;
+		outputFail:(message:string) => void;
+		outputSuccess:(message:string) => void;
+		/**Timestamp of the last time this command was run. */
+		commandLastUsed:number;
+		/**Timestamp of the last time this command was run succesfully. */
+		commandLastUsedSuccessfully:number;
+		/**Timestamp of the last time this tap handler was run. */
+		lastUsed:number;
+		/**Timestamp of the last time this tap handler was run succesfully. (without fail() being called) */
+		lastUsedSuccessfully:number;
 	}):unknown;
 }
 

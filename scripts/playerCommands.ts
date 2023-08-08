@@ -73,20 +73,20 @@ export const commands = commandList({
 		args: ['persist:boolean?'],
 		description: 'Checks the history of a tile.',
 		perm: Perm.none,
-		handler({ args, sender, output, outputSuccess }) {
-			if (sender.tilelog === 'persist') {
-				sender.tilelog = null;
+		handler({args, sender, output, outputSuccess, handleTaps}){
+			if(sender.tilelog === "persist"){
+				handleTaps("off");
 				outputSuccess(`Tilelog disabled.`);
 			} else {
-				if (args.persist) {
-					sender.tilelog = 'persist';
+				if(args.persist){
+					handleTaps("on");
 					outputSuccess(`Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.`);
 				} else {
-					sender.tilelog = 'once';
+					handleTaps("once");
 					output(`\n \n===>[yellow]Click on a tile to check its recent history...\n `);
 				}
 			}
-		},
+		}
 	},
 
 	afk: {
@@ -108,10 +108,13 @@ export const commands = commandList({
 		args: [],
 		description: 'Checks id of a tile.',
 		perm: Perm.none,
-		handler({ sender, output }) {
-			sender.tileId = true;
+		handler({output, handleTaps}){
+			handleTaps("once");
 			output(`Click a tile to see its id...`);
 		},
+		tapped({output, tile}){
+			output(tile.block().id);
+		}
 	},
 
 	...Object.fromEntries(
