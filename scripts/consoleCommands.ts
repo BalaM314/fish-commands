@@ -327,4 +327,17 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 			Call.sendMessage(`[scarlet]Player "${args.player.name}[scarlet]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
 		}
 	},
+	stopoffline: {
+		args: ["uuid:uuid", "time:time?"],
+		description: "Stops a player by uuid.",
+		handler({args:{uuid, time}, outputSuccess}){
+			const stopTime = time ?? (maxTime - Date.now() - 10000);
+			const info = Vars.netServer.admins.getInfoOptional(uuid) as mindustryPlayerData;
+			if(info == null) fail(`Unknown player ${uuid}`);
+			const fishP = FishPlayer.getFromInfo(info);
+			fishP.stop("console", stopTime);
+			logAction('stopped', "console", info, undefined, stopTime);
+			outputSuccess(`Player "${info.lastName}" was marked for ${formatTime(stopTime)}.`);
+		}
+	}
 });

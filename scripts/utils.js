@@ -383,7 +383,7 @@ function logAction(action, by, to, reason, duration) {
     }
 }
 exports.logAction = logAction;
-/**@returns the number of seconds. */
+/**@returns the number of milliseconds. */
 function parseTimeString(str) {
     var e_2, _a;
     var formats = [

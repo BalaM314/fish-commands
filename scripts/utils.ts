@@ -319,7 +319,7 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 	}
 }
 
-/**@returns the number of seconds. */
+/**@returns the number of milliseconds. */
 export function parseTimeString(str:string):number | null {
 	const formats = (<[RegExp, number][]>[
 		[/(\d+)s/, 1],

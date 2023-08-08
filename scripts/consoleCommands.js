@@ -407,4 +407,19 @@ exports.commands = (0, commands_1.consoleCommandList)({
             Call.sendMessage("[scarlet]Player \"".concat(args.player.name, "[scarlet]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
         }
     },
+    stopoffline: {
+        args: ["uuid:uuid", "time:time?"],
+        description: "Stops a player by uuid.",
+        handler: function (_a) {
+            var _b = _a.args, uuid = _b.uuid, time = _b.time, outputSuccess = _a.outputSuccess;
+            var stopTime = time !== null && time !== void 0 ? time : (config_1.maxTime - Date.now() - 10000);
+            var info = Vars.netServer.admins.getInfoOptional(uuid);
+            if (info == null)
+                (0, commands_1.fail)("Unknown player ".concat(uuid));
+            var fishP = players_1.FishPlayer.getFromInfo(info);
+            fishP.stop("console", stopTime);
+            (0, utils_1.logAction)('stopped', "console", info, undefined, stopTime);
+            outputSuccess("Player \"".concat(info.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(stopTime), "."));
+        }
+    }
 });
