@@ -54,7 +54,11 @@ export class Perm {
 		Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(Rank.trusted)
 			: Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast(Rank.admin)
 			: Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast(Rank.mod)
-			: fishP.ranksAtLeast(Rank.admin));
+			: fishP.ranksAtLeast(Rank.admin)
+	);
+	static spawnOhnos = new Perm("spawnOhnos", fishP =>
+		Vars.state.rules.mode().name() === "pvp" ? false : true
+	, "", "Ohnos are disabled in PVP.");
 	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
 	static fromRank(rank:Rank){
 		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);

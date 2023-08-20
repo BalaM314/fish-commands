@@ -85,6 +85,9 @@ var Perm = exports.Perm = /** @class */ (function () {
                 : Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast(ranks_1.Rank.mod)
                     : fishP.ranksAtLeast(ranks_1.Rank.admin);
     });
+    Perm.spawnOhnos = new Perm("spawnOhnos", function (fishP) {
+        return Vars.state.rules.mode().name() === "pvp" ? false : true;
+    }, "", "Ohnos are disabled in PVP.");
     return Perm;
 }());
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */

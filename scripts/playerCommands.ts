@@ -348,7 +348,7 @@ export const commands = commandList({
 	ohno: {
 		args: [],
 		description: 'Spawns an ohno.',
-		perm: Perm.play,
+		perm: Perm.spawnOhnos,
 		handler({ sender, outputFail }) {
 			const canSpawn = Ohnos.canSpawn(sender);
 			if (canSpawn === true) {
