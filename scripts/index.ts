@@ -219,7 +219,7 @@ Events.on(EventType.GameOverEvent, (e) => {
 	}
 	if(fishState.restarting){
 		Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---`);
-		serverRestartLoop(10);
+		serverRestartLoop(20);
 	}
 });
 
