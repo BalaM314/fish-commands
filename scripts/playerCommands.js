@@ -96,22 +96,22 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Checks the history of a tile.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, output = _a.output, outputSuccess = _a.outputSuccess, handleTaps = _a.handleTaps;
-            if (sender.tilelog === "persist") {
-                handleTaps("off");
+            var args = _a.args, sender = _a.sender, output = _a.output, outputSuccess = _a.outputSuccess;
+            if (sender.tilelog === 'persist') {
+                sender.tilelog = null;
                 outputSuccess("Tilelog disabled.");
             }
             else {
                 if (args.persist) {
-                    handleTaps("on");
+                    sender.tilelog = 'persist';
                     outputSuccess("Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.");
                 }
                 else {
-                    handleTaps("once");
+                    sender.tilelog = 'once';
                     output("\n \n===>[yellow]Click on a tile to check its recent history...\n ");
                 }
             }
-        }
+        },
     }, afk: {
         args: [],
         description: 'Toggles your afk status.',
@@ -132,14 +132,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Checks id of a tile.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var output = _a.output, handleTaps = _a.handleTaps;
-            handleTaps("once");
+            var sender = _a.sender, output = _a.output;
+            sender.tileId = true;
             output("Click a tile to see its id...");
         },
-        tapped: function (_a) {
-            var output = _a.output, tile = _a.tile;
-            output(tile.block().id);
-        }
     } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
     var _b = __read(_a, 2), name = _b[0], data = _b[1];
     return [
