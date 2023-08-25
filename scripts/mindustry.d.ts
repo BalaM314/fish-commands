@@ -13,7 +13,14 @@ declare const Vars: any;
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
 }
-declare type Tile = any;
+declare type Tile = {
+	x:number; y:number;
+	build: Building | null;
+	breakable():boolean;
+	block():Block;
+	removeNet():void;
+	getLinkedTiles(callback:(t:Tile) => void):void;
+};//TODO fix
 declare const ServerLoadEvent: any;
 declare const Menus: {
 	registerMenu(listener:MenuListener):number;

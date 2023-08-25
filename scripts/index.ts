@@ -93,10 +93,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 		} else {
 			if(action.type === ActionType.rotate){
 				addToTileHistory({
-					pos: `${action.tile.x},${action.tile.y}`,
+					pos: `${action.tile!.x},${action.tile!.y}`,
 					name: action.player.name,
 					action: "rotated",
-					type: action.tile.block()?.name ?? "nothing",
+					type: action.tile!.block()?.name ?? "nothing",
 				});
 			}
 			return true;
