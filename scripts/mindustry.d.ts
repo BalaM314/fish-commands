@@ -86,6 +86,7 @@ declare const Core: {
 	settings: {
 		get(key:string, defaultValue?:any):any;
 		put(key:string, value:any):void;
+		has(key:string):boolean;
 		remove(key:string):void;
 		manualSave():void;
 	}
@@ -95,6 +96,9 @@ declare const Core: {
 		getJavaHeap():number;
 		listeners: any[];
 	}
+}
+declare const Mathf: {
+	ceil(val:number):number;
 }
 declare const SaveIO: {
 	save(name:string):void;

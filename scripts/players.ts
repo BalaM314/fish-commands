@@ -11,6 +11,7 @@ export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
 	static readonly saveVersion = 4;
+	static readonly chunkSize = 65000;
 
 	//Static transients
 	static stats = {
@@ -500,18 +501,32 @@ We apologize for the inconvenience.`
 				.filter(([uuid, fishP]) => fishP.shouldCache()),
 			([uuid, player]) => player.write(out)
 		);
-		if(out.string.length > 65000){
-			Log.err("&r!!!!\n!!!!\nUNABLE TO SAVE PLAYER DATA!!!!\n!!!!\n!!!!&fr");
-			return;
+		let string = out.string;
+		let numKeys = Math.ceil(string.length / this.chunkSize);
+		Core.settings.put('fish-subkeys', Packages.java.lang.Integer(numKeys));
+		for(let i = 1; i <= numKeys; i ++){
+			Core.settings.put(`fish-playerdata-part-${i}`, string.slice(0, this.chunkSize));
+			string = string.slice(this.chunkSize);
 		}
-		Core.settings.put('fish', out.string);
 		Core.settings.manualSave();
 	}
 	shouldCache(){
 		return (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0);
 	}
+	static getFishPlayersString(){
+		if(Core.settings.has("fish-subkeys")){
+			const subkeys:number = Core.settings.get("fish-subkeys", 1);
+			let string = "";
+			for(let i = 1; i <= subkeys; i ++){
+				string += Core.settings.get(`fish-playerdata-part-${i}`, "");
+			}
+			return string;
+		} else {
+			return Core.settings.get("fish", "");
+		}
+	}
 	/**Loads cached FishPlayers from JSON in Core.settings. */
-	static loadAll(string = Core.settings.get('fish', '')){
+	static loadAll(string = this.getFishPlayersString()){
 		try {
 			if(string == "") return; //If it's empty, don't try to load anything
 			if(string.startsWith("{")) return this.loadAllLegacy(string);

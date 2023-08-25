@@ -577,20 +577,35 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
             return player.write(out);
         });
-        if (out.string.length > 65000) {
-            Log.err("&r!!!!\n!!!!\nUNABLE TO SAVE PLAYER DATA!!!!\n!!!!\n!!!!&fr");
-            return;
+        var string = out.string;
+        var numKeys = Math.ceil(string.length / this.chunkSize);
+        Core.settings.put('fish-subkeys', Packages.java.lang.Integer(numKeys));
+        for (var i = 1; i <= numKeys; i++) {
+            Core.settings.put("fish-playerdata-part-".concat(i), string.slice(0, this.chunkSize));
+            string = string.slice(this.chunkSize);
         }
-        Core.settings.put('fish', out.string);
         Core.settings.manualSave();
     };
     FishPlayer.prototype.shouldCache = function () {
         return (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0);
     };
+    FishPlayer.getFishPlayersString = function () {
+        if (Core.settings.has("fish-subkeys")) {
+            var subkeys = Core.settings.get("fish-subkeys", 1);
+            var string = "";
+            for (var i = 1; i <= subkeys; i++) {
+                string += Core.settings.get("fish-playerdata-part-".concat(i), "");
+            }
+            return string;
+        }
+        else {
+            return Core.settings.get("fish", "");
+        }
+    };
     /**Loads cached FishPlayers from JSON in Core.settings. */
     FishPlayer.loadAll = function (string) {
         var _this = this;
-        if (string === void 0) { string = Core.settings.get('fish', ''); }
+        if (string === void 0) { string = this.getFishPlayersString(); }
         try {
             if (string == "")
                 return; //If it's empty, don't try to load anything
@@ -868,6 +883,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
     FishPlayer.saveVersion = 4;
+    FishPlayer.chunkSize = 65000;
     //Static transients
     FishPlayer.stats = {
         numIpsChecked: 0,
