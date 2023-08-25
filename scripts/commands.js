@@ -287,45 +287,45 @@ function convertArgs(processedCmdArgs, allowMenus) {
 function handleTapEvent(event) {
     var _a;
     var sender = players_1.FishPlayer.get(event.player);
-    if (sender.tapInfo.commandName != null) {
-        var command = exports.allCommands[sender.tapInfo.commandName];
-        var usageData = sender.getUsageData(sender.tapInfo.commandName);
-        try {
-            var failed_1 = false;
-            (_a = command.tapped) === null || _a === void 0 ? void 0 : _a.call(command, {
-                args: sender.tapInfo.lastArgs,
-                outputFail: function (message) { outputFail(message, sender); failed_1 = true; },
-                outputSuccess: function (message) { return outputSuccess(message, sender); },
-                output: function (message) { return outputMessage(message, sender); },
-                commandLastUsed: usageData.lastUsed,
-                commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
-                lastUsed: usageData.tapLastUsed,
-                lastUsedSuccessfully: usageData.tapLastUsedSuccessfully,
-                sender: sender,
-                tile: event.tile,
-                x: event.tile.x,
-                y: event.tile.y,
-            });
-            if (!failed_1)
-                usageData.tapLastUsedSuccessfully = Date.now();
+    if (sender.tapInfo.commandName == null)
+        return;
+    var command = exports.allCommands[sender.tapInfo.commandName];
+    var usageData = sender.getUsageData(sender.tapInfo.commandName);
+    try {
+        var failed_1 = false;
+        (_a = command.tapped) === null || _a === void 0 ? void 0 : _a.call(command, {
+            args: sender.tapInfo.lastArgs,
+            outputFail: function (message) { outputFail(message, sender); failed_1 = true; },
+            outputSuccess: function (message) { return outputSuccess(message, sender); },
+            output: function (message) { return outputMessage(message, sender); },
+            commandLastUsed: usageData.lastUsed,
+            commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
+            lastUsed: usageData.tapLastUsed,
+            lastUsedSuccessfully: usageData.tapLastUsedSuccessfully,
+            sender: sender,
+            tile: event.tile,
+            x: event.tile.x,
+            y: event.tile.y,
+        });
+        if (!failed_1)
+            usageData.tapLastUsedSuccessfully = Date.now();
+    }
+    catch (err) {
+        if (err instanceof CommandError) {
+            //If the error is a command error, then just outputFail
+            outputFail(err.message, sender);
         }
-        catch (err) {
-            if (err instanceof CommandError) {
-                //If the error is a command error, then just outputFail
-                outputFail(err.message, sender);
-            }
-            else {
-                sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
-                if (sender.hasPerm("seeErrorMessages"))
-                    sender.sendMessage(err.toString());
-            }
+        else {
+            sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
+            if (sender.hasPerm("seeErrorMessages"))
+                sender.sendMessage((0, utils_1.parseError)(err));
         }
-        finally {
-            if (sender.tapInfo.mode == "once") {
-                sender.tapInfo.commandName = null;
-            }
-            usageData.tapLastUsed = Date.now();
+    }
+    finally {
+        if (sender.tapInfo.mode == "once") {
+            sender.tapInfo.commandName = null;
         }
+        usageData.tapLastUsed = Date.now();
     }
 }
 exports.handleTapEvent = handleTapEvent;
@@ -393,10 +393,8 @@ function register(commands, clientHandler, serverHandler) {
                         if (!failed) {
                             usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();
                         }
-                        usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();
                     }
                     catch (err) {
-                        usageData.lastUsed = Date.now();
                         if (err instanceof CommandError) {
                             //If the error is a command error, then just outputFail
                             outputFail(err.message, sender);
@@ -404,8 +402,11 @@ function register(commands, clientHandler, serverHandler) {
                         else {
                             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
                             if (fishSender.hasPerm("seeErrorMessages"))
-                                sender.sendMessage(err.toString());
+                                sender.sendMessage((0, utils_1.parseError)(err));
                         }
+                    }
+                    finally {
+                        usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();
                     }
                 });
             } }));
@@ -459,7 +460,7 @@ function registerConsole(commands, serverHandler) {
                     }
                     else {
                         Log.err("&lrAn error occured while executing the command!&fr");
-                        Log.err(err);
+                        Log.err((0, utils_1.parseError)(err));
                     }
                 }
             } }));
