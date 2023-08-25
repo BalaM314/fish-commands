@@ -73,8 +73,8 @@ export const commands = commandList({
 		args: ['persist:boolean?'],
 		description: 'Checks the history of a tile.',
 		perm: Perm.none,
-		handler({args, sender, output, outputSuccess, handleTaps}){
-			if(sender.tilelog === "persist"){
+		handler({args, output, outputSuccess, currentTapMode, handleTaps}){
+			if(currentTapMode == "on"){
 				handleTaps("off");
 				outputSuccess(`Tilelog disabled.`);
 			} else {
@@ -83,7 +83,7 @@ export const commands = commandList({
 					outputSuccess(`Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.`);
 				} else {
 					handleTaps("once");
-					output(`\n \n===>[yellow]Click on a tile to check its recent history...\n `);
+					output(`Click on a tile to check its recent history...`);
 				}
 			}
 		},

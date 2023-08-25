@@ -96,8 +96,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Checks the history of a tile.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, output = _a.output, outputSuccess = _a.outputSuccess, handleTaps = _a.handleTaps;
-            if (sender.tilelog === "persist") {
+            var args = _a.args, output = _a.output, outputSuccess = _a.outputSuccess, currentTapMode = _a.currentTapMode, handleTaps = _a.handleTaps;
+            if (currentTapMode == "on") {
                 handleTaps("off");
                 outputSuccess("Tilelog disabled.");
             }
@@ -108,7 +108,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 }
                 else {
                     handleTaps("once");
-                    output("\n \n===>[yellow]Click on a tile to check its recent history...\n ");
+                    output("Click on a tile to check its recent history...");
                 }
             }
         },
