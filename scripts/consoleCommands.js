@@ -303,9 +303,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var _b;
             var args = _a.args, output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             var commandsDir = Vars.modDirectory.child("fish-commands");
-            if (!commandsDir.exists()) {
+            if (!commandsDir.exists())
                 (0, commands_1.fail)("Fish commands directory at path ".concat(commandsDir.absolutePath(), " does not exist!"));
-            }
             if (config.localDebug)
                 (0, commands_1.fail)("Cannot update in local debug mode.");
             output("Updating...");
@@ -330,7 +329,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Restarts the server.",
         handler: function (_a) {
             var _b;
-            var args = _a.args, output = _a.output;
+            var args = _a.args;
             if (Vars.state.rules.mode().name() == "pvp") {
                 if (args.time === -1) {
                     Log.info("&rRestarting in 15 seconds (this will interrupt the current PVP match).&fr");

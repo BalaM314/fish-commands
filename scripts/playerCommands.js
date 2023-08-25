@@ -96,22 +96,43 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Checks the history of a tile.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, output = _a.output, outputSuccess = _a.outputSuccess;
-            if (sender.tilelog === 'persist') {
-                sender.tilelog = null;
+            var args = _a.args, sender = _a.sender, output = _a.output, outputSuccess = _a.outputSuccess, handleTaps = _a.handleTaps;
+            if (sender.tilelog === "persist") {
+                handleTaps("off");
                 outputSuccess("Tilelog disabled.");
             }
             else {
                 if (args.persist) {
-                    sender.tilelog = 'persist';
+                    handleTaps("on");
                     outputSuccess("Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.");
                 }
                 else {
-                    sender.tilelog = 'once';
+                    handleTaps("once");
                     output("\n \n===>[yellow]Click on a tile to check its recent history...\n ");
                 }
             }
         },
+        tapped: function (_a) {
+            var tile = _a.tile, x = _a.x, y = _a.y, output = _a.output, sender = _a.sender;
+            var pos = "".concat(x, ",").concat(y);
+            if (!globals_1.tileHistory[pos]) {
+                output("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
+            }
+            else {
+                var history = utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
+                    action: d.readString(2),
+                    uuid: d.readString(2),
+                    time: d.readNumber(16),
+                    type: d.readString(2),
+                }); }, 1); });
+                output("[yellow]Tile history for tile (".concat(tile.x, ", ").concat(tile.y, "):\n") + history.map(function (e) {
+                    var _a, _b;
+                    return sender.hasPerm("viewUUIDs")
+                        ? "[yellow]".concat((_a = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
+                        : "[yellow]".concat((_b = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time));
+                }).join('\n'));
+            }
+        }
     }, afk: {
         args: [],
         description: 'Toggles your afk status.',
@@ -132,10 +153,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Checks id of a tile.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var sender = _a.sender, output = _a.output;
-            sender.tileId = true;
+            var output = _a.output, handleTaps = _a.handleTaps;
+            handleTaps("once");
             output("Click a tile to see its id...");
         },
+        tapped: function (_a) {
+            var output = _a.output, tile = _a.tile;
+            output(tile.block().id);
+        }
     } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
     var _b = __read(_a, 2), name = _b[0], data = _b[1];
     return [

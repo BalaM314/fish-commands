@@ -231,9 +231,8 @@ export const commands = consoleCommandList({
 		description: "Updates the plugin.",
 		handler({args, output, outputSuccess, outputFail}){
 			const commandsDir = Vars.modDirectory.child("fish-commands");
-			if(!commandsDir.exists()){
+			if(!commandsDir.exists())
 				fail(`Fish commands directory at path ${commandsDir.absolutePath()} does not exist!`);
-			}
 			if(config.localDebug) fail(`Cannot update in local debug mode.`);
 			output("Updating...");
 			const gitProcess = new ProcessBuilder("git", "pull", "origin", args.branch ?? "master")
@@ -254,7 +253,7 @@ export const commands = consoleCommandList({
 	restart: {
 		args: ["time:number?"],
 		description: "Restarts the server.",
-		handler({args, output}){
+		handler({args}){
 			if(Vars.state.rules.mode().name() == "pvp"){
 				if(args.time === -1){
 					Log.info(`&rRestarting in 15 seconds (this will interrupt the current PVP match).&fr`);

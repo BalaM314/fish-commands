@@ -1,11 +1,11 @@
 import * as api from './api';
 import { commandList, fail, formatArg, Perm } from './commands';
 import { FishServers } from './config';
-import { recentWhispers } from './globals';
+import { recentWhispers, tileHistory } from './globals';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
-import { capitalizeText, getColor, StringBuilder, teleportPlayer, to2DArray } from './utils';
+import { capitalizeText, formatTimeRelative, getColor, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
 // import { votekickmanager } from './votes';
 
 
@@ -85,6 +85,24 @@ export const commands = commandList({
 					handleTaps("once");
 					output(`\n \n===>[yellow]Click on a tile to check its recent history...\n `);
 				}
+			}
+		},
+		tapped({tile, x, y, output, sender}){
+			const pos = `${x},${y}`;
+			if(!tileHistory[pos]){
+				output(`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`);
+			} else {
+				const history = StringIO.read(tileHistory[pos]!, str => str.readArray(d => ({
+					action: d.readString(2),
+					uuid: d.readString(2)!,
+					time: d.readNumber(16),
+					type: d.readString(2),
+				}), 1));
+				output(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
+					sender.hasPerm("viewUUIDs")
+					? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+					: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+				).join('\n'));
 			}
 		}
 	},
