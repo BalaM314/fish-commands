@@ -179,17 +179,22 @@ exports.commands = (0, commands_1.consoleCommandList)({
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
                 api.ban({ ip: args.target });
-                (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
+                var info = Vars.netServer.admins.findByIP(args.target);
+                if (info)
+                    (0, utils_1.logAction)("whacked", "console", info);
+                else
+                    (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
                 if (Vars.netServer.admins.isIPBanned(args.target)) {
                     output("IP &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
                 }
                 else {
                     Vars.netServer.admins.banPlayerIP(args.target);
-                    output("&lrIP &c\"".concat(args.target, "\" &lrwas banned. Ban was synced to other servers."));
+                    output("&lrIP &c\"".concat(args.target, "\"&lr was banned. Ban was synced to other servers."));
                 }
             }
             else if (globals_1.uuidPattern.test(args.target)) {
-                (0, utils_1.logAction)("console whacked ".concat(args.target));
+                var info = Vars.netServer.admins.getInfo(args.target);
+                (0, utils_1.logAction)("whacked", "console", info);
                 api.addStopped(args.target, config.maxTime);
                 if (Vars.netServer.admins.isIDBanned(args.target)) {
                     api.ban({ uuid: args.target });

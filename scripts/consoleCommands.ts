@@ -128,15 +128,20 @@ export const commands = consoleCommandList({
 			if(ipPattern.test(args.target)){
 				//target is an ip
 				api.ban({ip: args.target});
-				logAction(`console ip-whacked ${args.target}`);
+				const info = Vars.netServer.admins.findByIP(args.target);
+				if(info)
+					logAction("whacked", "console", info);
+				else
+					logAction(`console ip-whacked ${args.target}`);
 				if(Vars.netServer.admins.isIPBanned(args.target)){
 					output(`IP &c"${args.target}"&fr is already banned. Ban was synced to other servers.`);
 				} else {
 					Vars.netServer.admins.banPlayerIP(args.target);
-					output(`&lrIP &c"${args.target}" &lrwas banned. Ban was synced to other servers.`);
+					output(`&lrIP &c"${args.target}"&lr was banned. Ban was synced to other servers.`);
 				}
 			} else if(uuidPattern.test(args.target)){
-				logAction(`console whacked ${args.target}`);
+				const info = Vars.netServer.admins.getInfo(args.target);
+				logAction("whacked", "console", info);
 				api.addStopped(args.target, config.maxTime);
 				if(Vars.netServer.admins.isIDBanned(args.target)){
 					api.ban({uuid: args.target});
