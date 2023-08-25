@@ -128,7 +128,7 @@ export const commands = consoleCommandList({
 			if(ipPattern.test(args.target)){
 				//target is an ip
 				api.ban({ip: args.target});
-				const info = Vars.netServer.admins.findByIP(args.target);
+				const info:mindustryPlayerData = Vars.netServer.admins.findByIP(args.target);
 				if(info)
 					logAction("whacked", "console", info);
 				else
@@ -140,22 +140,22 @@ export const commands = consoleCommandList({
 					output(`&lrIP &c"${args.target}"&lr was banned. Ban was synced to other servers.`);
 				}
 			} else if(uuidPattern.test(args.target)){
-				const info = Vars.netServer.admins.getInfo(args.target);
-				logAction("whacked", "console", info);
+				const info:mindustryPlayerData = Vars.netServer.admins.getInfoOptional(args.target);
+				if(info) logAction("whacked", "console", info);
+				else logAction(`console ip-whacked ${args.target}`);
 				api.addStopped(args.target, config.maxTime);
 				if(Vars.netServer.admins.isIDBanned(args.target)){
 					api.ban({uuid: args.target});
 					output(`UUID &c"${args.target}"&fr is already banned. Ban was synced to other servers.`);
 				} else {
-					const ip:string | null = Groups.player.find(p => args.target === p.uuid())?.ip();
 					Vars.netServer.admins.banPlayerID(args.target);
-					if(ip){
-						Vars.netServer.admins.banPlayerIP(ip);
-						api.ban({uuid: args.target, ip});
-						output(`&lrUUID &c"${args.target}" &lrwas banned. IP &c"${ip}"&lr was banned. Ban was synced to other servers.`);
+					if(info){
+						Vars.netServer.admins.banPlayerIP(info.lastIP);
+						api.ban({uuid: args.target, ip: info.lastIP});
+						output(`&lrUUID &c"${args.target}" &lrwas banned. IP &c"${info.lastIP}"&lr was banned. Ban was synced to other servers.`);
 					} else {
 						api.ban({uuid: args.target});
-						output(`&lrUUID &c"${args.target}" &lrwas banned. Ban was synced to other servers. Unable to determine ip!.`);
+						output(`&lrUUID &c"${args.target}" &lrwas banned. Ban was synced to other servers. Warning: no stored info for this UUID, player may not exist. Unable to determine IP.`);
 					}
 				}
 			} else {

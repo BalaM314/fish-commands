@@ -174,7 +174,6 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["target:string"],
         description: "Whacks (ipbans) a player.",
         handler: function (_a) {
-            var _b;
             var args = _a.args, output = _a.output, outputFail = _a.outputFail;
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
@@ -193,24 +192,26 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 }
             }
             else if (globals_1.uuidPattern.test(args.target)) {
-                var info = Vars.netServer.admins.getInfo(args.target);
-                (0, utils_1.logAction)("whacked", "console", info);
+                var info = Vars.netServer.admins.getInfoOptional(args.target);
+                if (info)
+                    (0, utils_1.logAction)("whacked", "console", info);
+                else
+                    (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
                 api.addStopped(args.target, config.maxTime);
                 if (Vars.netServer.admins.isIDBanned(args.target)) {
                     api.ban({ uuid: args.target });
                     output("UUID &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
                 }
                 else {
-                    var ip = (_b = Groups.player.find(function (p) { return args.target === p.uuid(); })) === null || _b === void 0 ? void 0 : _b.ip();
                     Vars.netServer.admins.banPlayerID(args.target);
-                    if (ip) {
-                        Vars.netServer.admins.banPlayerIP(ip);
-                        api.ban({ uuid: args.target, ip: ip });
-                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. IP &c\"").concat(ip, "\"&lr was banned. Ban was synced to other servers."));
+                    if (info) {
+                        Vars.netServer.admins.banPlayerIP(info.lastIP);
+                        api.ban({ uuid: args.target, ip: info.lastIP });
+                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. IP &c\"").concat(info.lastIP, "\"&lr was banned. Ban was synced to other servers."));
                     }
                     else {
                         api.ban({ uuid: args.target });
-                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. Ban was synced to other servers. Unable to determine ip!."));
+                        output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. Ban was synced to other servers. Warning: no stored info for this UUID, player may not exist. Unable to determine IP."));
                     }
                 }
             }
