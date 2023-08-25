@@ -50,7 +50,7 @@ export type ObjectTypeFor<ArgString> =
 	: ArgString extends `${infer N}:${infer T}` //Same as above, but without the `| null`
 		? {[_ in N]: TypeOfArgType<T>} : never;
 
-type TapHandleMode = "off" | "once" | "on";
+export type TapHandleMode = "off" | "once" | "on";
 
 export interface FishCommandRunner<ArgType extends string> {
 	(_:{
