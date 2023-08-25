@@ -2,8 +2,8 @@ import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as config from "./config";
 import { menu } from "./menus";
-import { Rank, RoleFlag } from "./ranks";
-import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry, TapHandleMode, TapHandler } from "./types";
+import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
+import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
 import { StringIO, escapeStringColors, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray } from "./utils";
 
 
@@ -249,7 +249,7 @@ export class FishPlayer {
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
-		if(isImpersonator(this.name, this.ranksAtLeast(Rank.admin))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
+		if(isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
 		if(this.marked()) prefix += config.MARKED_PREFIX;
 		else if(this.autoflagged) prefix += "[yellow]\u26A0[scarlet]Flagged[yellow]\u26A0[white]";
 		if(this.muted) prefix += config.MUTED_PREFIX;
@@ -331,7 +331,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	checkUsid(){
 		if(this.usid != null && this.usid != "" && this.player.usid() != this.usid){
 			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r`);
-			if(this.ranksAtLeast(Rank.trusted)){
+			if(this.hasPerm("usidCheck")){
 				this.player.kick(`Authorization failure!`, 1);
 				FishPlayer.lastAuthKicked = this;
 			}
@@ -558,7 +558,8 @@ We apologize for the inconvenience.`
 		else
 			return this.rank.level >= player.rank.level || player == this;
 	}
-	ranksAtLeast(rank:Rank){
+	ranksAtLeast(rank:Rank | RankName){
+		if(typeof rank == "string") rank = Rank.getByName(rank)!;
 		return this.rank.level >= rank.level;
 	}
 	hasPerm(perm:PermType){
@@ -586,7 +587,7 @@ We apologize for the inconvenience.`
 		this.updateAdminStatus();
 		FishPlayer.saveAll();
 	}
-	setFlag(flag_:RoleFlag | string, value:boolean){
+	setFlag(flag_:RoleFlag | RoleFlagName, value:boolean){
 		const flag = flag_ instanceof RoleFlag ? flag_ : RoleFlag.getByName(flag_);
 		if(flag){
 			if(value){
@@ -598,7 +599,7 @@ We apologize for the inconvenience.`
 			FishPlayer.saveAll();
 		}
 	}
-	hasFlag(flagName:string){
+	hasFlag(flagName:RoleFlagName){
 		const flag = RoleFlag.getByName(flagName);
 		if(flag) return this.flags.has(flag);
 		else return false;
@@ -749,7 +750,7 @@ We apologize for the inconvenience.`
 		let messageReceived = false;
 		Groups.player.each(pl => {
 			const fishP = FishPlayer.get(pl);
-			if(fishP.ranksAtLeast(Rank.mod)){
+			if(fishP.hasPerm("mod")){
 				pl.sendMessage(message);
 				messageReceived = true;
 			}

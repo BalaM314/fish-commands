@@ -182,14 +182,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.chat,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, output = _a.output, outputFail = _a.outputFail, lastUsedSender = _a.lastUsedSender;
-            if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
+            if (!sender.hasPerm("mod")) {
                 if (Date.now() - lastUsedSender < 2000)
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
                 if (Date.now() - lastUsedSender < 5000)
                     output("[orange]Misuse of this command may result in a mute.");
             }
             api.sendStaffMessage(args.message, sender.name, function (sent) {
-                if (!sender.ranksAtLeast(ranks_1.Rank.mod)) {
+                if (!sender.hasPerm("mod")) {
                     if (sent) {
                         outputSuccess("Message sent to [orange]all online staff.");
                     }

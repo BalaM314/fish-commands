@@ -299,7 +299,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
-        if ((0, utils_1.isImpersonator)(this.name, this.ranksAtLeast(ranks_1.Rank.admin)))
+        if ((0, utils_1.isImpersonator)(this.name, this.ranksAtLeast("admin")))
             prefix += "[scarlet]SUSSY IMPOSTOR[]";
         if (this.marked())
             prefix += config.MARKED_PREFIX;
@@ -402,7 +402,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.checkUsid = function () {
         if (this.usid != null && this.usid != "" && this.player.usid() != this.usid) {
             Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
-            if (this.ranksAtLeast(ranks_1.Rank.trusted)) {
+            if (this.hasPerm("usidCheck")) {
                 this.player.kick("Authorization failure!", 1);
                 FishPlayer.lastAuthKicked = this;
             }
@@ -650,6 +650,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             return this.rank.level >= player.rank.level || player == this;
     };
     FishPlayer.prototype.ranksAtLeast = function (rank) {
+        if (typeof rank == "string")
+            rank = ranks_1.Rank.getByName(rank);
         return this.rank.level >= rank.level;
     };
     FishPlayer.prototype.hasPerm = function (perm) {
@@ -844,7 +846,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var messageReceived = false;
         Groups.player.each(function (pl) {
             var fishP = FishPlayer.get(pl);
-            if (fishP.ranksAtLeast(ranks_1.Rank.mod)) {
+            if (fishP.hasPerm("mod")) {
                 pl.sendMessage(message);
                 messageReceived = true;
             }

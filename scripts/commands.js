@@ -59,9 +59,16 @@ var Perm = exports.Perm = /** @class */ (function () {
         if (color === void 0) { color = ""; }
         if (unauthorizedMessage === void 0) { unauthorizedMessage = "You do not have the required permission (".concat(name, ") to execute this command"); }
         this.name = name;
-        this.check = check;
         this.color = color;
         this.unauthorizedMessage = unauthorizedMessage;
+        if (typeof check == "string") {
+            if (ranks_1.Rank.getByName(check) == null)
+                throw new Error("Invalid perm ".concat(name, ": invalid rank name ").concat(check));
+            this.check = function (fishP) { return fishP.ranksAtLeast(check); };
+        }
+        else {
+            this.check = check;
+        }
     }
     Perm.fromRank = function (rank) {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
@@ -70,24 +77,25 @@ var Perm = exports.Perm = /** @class */ (function () {
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
     Perm.member = new Perm("member", function (fishP) { return fishP.hasFlag("member") && !fishP.marked(); }, "[pink]", "You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!");
-    Perm.chat = new Perm("chat", function (fishP) { return (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast(ranks_1.Rank.mod); });
-    Perm.bypassChatFilter = new Perm("bypassChatFilter", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
-    Perm.seeMutedMessages = new Perm("seeMutedMessages", function (fishP) { return fishP.muted || fishP.autoflagged || fishP.ranksAtLeast(ranks_1.Rank.mod); });
-    Perm.play = new Perm("play", function (fishP) { return (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast(ranks_1.Rank.mod); });
-    Perm.seeErrorMessages = new Perm("seeErrorMessages", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
-    Perm.viewUUIDs = new Perm("viewUUIDs", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.admin); });
+    Perm.chat = new Perm("chat", function (fishP) { return (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast("mod"); });
+    Perm.bypassChatFilter = new Perm("bypassChatFilter", "admin");
+    Perm.seeMutedMessages = new Perm("seeMutedMessages", function (fishP) { return fishP.muted || fishP.autoflagged || fishP.ranksAtLeast("mod"); });
+    Perm.play = new Perm("play", function (fishP) { return (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast("mod"); });
+    Perm.seeErrorMessages = new Perm("seeErrorMessages", "admin");
+    Perm.viewUUIDs = new Perm("viewUUIDs", "admin");
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
-    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.mod); });
-    Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.trusted); });
+    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", "mod");
+    Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
-        return Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(ranks_1.Rank.trusted)
-            : Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast(ranks_1.Rank.admin)
-                : Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast(ranks_1.Rank.mod)
-                    : fishP.ranksAtLeast(ranks_1.Rank.admin);
+        return Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast("trusted")
+            : Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast("admin")
+                : Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast("mod")
+                    : fishP.ranksAtLeast("admin");
     });
     Perm.spawnOhnos = new Perm("spawnOhnos", function (fishP) {
         return Vars.state.rules.mode().name() === "pvp" ? false : true;
     }, "", "Ohnos are disabled in PVP.");
+    Perm.usidCheck = new Perm("usidCheck", "trusted");
     return Perm;
 }());
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */

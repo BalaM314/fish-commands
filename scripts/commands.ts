@@ -1,7 +1,7 @@
 import { uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
-import { Rank } from "./ranks";
+import { Rank, RankName } from "./ranks";
 import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
 	SelectClasslikeEnumKeys,
@@ -35,25 +35,35 @@ export class Perm {
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
 	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
-	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast(Rank.mod));
-	static bypassChatFilter = new Perm("bypassChatFilter", fishP => fishP.ranksAtLeast(Rank.admin));
-	static seeMutedMessages = new Perm("seeMutedMessages", fishP => fishP.muted || fishP.autoflagged || fishP.ranksAtLeast(Rank.mod));
-	static play = new Perm("play", fishP => (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast(Rank.mod));
-	static seeErrorMessages = new Perm("seeErrorMessages", fishP => fishP.ranksAtLeast(Rank.admin));
-	static viewUUIDs = new Perm("viewUUIDs", fishP => fishP.ranksAtLeast(Rank.admin));
+	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast("mod"));
+	static bypassChatFilter = new Perm("bypassChatFilter", "admin");
+	static seeMutedMessages = new Perm("seeMutedMessages", fishP => fishP.muted || fishP.autoflagged || fishP.ranksAtLeast("mod"));
+	static play = new Perm("play", fishP => (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast("mod"));
+	static seeErrorMessages = new Perm("seeErrorMessages", "admin");
+	static viewUUIDs = new Perm("viewUUIDs", "admin");
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
-	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => fishP.ranksAtLeast(Rank.mod));
-	static bypassVoteFreeze = new Perm("bypassVoteFreeze", fishP => fishP.ranksAtLeast(Rank.trusted));
+	static bulkLabelPacket = new Perm("bulkLabelPacket", "mod");
+	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
 	static changeTeam = new Perm("changeTeam", fishP => 
-		Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast(Rank.trusted)
-			: Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast(Rank.admin)
-			: Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast(Rank.mod)
-			: fishP.ranksAtLeast(Rank.admin)
+		Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast("trusted")
+			: Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast("admin")
+			: Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast("mod")
+			: fishP.ranksAtLeast("admin")
 	);
 	static spawnOhnos = new Perm("spawnOhnos", fishP =>
 		Vars.state.rules.mode().name() === "pvp" ? false : true
 	, "", "Ohnos are disabled in PVP.");
-	constructor(public name:string, public check:(fishP:FishPlayer) => boolean, public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){}
+	static usidCheck = new Perm("usidCheck", "trusted");
+
+	check:(fishP:FishPlayer) => boolean;
+	constructor(public name:string, check:RankName | ((fishP:FishPlayer) => boolean), public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){
+		if(typeof check == "string"){
+			if(Rank.getByName(check) == null) throw new Error(`Invalid perm ${name}: invalid rank name ${check}`);
+			this.check = fishP => fishP.ranksAtLeast(check as RankName);
+		} else {
+			this.check = check;
+		}
+	}
 	static fromRank(rank:Rank){
 		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);
 	}
