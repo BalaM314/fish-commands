@@ -375,6 +375,7 @@ function register(commands, clientHandler, serverHandler) {
                             lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
                             lastUsedSuccessfully: ((_a = globalUsageData[name]) !== null && _a !== void 0 ? _a : (globalUsageData[name] = { lastUsed: -1, lastUsedSuccessfully: -1 })).lastUsedSuccessfully,
                             allCommands: exports.allCommands,
+                            currentTapMode: fishSender.tapInfo.commandName == null ? "off" : fishSender.tapInfo.mode,
                             handleTaps: function (mode) {
                                 if (data.tapped == undefined)
                                     throw new Error("No tap handler to activate: command \"".concat(name, "\""));

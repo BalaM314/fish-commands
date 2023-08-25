@@ -67,6 +67,7 @@ export interface FishCommandRunner<ArgType extends string> {
 		execServer:(message:string) => void;
 		/**Call this function to set tap handling mode. */
 		handleTaps:(mode:TapHandleMode) => void;
+		currentTapMode:TapHandleMode;
 		/**List of every registered command, including this one. */
 		allCommands:Record<string, FishCommandData<any>>;
 		/**Timestamp of the last time this command was run successfully by any player. */

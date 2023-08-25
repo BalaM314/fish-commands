@@ -312,6 +312,7 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 							lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
 							lastUsedSuccessfully: (globalUsageData[name] ??= {lastUsed: -1, lastUsedSuccessfully: -1}).lastUsedSuccessfully,
 							allCommands,
+							currentTapMode: fishSender.tapInfo.commandName == null ? "off" : fishSender.tapInfo.mode,
 							handleTaps(mode){
 								if(data.tapped == undefined) throw new Error(`No tap handler to activate: command "${name}"`);
 								if(mode == "off"){
