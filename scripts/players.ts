@@ -4,7 +4,7 @@ import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry, TapHandleMode, TapHandler } from "./types";
-import { StringIO, escapeStringColors, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, setToArray } from "./utils";
+import { StringIO, escapeStringColors, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray } from "./utils";
 
 
 export class FishPlayer {
@@ -522,7 +522,7 @@ We apologize for the inconvenience.`
 			out.expectEOF();
 		} catch(err){
 			Log.err(`[CRITICAL] FAILED TO LOAD CACHED FISH PLAYER DATA`);
-			Log.err(err as any);
+			Log.err(parseError(err));
 			Log.err("=============================");
 			Log.err(string);
 			Log.err("=============================");

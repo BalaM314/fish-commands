@@ -393,3 +393,16 @@ export function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
 		Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
 	}, 0, 0.016, 10);
 }
+
+//TODO use
+export function parseError(thing:unknown){
+	if(thing instanceof Error){
+		return thing.toString();
+	} else if(typeof thing == "string"){
+		return thing;
+	} else {
+		Log.info("[[FINDTAG]] Unable to parse the following error object");
+		Log.info(thing as any);
+		return "Unable to parse error object";
+	}
+}

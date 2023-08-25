@@ -604,7 +604,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         }
         catch (err) {
             Log.err("[CRITICAL] FAILED TO LOAD CACHED FISH PLAYER DATA");
-            Log.err(err);
+            Log.err((0, utils_1.parseError)(err));
             Log.err("=============================");
             Log.err(string);
             Log.err("=============================");
