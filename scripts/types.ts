@@ -1,6 +1,13 @@
 import type { CommandArgType, Perm } from "./commands";
 import type { FishPlayer } from "./players";
 
+export type SelectClasslikeEnumKeys<C extends Function,
+	Key extends keyof C = keyof C
+> = Key extends unknown ? ( //trigger DCT
+	C[Key] extends C["prototype"] ? //if C[Key] is a C
+		Key extends "prototype" ? never : Key //and Key is not the string "prototype", return it
+	: never
+) : never;
 
 export type FishCommandArgType = string | number | FishPlayer | Team | boolean | null | UnitType | Block;
 export type MenuListener = (player:mindustryPlayer, option:number) => void;

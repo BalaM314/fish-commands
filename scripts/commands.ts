@@ -4,6 +4,7 @@ import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
+	SelectClasslikeEnumKeys,
 	ServerCommandHandler
 } from "./types";
 import { getBlock, getTeam, getUnitType, isBuildable, parseError, parseTimeString } from "./utils";
@@ -28,13 +29,6 @@ export const consoleCommandList = <A extends Record<string, string>>(list:{
 }):Record<string, FishConsoleCommandData<any>> => list;
 
 
-//Cursed
-type SelectPerm<T> = T extends infer A ? (
-	A extends keyof typeof Perm ? (
-		(typeof Perm)[A] extends Perm ? A : never
-	) : never
-) : never;
-export type PermType = SelectPerm<keyof typeof Perm>;
 /** Represents a permission that is required to do something. */
 export class Perm {
 	static none = new Perm("all", fishP => true, "[sky]");
@@ -64,6 +58,7 @@ export class Perm {
 		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);
 	}
 }
+export type PermType = SelectClasslikeEnumKeys<typeof Perm>;
 
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */

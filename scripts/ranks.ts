@@ -1,3 +1,4 @@
+import { SelectClasslikeEnumKeys as SelectEnumClassKeys } from "./types";
 
 export class Rank {
 	static ranks:Record<string, Rank> = {};
@@ -30,6 +31,7 @@ export class Rank {
 		return this.color + this.name + "[]";
 	}
 }
+export type RankName = SelectEnumClassKeys<typeof Rank>;
 
 export class RoleFlag {
 	static flags:Record<string, RoleFlag> = {};
@@ -53,3 +55,4 @@ export class RoleFlag {
 		return this.color + this.name + "[]";
 	}
 }
+export type RoleFlagName = SelectEnumClassKeys<typeof RoleFlag>;
