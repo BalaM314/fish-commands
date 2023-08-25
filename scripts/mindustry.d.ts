@@ -39,6 +39,7 @@ declare const Blocks: {
 declare class Block {
 	name: string;
 	buildType: Building;
+	id: number;
 }
 declare class Team {
 	static derelict:Team;

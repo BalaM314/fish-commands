@@ -159,7 +159,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         },
         tapped: function (_a) {
             var output = _a.output, tile = _a.tile;
-            output(tile.block().id);
+            output("ID is [cyan]".concat(tile.block().id));
         }
     } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
     var _b = __read(_a, 2), name = _b[0], data = _b[1];

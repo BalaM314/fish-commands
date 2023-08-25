@@ -131,7 +131,7 @@ export const commands = commandList({
 			output(`Click a tile to see its id...`);
 		},
 		tapped({output, tile}){
-			output(tile.block().id);
+			output(`ID is [cyan]${tile.block().id}`);
 		}
 	},
 
