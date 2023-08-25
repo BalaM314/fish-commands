@@ -219,6 +219,47 @@ function convertArgs(processedCmdArgs:CommandArg[], allowMenus:boolean):string {
 	}).join(" ");
 }
 
+export function handleTapEvent(event:EventType["TapEvent"]){
+	const sender = FishPlayer.get(event.player);
+	if(sender.tapInfo.commandName != null){
+		const command = allCommands[sender.tapInfo.commandName];
+		const usageData = sender.getUsageData(sender.tapInfo.commandName);
+		try {
+			let failed = false;
+			command.tapped?.({
+				args: sender.tapInfo.lastArgs,
+				outputFail: message => {outputFail(message, sender); failed = true;},
+				outputSuccess: message => outputSuccess(message, sender),
+				output: message => outputMessage(message, sender),
+				commandLastUsed: usageData.lastUsed,
+				commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
+				lastUsed: usageData.tapLastUsed,
+				lastUsedSuccessfully: usageData.tapLastUsedSuccessfully,
+				sender,
+				tile: event.tile,
+				x: event.tile.x,
+				y: event.tile.y,
+			});
+			if(!failed)
+				usageData.tapLastUsedSuccessfully = Date.now();
+			
+		} catch(err){
+			if(err instanceof CommandError){
+				//If the error is a command error, then just outputFail
+				outputFail(err.message, sender);
+			} else {
+				sender.sendMessage(`[scarlet]❌ An error occurred while executing the command!`);
+				if(sender.hasPerm("seeErrorMessages")) sender.sendMessage((<any>err).toString());
+			}
+		} finally {
+			if(sender.tapInfo.mode == "once"){
+				sender.tapInfo.commandName = null;
+			}
+			usageData.tapLastUsed = Date.now();
+		}
+	}
+}
+
 /**
  * Registers all commands in a list to a client command handler.
  **/
@@ -270,7 +311,17 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 							lastUsedSender: usageData.lastUsed,
 							lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
 							lastUsedSuccessfully: (globalUsageData[name] ??= {lastUsed: -1, lastUsedSuccessfully: -1}).lastUsedSuccessfully,
-							allCommands
+							allCommands,
+							handleTaps(mode){
+								if(data.tapped == undefined) throw new Error(`No tap handler to activate: command "${name}"`);
+								if(mode == "off"){
+									fishSender.tapInfo.commandName = null;
+								} else {
+									fishSender.tapInfo.commandName = name;
+									fishSender.tapInfo.mode = mode;
+								}
+								fishSender.tapInfo.lastArgs = output.processedArgs;
+							},
 						});
 						//Update usage data
 						if(!failed){

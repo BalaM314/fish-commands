@@ -38,7 +38,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerConsole = exports.register = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allCommands = void 0;
+exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allCommands = void 0;
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
@@ -284,6 +284,51 @@ function convertArgs(processedCmdArgs, allowMenus) {
         return brackets[0] + arg.name + (["player", "string"].includes(arg.type) && index + 1 == array.length ? "..." : "") + brackets[1];
     }).join(" ");
 }
+function handleTapEvent(event) {
+    var _a;
+    var sender = players_1.FishPlayer.get(event.player);
+    if (sender.tapInfo.commandName != null) {
+        var command = exports.allCommands[sender.tapInfo.commandName];
+        var usageData = sender.getUsageData(sender.tapInfo.commandName);
+        try {
+            var failed_1 = false;
+            (_a = command.tapped) === null || _a === void 0 ? void 0 : _a.call(command, {
+                args: sender.tapInfo.lastArgs,
+                outputFail: function (message) { outputFail(message, sender); failed_1 = true; },
+                outputSuccess: function (message) { return outputSuccess(message, sender); },
+                output: function (message) { return outputMessage(message, sender); },
+                commandLastUsed: usageData.lastUsed,
+                commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
+                lastUsed: usageData.tapLastUsed,
+                lastUsedSuccessfully: usageData.tapLastUsedSuccessfully,
+                sender: sender,
+                tile: event.tile,
+                x: event.tile.x,
+                y: event.tile.y,
+            });
+            if (!failed_1)
+                usageData.tapLastUsedSuccessfully = Date.now();
+        }
+        catch (err) {
+            if (err instanceof CommandError) {
+                //If the error is a command error, then just outputFail
+                outputFail(err.message, sender);
+            }
+            else {
+                sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
+                if (sender.hasPerm("seeErrorMessages"))
+                    sender.sendMessage(err.toString());
+            }
+        }
+        finally {
+            if (sender.tapInfo.mode == "once") {
+                sender.tapInfo.commandName = null;
+            }
+            usageData.tapLastUsed = Date.now();
+        }
+    }
+}
+exports.handleTapEvent = handleTapEvent;
 /**
  * Registers all commands in a list to a client command handler.
  **/
@@ -329,7 +374,19 @@ function register(commands, clientHandler, serverHandler) {
                             lastUsedSender: usageData.lastUsed,
                             lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
                             lastUsedSuccessfully: ((_a = globalUsageData[name]) !== null && _a !== void 0 ? _a : (globalUsageData[name] = { lastUsed: -1, lastUsedSuccessfully: -1 })).lastUsedSuccessfully,
-                            allCommands: exports.allCommands
+                            allCommands: exports.allCommands,
+                            handleTaps: function (mode) {
+                                if (data.tapped == undefined)
+                                    throw new Error("No tap handler to activate: command \"".concat(name, "\""));
+                                if (mode == "off") {
+                                    fishSender.tapInfo.commandName = null;
+                                }
+                                else {
+                                    fishSender.tapInfo.commandName = name;
+                                    fishSender.tapInfo.mode = mode;
+                                }
+                                fishSender.tapInfo.lastArgs = output.processedArgs;
+                            },
                         });
                         //Update usage data
                         if (!failed) {
@@ -388,10 +445,10 @@ function registerConsole(commands, serverHandler) {
                 }
                 var usageData = ((_a = globalUsageData[_b = "_console_" + name]) !== null && _a !== void 0 ? _a : (globalUsageData[_b] = { lastUsed: -1, lastUsedSuccessfully: -1 }));
                 try {
-                    var failed_1 = false;
-                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, outputFail: function (message) { Log.err("".concat(message)); failed_1 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); } }, usageData));
+                    var failed_2 = false;
+                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, outputFail: function (message) { Log.err("".concat(message)); failed_2 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); } }, usageData));
                     usageData.lastUsed = Date.now();
-                    if (!failed_1)
+                    if (!failed_2)
                         usageData.lastUsedSuccessfully = Date.now();
                 }
                 catch (err) {

@@ -4,6 +4,7 @@
 
 import * as api from './api';
 import * as commands from './commands';
+import { handleTapEvent } from './commands';
 import * as consoleCommands from "./consoleCommands";
 import { fishState, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
@@ -118,11 +119,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	//});
 });
 
-/**
- * Keeps track of any action performed on a tile for use in /tilelog
- * command.
- */
-
+/**Keeps track of any action performed on a tile for use in tilelog. */
 function addToTileHistory(e:any){
 
 	let tile:Tile, uuid:string, action:string, type:string, time:number = Date.now();
@@ -182,34 +179,7 @@ Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.BuildRotateEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);
 
-Events.on(EventType.TapEvent, (e) => {
-	const fishP = FishPlayer.get(e.player);
-	if(fishP.tileId){
-		e.player.sendMessage(e.tile.block().id);
-		fishP.tileId = false;
-	} else if(fishP.tilelog){
-		const tile = e.tile;
-		const pos = tile.x + ',' + tile.y;
-		if(!tileHistory[pos]){
-			fishP.sendMessage(
-				`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`
-			);
-		} else {
-			const history = StringIO.read(tileHistory[pos]!, str => str.readArray(d => ({
-				action: d.readString(2),
-				uuid: d.readString(2)!,
-				time: d.readNumber(16),
-				type: d.readString(2),
-			}), 1));
-			fishP.sendMessage(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
-				fishP.hasPerm("viewUUIDs")
-				? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-				: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-			).join('\n'));
-		}
-		if(fishP.tilelog === "once") fishP.tilelog = null;
-	}
-});
+Events.on(EventType.TapEvent, handleTapEvent);
 
 Events.on(EventType.GameOverEvent, (e) => {
 	Ohnos.onGameOver();

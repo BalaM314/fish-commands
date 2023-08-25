@@ -32,6 +32,7 @@ var __read = (this && this.__read) || function (o, n) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var api = require("./api");
 var commands = require("./commands");
+var commands_1 = require("./commands");
 var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
 var memberCommands = require("./memberCommands");
@@ -127,10 +128,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     //	//serverIp = r.getResultAsString();
     //});
 });
-/**
- * Keeps track of any action performed on a tile for use in /tilelog
- * command.
- */
+/**Keeps track of any action performed on a tile for use in tilelog. */
 function addToTileHistory(e) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     var tile, uuid, action, type, time = Date.now();
@@ -195,36 +193,7 @@ function addToTileHistory(e) {
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.BuildRotateEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);
-Events.on(EventType.TapEvent, function (e) {
-    var fishP = players_1.FishPlayer.get(e.player);
-    if (fishP.tileId) {
-        e.player.sendMessage(e.tile.block().id);
-        fishP.tileId = false;
-    }
-    else if (fishP.tilelog) {
-        var tile = e.tile;
-        var pos = tile.x + ',' + tile.y;
-        if (!globals_1.tileHistory[pos]) {
-            fishP.sendMessage("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
-        }
-        else {
-            var history = utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
-                action: d.readString(2),
-                uuid: d.readString(2),
-                time: d.readNumber(16),
-                type: d.readString(2),
-            }); }, 1); });
-            fishP.sendMessage("[yellow]Tile history for tile (".concat(tile.x, ", ").concat(tile.y, "):\n") + history.map(function (e) {
-                var _a, _b;
-                return fishP.hasPerm("viewUUIDs")
-                    ? "[yellow]".concat((_a = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
-                    : "[yellow]".concat((_b = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time));
-            }).join('\n'));
-        }
-        if (fishP.tilelog === "once")
-            fishP.tilelog = null;
-    }
-});
+Events.on(EventType.TapEvent, commands_1.handleTapEvent);
 Events.on(EventType.GameOverEvent, function (e) {
     var e_1, _a;
     ohno_1.Ohnos.onGameOver();
