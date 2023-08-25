@@ -62,6 +62,11 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         /** Used to freeze players when votekicking. */
         this.frozen = false;
         this.usageData = {};
+        this.tapInfo = {
+            commandName: null,
+            lastArgs: {},
+            mode: "once",
+        };
         this.lastJoined = -1;
         this.uuid = (_k = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _k !== void 0 ? _k : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_l = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]";
@@ -707,6 +712,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return (_a = (_b = this.usageData)[command]) !== null && _a !== void 0 ? _a : (_b[command] = {
             lastUsed: -1,
             lastUsedSuccessfully: -1,
+            tapLastUsed: -1,
+            tapLastUsedSuccessfully: -1,
         });
     };
     //#endregion

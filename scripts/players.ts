@@ -3,7 +3,7 @@ import { Perm, PermType } from "./commands";
 import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RoleFlag } from "./ranks";
-import type { FishPlayerData, PlayerHistoryEntry } from "./types";
+import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry, TapHandleMode, TapHandler } from "./types";
 import { StringIO, escapeStringColors, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, setToArray } from "./utils";
 
 
@@ -40,7 +40,14 @@ export class FishPlayer {
 	usageData: Record<string, {
 		lastUsed: number;
 		lastUsedSuccessfully: number;
+		tapLastUsed: number;
+		tapLastUsedSuccessfully: number;
 	}> = {};
+	tapInfo = {
+		commandName: null as string | null,
+		lastArgs: {} as Record<string, FishCommandArgType>,
+		mode: "once" as "once" | "on",
+	};
 	lastJoined:number = -1;
 
 	//Stored data
@@ -604,6 +611,8 @@ We apologize for the inconvenience.`
 		return this.usageData[command] ??= {
 			lastUsed: -1,
 			lastUsedSuccessfully: -1,
+			tapLastUsed: -1,
+			tapLastUsedSuccessfully: -1,
 		};
 	}
 	//#endregion
