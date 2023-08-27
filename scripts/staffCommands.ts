@@ -8,7 +8,7 @@ import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
 import {
-	colorBadBoolean, escapeStringColors, formatTime, formatTimeRelative, logAction,
+	colorBadBoolean, escapeStringColorsClient, formatTime, formatTimeRelative, logAction,
 	setToArray
 } from "./utils";
 
@@ -423,7 +423,7 @@ export const commands = commandList({
 		handler({sender, args, output}){
 			const info = args.target.player.info as mindustryPlayerData;
 			output(
-(`[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColors(args.target.name)}) (${args.target.player.id})
+(`[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColorsClient(args.target.name)}) (${args.target.player.id})
 	[accent]Rank: ${args.target.rank.coloredName()}
 	[accent]Role flags: ${Array.from(args.target.flags).map(f => f.coloredName()).join(" ")}
 	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
@@ -431,7 +431,7 @@ export const commands = commandList({
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
 	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
 	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
-	[accent]Names used: [[${info.names.map(escapeStringColors).items.join(", ")}]
+	[accent]Names used: [[${info.names.map(escapeStringColorsClient).items.join(", ")}]
 ` + (sender.hasPerm("viewUUIDs") ? 
 `	[#C30202]UUID: ${args.target.uuid}
 	[#C30202]IP: ${args.target.player.ip()}

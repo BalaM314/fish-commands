@@ -394,7 +394,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
         if (Strings.stripColors(this.name).replace(/ /g, "").length == 0) {
-            this.player.kick("[scarlet]\"".concat((0, utils_1.escapeStringColors)(this.name), "[scarlet]\" is not an allowed name. Please change it."), 1);
+            this.player.kick("[scarlet]\"".concat((0, utils_1.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name. Please change it."), 1);
         }
         return true;
     };

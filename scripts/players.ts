@@ -4,7 +4,7 @@ import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
-import { StringIO, escapeStringColors, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray } from "./utils";
+import { StringIO, escapeStringColorsClient, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray } from "./utils";
 
 
 export class FishPlayer {
@@ -323,7 +323,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		}
 		if(Strings.stripColors(this.name).replace(/ /g, "").length == 0){
 			this.player.kick(
-`[scarlet]"${escapeStringColors(this.name)}[scarlet]" is not an allowed name. Please change it.`
+`[scarlet]"${escapeStringColorsClient(this.name)}[scarlet]" is not an allowed name. Please change it.`
 			, 1);
 		}
 		return true;

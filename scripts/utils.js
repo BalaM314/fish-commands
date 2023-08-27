@@ -26,8 +26,17 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColors = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var players_1 = require("./players");
@@ -421,10 +430,15 @@ function parseTimeString(str) {
 }
 exports.parseTimeString = parseTimeString;
 /**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
-function escapeStringColors(str) {
+function escapeStringColorsClient(str) {
     return str.replace(/\[/g, "[[");
 }
-exports.escapeStringColors = escapeStringColors;
+exports.escapeStringColorsClient = escapeStringColorsClient;
+/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
+function escapeStringColorsServer(str) {
+    return str.replace(/&/g, "&&");
+}
+exports.escapeStringColorsServer = escapeStringColorsServer;
 function serverRestartLoop(sec) {
     if (sec > 0) {
         if (sec < 15 || sec % 5 == 0)
@@ -496,3 +510,14 @@ function parseError(thing) {
     }
 }
 exports.parseError = parseError;
+/** Generates a tag template processor from a function that processes one value at a time. */
+function tagProcessor(transformer) {
+    return function (stringChunks) {
+        var varChunks = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            varChunks[_i - 1] = arguments[_i];
+        }
+        return String.raw.apply(String, __spreadArray([{ raw: stringChunks }], __read(varChunks.map(transformer)), false));
+    };
+}
+exports.tagProcessor = tagProcessor;

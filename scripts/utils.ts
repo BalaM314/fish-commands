@@ -341,8 +341,13 @@ export function parseTimeString(str:string):number | null {
 }
 
 /**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
-export function escapeStringColors(str:string):string {
+export function escapeStringColorsClient(str:string):string {
 	return str.replace(/\[/g, "[[");
+}
+
+/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
+export function escapeStringColorsServer(str:string):string {
+	return str.replace(/&/g, "&&");
 }
 
 export function serverRestartLoop(sec:number){
@@ -404,5 +409,12 @@ export function parseError(thing:unknown){
 		Log.info("[[FINDTAG]] Unable to parse the following error object");
 		Log.info(thing as any);
 		return "Unable to parse error object";
+	}
+}
+
+/** Generates a tag template processor from a function that processes one value at a time. */
+export function tagProcessor(transformer:(chunk:unknown, index:number) => string){
+	return function(stringChunks:string[], ...varChunks:string[]){
+		return String.raw({raw: stringChunks}, ...varChunks.map(transformer));
 	}
 }
