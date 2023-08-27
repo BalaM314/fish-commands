@@ -203,7 +203,7 @@ function ban(data, callback) {
     }
 }
 exports.ban = ban;
-/** Bans the provided ip and/or uuid. */
+/** Unbans the provided ip and/or uuid. */
 function unban(data, callback) {
     if (callback === void 0) { callback = function () { }; }
     if (config_1.localDebug)

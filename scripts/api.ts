@@ -180,7 +180,7 @@ export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) =
 	}
 }
 
-/** Bans the provided ip and/or uuid. */
+/** Unbans the provided ip and/or uuid. */
 export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string, error?:string) => unknown = () => {}){
 	if(localDebug) return;
 	const req = Http.post(`http://${ip}:5000/api/unban`, JSON.stringify(data))
