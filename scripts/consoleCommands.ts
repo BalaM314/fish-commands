@@ -187,6 +187,53 @@ export const commands = consoleCommandList({
 		}
 
 	},
+	unwhack: {
+		args: ["target:string"],
+		description: "Unbans a player.",
+		handler({args, output}){
+			if(ipPattern.test(args.target)){
+				//target is an ip
+				output("Checking ban status...");
+				const info:mindustryPlayerData = Vars.netServer.admins.findByIP(args.target);
+				api.getBanned({ip: args.target}, (banned) => {
+					if(banned){
+						api.unban({ip: args.target});
+						logAction(`console unbanned ip \`${args.target}\``);
+						output(`IP &c"${args.target}"&fr has been globally unbanned.`);
+					} else {
+						output(`IP &c"${args.target}"&fr is not globally banned.`);
+					}
+					if(Vars.netServer.admins.isIPBanned(args.target)){
+						Vars.netServer.admins.unbanPlayerIP(args.target);
+						output(`IP &c"${args.target}"&fr has been locally unbanned.`);
+					} else {
+						output(`IP &c"${args.target}"&fr was not locally banned.`);
+					}
+				});
+			} else if(uuidPattern.test(args.target)){
+				output("Checking ban status...");
+				const info:mindustryPlayerData = Vars.netServer.admins.findByIP(args.target);
+				api.getBanned({uuid: args.target}, (banned) => {
+					if(banned){
+						api.unban({uuid: args.target});
+						logAction(`console unbanned uuid \`${args.target}\``);
+						output(`UUID &c"${args.target}"&fr has been globally unbanned.`);
+					} else {
+						output(`UUID &c"${args.target}"&fr is not globally banned.`);
+					}
+					if(Vars.netServer.admins.isIDBanned(args.target)){
+						Vars.netServer.admins.unbanPlayerID(args.target);
+						output(`UUID &c"${args.target}"&fr has been locally unbanned.`);
+					} else {
+						output(`UUID &c"${args.target}"&fr was not locally banned.`);
+					}
+				});
+			} else {
+				fail(`Cannot unban by name; please use the info command to find the IP and UUID of the player you are looking for.`);
+			}
+		}
+
+	},
 	loadfishplayerdata: {
 		args: ["areyousure:boolean", "fishplayerdata:string"],
 		description: "Overwrites current fish player data.",

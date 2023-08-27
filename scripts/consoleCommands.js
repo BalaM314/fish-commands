@@ -245,6 +245,59 @@ exports.commands = (0, commands_1.consoleCommandList)({
             });
         }
     },
+    unwhack: {
+        args: ["target:string"],
+        description: "Unbans a player.",
+        handler: function (_a) {
+            var args = _a.args, output = _a.output;
+            if (globals_1.ipPattern.test(args.target)) {
+                //target is an ip
+                output("Checking ban status...");
+                var info = Vars.netServer.admins.findByIP(args.target);
+                api.getBanned({ ip: args.target }, function (banned) {
+                    if (banned) {
+                        api.unban({ ip: args.target });
+                        (0, utils_1.logAction)("console unbanned ip `".concat(args.target, "`"));
+                        output("IP &c\"".concat(args.target, "\"&fr has been globally unbanned."));
+                    }
+                    else {
+                        output("IP &c\"".concat(args.target, "\"&fr is not globally banned."));
+                    }
+                    if (Vars.netServer.admins.isIPBanned(args.target)) {
+                        Vars.netServer.admins.unbanPlayerIP(args.target);
+                        output("IP &c\"".concat(args.target, "\"&fr has been locally unbanned."));
+                    }
+                    else {
+                        output("IP &c\"".concat(args.target, "\"&fr was not locally banned."));
+                    }
+                });
+            }
+            else if (globals_1.uuidPattern.test(args.target)) {
+                output("Checking ban status...");
+                var info = Vars.netServer.admins.findByIP(args.target);
+                api.getBanned({ uuid: args.target }, function (banned) {
+                    if (banned) {
+                        api.unban({ uuid: args.target });
+                        (0, utils_1.logAction)("console unbanned uuid `".concat(args.target, "`"));
+                        output("UUID &c\"".concat(args.target, "\"&fr has been globally unbanned."));
+                    }
+                    else {
+                        output("UUID &c\"".concat(args.target, "\"&fr is not globally banned."));
+                    }
+                    if (Vars.netServer.admins.isIDBanned(args.target)) {
+                        Vars.netServer.admins.unbanPlayerID(args.target);
+                        output("UUID &c\"".concat(args.target, "\"&fr has been locally unbanned."));
+                    }
+                    else {
+                        output("UUID &c\"".concat(args.target, "\"&fr was not locally banned."));
+                    }
+                });
+            }
+            else {
+                (0, commands_1.fail)("Cannot unban by name; please use the info command to find the IP and UUID of the player you are looking for.");
+            }
+        }
+    },
     loadfishplayerdata: {
         args: ["areyousure:boolean", "fishplayerdata:string"],
         description: "Overwrites current fish player data.",
