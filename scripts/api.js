@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBanned = exports.ban = exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
+exports.getBanned = exports.unban = exports.ban = exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
 var players_1 = require("./players");
 /** Mark a player as stopped until time */
@@ -203,6 +203,34 @@ function ban(data, callback) {
     }
 }
 exports.ban = ban;
+/** Bans the provided ip and/or uuid. */
+function unban(data, callback) {
+    if (callback === void 0) { callback = function () { }; }
+    if (config_1.localDebug)
+        return;
+    var req = Http.post("http://".concat(config_1.ip, ":5000/api/unban"), JSON.stringify(data))
+        .header('Content-Type', 'application/json')
+        .header('Accept', '*/*');
+    req.timeout = 10000;
+    try {
+        req.submit(function (response, exception) {
+            //Log.info(response.getResultAsString());
+            if (exception || !response) {
+                Log.err('Error while trying to unban a player.');
+            }
+            else {
+                var str = response.getResultAsString();
+                var parsedData = JSON.parse(str);
+                if (str.length)
+                    callback(parsedData.status, parsedData.error);
+            }
+        });
+    }
+    catch (e) {
+        Log.err('Error while trying to unban a player.');
+    }
+}
+exports.unban = unban;
 /** Gets if either the provided uuid or ip is banned. */
 function getBanned(data, callback) {
     if (config_1.localDebug)

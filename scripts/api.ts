@@ -180,6 +180,30 @@ export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) =
 	}
 }
 
+/** Bans the provided ip and/or uuid. */
+export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string, error?:string) => unknown = () => {}){
+	if(localDebug) return;
+	const req = Http.post(`http://${ip}:5000/api/unban`, JSON.stringify(data))
+		.header('Content-Type', 'application/json')
+		.header('Accept', '*/*');
+	req.timeout = 10000;
+
+	try {
+		req.submit((response, exception) => {
+			//Log.info(response.getResultAsString());
+			if (exception || !response) {
+				Log.err('Error while trying to unban a player.');
+			} else {
+				let str = response.getResultAsString();
+				const parsedData = JSON.parse(str);
+				if(str.length) callback(parsedData.status, parsedData.error);
+			}
+		});
+	} catch (e) {
+		Log.err('Error while trying to unban a player.');
+	}
+}
+
 /** Gets if either the provided uuid or ip is banned. */
 export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:boolean) => unknown){
 	if(localDebug) return;
