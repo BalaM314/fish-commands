@@ -4,7 +4,7 @@ import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
-import { StringIO, escapeStringColorsClient, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray } from "./utils";
+import { StringIO, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray } from "./utils";
 
 
 export class FishPlayer {
@@ -82,7 +82,7 @@ export class FishPlayer {
 		this.history = history;
 		this.player = player;
 		this.rainbow = rainbow;
-		this.cleanedName = Strings.stripColors(this.name);
+		this.cleanedName = escapeStringColorsServer(Strings.stripColors(this.name));
 		this.rank = Rank.getByName(rank) ?? Rank.new;
 		this.flags = new Set(flags.map(RoleFlag.getByName).filter((f):f is RoleFlag => f != null));
 		if(member) this.flags.add(RoleFlag.member);

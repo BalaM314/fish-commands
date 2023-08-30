@@ -79,7 +79,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.history = history;
         this.player = player;
         this.rainbow = rainbow;
-        this.cleanedName = Strings.stripColors(this.name);
+        this.cleanedName = (0, utils_1.escapeStringColorsServer)(Strings.stripColors(this.name));
         this.rank = (_m = ranks_1.Rank.getByName(rank)) !== null && _m !== void 0 ? _m : ranks_1.Rank.new;
         this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
         if (member)

@@ -35,7 +35,7 @@ export function registerListeners(){
 /**Displays a menu to a player. */
 function menu(title:string, description:string, options:string[], target:FishPlayer):void;
 /**Displays a menu to a player with callback. */
-function menu<T>(
+function menu<const T>(
 	title:string, description:string, options:T[], target:FishPlayer,
 	callback: (opts: {
 		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
