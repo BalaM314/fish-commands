@@ -1,13 +1,13 @@
-import { uuidPattern } from "./globals";
+import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
-import { Rank, RankName } from "./ranks";
+import { Rank, RankName, RoleFlag } from "./ranks";
 import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
 	SelectClasslikeEnumKeys,
 	ServerCommandHandler
 } from "./types";
-import { getBlock, getTeam, getUnitType, isBuildable, parseError, parseTimeString } from "./utils";
+import { escapeStringColorsServer, getBlock, getTeam, getUnitType, isBuildable, parseError, parseTimeString, tagProcessor } from "./utils";
 
 export const allCommands:Record<string, FishCommandData<any>> = {};
 const globalUsageData:Record<string, {
@@ -203,6 +203,63 @@ function outputSuccess(message:string, sender:mindustryPlayer){
 function outputMessage(message:string, sender:mindustryPlayer){
 	sender.sendMessage(message);
 }
+
+const outputFormatter_server = tagProcessor(chunk => {
+	if(chunk instanceof FishPlayer){
+		return `&c${chunk.cleanedName}&fr`;
+	} else if(chunk instanceof Rank){
+		return `&p${chunk.name}&fr`;
+	} else if(chunk instanceof RoleFlag){
+		return `&p${chunk.name}&fr`;
+	} else if(chunk instanceof Error){
+		return `&r${chunk.toString()}&fr`;
+	} else if(chunk instanceof Packages.mindustry.gen.Player){
+		const player = chunk as mindustryPlayer; //not sure why this is necessary, typescript randomly converts any to unknown
+		return `&cPlayer#${player.id} (${escapeStringColorsServer(Strings.stripColors(player.name))})&fr`
+	} else if(typeof chunk == "string"){
+		if(uuidPattern.test(chunk)){
+			return `&b${chunk}&fr`;
+		} else if(ipPattern.test(chunk)){
+			return `&b${chunk}&fr`;
+		} else {
+			return `${chunk}`;
+		}
+	} else if(typeof chunk == "boolean"){
+		return `&b${chunk.toString()}&fr`;
+	} else if(typeof chunk == "number"){
+		return `&b${chunk.toString()}&fr`;
+	} else {
+		return chunk as string;
+	}
+});
+const outputFormatter_client = tagProcessor(chunk => {
+	if(chunk instanceof FishPlayer){
+		return `[cyan]${chunk.cleanedName}[]`;
+	} else if(chunk instanceof Rank){
+		return chunk.coloredName();
+	} else if(chunk instanceof RoleFlag){
+		return chunk.coloredName();
+	} else if(chunk instanceof Error){
+		return `[red]${chunk.toString()}[]`;
+	} else if(chunk instanceof Packages.mindustry.gen.Player){
+		const player = chunk as mindustryPlayer; //not sure why this is necessary, typescript randomly converts any to unknown
+		return `[cyan]Player#${player.id} (${Strings.stripColors(player.name)})&fr`
+	} else if(typeof chunk == "string"){
+		if(uuidPattern.test(chunk)){
+			return `[blue]${chunk}[]`;
+		} else if(ipPattern.test(chunk)){
+			return `[blue]${chunk}[]`;
+		} else {
+			return chunk;
+		}
+	} else if(typeof chunk == "boolean"){
+		return `[blue]${chunk.toString()}[]`;
+	} else if(typeof chunk == "number"){
+		return `[blue]${chunk.toString()}[]`;
+	} else {
+		return chunk as string;
+	}
+});
 
 
 const CommandError = (function(){}) as typeof Error;

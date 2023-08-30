@@ -274,6 +274,82 @@ function outputSuccess(message, sender) {
 function outputMessage(message, sender) {
     sender.sendMessage(message);
 }
+var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
+    if (chunk instanceof players_1.FishPlayer) {
+        return "&c".concat(chunk.cleanedName, "&fr");
+    }
+    else if (chunk instanceof ranks_1.Rank) {
+        return "&p".concat(chunk.name, "&fr");
+    }
+    else if (chunk instanceof ranks_1.RoleFlag) {
+        return "&p".concat(chunk.name, "&fr");
+    }
+    else if (chunk instanceof Error) {
+        return "&r".concat(chunk.toString(), "&fr");
+    }
+    else if (chunk instanceof Packages.mindustry.gen.Player) {
+        var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
+        return "&cPlayer#".concat(player.id, " (").concat((0, utils_1.escapeStringColorsServer)(Strings.stripColors(player.name)), ")&fr");
+    }
+    else if (typeof chunk == "string") {
+        if (globals_1.uuidPattern.test(chunk)) {
+            return "&b".concat(chunk, "&fr");
+        }
+        else if (globals_1.ipPattern.test(chunk)) {
+            return "&b".concat(chunk, "&fr");
+        }
+        else {
+            return "".concat(chunk);
+        }
+    }
+    else if (typeof chunk == "boolean") {
+        return "&b".concat(chunk.toString(), "&fr");
+    }
+    else if (typeof chunk == "number") {
+        return "&b".concat(chunk.toString(), "&fr");
+    }
+    else {
+        return chunk;
+    }
+});
+var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk) {
+    if (chunk instanceof players_1.FishPlayer) {
+        return "[cyan]".concat(chunk.cleanedName, "[]");
+    }
+    else if (chunk instanceof ranks_1.Rank) {
+        return chunk.coloredName();
+    }
+    else if (chunk instanceof ranks_1.RoleFlag) {
+        return chunk.coloredName();
+    }
+    else if (chunk instanceof Error) {
+        return "[red]".concat(chunk.toString(), "[]");
+    }
+    else if (chunk instanceof Packages.mindustry.gen.Player) {
+        var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
+        return "[cyan]Player#".concat(player.id, " (").concat(Strings.stripColors(player.name), ")&fr");
+    }
+    else if (typeof chunk == "string") {
+        if (globals_1.uuidPattern.test(chunk)) {
+            return "[blue]".concat(chunk, "[]");
+        }
+        else if (globals_1.ipPattern.test(chunk)) {
+            return "[blue]".concat(chunk, "[]");
+        }
+        else {
+            return chunk;
+        }
+    }
+    else if (typeof chunk == "boolean") {
+        return "[blue]".concat(chunk.toString(), "[]");
+    }
+    else if (typeof chunk == "number") {
+        return "[blue]".concat(chunk.toString(), "[]");
+    }
+    else {
+        return chunk;
+    }
+});
 var CommandError = (function () { });
 Object.setPrototypeOf(CommandError.prototype, Error.prototype);
 //Shenanigans necessary due to odd behavior of Typescript's compiled error subclass
