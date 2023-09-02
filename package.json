@@ -1,8 +1,15 @@
 {
+  "name": "fish-commands",
+  "version": "1.0.0",
+  "description": "A custom commands plugin for >|||>Fish Mindustry servers. Created by Brandons404, rewritten by BalaM314.",
+  "main": "scripts/main.js",
+  "private": "true",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc --watch",
     "watch": "tsc --watch"
   },
-  "devDependencies": {
-    "@types/node": "^18.14.2"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED"
 }
