@@ -1,5 +1,6 @@
 import * as api from './api';
 import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, substitutions } from "./config";
+import { fishState } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
 
@@ -417,4 +418,17 @@ export function tagProcessor(transformer:(chunk:unknown, index:number) => string
 	return function(stringChunks:string[], ...varChunks:string[]){
 		return String.raw({raw: stringChunks}, ...varChunks.map(transformer));
 	}
+}
+
+export function definitelyRealMemoryCorruption(){
+	Log.info(`Triggering a prank: this will cause players to see two error messages claiming to be from a memory corruption, and cause a flickering amount of fissile matter and dormant cysts to be put in the core.`);
+	FishPlayer.messageStaff(`[gray]<[cyan]staff[gray]> [white]Activating memory corruption prank! (please don't ruin it by telling players what is happening, pretend you dont know)`);
+	api.sendModerationMessage(`Activated memory corruption prank`);
+	let t1f = false;
+	let t2f = false;
+	fishState.corruption_t1 = Timer.schedule(() => Vars.state.rules.defaultTeam.data().cores.first().items.set(Items.dormantCyst, (t1f = t1f !== true) ? 69 : 420), 0, 0.4, 600);
+	fishState.corruption_t2 = Timer.schedule(() => Vars.state.rules.defaultTeam.data().cores.first().items.set(Items.fissileMatter, (t2f = t2f !== true) ? 999 : 123), 0, 1.5, 200);
+	const hexString = Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, "0");
+	Call.sendMessage("[scarlet]Error: internal server error.");
+	Call.sendMessage(`[scarlet]Error: memory corruption: mindustry.world.modules.ItemModule@${hexString}`);
 }

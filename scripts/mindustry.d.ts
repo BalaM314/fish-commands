@@ -41,6 +41,10 @@ declare class Block {
 	buildType: Building;
 	id: number;
 }
+declare const Items: Record<string, Item>;
+declare class Item {
+	
+}
 declare class Team {
 	static derelict:Team;
 	static sharded:Team;

@@ -759,7 +759,7 @@ We apologize for the inconvenience.`
 	 * @returns if the message was received by anyone.
 	 */
 	static messageStaff(senderName:string, message:string):boolean;
-	static messageStaff(senderName:string):boolean;
+	static messageStaff(message:string):boolean;
 	static messageStaff(arg1:string, arg2?:string):boolean {
 		const message = arg2 ? `[gray]<[cyan]staff[gray]>[white]${arg1}[green]: [cyan]${arg2}` : arg1;
 		let messageReceived = false;

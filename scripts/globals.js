@@ -4,7 +4,10 @@ exports.ipPattern = exports.uuidPattern = exports.fishState = exports.recentWhis
 exports.tileHistory = {};
 exports.recentWhispers = {};
 exports.fishState = {
-    restarting: false
+    restarting: false,
+    corruption_t1: null,
+    corruption_t2: null,
+    lastPranked: Date.now(),
 };
 exports.uuidPattern = /^[a-zA-Z0-9+/]{22}==$/;
 exports.ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
