@@ -31,7 +31,15 @@ const $ = Object.assign(
 		return null;
 	},
 	{
-		sussy: true
+		sussy: true,
+		info: function(){
+			if(typeof input == "string"){
+				if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
+					return Vars.netServer.admins.getInfo(input);
+				}
+			}
+			return null;
+		}
 	}
 );
 
