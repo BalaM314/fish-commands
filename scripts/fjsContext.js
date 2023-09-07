@@ -19,6 +19,7 @@ const { FishPlayer } = players;
 const { Rank, RoleFlag } = ranks;
 const { menu } = menus;
 const { Ohnos } = ohno;
+const admins = Vars.netServer.admins;
 Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 
 const $ = Object.assign(
