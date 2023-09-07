@@ -883,7 +883,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
     FishPlayer.saveVersion = 4;
-    FishPlayer.chunkSize = 65000;
+    FishPlayer.chunkSize = 60000;
     //Static transients
     FishPlayer.stats = {
         numIpsChecked: 0,
