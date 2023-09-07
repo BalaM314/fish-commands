@@ -195,10 +195,10 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 
 
 function outputFail(message:string, sender:mindustryPlayer){
-	sender.sendMessage(`[scarlet]⚠ [yellow]${message}`);
+	sender.sendMessage(`[scarlet]\u26A0 [yellow]${message}`);
 }
 function outputSuccess(message:string, sender:mindustryPlayer){
-	sender.sendMessage(`[#48e076]✔ ${message}`);
+	sender.sendMessage(`[#48e076]\u2714 ${message}`);
 }
 function outputMessage(message:string, sender:mindustryPlayer){
 	sender.sendMessage(message);
@@ -310,7 +310,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 			//If the error is a command error, then just outputFail
 			outputFail(err.message, sender);
 		} else {
-			sender.sendMessage(`[scarlet]❌ An error occurred while executing the command!`);
+			sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 			if(sender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
 		}
 	} finally {
@@ -394,7 +394,7 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 							//If the error is a command error, then just outputFail
 							outputFail(err.message, sender);
 						} else {
-							sender.sendMessage(`[scarlet]❌ An error occurred while executing the command!`);
+							sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 							if(fishSender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
 						}
 					} finally {

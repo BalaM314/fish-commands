@@ -82,10 +82,10 @@ function menu<T>(
 				option: options[option],
 				sender: target,
 				outputFail(message:string){
-					target.sendMessage(`[scarlet]⚠ [yellow]${message}`);
+					target.sendMessage(`[scarlet]\u26A0 [yellow]${message}`);
 				},
 				outputSuccess(message:string){
-					target.sendMessage(`[#48e076]✔ ${message}`);
+					target.sendMessage(`[#48e076]\u2714 ${message}`);
 				}
 			});
 		};

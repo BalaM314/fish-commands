@@ -88,7 +88,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 
 		//prevent stopped players from doing anything other than deposit items.
 		if(!fishP.hasPerm("play")){
-			action.player.sendMessage('[scarlet]⚠ [yellow]You are stopped, you cant perfom this action.');
+			action.player.sendMessage('[scarlet]\u26A0 [yellow]You are stopped, you cant perfom this action.');
 			return false;
 		} else {
 			if(action.type === ActionType.rotate){

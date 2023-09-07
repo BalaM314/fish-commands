@@ -26,7 +26,7 @@ exports.commands = (0, commands_1.commandList)({
             var pet = UnitTypes.merui.spawn(sender.team(), sender.unit().x, sender.unit().y);
             pet.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
             sender.pet = pet.id;
-            Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
+            Call.infoPopup('[#7FD7FD7f]\uE81B', 5, Align.topRight, 180, 0, 0, 10);
             outputSuccess("Spawned a pet.");
             function controlUnit(_a) {
                 var pet = _a.pet, fishPlayer = _a.fishPlayer, petName = _a.petName;

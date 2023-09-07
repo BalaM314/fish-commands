@@ -25,7 +25,7 @@ export const commands = commandList({
 			pet.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
 			sender.pet = pet.id;
 
-			Call.infoPopup('[#7FD7FD7f]', 5, Align.topRight, 180, 0, 0, 10);
+			Call.infoPopup('[#7FD7FD7f]\uE81B', 5, Align.topRight, 180, 0, 0, 10);
 			outputSuccess(`Spawned a pet.`);
 
 			function controlUnit({pet, fishPlayer, petName}:{
