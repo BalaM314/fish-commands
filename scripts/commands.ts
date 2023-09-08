@@ -14,7 +14,7 @@ const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
 }> = {};
-const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid"] as const;
+const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid", "offlinePlayer"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
 /** Use this to get the correct type for command lists. */
@@ -146,8 +146,14 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				else if(output == "multiple") return {error: `Name "${args[i]}" could refer to more than one player.`};
 				outputArgs[cmdArg.name] = output;
 				break;
-			case "menuPlayer":
-				return {error: `menuPlayer argtype is not yet implemented`};
+			case "offlinePlayer":
+				if(uuidPattern.test(args[i])){
+					const player = FishPlayer.getById(args[i]);
+					if(player == null) return {error: `Player with uuid "${args[i]}" not found. Specify "create:${args[i]}" to create the player.`};
+					outputArgs[cmdArg.name] = player;
+				} else {
+					const player = FishPlayer.getAllOfflineByName(args[i]);
+				}
 				break;
 			case "team":
 				const team = getTeam(args[i]);

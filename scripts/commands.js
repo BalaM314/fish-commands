@@ -46,7 +46,7 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
 var globalUsageData = {};
-var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid"];
+var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid", "offlinePlayer"];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
 exports.commandList = commandList;
@@ -187,8 +187,16 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                         return { error: "Name \"".concat(args[i], "\" could refer to more than one player.") };
                     outputArgs[cmdArg.name] = output;
                     break;
-                case "menuPlayer":
-                    return { error: "menuPlayer argtype is not yet implemented" };
+                case "offlinePlayer":
+                    if (globals_1.uuidPattern.test(args[i])) {
+                        var player = players_1.FishPlayer.getById(args[i]);
+                        if (player == null)
+                            return { error: "Player with uuid \"".concat(args[i], "\" not found. Specify \"create:").concat(args[i], "\" to create the player.") };
+                        outputArgs[cmdArg.name] = player;
+                    }
+                    else {
+                        var player = players_1.FishPlayer.getAllOfflineByName(args[i]);
+                    }
                     break;
                 case "team":
                     var team = (0, utils_1.getTeam)(args[i]);

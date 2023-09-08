@@ -21,6 +21,7 @@ export type TypeOfArgType<T> =
 	T extends "team" ? Team :
 	T extends "player" ? FishPlayer :
 	T extends "exactPlayer" ? FishPlayer :
+	T extends "offlinePlayer" ? FishPlayer :
 	T extends "unittype" ? UnitType :
 	T extends "block" ? Block :
 	T extends "uuid" ? string :

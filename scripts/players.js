@@ -224,6 +224,62 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         });
         return players;
     };
+    /** Returns all cached FishPlayers with names matching the search string. */
+    FishPlayer.getAllOfflineByName = function (name) {
+        var e_3, _a;
+        var matching = [];
+        try {
+            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
+                if (player.cleanedName.toLowerCase().includes(name))
+                    matching.push(player);
+            }
+        }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_3) throw e_3.error; }
+        }
+        return matching;
+    };
+    /** Tries to return one cached FishPlayer with name matching the search string. */
+    FishPlayer.getOneOfflineByName = function (str) {
+        var e_4, _a;
+        if (str == "")
+            return "none";
+        var players = Object.values(this.cachedPlayers);
+        var matchingPlayers;
+        var filters = [
+            function (p) { return p.uuid === str; },
+            function (p) { return p.connected() && p.player.id.toString() === str; },
+            function (p) { return p.name.toLowerCase() === str.toLowerCase(); },
+            // p => p.cleanedName === str,
+            function (p) { return p.cleanedName.toLowerCase() === str.toLowerCase(); },
+            function (p) { return p.name.toLowerCase().includes(str.toLowerCase()); },
+            // p => p.cleanedName.includes(str),
+            function (p) { return p.cleanedName.toLowerCase().includes(str.toLowerCase()); },
+        ];
+        try {
+            for (var filters_3 = __values(filters), filters_3_1 = filters_3.next(); !filters_3_1.done; filters_3_1 = filters_3.next()) {
+                var filter = filters_3_1.value;
+                matchingPlayers = players.filter(filter);
+                if (matchingPlayers.length == 1)
+                    return matchingPlayers[0];
+                else if (matchingPlayers.length > 1)
+                    return "multiple";
+            }
+        }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        finally {
+            try {
+                if (filters_3_1 && !filters_3_1.done && (_a = filters_3.return)) _a.call(filters_3);
+            }
+            finally { if (e_4) throw e_4.error; }
+        }
+        return "none";
+    };
     //#endregion
     //#region eventhandling
     //Contains methods that handle an event and must be called by other code (usually through Events.on).
@@ -263,7 +319,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             fishP.stopUnit();
     };
     FishPlayer.forEachPlayer = function (func) {
-        var e_3, _a;
+        var e_5, _a;
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
@@ -271,12 +327,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     func(player);
             }
         }
-        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        catch (e_5_1) { e_5 = { error: e_5_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_3) throw e_3.error; }
+            finally { if (e_5) throw e_5.error; }
         }
     };
     /**Must be called at player join, before updateName(). */
@@ -295,7 +351,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
-        var e_4, _a;
+        var e_6, _a;
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
@@ -313,12 +369,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 prefix += flag.prefix;
             }
         }
-        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_4) throw e_4.error; }
+            finally { if (e_6) throw e_6.error; }
         }
         prefix += this.rank.prefix;
         if (prefix != "")
@@ -373,7 +429,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
-        var e_5, _a;
+        var e_7, _a;
         try {
             for (var _b = __values(config.bannedNames), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var bannedName = _c.value;
@@ -383,12 +439,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_5) throw e_5.error; }
+            finally { if (e_7) throw e_7.error; }
         }
         if ((0, utils_1.matchFilter)(this.name, true)) {
             this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
@@ -626,7 +682,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_6, _a;
+        var e_8, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -640,12 +696,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_6_1) { e_6 = { error: e_6_1 }; }
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_6) throw e_6.error; }
+            finally { if (e_8) throw e_8.error; }
         }
     };
     //#endregion

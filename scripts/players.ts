@@ -193,6 +193,38 @@ export class FishPlayer {
 		});
 		return players;
 	}
+	/** Returns all cached FishPlayers with names matching the search string. */
+	static getAllOfflineByName(name:string){
+		const matching:FishPlayer[] = [];
+		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
+			if(player.cleanedName.toLowerCase().includes(name)) matching.push(player);
+		}
+		return matching;
+	}
+	/** Tries to return one cached FishPlayer with name matching the search string. */
+	static getOneOfflineByName(str:string):FishPlayer | "none" | "multiple" {
+		if(str == "") return "none";
+		const players = Object.values(this.cachedPlayers);
+		let matchingPlayers:FishPlayer[];
+
+		const filters:((p:FishPlayer) => boolean)[] = [
+			p => p.uuid === str,
+			p => p.connected() && p.player.id.toString() === str,
+			p => p.name.toLowerCase() === str.toLowerCase(),
+			// p => p.cleanedName === str,
+			p => p.cleanedName.toLowerCase() === str.toLowerCase(),
+			p => p.name.toLowerCase().includes(str.toLowerCase()),
+			// p => p.cleanedName.includes(str),
+			p => p.cleanedName.toLowerCase().includes(str.toLowerCase()),
+		];
+
+		for(const filter of filters){
+			matchingPlayers = players.filter(filter);
+			if(matchingPlayers.length == 1) return matchingPlayers[0];
+			else if(matchingPlayers.length > 1) return "multiple";
+		}
+		return "none";
+	}
 	//#endregion
 
 	//#region eventhandling

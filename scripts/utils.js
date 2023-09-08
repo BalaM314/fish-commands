@@ -525,7 +525,7 @@ exports.tagProcessor = tagProcessor;
 function definitelyRealMemoryCorruption() {
     Log.info("Triggering a prank: this will cause players to see two error messages claiming to be from a memory corruption, and cause a flickering amount of fissile matter and dormant cysts to be put in the core.");
     players_1.FishPlayer.messageStaff("[gray]<[cyan]staff[gray]> [white]Activating memory corruption prank! (please don't ruin it by telling players what is happening, pretend you dont know)");
-    api.sendModerationMessage("Activated memory corruption prank");
+    api.sendModerationMessage("Activated memory corruption prank on server ".concat(Vars.state.rules.mode().name()));
     var t1f = false;
     var t2f = false;
     globals_1.fishState.corruption_t1 = Timer.schedule(function () { return Vars.state.rules.defaultTeam.data().cores.first().items.set(Items.dormantCyst, (t1f = t1f !== true) ? 69 : 420); }, 0, 0.4, 600);
