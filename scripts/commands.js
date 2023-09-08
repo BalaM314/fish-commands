@@ -194,8 +194,16 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                             return { error: "Player with uuid \"".concat(args[i], "\" not found. Specify \"create:").concat(args[i], "\" to create the player.") };
                         outputArgs[cmdArg.name] = player;
                     }
+                    else if (args[i].split("create:")[1]) {
+                        outputArgs[cmdArg.name] = players_1.FishPlayer.getFromInfo(Vars.netServer.admins.getInfo(args[i].split("create:")[1]));
+                    }
                     else {
-                        var player = players_1.FishPlayer.getAllOfflineByName(args[i]);
+                        var output_1 = players_1.FishPlayer.getOneOfflineByName(args[i]);
+                        if (output_1 == "none")
+                            return { error: "Player \"".concat(args[i], "\" not found.") };
+                        else if (output_1 == "multiple")
+                            return { error: "Name \"".concat(args[i], "\" could refer to more than one player. Try specifying by UUID.") };
+                        outputArgs[cmdArg.name] = output_1;
                     }
                     break;
                 case "team":

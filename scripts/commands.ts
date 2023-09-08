@@ -151,8 +151,17 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 					const player = FishPlayer.getById(args[i]);
 					if(player == null) return {error: `Player with uuid "${args[i]}" not found. Specify "create:${args[i]}" to create the player.`};
 					outputArgs[cmdArg.name] = player;
+				} else if(args[i].split("create:")[1]){
+					outputArgs[cmdArg.name] = FishPlayer.getFromInfo(
+						Vars.netServer.admins.getInfo(
+							args[i].split("create:")[1]
+						)
+					);
 				} else {
-					const player = FishPlayer.getAllOfflineByName(args[i]);
+					const output = FishPlayer.getOneOfflineByName(args[i]);
+					if(output == "none") return {error: `Player "${args[i]}" not found.`};
+					else if(output == "multiple") return {error: `Name "${args[i]}" could refer to more than one player. Try specifying by UUID.`};
+					outputArgs[cmdArg.name] = output;
 				}
 				break;
 			case "team":
