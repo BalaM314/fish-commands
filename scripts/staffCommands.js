@@ -487,9 +487,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             }
             try {
                 var scripts = Vars.mods.getScripts();
-                Log.info("Running JS");
                 var out = scripts.context.evaluateString(scripts.scope, javascript, "fish-js-console.js", 1);
-                Log.info("JS ran");
                 if (out instanceof Array) {
                     output("[cyan]Array: [[[]" + out.join(", ") + "[cyan]]");
                 }

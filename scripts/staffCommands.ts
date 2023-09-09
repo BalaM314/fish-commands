@@ -503,9 +503,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 
 			try {
 				const scripts = Vars.mods.getScripts();
-				Log.info("Running JS");
 				const out = scripts.context.evaluateString(scripts.scope, javascript, "fish-js-console.js", 1);
-				Log.info("JS ran");
 				if(out instanceof Array){
 					output("[cyan]Array: [[[]" + out.join(", ") + "[cyan]]");
 				} else if(out === undefined){
