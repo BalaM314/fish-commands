@@ -19,7 +19,7 @@ const { FishPlayer } = players;
 const { Rank, RoleFlag } = ranks;
 const { menu } = menus;
 const { Ohnos } = ohno;
-const admins = Vars.netServer.admins;
+
 Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 
 const $ = Object.assign(
@@ -46,6 +46,7 @@ const $ = Object.assign(
 
 exports.runJS = function(input){
 	try {
+		const admins = Vars.netServer.admins;
 		const output = eval(input);
 		if(output instanceof Array){
 			Log.info("&cArray: [&fr" + output.join(", ") + "&c]&fr");
