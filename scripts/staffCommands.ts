@@ -502,17 +502,20 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 			}
 
 			try {
+				const scripts = Vars.mods.getScripts();
 				Log.info("Running JS");
-				const out = Vars.mods.getScripts().runConsole(javascript);
+				const out = scripts.context.evaluateString(scripts.scope, javascript, "fish-js-console.js", 1);
 				Log.info("JS ran");
 				if(out instanceof Array){
 					output("[cyan]Array: [[[]" + out.join(", ") + "[cyan]]");
 				} else if(out === undefined){
-					output("undefined");
+					output("[blue]undefined[]");
 				} else if(out === null){
-					output("null");
+					output("[blue]null[]");
 				} else if(out instanceof Error){
 					outputFail(parseError(out));
+				} else if(typeof out == "number"){
+					output(`[blue]${out}[]`);
 				} else {
 					output(out);
 				}

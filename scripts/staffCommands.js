@@ -486,20 +486,24 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 (0, commands_1.fail)("Authentication failure");
             }
             try {
+                var scripts = Vars.mods.getScripts();
                 Log.info("Running JS");
-                var out = Vars.mods.getScripts().runConsole(javascript);
+                var out = scripts.context.evaluateString(scripts.scope, javascript, "fish-js-console.js", 1);
                 Log.info("JS ran");
                 if (out instanceof Array) {
                     output("[cyan]Array: [[[]" + out.join(", ") + "[cyan]]");
                 }
                 else if (out === undefined) {
-                    output("undefined");
+                    output("[blue]undefined[]");
                 }
                 else if (out === null) {
-                    output("null");
+                    output("[blue]null[]");
                 }
                 else if (out instanceof Error) {
                     outputFail((0, utils_1.parseError)(out));
+                }
+                else if (typeof out == "number") {
+                    output("[blue]".concat(out, "[]"));
                 }
                 else {
                     output(out);
