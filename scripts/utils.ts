@@ -400,7 +400,6 @@ export function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
 	}, 0, 0.016, 10);
 }
 
-//TODO use
 export function parseError(thing:unknown){
 	if(thing instanceof Error){
 		return thing.toString();

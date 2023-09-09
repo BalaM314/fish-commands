@@ -1,6 +1,6 @@
 import * as api from "./api";
 import { Perm, commandList, fail } from "./commands";
-import { maxTime } from "./config";
+import { getGamemode, maxTime } from "./config";
 import { uuidPattern } from "./globals";
 import { menu } from './menus';
 import { Ohnos } from "./ohno";
@@ -8,8 +8,8 @@ import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
 import {
-	colorBadBoolean, escapeStringColorsClient, formatTime, formatTimeRelative, logAction,
-	setToArray
+	colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative,
+	logAction, parseError, setToArray
 } from "./utils";
 
 const spawnedUnits:Unit[] = [];
@@ -482,6 +482,43 @@ export const commands = commandList({
 			});
 			logAction(`Exterminated ${numKilled} units`, sender);
 			outputSuccess(`Exterminated ${numKilled} units.`);
+		}
+	},
+	js: {
+		args: ["javascript:string"],
+		description: "Run arbitrary javascript.",
+		perm: Perm.runJS,
+		handler({args: {javascript}, output, outputFail, sender}){
+			
+			//Additional validation couldn't hurt...
+			const adminUsid = sender.info().adminUsid;
+			if(!adminUsid || adminUsid != sender.player.usid() || sender.usid != sender.player.usid()){
+				api.sendModerationMessage(
+`# !!!!! /js authentication failed !!!!!
+Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+<@!709904412033810533>`
+				);
+				fail(`Authentication failure`);
+			}
+
+			try {
+				Log.info("Running JS");
+				const out = Vars.mods.getScripts().runConsole(javascript);
+				Log.info("JS ran");
+				if(out instanceof Array){
+					output("[cyan]Array: [[[]" + out.join(", ") + "[cyan]]");
+				} else if(out === undefined){
+					output("undefined");
+				} else if(out === null){
+					output("null");
+				} else if(out instanceof Error){
+					outputFail(parseError(out));
+				} else {
+					output(out);
+				}
+			} catch(err){
+				outputFail(parseError(err));
+			}
 		}
 	}
 

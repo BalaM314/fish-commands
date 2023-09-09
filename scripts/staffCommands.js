@@ -473,4 +473,40 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             (0, utils_1.logAction)("Exterminated ".concat(numKilled, " units"), sender);
             outputSuccess("Exterminated ".concat(numKilled, " units."));
         }
+    }, js: {
+        args: ["javascript:string"],
+        description: "Run arbitrary javascript.",
+        perm: commands_1.Perm.runJS,
+        handler: function (_a) {
+            var javascript = _a.args.javascript, output = _a.output, outputFail = _a.outputFail, sender = _a.sender;
+            //Additional validation couldn't hurt...
+            var adminUsid = sender.info().adminUsid;
+            if (!adminUsid || adminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat((0, config_1.getGamemode)(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                (0, commands_1.fail)("Authentication failure");
+            }
+            try {
+                Log.info("Running JS");
+                var out = Vars.mods.getScripts().runConsole(javascript);
+                Log.info("JS ran");
+                if (out instanceof Array) {
+                    output("[cyan]Array: [[[]" + out.join(", ") + "[cyan]]");
+                }
+                else if (out === undefined) {
+                    output("undefined");
+                }
+                else if (out === null) {
+                    output("null");
+                }
+                else if (out instanceof Error) {
+                    outputFail((0, utils_1.parseError)(out));
+                }
+                else {
+                    output(out);
+                }
+            }
+            catch (err) {
+                outputFail((0, utils_1.parseError)(err));
+            }
+        }
     } }));

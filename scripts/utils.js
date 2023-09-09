@@ -496,7 +496,6 @@ function teleportPlayer(player, to) {
     }, 0, 0.016, 10);
 }
 exports.teleportPlayer = teleportPlayer;
-//TODO use
 function parseError(thing) {
     if (thing instanceof Error) {
         return thing.toString();
