@@ -227,6 +227,9 @@ export const commands = consoleCommandList({
 					} else {
 						output(`UUID &c"${args.target}"&fr was not locally banned.`);
 					}
+					if(info){
+						output(`You may also want to consider unbanning the IP "${info.lastIP}".`);
+					}
 				});
 			} else {
 				fail(`Cannot unban by name; please use the info command to find the IP and UUID of the player you are looking for.`);

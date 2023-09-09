@@ -274,7 +274,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }
             else if (globals_1.uuidPattern.test(args.target)) {
                 output("Checking ban status...");
-                var info = Vars.netServer.admins.findByIP(args.target);
+                var info_1 = Vars.netServer.admins.findByIP(args.target);
                 api.getBanned({ uuid: args.target }, function (banned) {
                     if (banned) {
                         api.unban({ uuid: args.target });
@@ -290,6 +290,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     }
                     else {
                         output("UUID &c\"".concat(args.target, "\"&fr was not locally banned."));
+                    }
+                    if (info_1) {
+                        output("You may also want to consider unbanning the IP \"".concat(info_1.lastIP, "\"."));
                     }
                 });
             }
