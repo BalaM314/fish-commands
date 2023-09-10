@@ -91,17 +91,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 			action.player.sendMessage('[scarlet]\u26A0 [yellow]You are stopped, you cant perfom this action.');
 			return false;
 		} else {
-			if(action.type === ActionType.rotate){
+			if(action.type === ActionType.pickupBlock){
 				addToTileHistory({
 					pos: `${action.tile!.x},${action.tile!.y}`,
-					name: action.player.name,
-					action: "rotated",
-					type: action.tile!.block()?.name ?? "nothing",
-				});
-			} else if(action.type === ActionType.pickupBlock){
-				addToTileHistory({
-					pos: `${action.tile!.x},${action.tile!.y}`,
-					name: action.player.name,
+					uuid: action.player.uuid(),
 					action: "picked up",
 					type: action.tile!.block()?.name ?? "nothing",
 				});

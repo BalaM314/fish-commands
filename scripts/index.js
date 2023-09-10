@@ -95,7 +95,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     });
     // Action filters
     Vars.netServer.admins.addActionFilter(function (action) {
-        var _a, _b, _c, _d;
+        var _a, _b;
         var player = action.player;
         var fishP = players_1.FishPlayer.get(player);
         //prevent stopped players from doing anything other than deposit items.
@@ -104,20 +104,12 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             return false;
         }
         else {
-            if (action.type === ActionType.rotate) {
+            if (action.type === ActionType.pickupBlock) {
                 addToTileHistory({
                     pos: "".concat(action.tile.x, ",").concat(action.tile.y),
-                    name: action.player.name,
-                    action: "rotated",
-                    type: (_b = (_a = action.tile.block()) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : "nothing",
-                });
-            }
-            else if (action.type === ActionType.pickupBlock) {
-                addToTileHistory({
-                    pos: "".concat(action.tile.x, ",").concat(action.tile.y),
-                    name: action.player.name,
+                    uuid: action.player.uuid(),
                     action: "picked up",
-                    type: (_d = (_c = action.tile.block()) === null || _c === void 0 ? void 0 : _c.name) !== null && _d !== void 0 ? _d : "nothing",
+                    type: (_b = (_a = action.tile.block()) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : "nothing",
                 });
             }
             return true;
