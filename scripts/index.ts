@@ -98,6 +98,13 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 					action: "rotated",
 					type: action.tile!.block()?.name ?? "nothing",
 				});
+			} else if(action.type === ActionType.pickupBlock){
+				addToTileHistory({
+					pos: `${action.tile!.x},${action.tile!.y}`,
+					name: action.player.name,
+					action: "picked up",
+					type: action.tile!.block()?.name ?? "nothing",
+				});
 			}
 			return true;
 		}
@@ -143,11 +150,38 @@ function addToTileHistory(e:any){
 		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
 		action = "rotated";
 		type = e.build.block.name;
+	} else if(e instanceof EventType.PayloadDropEvent){
+		action = "pay-dropped";
+		const controller = e.carrier.controller();
+		uuid = e.carrier.player?.uuid() ?? (controller instanceof LogicAI ? `${controller.controller.block.name} at ${controller.controller.tileX()},${controller.controller.tileY()} last accessed by ${e.carrier.getControllerName()}` : null) ?? e.carrier.type.name;
+		if(e.build){
+			tile = e.build.tile;
+			type = e.build.block.name;
+		} else if(e.unit){
+			tile = e.unit.tileOn();
+			if(!tile) return;
+			type = e.unit.type.name;
+		} else return;
+	} else if(e instanceof EventType.PickupEvent){
+		action = "picked up";
+		if(e.carrier.isPlayer()) return; //This event would have been handled by actionfilter
+		const controller = e.carrier.controller();
+		if(!(controller instanceof LogicAI)) return;
+		uuid = `${controller.controller.block.name} at ${controller.controller.tileX()},${controller.controller.tileY()} last accessed by ${e.carrier.getControllerName()}`
+		if(e.build){
+			tile = e.build.tile;
+			type = e.build.block.name;
+		} else if(e.unit){
+			tile = e.unit.tileOn();
+			if(!tile) return;
+			type = e.unit.type.name;
+		} else return;
 	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
 		let pos;
 		({pos, uuid, action, type} = e);
 		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]);
 	} else return;
+	[tile, uuid, action, type, time] satisfies [Tile, string, string, string, number];
 
 	tile.getLinkedTiles((t:Tile) => {
 		const pos = `${t.x},${t.y}`;
@@ -178,6 +212,8 @@ function addToTileHistory(e:any){
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.BuildRotateEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);
+Events.on(EventType.PickupEvent, addToTileHistory);
+Events.on(EventType.PayloadDropEvent, addToTileHistory);
 
 Events.on(EventType.TapEvent, handleTapEvent);
 

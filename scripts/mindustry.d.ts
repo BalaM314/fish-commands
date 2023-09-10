@@ -261,3 +261,6 @@ declare class UnitType {
 	name: string;
 }
 declare class MissileUnitType extends UnitType {}
+declare class LogicAI {
+	controller: Building | null;
+}

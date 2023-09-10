@@ -95,7 +95,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     });
     // Action filters
     Vars.netServer.admins.addActionFilter(function (action) {
-        var _a, _b;
+        var _a, _b, _c, _d;
         var player = action.player;
         var fishP = players_1.FishPlayer.get(player);
         //prevent stopped players from doing anything other than deposit items.
@@ -110,6 +110,14 @@ Events.on(EventType.ServerLoadEvent, function (e) {
                     name: action.player.name,
                     action: "rotated",
                     type: (_b = (_a = action.tile.block()) === null || _a === void 0 ? void 0 : _a.name) !== null && _b !== void 0 ? _b : "nothing",
+                });
+            }
+            else if (action.type === ActionType.pickupBlock) {
+                addToTileHistory({
+                    pos: "".concat(action.tile.x, ",").concat(action.tile.y),
+                    name: action.player.name,
+                    action: "picked up",
+                    type: (_d = (_c = action.tile.block()) === null || _c === void 0 ? void 0 : _c.name) !== null && _d !== void 0 ? _d : "nothing",
                 });
             }
             return true;
@@ -130,7 +138,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
 function addToTileHistory(e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         tile = e.tile;
@@ -156,6 +164,44 @@ function addToTileHistory(e) {
         action = "rotated";
         type = e.build.block.name;
     }
+    else if (e instanceof EventType.PayloadDropEvent) {
+        action = "pay-dropped";
+        var controller = e.carrier.controller();
+        uuid = (_q = (_p = (_o = e.carrier.player) === null || _o === void 0 ? void 0 : _o.uuid()) !== null && _p !== void 0 ? _p : (controller instanceof LogicAI ? "".concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _q !== void 0 ? _q : e.carrier.type.name;
+        if (e.build) {
+            tile = e.build.tile;
+            type = e.build.block.name;
+        }
+        else if (e.unit) {
+            tile = e.unit.tileOn();
+            if (!tile)
+                return;
+            type = e.unit.type.name;
+        }
+        else
+            return;
+    }
+    else if (e instanceof EventType.PickupEvent) {
+        action = "picked up";
+        if (e.carrier.isPlayer())
+            return; //This event would have been handled by actionfilter
+        var controller = e.carrier.controller();
+        if (!(controller instanceof LogicAI))
+            return;
+        uuid = "".concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName());
+        if (e.build) {
+            tile = e.build.tile;
+            type = e.build.block.name;
+        }
+        else if (e.unit) {
+            tile = e.unit.tileOn();
+            if (!tile)
+                return;
+            type = e.unit.type.name;
+        }
+        else
+            return;
+    }
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
         var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
@@ -163,6 +209,7 @@ function addToTileHistory(e) {
     }
     else
         return;
+    [tile, uuid, action, type, time];
     tile.getLinkedTiles(function (t) {
         var pos = "".concat(t.x, ",").concat(t.y);
         var existingData = globals_1.tileHistory[pos] ? utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
@@ -193,6 +240,8 @@ function addToTileHistory(e) {
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.BuildRotateEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);
+Events.on(EventType.PickupEvent, addToTileHistory);
+Events.on(EventType.PayloadDropEvent, addToTileHistory);
 Events.on(EventType.TapEvent, commands_1.handleTapEvent);
 Events.on(EventType.GameOverEvent, function (e) {
     var e_1, _a;
