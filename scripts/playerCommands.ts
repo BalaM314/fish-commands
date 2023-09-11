@@ -1,7 +1,7 @@
 import * as api from './api';
 import { commandList, fail, formatArg, Perm } from './commands';
 import { FishServers } from './config';
-import { recentWhispers, tileHistory } from './globals';
+import { recentWhispers, tileHistory, uuidPattern } from './globals';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
@@ -99,9 +99,11 @@ export const commands = commandList({
 					type: d.readString(2),
 				}), 1));
 				output(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
-					sender.hasPerm("viewUUIDs")
+					uuidPattern.test(e.uuid)
+					? (sender.hasPerm("viewUUIDs")
 					? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-					: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+					: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
+					: `[yellow]${e.uuid} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
 				).join('\n'));
 			}
 		}
