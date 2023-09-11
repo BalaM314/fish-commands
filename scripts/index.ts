@@ -143,6 +143,11 @@ function addToTileHistory(e:any){
 		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
 		action = "rotated";
 		type = e.build.block.name;
+	} else if(e instanceof EventType.UnitDestroyEvent){
+		tile = e.unit.tileOn();
+		uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : e.unit.lastCommanded ?? "unknown";
+		action = "killed";
+		type = e.unit.type.name;
 	} else if(e instanceof EventType.PayloadDropEvent){
 		action = "pay-dropped";
 		const controller = e.carrier.controller();
@@ -207,6 +212,7 @@ Events.on(EventType.BuildRotateEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);
 Events.on(EventType.PickupEvent, addToTileHistory);
 Events.on(EventType.PayloadDropEvent, addToTileHistory);
+Events.on(EventType.UnitDestroyEvent, addToTileHistory);
 
 Events.on(EventType.TapEvent, handleTapEvent);
 
