@@ -101,9 +101,9 @@ export const commands = commandList({
 				output(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
 					uuidPattern.test(e.uuid)
 					? (sender.hasPerm("viewUUIDs")
-					? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+					? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
 					: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
-					: `[yellow]${e.uuid} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+					: `[yellow]${e.uuid}[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
 				).join('\n'));
 			}
 		}
