@@ -487,7 +487,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         else if (this.autoflagged)
             this.sendMessage("[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
         else
-            this.sendMessage("[gold]Welcome![]");
+            this.sendMessage("[gold]Welcome![]"
+            //TODO tips
+            );
     };
     //#endregion
     //#region I/O
@@ -724,6 +726,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
      */
     FishPlayer.prototype.canModerate = function (player, strict) {
         if (strict === void 0) { strict = true; }
+        if (!this.hasPerm("mod") && player !== this)
+            return; //players below mod rank have no moderation permissions and cannot moderate anybody, except themselves
         if (strict)
             return this.rank.level > player.rank.level || player == this;
         else

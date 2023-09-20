@@ -399,6 +399,7 @@ To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank
 We apologize for the inconvenience.`
 		); else this.sendMessage(
 `[gold]Welcome![]`
+//TODO tips
 		);
 	}
 	//#endregion
@@ -608,6 +609,7 @@ We apologize for the inconvenience.`
 	 * @param strict If false, then the action is also allowed on players of same rank.
 	 */
 	canModerate(player:FishPlayer, strict:boolean = true){
+		if(!this.hasPerm("mod") && player !== this) return; //players below mod rank have no moderation permissions and cannot moderate anybody, except themselves
 		if(strict)
 			return this.rank.level > player.rank.level || player == this;
 		else
