@@ -4,7 +4,10 @@ import * as config from "./config";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
-import { StringIO, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative, isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray } from "./utils";
+import {
+	StringIO, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative,
+	isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray
+} from "./utils";
 
 
 export class FishPlayer {
@@ -50,6 +53,7 @@ export class FishPlayer {
 		mode: "once" as "once" | "on",
 	};
 	lastJoined:number = -1;
+	lastShownAd:number = config.maxTime;
 
 	//Stored data
 	uuid: string;
@@ -397,10 +401,24 @@ We apologize for the inconvenience.`
 `[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.
 To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
 We apologize for the inconvenience.`
-		); else this.sendMessage(
-`[gold]Welcome![]`
-//TODO tips
-		);
+		); else {
+			//show tips
+			
+			let showAd = false;
+			if(Date.now() - this.lastShownAd > 86400000){
+				this.lastShownAd = Date.now();
+				showAd = true;
+			} else if(this.lastShownAd == config.maxTime){
+				//this is the first time they joined, show ad the next time they join
+				this.lastShownAd = -1;
+			}
+			const messages = showAd ? config.tips.ads : config.tips.normal;
+			const message = messages[Math.floor(Math.random() * messages.length)];
+			this.sendMessage(
+`[gold]Welcome![]
+[gold]Tip: ${message}[]`
+			);
+		}
 	}
 	//#endregion
 

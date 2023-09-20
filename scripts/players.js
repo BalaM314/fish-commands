@@ -68,6 +68,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             mode: "once",
         };
         this.lastJoined = -1;
+        this.lastShownAd = config.maxTime;
         this.uuid = (_k = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _k !== void 0 ? _k : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_l = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]";
         this.muted = muted;
@@ -486,10 +487,21 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.sendMessage("[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
         else if (this.autoflagged)
             this.sendMessage("[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
-        else
-            this.sendMessage("[gold]Welcome![]"
-            //TODO tips
-            );
+        else {
+            //show tips
+            var showAd = false;
+            if (Date.now() - this.lastShownAd > 86400000) {
+                this.lastShownAd = Date.now();
+                showAd = true;
+            }
+            else if (this.lastShownAd == config.maxTime) {
+                //this is the first time they joined, show ad the next time they join
+                this.lastShownAd = -1;
+            }
+            var messages = showAd ? config.tips.ads : config.tips.normal;
+            var message = messages[Math.floor(Math.random() * messages.length)];
+            this.sendMessage("[gold]Welcome![]\n[gold]Tip: ".concat(message, "[]"));
+        }
     };
     //#endregion
     //#region I/O
