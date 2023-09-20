@@ -369,7 +369,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (this.marked())
             prefix += config.MARKED_PREFIX;
         else if (this.autoflagged)
-            prefix += "[yellow]\u26A0[scarlet]Flagged[yellow]\u26A0[white]";
+            prefix += "[yellow]\u26A0[scarlet]Flagged[]\u26A0[]";
         if (this.muted)
             prefix += config.MUTED_PREFIX;
         try {

@@ -292,7 +292,7 @@ export class FishPlayer {
 		let prefix = '';
 		if(isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
 		if(this.marked()) prefix += config.MARKED_PREFIX;
-		else if(this.autoflagged) prefix += "[yellow]\u26A0[scarlet]Flagged[yellow]\u26A0[white]";
+		else if(this.autoflagged) prefix += "[yellow]\u26A0[scarlet]Flagged[]\u26A0[]";
 		if(this.muted) prefix += config.MUTED_PREFIX;
 		for(const flag of this.flags){
 			prefix += flag.prefix;

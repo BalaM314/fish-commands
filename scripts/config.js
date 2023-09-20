@@ -17,7 +17,7 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.maxTime = exports.localDebug = exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.adminNames = exports.bannedNames = exports.bannedInNamesWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
-exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[yellow]\u26A0[white]';
+exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });

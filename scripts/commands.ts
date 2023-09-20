@@ -34,7 +34,7 @@ export class Perm {
 	static none = new Perm("all", fishP => true, "[sky]");
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
-	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a [scarlet]Fish Membership[yellow] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a [pink]Fish Membership[] to use this command. Subscribe on the [sky]/discord[yellow]!`);
 	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast("mod"));
 	static bypassChatFilter = new Perm("bypassChatFilter", "admin");
 	static seeMutedMessages = new Perm("seeMutedMessages", fishP => fishP.muted || fishP.autoflagged || fishP.ranksAtLeast("mod"));
