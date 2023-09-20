@@ -86,3 +86,41 @@ export const FishServers = {
 export const getGamemode = () => Vars.state.rules.mode().name();
 export const localDebug = new Fi("config/.debug").exists();
 export const maxTime = 9999999999999;
+export const tips = {
+	ads: [
+		`[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at https://patreon.com/FishServers`,
+		`[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at https://patreon.com/FishServers`,
+		`[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at https://patreon.com/FishServers`,
+		`Want to support the server and get some perks? Get a [pink]Fish Membership[] at https://patreon.com/FishServers`,
+		`Join our [#7289da]Discord server[]! https://discord.gg/VpzcYSQ33Y`,
+		`Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[]`
+	],
+	normal: [
+		//commands
+		`You can spawn an [scarlet]Ohno[] with the [scarlet]/ohno[] command. Ohnos are harmless creatures that were created by fusing an alpha and an atrax.`,
+		`Ohnos cannot be spawned near enemy buildings, because they are peaceful and do not want to be used for attacks.`,
+		`You can use [white]/tp[] to teleport directly to any other player! (But only when you're in a core unit)`,
+		`Hate boulders? You can remove them with [white]/clean[].`,
+		`You can kill your unit by running [white]/die[].`,
+		`We have a tilelog system to help catch griefers. Run [white]/tilelog[], then click a tile to see what's happened there.`,
+		`Run [white]/tilelog 1[] to check the tile history of multiple tiles.`,
+		`Tilelog stores when a building is placed, broken, rotated, configured, and picked up/dropped by a payload unit. Access it with [white]/tilelog[]`,
+		`Tilelog doesn't just log tile actions, it also logs unit deaths! Access it with [white]/tilelog[]`,
+		`You can mark yourself as AFK(away from keyboard) with [white]/afk[].`,
+		`Run /survival, /attack, /pvp, or /sandbox to quickly change to another server.`,
+		`Need to get rid of an active griefer? Use [#6FFC7C]/s[] to send a message to all staff members across all servers.`,
+		`Use [white]/help to get more information about a specific command.`,
+		`If you want to send a message to just one player, you can use the [white]/msg[] command.`,
+		`Use [white]/r[] to reply to a message sent by another player.`,
+		`[white]/trail[] can be used to give your unit a trail of particle effects.`,
+		`Run [white]/ranks[] to see all the ranks on our server.`,
+		`Is someone impersonating a staff member? Run [white]/rank[] to see their real rank.`,
+		//misc
+		`Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!`,
+		`Griefers will often be found with the text ${MARKED_PREFIX} prepended to their name.`,
+		`Players marked as [yellow]\u26A0[scarlet]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.`,
+	],
+	staff: [
+
+	]
+};
