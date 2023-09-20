@@ -179,6 +179,11 @@ function addToTileHistory(e:any){
 		({pos, uuid, action, type} = e);
 		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]);
 	} else return;
+	if(tile == null){
+		Log.err("[tilelog] tile was null");
+		Log.info(e);
+		return;
+	}
 	[tile, uuid, action, type, time] satisfies [Tile, string, string, string, number];
 
 	tile.getLinkedTiles((t:Tile) => {
