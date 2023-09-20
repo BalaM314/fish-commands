@@ -43,7 +43,11 @@ export function free(uuid: string) {
 
 /** Gets player's unmark time */
 export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
-	if(localDebug) return;
+	if(localDebug){
+		Log.info(`Attempted to getStopped("${uuid}"), assuming -1 due to local debug`);
+		callback(-1);
+		return;
+	}
 	const req = Http.post(`http://${ip}:5000/api/getStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
