@@ -5,6 +5,7 @@
 import * as api from './api';
 import * as commands from './commands';
 import { handleTapEvent } from './commands';
+import { getGamemode } from './config';
 import * as consoleCommands from "./consoleCommands";
 import { fishState, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
@@ -151,6 +152,12 @@ function addToTileHistory(e:any){
 		uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : e.unit.lastCommanded ?? "unknown";
 		action = "killed";
 		type = e.unit.type.name;
+	} else if(e instanceof EventType.BlockDestroyEvent){
+		if(getGamemode() == "attack" && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
+		tile = e.tile;
+		uuid = "something";
+		action = "destroyed";
+		type = e.tile.block()?.name ?? "air";
 	} else if(e instanceof EventType.PayloadDropEvent){
 		action = "pay-dropped";
 		const controller = e.carrier.controller();
@@ -221,7 +228,8 @@ Events.on(EventType.ConfigEvent, addToTileHistory);
 Events.on(EventType.PickupEvent, addToTileHistory);
 Events.on(EventType.PayloadDropEvent, addToTileHistory);
 Events.on(EventType.UnitDestroyEvent, addToTileHistory);
-//TODO log block destructions *only if player team*
+Events.on(EventType.BlockDestroyEvent, addToTileHistory);
+
 
 Events.on(EventType.TapEvent, handleTapEvent);
 

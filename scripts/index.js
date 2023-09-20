@@ -33,6 +33,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var api = require("./api");
 var commands = require("./commands");
 var commands_1 = require("./commands");
+var config_1 = require("./config");
 var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
 var memberCommands = require("./memberCommands");
@@ -133,7 +134,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
 function addToTileHistory(e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         tile = e.tile;
@@ -165,10 +166,18 @@ function addToTileHistory(e) {
         action = "killed";
         type = e.unit.type.name;
     }
+    else if (e instanceof EventType.BlockDestroyEvent) {
+        if ((0, config_1.getGamemode)() == "attack" && ((_p = e.tile.build) === null || _p === void 0 ? void 0 : _p.team) != Vars.state.rules.defaultTeam)
+            return; //Don't log destruction of enemy blocks
+        tile = e.tile;
+        uuid = "something";
+        action = "destroyed";
+        type = (_r = (_q = e.tile.block()) === null || _q === void 0 ? void 0 : _q.name) !== null && _r !== void 0 ? _r : "air";
+    }
     else if (e instanceof EventType.PayloadDropEvent) {
         action = "pay-dropped";
         var controller = e.carrier.controller();
-        uuid = (_r = (_q = (_p = e.carrier.player) === null || _p === void 0 ? void 0 : _p.uuid()) !== null && _q !== void 0 ? _q : (controller instanceof LogicAI ? "".concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _r !== void 0 ? _r : e.carrier.type.name;
+        uuid = (_u = (_t = (_s = e.carrier.player) === null || _s === void 0 ? void 0 : _s.uuid()) !== null && _t !== void 0 ? _t : (controller instanceof LogicAI ? "".concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _u !== void 0 ? _u : e.carrier.type.name;
         if (e.build) {
             tile = e.build.tile;
             type = e.build.block.name;
@@ -249,7 +258,7 @@ Events.on(EventType.ConfigEvent, addToTileHistory);
 Events.on(EventType.PickupEvent, addToTileHistory);
 Events.on(EventType.PayloadDropEvent, addToTileHistory);
 Events.on(EventType.UnitDestroyEvent, addToTileHistory);
-//TODO log block destructions *only if player team*
+Events.on(EventType.BlockDestroyEvent, addToTileHistory);
 Events.on(EventType.TapEvent, commands_1.handleTapEvent);
 Events.on(EventType.GameOverEvent, function (e) {
     var e_1, _a;

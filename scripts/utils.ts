@@ -182,6 +182,8 @@ export class StringIO {
 	writeString(str:string | null, lenlen:number = 3, truncate = false){
 		if(str === null){
 			this.string += "0".repeat(lenlen);
+		} else if(typeof str !== "string"){
+			throw new Error(`Attempted to serialize string ${str}, but it was not a string`);
 		} else if(str.length > (10 ** lenlen - 1)){
 			if(truncate){
 				Log.err(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);

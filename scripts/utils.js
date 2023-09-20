@@ -237,6 +237,9 @@ var StringIO = /** @class */ (function () {
         if (str === null) {
             this.string += "0".repeat(lenlen);
         }
+        else if (typeof str !== "string") {
+            throw new Error("Attempted to serialize string ".concat(str, ", but it was not a string"));
+        }
         else if (str.length > (Math.pow(10, lenlen) - 1)) {
             if (truncate) {
                 Log.err("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
