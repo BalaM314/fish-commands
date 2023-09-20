@@ -481,6 +481,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
     };
     FishPlayer.prototype.sendWelcomeMessage = function () {
+        var _this = this;
         if (this.marked())
             this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nYour mark will expire automatically ").concat(this.unmarkTime == config.maxTime ? "in [red]never[]" : "[green]".concat((0, utils_1.formatTimeRelative)(this.unmarkTime), "[]"), ".\nWe apologize for the inconvenience."));
         else if (this.muted)
@@ -488,6 +489,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         else if (this.autoflagged)
             this.sendMessage("[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
         else {
+            this.sendMessage("[gold]Welcome![]");
             //show tips
             var showAd = false;
             if (Date.now() - this.lastShownAd > 86400000) {
@@ -499,8 +501,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 this.lastShownAd = -1;
             }
             var messages = showAd ? config.tips.ads : config.tips.normal;
-            var message = messages[Math.floor(Math.random() * messages.length)];
-            this.sendMessage("[gold]Welcome![]\n[gold]Tip: ".concat(message, "[]"));
+            var message_1 = messages[Math.floor(Math.random() * messages.length)];
+            //Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
+            Timer.schedule(function () { return _this.sendMessage("[gold]Tip: ".concat(message_1, "[]")); }, 5);
         }
     };
     //#endregion

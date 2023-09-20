@@ -35,5 +35,11 @@ function initializeTimers() {
                     players_1.FishPlayer.messageStaff(messages);
             });
         }, 5, 3);
+    //Tip
+    Timer.schedule(function () {
+        var messages = config.tips.ads.concat(config.tips.normal);
+        var message = messages[Math.floor(Math.random() * messages.length)];
+        Call.sendMessage("[gold]Tip: ".concat(message));
+    }, 0, 20 * 60);
 }
 exports.initializeTimers = initializeTimers;

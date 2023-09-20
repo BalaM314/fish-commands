@@ -402,8 +402,11 @@ We apologize for the inconvenience.`
 To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
 We apologize for the inconvenience.`
 		); else {
+			this.sendMessage(
+`[gold]Welcome![]`
+			);
+
 			//show tips
-			
 			let showAd = false;
 			if(Date.now() - this.lastShownAd > 86400000){
 				this.lastShownAd = Date.now();
@@ -414,10 +417,9 @@ We apologize for the inconvenience.`
 			}
 			const messages = showAd ? config.tips.ads : config.tips.normal;
 			const message = messages[Math.floor(Math.random() * messages.length)];
-			this.sendMessage(
-`[gold]Welcome![]
-[gold]Tip: ${message}[]`
-			);
+
+			//Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
+			Timer.schedule(() => this.sendMessage(`[gold]Tip: ${message}[]`), 5);
 		}
 	}
 	//#endregion

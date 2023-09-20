@@ -33,4 +33,10 @@ export function initializeTimers(){
 				if(messages.length) FishPlayer.messageStaff(messages);
 			})
 		}, 5, 3);
+	//Tip
+	Timer.schedule(() => {
+		const messages = config.tips.ads.concat(config.tips.normal);
+		const message = messages[Math.floor(Math.random() * messages.length)];
+		Call.sendMessage(`[gold]Tip: ${message}`);
+	}, 0, 20 * 60);
 }
