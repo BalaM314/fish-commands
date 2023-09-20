@@ -1,6 +1,6 @@
 import * as api from './api';
 import { commandList, fail, formatArg, Perm } from './commands';
-import { FishServers } from './config';
+import { FishServers, getGamemode } from './config';
 import { recentWhispers, tileHistory, uuidPattern } from './globals';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
@@ -23,12 +23,11 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Teleport to another player.',
 		perm: Perm.play,
-		handler({ args, sender, outputFail }) {
-			if (sender.unit()?.spawnedByCore) {
-				teleportPlayer(sender.player, args.player.player);
-			} else {
-				outputFail(`Can only teleport while in a core unit.`);
-			}
+		handler({ args, sender }) {
+			if(!sender.unit()?.spawnedByCore) fail(`Can only teleport while in a core unit.`);
+			if(getGamemode() == "pvp") fail(`The /tp command is disabled in PVP.`);
+			if(sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
+			teleportPlayer(sender.player, args.player.player);
 		},
 	},
 

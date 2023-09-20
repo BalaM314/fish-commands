@@ -50,13 +50,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.play,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail;
-            if ((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore) {
-                (0, utils_1.teleportPlayer)(sender.player, args.player.player);
-            }
-            else {
-                outputFail("Can only teleport while in a core unit.");
-            }
+            var args = _a.args, sender = _a.sender;
+            if (!((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore))
+                (0, commands_1.fail)("Can only teleport while in a core unit.");
+            if ((0, config_1.getGamemode)() == "pvp")
+                (0, commands_1.fail)("The /tp command is disabled in PVP.");
+            if (sender.team() !== args.player.team())
+                (0, commands_1.fail)("Cannot teleport to players on another team.");
+            (0, utils_1.teleportPlayer)(sender.player, args.player.player);
         },
     }, clean: {
         args: [],
