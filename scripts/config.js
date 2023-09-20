@@ -109,12 +109,11 @@ exports.localDebug = new Fi("config/.debug").exists();
 exports.maxTime = 9999999999999;
 exports.tips = {
     ads: [
-        "[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at https://patreon.com/FishServers",
-        "[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at https://patreon.com/FishServers",
-        "[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at https://patreon.com/FishServers",
-        "Want to support the server and get some perks? Get a [pink]Fish Membership[] at https://patreon.com/FishServers",
-        "Join our [#7289da]Discord server[]! https://discord.gg/VpzcYSQ33Y",
-        "Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[]"
+        "[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
+        "[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
+        "[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
+        "Want to support the server and get some perks? Get a [pink]Fish Membership[] at[sky] https://patreon.com/FishServers []",
+        "Join our [#7289da]Discord server[]![#7289da] https://discord.gg/VpzcYSQ33Y",
     ],
     normal: [
         //commands
@@ -140,6 +139,8 @@ exports.tips = {
         "Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!",
         "Griefers will often be found with the text ".concat(exports.MARKED_PREFIX, " prepended to their name."),
         "Players marked as [yellow]\u26A0[scarlet]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.",
+        "Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[]",
+        "Want to send the phrase [white]\"/command\"[] in chat? Type [white]\"./command\"[] and the [white].[] will be removed.",
     ],
     staff: []
 };

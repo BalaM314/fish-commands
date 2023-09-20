@@ -35,8 +35,10 @@ export function initializeTimers(){
 		}, 5, 3);
 	//Tip
 	Timer.schedule(() => {
-		const messages = config.tips.ads.concat(config.tips.normal);
-		const message = messages[Math.floor(Math.random() * messages.length)];
-		Call.sendMessage(`[gold]Tip: ${message}`);
-	}, 0, 20 * 60);
+		const showAd = Math.random() < 0.10; //10% chance every 15 minutes
+		const messagePool = showAd ? config.tips.ads : config.tips.normal;
+		const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
+		const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`
+		Call.sendMessage(message);
+	}, 0, 15 * 60);
 }

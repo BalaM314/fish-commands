@@ -415,11 +415,12 @@ We apologize for the inconvenience.`
 				//this is the first time they joined, show ad the next time they join
 				this.lastShownAd = -1;
 			}
-			const messages = showAd ? config.tips.ads : config.tips.normal;
-			const message = messages[Math.floor(Math.random() * messages.length)];
+			const messagePool = showAd ? config.tips.ads : config.tips.normal;
+			const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
+			const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`;
 
 			//Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
-			Timer.schedule(() => this.sendMessage(`[gold]Tip: ${message}[]`), 5);
+			Timer.schedule(() => this.sendMessage(message), 3);
 		}
 	}
 	//#endregion

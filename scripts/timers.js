@@ -37,9 +37,11 @@ function initializeTimers() {
         }, 5, 3);
     //Tip
     Timer.schedule(function () {
-        var messages = config.tips.ads.concat(config.tips.normal);
-        var message = messages[Math.floor(Math.random() * messages.length)];
-        Call.sendMessage("[gold]Tip: ".concat(message));
-    }, 0, 20 * 60);
+        var showAd = Math.random() < 0.10; //10% chance every 15 minutes
+        var messagePool = showAd ? config.tips.ads : config.tips.normal;
+        var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
+        var message = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
+        Call.sendMessage(message);
+    }, 0, 15 * 60);
 }
 exports.initializeTimers = initializeTimers;
