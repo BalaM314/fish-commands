@@ -155,10 +155,9 @@ export const commands = commandList({
 		args: ['message:string'],
 		description: `Sends a message to staff only.`,
 		perm: Perm.chat,
-		handler({ sender, args, outputSuccess, output, outputFail, lastUsedSender }){
+		handler({ sender, args, outputSuccess, outputFail, lastUsedSender }){
 			if(!sender.hasPerm("mod")){
-				if(Date.now() - lastUsedSender < 2000) fail(`This command was used recently and is on cooldown.`);
-				if(Date.now() - lastUsedSender < 5000) output(`[orange]Misuse of this command may result in a mute.`);
+				if(Date.now() - lastUsedSender < 4000) fail(`This command was used recently and is on cooldown. [orange]Misuse of this command may result in a mute.`);
 			}
 			api.sendStaffMessage(args.message, sender.name, (sent) => {
 				if(!sender.hasPerm("mod")){

@@ -221,6 +221,7 @@ Events.on(EventType.ConfigEvent, addToTileHistory);
 Events.on(EventType.PickupEvent, addToTileHistory);
 Events.on(EventType.PayloadDropEvent, addToTileHistory);
 Events.on(EventType.UnitDestroyEvent, addToTileHistory);
+//TODO log block destructions *only if player team*
 
 Events.on(EventType.TapEvent, handleTapEvent);
 

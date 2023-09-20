@@ -249,6 +249,7 @@ Events.on(EventType.ConfigEvent, addToTileHistory);
 Events.on(EventType.PickupEvent, addToTileHistory);
 Events.on(EventType.PayloadDropEvent, addToTileHistory);
 Events.on(EventType.UnitDestroyEvent, addToTileHistory);
+//TODO log block destructions *only if player team*
 Events.on(EventType.TapEvent, commands_1.handleTapEvent);
 Events.on(EventType.GameOverEvent, function (e) {
     var e_1, _a;
