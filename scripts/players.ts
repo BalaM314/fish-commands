@@ -244,6 +244,14 @@ export class FishPlayer {
 			fishPlayer.checkVPN();
 		}
 	}
+	/**Must be run on PlayerLeaveEvent. */
+	static onPlayerLeave(player:mindustryPlayer){
+		let fishPlayer = this.cachedPlayers[player.uuid()];
+		if(!fishPlayer) return;
+		//Clear temporary states such as menu and taphandler
+		fishPlayer.activeMenu.callback = undefined;
+		fishPlayer.tapInfo.commandName = null;
+	}
 	/**Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
 		//if(unit.spawnedByCore)

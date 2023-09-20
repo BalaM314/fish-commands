@@ -300,6 +300,15 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             fishPlayer.checkVPN();
         }
     };
+    /**Must be run on PlayerLeaveEvent. */
+    FishPlayer.onPlayerLeave = function (player) {
+        var fishPlayer = this.cachedPlayers[player.uuid()];
+        if (!fishPlayer)
+            return;
+        //Clear temporary states such as menu and taphandler
+        fishPlayer.activeMenu.callback = undefined;
+        fishPlayer.tapInfo.commandName = null;
+    };
     /**Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
         //if(unit.spawnedByCore)

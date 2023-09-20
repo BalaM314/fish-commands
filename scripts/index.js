@@ -46,6 +46,9 @@ var utils_1 = require("./utils");
 Events.on(EventType.PlayerConnect, function (e) {
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
+Events.on(EventType.PlayerLeave, function (e) {
+    players_1.FishPlayer.onPlayerLeave(e.player);
+});
 Events.on(EventType.ConnectPacketEvent, function (e) {
     api.getBanned({
         ip: e.connection.address,

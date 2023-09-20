@@ -22,6 +22,9 @@ import { StringIO, formatTimeRelative, matchFilter, serverRestartLoop } from "./
 Events.on(EventType.PlayerConnect, (e) => {
 	FishPlayer.onPlayerJoin(e.player);
 });
+Events.on(EventType.PlayerLeave, (e) => {
+	FishPlayer.onPlayerLeave(e.player);
+});
 Events.on(EventType.ConnectPacketEvent, (e) => {
 	api.getBanned({
 		ip: e.connection.address,
