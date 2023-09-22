@@ -53,7 +53,7 @@ export const commands = commandList({
 	die: {
 		args: [],
 		description: 'Commits die.',
-		perm: Perm.play,
+		perm: Perm.mod,
 		handler({ sender }) {
 			sender.unit()?.kill();
 		},

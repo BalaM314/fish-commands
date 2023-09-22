@@ -78,7 +78,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     }, die: {
         args: [],
         description: 'Commits die.',
-        perm: commands_1.Perm.play,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
             var sender = _a.sender;
