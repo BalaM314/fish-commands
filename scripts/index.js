@@ -219,11 +219,8 @@ function addToTileHistory(e) {
     }
     else
         return;
-    if (tile == null) {
-        Log.err("[tilelog] tile was null");
-        Log.info(e);
+    if (tile == null)
         return;
-    }
     [tile, uuid, action, type, time];
     tile.getLinkedTiles(function (t) {
         var pos = "".concat(t.x, ",").concat(t.y);
