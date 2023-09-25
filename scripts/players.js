@@ -887,8 +887,6 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             return;
         this.autoflagged = false; //Might as well set autoflagged to false
         this.unmarkTime = -1;
-        this.updateName();
-        this.forceRespawn();
         this.sendMessage('[yellow]Looks like someone had mercy on you.');
         if (by !== "api") {
             api.free(this.uuid);
@@ -899,6 +897,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             time: Date.now(),
         });
         FishPlayer.saveAll();
+        this.updateName();
+        this.forceRespawn();
     };
     FishPlayer.prototype.freeze = function () {
         this.frozen = true;

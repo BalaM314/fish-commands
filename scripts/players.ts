@@ -306,7 +306,7 @@ export class FishPlayer {
 			this.player.name = prefix + " " + this.name;
 		else
 			this.player.name = this.name;
-		
+
 		if(/hack[3e]r/.test(Strings.stripColors(this.name).toLowerCase())){
 			//"Don't be a script kiddie"
 			//-LiveOverflow, 2015
@@ -765,8 +765,6 @@ We apologize for the inconvenience.`
 
 		this.autoflagged = false; //Might as well set autoflagged to false
 		this.unmarkTime = -1;
-		this.updateName();
-		this.forceRespawn();
 		this.sendMessage('[yellow]Looks like someone had mercy on you.');
 		if(by !== "api"){
 			api.free(this.uuid);
@@ -777,6 +775,9 @@ We apologize for the inconvenience.`
 			time: Date.now(),
 		});
 		FishPlayer.saveAll();
+		
+		this.updateName();
+		this.forceRespawn();
 	}
 	freeze(){
 		this.frozen = true;
