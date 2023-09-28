@@ -122,7 +122,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             else {
                 var history = utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
                     action: d.readString(2),
-                    uuid: d.readString(2),
+                    uuid: d.readString(3),
                     time: d.readNumber(16),
                     type: d.readString(2),
                 }); }, 1); });

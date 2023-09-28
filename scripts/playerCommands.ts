@@ -93,7 +93,7 @@ export const commands = commandList({
 			} else {
 				const history = StringIO.read(tileHistory[pos]!, str => str.readArray(d => ({
 					action: d.readString(2),
-					uuid: d.readString(2)!,
+					uuid: d.readString(3)!,
 					time: d.readNumber(16),
 					type: d.readString(2),
 				}), 1));
