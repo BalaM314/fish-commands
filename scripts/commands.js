@@ -420,6 +420,8 @@ function handleTapEvent(event) {
             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
             if (sender.hasPerm("seeErrorMessages"))
                 sender.sendMessage((0, utils_1.parseError)(err));
+            Log.err("Unhandled error in command execution: ".concat(sender.cleanedName, " ran /").concat(sender.tapInfo.commandName, " and tapped"));
+            Log.err(err);
         }
     }
     finally {
@@ -504,6 +506,8 @@ function register(commands, clientHandler, serverHandler) {
                             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
                             if (fishSender.hasPerm("seeErrorMessages"))
                                 sender.sendMessage((0, utils_1.parseError)(err));
+                            Log.err("Unhandled error in command execution: ".concat(sender.cleanedName, " ran /").concat(sender.tapInfo.commandName));
+                            Log.err(err);
                         }
                     }
                     finally {

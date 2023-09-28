@@ -125,7 +125,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 
 /**Keeps track of any action performed on a tile for use in tilelog. */
 
-const addToTileHistory = logErrors("Error while saving a tilelog entrys", (e:any) => {
+const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any) => {
 
 	let tile:Tile, uuid:string, action:string, type:string, time:number = Date.now();
 	if(e instanceof EventType.BlockBuildBeginEvent){
