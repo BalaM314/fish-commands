@@ -198,7 +198,7 @@ function addToTileHistory(e) {
         var controller = e.carrier.controller();
         if (!(controller instanceof LogicAI))
             return;
-        uuid = "".concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName());
+        uuid = "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName());
         if (e.build) {
             tile = e.build.tile;
             type = e.build.block.name;
@@ -226,7 +226,7 @@ function addToTileHistory(e) {
         var pos = "".concat(t.x, ",").concat(t.y);
         var existingData = globals_1.tileHistory[pos] ? utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
             action: d.readString(2),
-            uuid: d.readString(2),
+            uuid: d.readString(3),
             time: d.readNumber(16),
             type: d.readString(2),
         }); }, 1); }) : [];
@@ -242,7 +242,7 @@ function addToTileHistory(e) {
         //Write
         globals_1.tileHistory[t.x + ',' + t.y] = utils_1.StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
             str.writeString(el.action, 2);
-            str.writeString(el.uuid, 2);
+            str.writeString(el.uuid, 3);
             str.writeNumber(el.time, 16);
             str.writeString(el.type, 2);
         }, 1); });

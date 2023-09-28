@@ -175,7 +175,7 @@ function addToTileHistory(e:any){
 		if(e.carrier.isPlayer()) return; //This event would have been handled by actionfilter
 		const controller = e.carrier.controller();
 		if(!(controller instanceof LogicAI)) return;
-		uuid = `${controller.controller.block.name} at ${controller.controller.tileX()},${controller.controller.tileY()} last accessed by ${e.carrier.getControllerName()}`
+		uuid = `${e.carrier.type.name} controlled by ${controller.controller.block.name} at ${controller.controller.tileX()},${controller.controller.tileY()} last accessed by ${e.carrier.getControllerName()}`
 		if(e.build){
 			tile = e.build.tile;
 			type = e.build.block.name;
@@ -196,7 +196,7 @@ function addToTileHistory(e:any){
 		const pos = `${t.x},${t.y}`;
 		let existingData = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
 			action: d.readString(2),
-			uuid: d.readString(2),
+			uuid: d.readString(3),
 			time: d.readNumber(16),
 			type: d.readString(2),
 		}), 1)) : [];
@@ -210,7 +210,7 @@ function addToTileHistory(e:any){
 		//Write
 		tileHistory[t.x + ',' + t.y] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
 			str.writeString(el.action, 2);
-			str.writeString(el.uuid, 2);
+			str.writeString(el.uuid, 3);
 			str.writeNumber(el.time, 16);
 			str.writeString(el.type, 2);
 		}, 1));
