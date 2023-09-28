@@ -421,6 +421,17 @@ export function tagProcessor(transformer:(chunk:unknown, index:number) => string
 	}
 }
 
+export function logErrors<T extends (...args:any[]) => unknown>(message:string, func:T):T {
+	return function(...args:any[]){
+		try {
+			return func(...args);
+		} catch(err){
+			Log.err(message)
+			Log.err(parseError(err));
+		}
+	} as T;
+}
+
 export function definitelyRealMemoryCorruption(){
 	Log.info(`Triggering a prank: this will cause players to see two error messages claiming to be from a memory corruption, and cause a flickering amount of fissile matter and dormant cysts to be put in the core.`);
 	FishPlayer.messageStaff(`[gray]<[cyan]staff[gray]> [white]Activating memory corruption prank! (please don't ruin it by telling players what is happening, pretend you dont know)`);

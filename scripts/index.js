@@ -133,7 +133,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     //});
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
-function addToTileHistory(e) {
+var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entrys", function (e) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
@@ -247,8 +247,7 @@ function addToTileHistory(e) {
             str.writeString(el.type, 2);
         }, 1); });
     });
-}
-;
+});
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.BuildRotateEvent, addToTileHistory);
 Events.on(EventType.ConfigEvent, addToTileHistory);

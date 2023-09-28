@@ -15,7 +15,7 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, formatTimeRelative, matchFilter, serverRestartLoop } from "./utils";
+import { StringIO, formatTimeRelative, logErrors, matchFilter, serverRestartLoop } from "./utils";
 
 
 
@@ -124,7 +124,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 });
 
 /**Keeps track of any action performed on a tile for use in tilelog. */
-function addToTileHistory(e:any){
+
+const addToTileHistory = logErrors("Error while saving a tilelog entrys", (e:any) => {
 
 	let tile:Tile, uuid:string, action:string, type:string, time:number = Date.now();
 	if(e instanceof EventType.BlockBuildBeginEvent){
@@ -216,7 +217,7 @@ function addToTileHistory(e:any){
 		}, 1));
 	});
 	
-};
+});
 
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.BuildRotateEvent, addToTileHistory);

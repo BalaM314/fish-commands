@@ -36,7 +36,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.definitelyRealMemoryCorruption = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -524,6 +524,22 @@ function tagProcessor(transformer) {
     };
 }
 exports.tagProcessor = tagProcessor;
+function logErrors(message, func) {
+    return function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        try {
+            return func.apply(void 0, __spreadArray([], __read(args), false));
+        }
+        catch (err) {
+            Log.err(message);
+            Log.err(parseError(err));
+        }
+    };
+}
+exports.logErrors = logErrors;
 function definitelyRealMemoryCorruption() {
     Log.info("Triggering a prank: this will cause players to see two error messages claiming to be from a memory corruption, and cause a flickering amount of fissile matter and dormant cysts to be put in the core.");
     players_1.FishPlayer.messageStaff("[gray]<[cyan]staff[gray]> [white]Activating memory corruption prank! (please don't ruin it by telling players what is happening, pretend you dont know)");
