@@ -33,7 +33,7 @@ const $ = Object.assign(
 	},
 	{
 		sussy: true,
-		info: function(){
+		info: function(input){
 			if(typeof input == "string"){
 				if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
 					return Vars.netServer.admins.getInfo(input);
@@ -52,6 +52,8 @@ exports.runJS = function(input){
 			Log.info("&cArray: [&fr" + output.join(", ") + "&c]&fr");
 		} else if(output === undefined){
 			Log.info("undefined");
+		} else if(output === null){
+			Log.info("null");
 		} else {
 			Log.info(output);
 		}
