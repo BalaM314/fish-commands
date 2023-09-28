@@ -242,12 +242,12 @@ var StringIO = /** @class */ (function () {
         }
         else if (str.length > (Math.pow(10, lenlen) - 1)) {
             if (truncate) {
-                Log.err("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
+                Log.err("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1), " (was ").concat(str.length, "), truncating"));
                 this.string += (Math.pow(10, lenlen) - 1).toString().padStart(lenlen, "0");
                 this.string += str.slice(0, (Math.pow(10, lenlen) - 1));
             }
             else {
-                throw new Error("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1)));
+                throw new Error("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1), " (was ").concat(str.length, ")\n String was: \"").concat(str, "\""));
             }
         }
         else {

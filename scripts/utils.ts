@@ -186,11 +186,11 @@ export class StringIO {
 			throw new Error(`Attempted to serialize string ${str}, but it was not a string`);
 		} else if(str.length > (10 ** lenlen - 1)){
 			if(truncate){
-				Log.err(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);
+				Log.err(`Cannot write strings with length greater than ${(10 ** lenlen - 1)} (was ${str.length}), truncating`);
 				this.string += (10 ** lenlen - 1).toString().padStart(lenlen, "0");
 				this.string += str.slice(0, (10 ** lenlen - 1));
 			} else {
-				throw new Error(`Cannot write strings with length greater than ${(10 ** lenlen - 1)}`);
+				throw new Error(`Cannot write strings with length greater than ${(10 ** lenlen - 1)} (was ${str.length})\n String was: "${str}"`);
 			}
 		} else {
 			this.string += str.length.toString().padStart(lenlen, "0");
