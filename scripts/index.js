@@ -177,7 +177,7 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     else if (e instanceof EventType.PayloadDropEvent) {
         action = "pay-dropped";
         var controller = e.carrier.controller();
-        uuid = (_u = (_t = (_s = e.carrier.player) === null || _s === void 0 ? void 0 : _s.uuid()) !== null && _t !== void 0 ? _t : (controller instanceof LogicAI ? "".concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _u !== void 0 ? _u : e.carrier.type.name;
+        uuid = (_u = (_t = (_s = e.carrier.player) === null || _s === void 0 ? void 0 : _s.uuid()) !== null && _t !== void 0 ? _t : (controller instanceof LogicAI ? "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _u !== void 0 ? _u : e.carrier.type.name;
         if (e.build) {
             tile = e.build.tile;
             type = e.build.block.name;
