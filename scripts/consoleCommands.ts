@@ -320,8 +320,8 @@ export const commands = consoleCommandList({
 					fishState.restarting = true;
 				}
 			} else {
-				Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds, and all progress will be saved.[]\n[accent]---[[[coral]+++[]]---`);
-				const time = args.time ?? 10;
+				Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back with 15 seconds of downtime, and all progress will be saved.[]\n[accent]---[[[coral]+++[]]---`);
+				const time = args.time ?? 60;
 				if(time < 0 || time > 100) fail(`Invalid time: out of valid range.`);
 				Log.info(`Restarting in ${time} seconds...`);
 				serverRestartLoop(time);
