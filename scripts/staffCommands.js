@@ -480,8 +480,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         handler: function (_a) {
             var javascript = _a.args.javascript, output = _a.output, outputFail = _a.outputFail, sender = _a.sender;
             //Additional validation couldn't hurt...
-            var adminUsid = sender.info().adminUsid;
-            if (!adminUsid || adminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
+            var playerInfo_AdminUsid = sender.info().adminUsid;
+            if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
                 api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat((0, config_1.getGamemode)(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }

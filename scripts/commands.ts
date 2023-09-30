@@ -1,3 +1,4 @@
+import { Mode } from "./config";
 import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
@@ -45,14 +46,12 @@ export class Perm {
 	static bulkLabelPacket = new Perm("bulkLabelPacket", "mod");
 	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
 	static changeTeam = new Perm("changeTeam", fishP => 
-		Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast("trusted")
-			: Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast("admin")
-			: Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast("mod")
+		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
+			: Mode.attack() ? fishP.ranksAtLeast("admin")
+			: Mode.pvp() ? fishP.ranksAtLeast("mod")
 			: fishP.ranksAtLeast("admin")
 	);
-	static spawnOhnos = new Perm("spawnOhnos", fishP =>
-		Vars.state.rules.mode().name() === "pvp" ? false : true
-	, "", "Ohnos are disabled in PVP.");
+	static spawnOhnos = new Perm("spawnOhnos", () => !Mode.pvp(), "", "Ohnos are disabled in PVP.");
 	static usidCheck = new Perm("usidCheck", "trusted");
 	static runJS = new Perm("runJS", "manager");
 

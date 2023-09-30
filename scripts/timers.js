@@ -16,7 +16,7 @@ function initializeTimers() {
         });
     }, 10, 300);
     //Memory corruption prank
-    if (Vars.state.rules.mode().name() !== "pvp")
+    if (config.Mode.pvp())
         Timer.schedule(function () {
             if (Math.random() < 0.2) {
                 //Timer triggers every 8 hours, and the random chance is 20%, so the average interval between pranks is 40 hours

@@ -491,8 +491,8 @@ export const commands = commandList({
 		handler({args: {javascript}, output, outputFail, sender}){
 			
 			//Additional validation couldn't hurt...
-			const adminUsid = sender.info().adminUsid;
-			if(!adminUsid || adminUsid != sender.player.usid() || sender.usid != sender.player.usid()){
+			const playerInfo_AdminUsid = sender.info().adminUsid;
+			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
 Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`

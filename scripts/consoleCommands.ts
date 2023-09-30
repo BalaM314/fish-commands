@@ -1,7 +1,7 @@
 import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
-import { maxTime } from "./config";
+import { Mode, maxTime } from "./config";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
@@ -309,7 +309,7 @@ export const commands = consoleCommandList({
 		args: ["time:number?"],
 		description: "Restarts the server.",
 		handler({args}){
-			if(Vars.state.rules.mode().name() == "pvp"){
+			if(Mode.pvp()){
 				if(args.time === -1){
 					Log.info(`&rRestarting in 15 seconds (this will interrupt the current PVP match).&fr`);
 					Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---`);

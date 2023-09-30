@@ -39,6 +39,7 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allCommands = void 0;
+var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
@@ -87,14 +88,12 @@ var Perm = exports.Perm = /** @class */ (function () {
     Perm.bulkLabelPacket = new Perm("bulkLabelPacket", "mod");
     Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
-        return Vars.state.rules.mode().name() === "sandbox" ? fishP.ranksAtLeast("trusted")
-            : Vars.state.rules.mode().name() === "attack" ? fishP.ranksAtLeast("admin")
-                : Vars.state.rules.mode().name() === "pvp" ? fishP.ranksAtLeast("mod")
+        return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted")
+            : config_1.Mode.attack() ? fishP.ranksAtLeast("admin")
+                : config_1.Mode.pvp() ? fishP.ranksAtLeast("mod")
                     : fishP.ranksAtLeast("admin");
     });
-    Perm.spawnOhnos = new Perm("spawnOhnos", function (fishP) {
-        return Vars.state.rules.mode().name() === "pvp" ? false : true;
-    }, "", "Ohnos are disabled in PVP.");
+    Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Mode.pvp(); }, "", "Ohnos are disabled in PVP.");
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");
     return Perm;

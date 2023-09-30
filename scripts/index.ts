@@ -5,7 +5,7 @@
 import * as api from './api';
 import * as commands from './commands';
 import { handleTapEvent } from './commands';
-import { getGamemode } from './config';
+import { Mode, getGamemode } from './config';
 import * as consoleCommands from "./consoleCommands";
 import { fishState, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
@@ -154,7 +154,7 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 		action = "killed";
 		type = e.unit.type.name;
 	} else if(e instanceof EventType.BlockDestroyEvent){
-		if(getGamemode() == "attack" && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
+		if(Mode.attack() && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
 		tile = e.tile;
 		uuid = "something";
 		action = "destroyed";

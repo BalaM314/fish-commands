@@ -392,7 +392,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args;
-            if (Vars.state.rules.mode().name() == "pvp") {
+            if (config_1.Mode.pvp()) {
                 if (args.time === -1) {
                     Log.info("&rRestarting in 15 seconds (this will interrupt the current PVP match).&fr");
                     Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---");
