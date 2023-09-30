@@ -12,6 +12,7 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	/\bcum\b/,
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
+//TODO strict word filter
 export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])

@@ -30,6 +30,7 @@ exports.bannedWords = (function (words) {
     /\bcum\b/,
     "porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
+//TODO strict word filter
 exports.bannedInNamesWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([

@@ -373,7 +373,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		}
 		if(Strings.stripColors(this.name).replace(/ /g, "").length == 0){
 			this.player.kick(
-`[scarlet]"${escapeStringColorsClient(this.name)}[scarlet]" is not an allowed name. Please change it.`
+`[scarlet]"${escapeStringColorsClient(this.name)}[scarlet]" is not an allowed name because it is blank. Please change it.`
 			, 1);
 		}
 		return true;
