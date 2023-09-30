@@ -1,6 +1,7 @@
 import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as config from "./config";
+import { Mode } from "./config";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
@@ -579,7 +580,7 @@ We apologize for the inconvenience.`
 		Core.settings.manualSave();
 	}
 	shouldCache(){
-		return (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0);
+		return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0);
 	}
 	static getFishPlayersString(){
 		if(Core.settings.has("fish-subkeys")){

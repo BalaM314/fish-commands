@@ -42,6 +42,7 @@ exports.FishPlayer = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
+var config_1 = require("./config");
 var menus_1 = require("./menus");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -675,7 +676,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         Core.settings.manualSave();
     };
     FishPlayer.prototype.shouldCache = function () {
-        return (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0);
+        return config_1.Mode.sandbox() || (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0);
     };
     FishPlayer.getFishPlayersString = function () {
         if (Core.settings.has("fish-subkeys")) {
