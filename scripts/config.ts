@@ -4,22 +4,26 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
-	"uwu",
+	"uwu", //lol
 	"nig"+"ger", "nig" + "ga", "niger",
-	"re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter",
+	"re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter", "cu"+"nt",
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
 	["fa"+"g", "fage"],
 	/\bcum\b/,
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
-//TODO strict word filter
+export const strictBannedWords:[word:string | RegExp, whitelist:string[]][] = (
+	(words:(string | string[] | RegExp)[]) =>
+		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
+)([
+	"fu"+"ck","bi"+"tch",["sh"+"it", "harshit"],
+]);
 export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
-	"fu"+"ck", ["sh"+"it", "harshit"],
+	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin"
 ]);
-export const bannedNames = ['goldberg', 'eshay', "VALVE", "hitler"];
 export const adminNames = ["fish", "balame14", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 export const substitutions:Record<string, string> = Object.fromEntries(Object.entries({
