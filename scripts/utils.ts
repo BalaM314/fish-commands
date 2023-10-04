@@ -1,5 +1,5 @@
 import * as api from './api';
-import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, substitutions } from "./config";
+import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, strictBannedWords, substitutions } from "./config";
 import { fishState } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
@@ -263,10 +263,14 @@ export function escapeTextDiscord(text:string):string {
 	return pattern.matcher(text).replaceAll("\\\\$1");
 }
 
-export function matchFilter(text:string, strict = false):boolean {
+/**
+ * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
+ * @returns 
+ */
+export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | "name"):boolean {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(text).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
-	for(const [word, whitelist] of bannedWords.concat(strict ? bannedInNamesWords : [])){
+	for(const [word, whitelist] of bannedWords.concat(strict == "strict" ? strictBannedWords : []).concat(strict == "name" ? bannedInNamesWords : [])){
 		if(word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)){
 			let moreReplacedText = replacedText;
 			whitelist.forEach(w => moreReplacedText = moreReplacedText.replace(new RegExp(w, "g"), ""));

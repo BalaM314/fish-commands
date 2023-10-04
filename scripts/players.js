@@ -445,24 +445,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
-        var e_7, _a;
-        try {
-            for (var _b = __values(config.bannedNames), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var bannedName = _c.value;
-                if (this.name.toLowerCase().includes(bannedName.toLowerCase())) {
-                    this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
-                    return false;
-                }
-            }
-        }
-        catch (e_7_1) { e_7 = { error: e_7_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_7) throw e_7.error; }
-        }
-        if ((0, utils_1.matchFilter)(this.name, true)) {
+        if ((0, utils_1.matchFilter)(this.name, "name")) {
             this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
         if (Strings.stripColors(this.name).replace(/ /g, "").length == 0) {
@@ -715,7 +698,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_8, _a;
+        var e_7, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -729,12 +712,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_8) throw e_8.error; }
+            finally { if (e_7) throw e_7.error; }
         }
     };
     //#endregion

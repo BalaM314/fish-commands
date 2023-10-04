@@ -329,9 +329,13 @@ function escapeTextDiscord(text) {
     return pattern.matcher(text).replaceAll("\\\\$1");
 }
 exports.escapeTextDiscord = escapeTextDiscord;
+/**
+ * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
+ * @returns
+ */
 function matchFilter(text, strict) {
     var e_1, _a;
-    if (strict === void 0) { strict = false; }
+    if (strict === void 0) { strict = "chat"; }
     //Replace substitutions
     var replacedText = Strings.stripColors(text).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
     var _loop_1 = function (word, whitelist) {
@@ -343,7 +347,7 @@ function matchFilter(text, strict) {
         }
     };
     try {
-        for (var _b = __values(config_1.bannedWords.concat(strict ? config_1.bannedInNamesWords : [])), _c = _b.next(); !_c.done; _c = _b.next()) {
+        for (var _b = __values(config_1.bannedWords.concat(strict == "strict" ? config_1.strictBannedWords : []).concat(strict == "name" ? config_1.bannedInNamesWords : [])), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), word = _d[0], whitelist = _d[1];
             var state_1 = _loop_1(word, whitelist);
             if (typeof state_1 === "object")

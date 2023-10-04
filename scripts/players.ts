@@ -355,17 +355,7 @@ export class FishPlayer {
 	}
 	/**Checks if this player's name is allowed. */
 	checkName(){
-		for(const bannedName of config.bannedNames){
-			if(this.name.toLowerCase().includes(bannedName.toLowerCase())){
-				this.player.kick(
-`[scarlet]"${this.name}[scarlet]" is not an allowed name.
-
-If you are unable to change it, please download Mindustry from Steam or itch.io.`
-				, 1);
-				return false;
-			}
-		}
-		if(matchFilter(this.name, true)){
+		if(matchFilter(this.name, "name")){
 			this.player.kick(
 `[scarlet]"${this.name}[scarlet]" is not an allowed name.
 
