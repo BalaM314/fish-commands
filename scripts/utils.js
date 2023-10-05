@@ -263,6 +263,8 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.writeEnumString = function (value, options) {
         var length = (options.length - 1).toString().length;
         var option = options.indexOf(value);
+        if (option == -1)
+            throw new Error("Attempted to write invalid value \"".concat(value, "\" for enum, valid values are (").concat(options.join(", "), ")"));
         this.writeNumber(option, length);
     };
     StringIO.prototype.readNumber = function (size) {
@@ -280,6 +282,8 @@ var StringIO = /** @class */ (function () {
         if (size === void 0) { size = 4; }
         if (typeof num != "number")
             throw new Error("".concat(num, " was not a number!"));
+        if (num.toString().length > size)
+            throw new Error("Cannot write number ".concat(num, " with length ").concat(size, ": too long"));
         this.string += num.toString().padStart(size, "0");
     };
     StringIO.prototype.readBool = function () {

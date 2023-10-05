@@ -205,6 +205,7 @@ export class StringIO {
 	writeEnumString<const T>(value:T, options:T[]){
 		const length = (options.length - 1).toString().length;
 		const option = options.indexOf(value);
+		if(option == -1) throw new Error(`Attempted to write invalid value "${value}" for enum, valid values are (${options.join(", ")})`);
 		this.writeNumber(option, length);
 	}
 	readNumber(size:number = 4){
@@ -218,6 +219,7 @@ export class StringIO {
 	}
 	writeNumber(num:number, size:number = 4){
 		if(typeof num != "number") throw new Error(`${num} was not a number!`);
+		if(num.toString().length > size) throw new Error(`Cannot write number ${num} with length ${size}: too long`);
 		this.string += num.toString().padStart(size, "0");
 	}
 	readBool(){

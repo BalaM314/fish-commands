@@ -131,7 +131,7 @@ export const tips = {
 		`Players marked as [yellow]\u26A0[scarlet]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.`,
 		`Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[]`,
 		`Want to send the phrase [white]"/command"[] in chat? Type [white]"./command"[] and the [white].[] will be removed.`,
-		`All commands with a player as an argument support using a menu to specify the player. Just run leaving the argument blank, and a menu will show up.`,
+		`All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.`,
 	],
 	staff: [
 
