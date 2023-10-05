@@ -14,7 +14,7 @@ import {
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 4;
+	static readonly saveVersion = 5;
 	static readonly chunkSize = 60000;
 
 	//Static transients
@@ -70,10 +70,11 @@ export class FishPlayer {
 	} | null;
 	history: PlayerHistoryEntry[];
 	usid: string | null;
+	chatStrictness: "chat" | "strict" = "chat";
 
 	constructor({
 		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
-		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid,
+		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid, chatStrictness = "chat",
 		//deprecated
 		member, stopped,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
@@ -96,6 +97,7 @@ export class FishPlayer {
 			this.flags.add(RoleFlag.developer);
 		}
 		this.usid = usid ?? player?.usid() ?? null;
+		this.chatStrictness = chatStrictness;
 	}
 
 	//#region getplayer
@@ -530,6 +532,25 @@ We apologize for the inconvenience.`
 					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
 					usid: fishPlayerData.readString(2)
 				}, player);
+			case 5:
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? (() => {throw new Error("Failed to deserialize FishPlayer: UUID was null.")})(),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					autoflagged: fishPlayerData.readBool(),
+					unmarkTime: fishPlayerData.readNumber(13),
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2),
+					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+				}, player);
 			default: throw new Error(`Unknown save version ${version}`);
 		}
 	}
@@ -550,6 +571,7 @@ We apologize for the inconvenience.`
 		out.writeString(this.rank.name, 2);
 		out.writeArray(Array.from(this.flags).filter(f => f.peristent), (f, str) => str.writeString(f.name, 2), 2);
 		out.writeString(this.usid, 2);
+		out.writeEnumString(this.chatStrictness, ["chat", "strict"]);
 	}
 	/**Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){
@@ -570,7 +592,7 @@ We apologize for the inconvenience.`
 		Core.settings.manualSave();
 	}
 	shouldCache(){
-		return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0);
+		return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
 	}
 	static getFishPlayersString(){
 		if(Core.settings.has("fish-subkeys")){

@@ -48,10 +48,10 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, 
+        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, _k = _a.chatStrictness, chatStrictness = _k === void 0 ? "chat" : _k, 
         //deprecated
         member = _a.member, stopped = _a.stopped;
-        var _k, _l, _m, _o;
+        var _l, _m, _o, _p;
         //Transients
         this.player = null;
         this.pet = "";
@@ -70,8 +70,9 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         };
         this.lastJoined = -1;
         this.lastShownAd = config.maxTime;
-        this.uuid = (_k = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _k !== void 0 ? _k : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
-        this.name = (_l = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]";
+        this.chatStrictness = "chat";
+        this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
+        this.name = (_m = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _m !== void 0 ? _m : "Unnamed player [ERROR]";
         this.muted = muted;
         this.unmarkTime = unmarked;
         if (stopped)
@@ -82,7 +83,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         this.player = player;
         this.rainbow = rainbow;
         this.cleanedName = (0, utils_1.escapeStringColorsServer)(Strings.stripColors(this.name));
-        this.rank = (_m = ranks_1.Rank.getByName(rank)) !== null && _m !== void 0 ? _m : ranks_1.Rank.new;
+        this.rank = (_o = ranks_1.Rank.getByName(rank)) !== null && _o !== void 0 ? _o : ranks_1.Rank.new;
         this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
         if (member)
             this.flags.add(ranks_1.RoleFlag.member);
@@ -90,7 +91,8 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.rank = ranks_1.Rank.admin;
             this.flags.add(ranks_1.RoleFlag.developer);
         }
-        this.usid = (_o = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _o !== void 0 ? _o : null;
+        this.usid = (_p = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _p !== void 0 ? _p : null;
+        this.chatStrictness = chatStrictness;
     }
     //#region getplayer
     //Contains methods used to get FishPlayer instances.
@@ -502,7 +504,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
         switch (version) {
             case 0:
                 return new this({
@@ -614,6 +616,28 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
                     usid: fishPlayerData.readString(2)
                 }, player);
+            case 5:
+                return new this({
+                    uuid: (_r = fishPlayerData.readString(2)) !== null && _r !== void 0 ? _r : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    name: (_s = fishPlayerData.readString(2)) !== null && _s !== void 0 ? _s : "Unnamed player [ERROR]",
+                    muted: fishPlayerData.readBool(),
+                    autoflagged: fishPlayerData.readBool(),
+                    unmarkTime: fishPlayerData.readNumber(13),
+                    highlight: fishPlayerData.readString(2),
+                    history: fishPlayerData.readArray(function (str) {
+                        var _a, _b;
+                        return ({
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
+                            time: str.readNumber(15)
+                        });
+                    }),
+                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
+                    rank: (_t = fishPlayerData.readString(2)) !== null && _t !== void 0 ? _t : "",
+                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
+                    usid: fishPlayerData.readString(2),
+                    chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+                }, player);
             default: throw new Error("Unknown save version ".concat(version));
         }
     };
@@ -636,6 +660,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         out.writeString(this.rank.name, 2);
         out.writeArray(Array.from(this.flags).filter(function (f) { return f.peristent; }), function (f, str) { return str.writeString(f.name, 2); }, 2);
         out.writeString(this.usid, 2);
+        out.writeEnumString(this.chatStrictness, ["chat", "strict"]);
     };
     /**Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
@@ -659,7 +684,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         Core.settings.manualSave();
     };
     FishPlayer.prototype.shouldCache = function () {
-        return config_1.Mode.sandbox() || (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0);
+        return config_1.Mode.sandbox() || (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
     };
     FishPlayer.getFishPlayersString = function () {
         if (Core.settings.has("fish-subkeys")) {
@@ -956,7 +981,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    FishPlayer.saveVersion = 4;
+    FishPlayer.saveVersion = 5;
     FishPlayer.chunkSize = 60000;
     //Static transients
     FishPlayer.stats = {

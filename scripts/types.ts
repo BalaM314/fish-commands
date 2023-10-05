@@ -180,6 +180,7 @@ export interface FishPlayerData {
 	rainbow: { speed:number; } | null;
 	history: PlayerHistoryEntry[];
 	usid: string | null;
+	chatStrictness: "chat" | "strict";
 }
 
 export interface PlayerHistoryEntry {
