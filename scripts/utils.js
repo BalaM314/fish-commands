@@ -255,6 +255,16 @@ var StringIO = /** @class */ (function () {
             this.string += str;
         }
     };
+    StringIO.prototype.readEnumString = function (options) {
+        var length = (options.length - 1).toString().length;
+        var option = this.readNumber(length);
+        return options[option];
+    };
+    StringIO.prototype.writeEnumString = function (value, options) {
+        var length = (options.length - 1).toString().length;
+        var option = options.indexOf(value);
+        this.writeNumber(option, length);
+    };
     StringIO.prototype.readNumber = function (size) {
         if (size === void 0) { size = 4; }
         var data = this.read(size);

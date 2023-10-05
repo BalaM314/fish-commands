@@ -197,6 +197,16 @@ export class StringIO {
 			this.string += str;
 		}
 	}
+	readEnumString<const T>(options:T[]):T {
+		const length = (options.length - 1).toString().length;
+		const option = this.readNumber(length);
+		return options[option];
+	}
+	writeEnumString<const T>(value:T, options:T[]){
+		const length = (options.length - 1).toString().length;
+		const option = options.indexOf(value);
+		this.writeNumber(option, length);
+	}
 	readNumber(size:number = 4){
 		let data = this.read(size);
 		if(/^0*-\d+$/.test(data)){
