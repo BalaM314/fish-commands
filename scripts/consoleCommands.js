@@ -82,8 +82,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Find player info(s). Displays all names and ips of a player.",
         handler: function (_a) {
             var e_1, _b;
-            var args = _a.args, output = _a.output;
-            var infoList = (0, utils_1.setToArray)(Vars.netServer.admins.findByName(args.player));
+            var args = _a.args, output = _a.output, admins = _a.admins;
+            var infoList = (0, utils_1.setToArray)(admins.findByName(args.player));
             if (infoList.length == 0)
                 (0, commands_1.fail)("No players found.");
             var outputString = [""];
@@ -114,13 +114,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Display information about an online player.",
         handler: function (_a) {
             var e_2, _b;
-            var args = _a.args, output = _a.output;
+            var args = _a.args, output = _a.output, admins = _a.admins;
             var infoList = args.player == "*" ? players_1.FishPlayer.getAllOnline() : players_1.FishPlayer.getAllByName(args.player, false);
             if (infoList.length == 0)
                 (0, commands_1.fail)("Nobody with that name could be found.");
             var outputString = [""];
             var _loop_2 = function (player) {
-                var playerInfo = Vars.netServer.admins.getInfo(player.uuid);
+                var playerInfo = admins.getInfo(player.uuid);
                 outputString.push("Info for player &c\"".concat(player.cleanedName, "\" &lk(").concat(player.name, ")&fr\n\tUUID: &c\"").concat(playerInfo.id, "\"&fr\n\tUSID: &c").concat(player.usid ? "\"".concat(player.usid, "\"") : "unknown", "&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times\n\trank: &c").concat(player.rank.name, "&fr").concat((player.marked() ? ", &lris marked&fr" : "") + (player.muted ? ", &lris muted&fr" : "") + (player.hasFlag("member") ? ", &lmis member&fr" : "") + (player.autoflagged ? ", &lris autoflagged&fr" : "")));
             };
             try {
@@ -143,8 +143,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["ip:string"],
         description: "Unblacklists an ip from the DOS blacklist.",
         handler: function (_a) {
-            var args = _a.args, output = _a.output;
-            var blacklist = Vars.netServer.admins.dosBlacklist;
+            var args = _a.args, output = _a.output, admins = _a.admins;
+            var blacklist = admins.dosBlacklist;
             if (blacklist.remove(args.ip))
                 output("Removed ".concat(args.ip, " from the DOS blacklist."));
             else
@@ -155,15 +155,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: [],
         description: "Allows you to view the DOS blacklist.",
         handler: function (_a) {
-            var output = _a.output;
-            var blacklist = Vars.netServer.admins.dosBlacklist;
-            if (blacklist.isEmpty()) {
-                output("The blacklist is empty");
-                return;
-            }
+            var output = _a.output, admins = _a.admins;
+            var blacklist = admins.dosBlacklist;
+            if (blacklist.isEmpty())
+                (0, commands_1.fail)("The blacklist is empty");
             var outputString = ["DOS Blacklist:"];
             blacklist.each(function (ip) {
-                Vars.netServer.admins.findByName(ip).each(function (data) {
+                return admins.findByName(ip).each(function (data) {
                     return outputString.push("IP: &c".concat(ip, "&fr UUID: &c\"").concat(data.id, "\"&fr Last name used: &c\"").concat(data.plainLastName(), "\"&fr"));
                 });
             });
@@ -174,38 +172,38 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["target:string"],
         description: "Whacks (ipbans) a player.",
         handler: function (_a) {
-            var args = _a.args, output = _a.output, outputFail = _a.outputFail;
+            var args = _a.args, output = _a.output, outputFail = _a.outputFail, admins = _a.admins;
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
                 api.ban({ ip: args.target });
-                var info = Vars.netServer.admins.findByIP(args.target);
+                var info = admins.findByIP(args.target);
                 if (info)
                     (0, utils_1.logAction)("whacked", "console", info);
                 else
                     (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
-                if (Vars.netServer.admins.isIPBanned(args.target)) {
+                if (admins.isIPBanned(args.target)) {
                     output("IP &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
                 }
                 else {
-                    Vars.netServer.admins.banPlayerIP(args.target);
+                    admins.banPlayerIP(args.target);
                     output("&lrIP &c\"".concat(args.target, "\"&lr was banned. Ban was synced to other servers."));
                 }
             }
             else if (globals_1.uuidPattern.test(args.target)) {
-                var info = Vars.netServer.admins.getInfoOptional(args.target);
+                var info = admins.getInfoOptional(args.target);
                 if (info)
                     (0, utils_1.logAction)("whacked", "console", info);
                 else
                     (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
                 api.addStopped(args.target, config.maxTime);
-                if (Vars.netServer.admins.isIDBanned(args.target)) {
+                if (admins.isIDBanned(args.target)) {
                     api.ban({ uuid: args.target });
                     output("UUID &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
                 }
                 else {
-                    Vars.netServer.admins.banPlayerID(args.target);
+                    admins.banPlayerID(args.target);
                     if (info) {
-                        Vars.netServer.admins.banPlayerIP(info.lastIP);
+                        admins.banPlayerIP(info.lastIP);
                         api.ban({ uuid: args.target, ip: info.lastIP });
                         output("&lrUUID &c\"".concat(args.target, "\" &lrwas banned. IP &c\"").concat(info.lastIP, "\"&lr was banned. Ban was synced to other servers."));
                     }
@@ -228,8 +226,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
                         (0, commands_1.fail)("Player &c\"".concat(player.name, "\"&fr is an admin, you probably don't want to ban them."));
                     var ip = player.ip();
                     var uuid = player.uuid();
-                    Vars.netServer.admins.banPlayerID(uuid);
-                    Vars.netServer.admins.banPlayerIP(ip);
+                    admins.banPlayerID(uuid);
+                    admins.banPlayerIP(ip);
                     (0, utils_1.logAction)("console whacked ".concat(Strings.stripColors(player.name), " (`").concat(uuid, "`/`").concat(ip, "`)"));
                     api.ban({ uuid: uuid, ip: ip });
                     api.addStopped(player.uuid(), config.maxTime);
@@ -237,7 +235,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 }
             }
             Groups.player.each(function (player) {
-                if (Vars.netServer.admins.isIDBanned(player.uuid())) {
+                if (admins.isIDBanned(player.uuid())) {
                     api.addStopped(player.uuid(), config.maxTime);
                     player.con.kick(Packets.KickReason.banned);
                     Call.sendMessage("[scarlet] Player [yellow]".concat(player.name, " [scarlet] has been whacked."));
@@ -249,11 +247,11 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["target:string"],
         description: "Unbans a player.",
         handler: function (_a) {
-            var args = _a.args, output = _a.output;
+            var args = _a.args, output = _a.output, admins = _a.admins;
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
                 output("Checking ban status...");
-                var info = Vars.netServer.admins.findByIP(args.target);
+                var info = admins.findByIP(args.target);
                 api.getBanned({ ip: args.target }, function (banned) {
                     if (banned) {
                         api.unban({ ip: args.target });
@@ -263,8 +261,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     else {
                         output("IP &c\"".concat(args.target, "\"&fr is not globally banned."));
                     }
-                    if (Vars.netServer.admins.isIPBanned(args.target)) {
-                        Vars.netServer.admins.unbanPlayerIP(args.target);
+                    if (admins.isIPBanned(args.target)) {
+                        admins.unbanPlayerIP(args.target);
                         output("IP &c\"".concat(args.target, "\"&fr has been locally unbanned."));
                     }
                     else {
@@ -274,7 +272,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }
             else if (globals_1.uuidPattern.test(args.target)) {
                 output("Checking ban status...");
-                var info_1 = Vars.netServer.admins.findByIP(args.target);
+                var info_1 = admins.findByIP(args.target);
                 api.getBanned({ uuid: args.target }, function (banned) {
                     if (banned) {
                         api.unban({ uuid: args.target });
@@ -284,8 +282,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     else {
                         output("UUID &c\"".concat(args.target, "\"&fr is not globally banned."));
                     }
-                    if (Vars.netServer.admins.isIDBanned(args.target)) {
-                        Vars.netServer.admins.unbanPlayerID(args.target);
+                    if (admins.isIDBanned(args.target)) {
+                        admins.unbanPlayerID(args.target);
                         output("UUID &c\"".concat(args.target, "\"&fr has been locally unbanned."));
                     }
                     else {
@@ -348,9 +346,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Removes the USID of the player provided, use this if they are getting kicked with the message \"Authorization failure!\". Specify \"last\" to use the last player that got kicked.",
         handler: function (_a) {
             var _b, _c;
-            var args = _a.args, outputSuccess = _a.outputSuccess;
+            var args = _a.args, outputSuccess = _a.outputSuccess, admins = _a.admins;
             var player = args.player == "last" ? ((_b = players_1.FishPlayer.lastAuthKicked) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("Nobody has been kicked for authorization failure since the last restart.")) :
-                (_c = players_1.FishPlayer.getById(args.player)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(Vars.netServer.admins.getInfoOptional(args.player)
+                (_c = players_1.FishPlayer.getById(args.player)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(admins.getInfoOptional(args.player)
                     ? "Player ".concat(args.player, " has joined the server, but their info was not cached, most likely because they have no rank, so there is no stored USID.")
                     : "Unknown player ".concat(args.player));
             var oldusid = player.usid;
@@ -472,9 +470,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["uuid:uuid", "time:time?"],
         description: "Stops a player by uuid.",
         handler: function (_a) {
-            var _b = _a.args, uuid = _b.uuid, time = _b.time, outputSuccess = _a.outputSuccess;
+            var _b = _a.args, uuid = _b.uuid, time = _b.time, outputSuccess = _a.outputSuccess, admins = _a.admins;
             var stopTime = time !== null && time !== void 0 ? time : (config_1.maxTime - Date.now() - 10000);
-            var info = Vars.netServer.admins.getInfoOptional(uuid);
+            var info = admins.getInfoOptional(uuid);
             if (info == null)
                 (0, commands_1.fail)("Unknown player ".concat(uuid));
             var fishP = players_1.FishPlayer.getFromInfo(info);

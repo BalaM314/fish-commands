@@ -189,8 +189,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
-            var admins = Vars.netServer.admins;
+            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, admins = _a.admins;
             var maxPlayers = 60;
             function stop(option, time) {
                 var fishP = players_1.FishPlayer.getFromInfo(option);

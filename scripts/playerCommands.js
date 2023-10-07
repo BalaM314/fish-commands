@@ -114,7 +114,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
         },
         tapped: function (_a) {
-            var tile = _a.tile, x = _a.x, y = _a.y, output = _a.output, sender = _a.sender;
+            var tile = _a.tile, x = _a.x, y = _a.y, output = _a.output, sender = _a.sender, admins = _a.admins;
             var pos = "".concat(x, ",").concat(y);
             if (!globals_1.tileHistory[pos]) {
                 output("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
@@ -130,8 +130,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     var _a, _b;
                     return globals_1.uuidPattern.test(e.uuid)
                         ? (sender.hasPerm("viewUUIDs")
-                            ? "[yellow]".concat((_a = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[yellow] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
-                            : "[yellow]".concat((_b = Vars.netServer.admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time)))
+                            ? "[yellow]".concat((_a = admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[yellow] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
+                            : "[yellow]".concat((_b = admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time)))
                         : "[yellow]".concat(e.uuid, "[yellow] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time));
                 }).join('\n'));
             }

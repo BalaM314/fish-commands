@@ -86,7 +86,7 @@ export const commands = commandList({
 				}
 			}
 		},
-		tapped({tile, x, y, output, sender}){
+		tapped({tile, x, y, output, sender, admins}){
 			const pos = `${x},${y}`;
 			if(!tileHistory[pos]){
 				output(`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`);
@@ -100,8 +100,8 @@ export const commands = commandList({
 				output(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
 					uuidPattern.test(e.uuid)
 					? (sender.hasPerm("viewUUIDs")
-					? `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-					: `[yellow]${Vars.netServer.admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
+					? `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+					: `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
 					: `[yellow]${e.uuid}[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
 				).join('\n'));
 			}

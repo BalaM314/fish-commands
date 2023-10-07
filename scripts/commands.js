@@ -194,7 +194,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                             return { error: "Player with uuid \"".concat(args[i], "\" not found. Specify \"create:").concat(args[i], "\" to create the player.") };
                         outputArgs[cmdArg.name] = player;
                     }
-                    else if (args[i].split("create:")[1]) {
+                    else if (globals_1.uuidPattern.test(args[i].split("create:")[1])) {
                         outputArgs[cmdArg.name] = players_1.FishPlayer.getFromInfo(Vars.netServer.admins.getInfo(args[i].split("create:")[1]));
                     }
                     else {

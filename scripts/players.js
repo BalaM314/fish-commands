@@ -394,7 +394,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.player.name = prefix + " " + this.name;
         else
             this.player.name = this.name;
-        if (/hack[3e]r/.test(Strings.stripColors(this.name).toLowerCase())) {
+        if (/hack[3e]r/.test(Strings.stripColors(this.name).toLowerCase().replace(/[^a-z]/g, ""))) {
             //"Don't be a script kiddie"
             //-LiveOverflow, 2015
             this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/g, "script kiddie");

@@ -175,8 +175,7 @@ export const commands = commandList({
 		args: ["time:time?", "name:string"],
 		description: "Stops an offline player.",
 		perm: Perm.mod,
-		handler({args, sender, outputFail, outputSuccess}){
-			const admins = Vars.netServer.admins;
+		handler({args, sender, outputFail, outputSuccess, admins}){
 			const maxPlayers = 60;
 			
 			function stop(option:mindustryPlayerData, time:number){

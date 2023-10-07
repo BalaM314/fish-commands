@@ -151,7 +151,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 					const player = FishPlayer.getById(args[i]);
 					if(player == null) return {error: `Player with uuid "${args[i]}" not found. Specify "create:${args[i]}" to create the player.`};
 					outputArgs[cmdArg.name] = player;
-				} else if(args[i].split("create:")[1]){
+				} else if(uuidPattern.test(args[i].split("create:")[1])){
 					outputArgs[cmdArg.name] = FishPlayer.getFromInfo(
 						Vars.netServer.admins.getInfo(
 							args[i].split("create:")[1]
