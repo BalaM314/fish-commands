@@ -259,6 +259,13 @@ export class FishPlayer {
 		fishPlayer.activeMenu.callback = undefined;
 		fishPlayer.tapInfo.commandName = null;
 	}
+	static onGameOver() {
+		for(const [uuid, fishPlayer] of Object.entries(this.cachedPlayers)){
+			//Clear temporary states such as menu and taphandler
+			fishPlayer.activeMenu.callback = undefined;
+			fishPlayer.tapInfo.commandName = null;
+		}
+	}
 	/**Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
 		//if(unit.spawnedByCore)

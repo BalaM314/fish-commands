@@ -233,13 +233,16 @@ Events.on(EventType.TapEvent, handleTapEvent);
 Events.on(EventType.GameOverEvent, (e) => {
 	Ohnos.onGameOver();
 	for(const [key, value] of Object.entries(tileHistory)){
+		//clear tilelog
 		tileHistory[key] = null!;
 		delete tileHistory[key];
 	}
 	if(fishState.restarting){
+		//restart
 		Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---`);
 		serverRestartLoop(20);
 	}
+	FishPlayer.onGameOver();
 });
 
 Events.on(EventType.DisposeEvent, (e) => {

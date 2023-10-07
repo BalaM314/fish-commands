@@ -313,6 +313,24 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         fishPlayer.activeMenu.callback = undefined;
         fishPlayer.tapInfo.commandName = null;
     };
+    FishPlayer.onGameOver = function () {
+        var e_5, _a;
+        try {
+            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), uuid = _d[0], fishPlayer = _d[1];
+                //Clear temporary states such as menu and taphandler
+                fishPlayer.activeMenu.callback = undefined;
+                fishPlayer.tapInfo.commandName = null;
+            }
+        }
+        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_5) throw e_5.error; }
+        }
+    };
     /**Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
         //if(unit.spawnedByCore)
@@ -332,7 +350,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             fishP.stopUnit();
     };
     FishPlayer.forEachPlayer = function (func) {
-        var e_5, _a;
+        var e_6, _a;
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
@@ -340,12 +358,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                     func(player);
             }
         }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_5) throw e_5.error; }
+            finally { if (e_6) throw e_6.error; }
         }
     };
     /**Must be called at player join, before updateName(). */
@@ -364,7 +382,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
-        var e_6, _a;
+        var e_7, _a;
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
@@ -382,12 +400,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 prefix += flag.prefix;
             }
         }
-        catch (e_6_1) { e_6 = { error: e_6_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_6) throw e_6.error; }
+            finally { if (e_7) throw e_7.error; }
         }
         prefix += this.rank.prefix;
         if (prefix != "")
@@ -723,7 +741,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_7, _a;
+        var e_8, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -737,12 +755,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_7_1) { e_7 = { error: e_7_1 }; }
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_7) throw e_7.error; }
+            finally { if (e_8) throw e_8.error; }
         }
     };
     //#endregion

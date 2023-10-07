@@ -262,6 +262,7 @@ Events.on(EventType.GameOverEvent, function (e) {
     try {
         for (var _b = __values(Object.entries(globals_1.tileHistory)), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
+            //clear tilelog
             globals_1.tileHistory[key] = null;
             delete globals_1.tileHistory[key];
         }
@@ -274,9 +275,11 @@ Events.on(EventType.GameOverEvent, function (e) {
         finally { if (e_1) throw e_1.error; }
     }
     if (globals_1.fishState.restarting) {
+        //restart
         Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---");
         (0, utils_1.serverRestartLoop)(20);
     }
+    players_1.FishPlayer.onGameOver();
 });
 Events.on(EventType.DisposeEvent, function (e) {
     players_1.FishPlayer.saveAll();
