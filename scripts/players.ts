@@ -7,7 +7,7 @@ import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
 import {
 	StringIO, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative,
-	isCoreUnitType, isImpersonator, logAction, matchFilter, parseError, setToArray
+	isImpersonator, logAction, matchFilter, parseError, setToArray
 } from "./utils";
 
 
@@ -268,15 +268,7 @@ export class FishPlayer {
 	}
 	/**Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
-		//if(unit.spawnedByCore)
-		/**
-		 * unit.spawnedByCore is not set correctly in UnitChangeEvent.
-		 * This is because the function that fires it(unit.controller(player);)
-		 * does not seem to run any code, but it actually runs player.unit(unit)
-		 * which fires the event.
-		 * This bug should be fixed after v142.
-		 */
-		if(isCoreUnitType(unit.type))
+		if(unit.spawnedByCore)
 			this.onRespawn(player);
 	}
 	private static onRespawn(player:mindustryPlayer){
@@ -833,7 +825,7 @@ We apologize for the inconvenience.`
 
 	stopUnit(){
 		if(this.connected() && this.unit()){
-			if(isCoreUnitType(this.unit().type)){
+			if(this.unit().spawnedByCore){
 				this.unit().type = UnitTypes.stell;
 				this.unit().health = UnitTypes.stell.health;
 				this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);

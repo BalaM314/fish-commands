@@ -333,15 +333,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     /**Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
-        //if(unit.spawnedByCore)
-        /**
-         * unit.spawnedByCore is not set correctly in UnitChangeEvent.
-         * This is because the function that fires it(unit.controller(player);)
-         * does not seem to run any code, but it actually runs player.unit(unit)
-         * which fires the event.
-         * This bug should be fixed after v142.
-         */
-        if ((0, utils_1.isCoreUnitType)(unit.type))
+        if (unit.spawnedByCore)
             this.onRespawn(player);
     };
     FishPlayer.onRespawn = function (player) {
@@ -962,7 +954,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.stopUnit = function () {
         if (this.connected() && this.unit()) {
-            if ((0, utils_1.isCoreUnitType)(this.unit().type)) {
+            if (this.unit().spawnedByCore) {
                 this.unit().type = UnitTypes.stell;
                 this.unit().health = UnitTypes.stell.health;
                 this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);

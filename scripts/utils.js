@@ -36,7 +36,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.isCoreUnitType = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -160,14 +160,6 @@ function nearbyEnemyTile(unit, dist) {
     return null;
 }
 exports.nearbyEnemyTile = nearbyEnemyTile;
-/**
- * This function is necessary due to a bug with UnitChangeEvent. It can be removed in the next release after v142.
- * @deprecated
- * */
-function isCoreUnitType(type) {
-    return [UnitTypes.alpha, UnitTypes.beta, UnitTypes.gamma, UnitTypes.evoke, UnitTypes.incite, UnitTypes.emanate].includes(type);
-}
-exports.isCoreUnitType = isCoreUnitType;
 function setToArray(set) {
     var array = [];
     set.each(function (item) { return array.push(item); });

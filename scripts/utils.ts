@@ -121,14 +121,6 @@ export function nearbyEnemyTile(unit:Unit, dist:number){
 	return null;
 }
 
-/**
- * This function is necessary due to a bug with UnitChangeEvent. It can be removed in the next release after v142.
- * @deprecated
- * */
-export function isCoreUnitType(type:UnitType){
-	return [UnitTypes.alpha, UnitTypes.beta, UnitTypes.gamma, UnitTypes.evoke, UnitTypes.incite, UnitTypes.emanate].includes(type);
-}
-
 export function setToArray<T>(set:ObjectSet<T> | EntityGroup<T>):T[] {
 	const array:T[] = [];
 	set.each(item => array.push(item));
