@@ -308,6 +308,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 			outputFail: message => {outputFail(message, sender); failed = true;},
 			outputSuccess: message => outputSuccess(message, sender),
 			output: message => outputMessage(message, sender),
+			admins: Vars.netServer.admins,
 			commandLastUsed: usageData.lastUsed,
 			commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
 			lastUsed: usageData.tapLastUsed,
@@ -386,6 +387,7 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 							outputSuccess: message => outputSuccess(message, sender),
 							output: message => outputMessage(message, sender),
 							execServer: command => serverHandler.handleMessage(command),
+							admins: Vars.netServer.admins,
 							lastUsedSender: usageData.lastUsed,
 							lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
 							lastUsedSuccessfully: (globalUsageData[name] ??= {lastUsed: -1, lastUsedSuccessfully: -1}).lastUsedSuccessfully,
@@ -460,6 +462,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 						outputSuccess: message => Log.info(`${message}`),
 						output: message => Log.info(message),
 						execServer: command => serverHandler.handleMessage(command),
+						admins: Vars.netServer.admins,
 						...usageData
 					});
 					usageData.lastUsed = Date.now();

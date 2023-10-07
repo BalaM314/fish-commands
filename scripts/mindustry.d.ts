@@ -130,6 +130,7 @@ declare const Http: {
 	get(url:string):HttpRequest;
 	get(url:string, callback:(res:HttpResponse) => unknown):void;
 }
+type Administration = any;
 declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
 	items: T[];
 	size: number;

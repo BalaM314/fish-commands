@@ -398,6 +398,7 @@ function handleTapEvent(event) {
             outputFail: function (message) { outputFail(message, sender); failed_1 = true; },
             outputSuccess: function (message) { return outputSuccess(message, sender); },
             output: function (message) { return outputMessage(message, sender); },
+            admins: Vars.netServer.admins,
             commandLastUsed: usageData.lastUsed,
             commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
             lastUsed: usageData.tapLastUsed,
@@ -473,6 +474,7 @@ function register(commands, clientHandler, serverHandler) {
                             outputSuccess: function (message) { return outputSuccess(message, sender); },
                             output: function (message) { return outputMessage(message, sender); },
                             execServer: function (command) { return serverHandler.handleMessage(command); },
+                            admins: Vars.netServer.admins,
                             lastUsedSender: usageData.lastUsed,
                             lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
                             lastUsedSuccessfully: ((_a = globalUsageData[name]) !== null && _a !== void 0 ? _a : (globalUsageData[name] = { lastUsed: -1, lastUsedSuccessfully: -1 })).lastUsedSuccessfully,
@@ -552,7 +554,7 @@ function registerConsole(commands, serverHandler) {
                 var usageData = ((_a = globalUsageData[_b = "_console_" + name]) !== null && _a !== void 0 ? _a : (globalUsageData[_b] = { lastUsed: -1, lastUsedSuccessfully: -1 }));
                 try {
                     var failed_2 = false;
-                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, outputFail: function (message) { Log.err("".concat(message)); failed_2 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); } }, usageData));
+                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, outputFail: function (message) { Log.err("".concat(message)); failed_2 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); }, admins: Vars.netServer.admins }, usageData));
                     usageData.lastUsed = Date.now();
                     if (!failed_2)
                         usageData.lastUsedSuccessfully = Date.now();

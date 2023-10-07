@@ -76,6 +76,8 @@ export interface FishCommandRunner<ArgType extends string> {
 		/**Call this function to set tap handling mode. */
 		handleTaps:(mode:TapHandleMode) => void;
 		currentTapMode:TapHandleMode;
+		/** Vars.netServer.admins */
+		admins: Administration;
 		/**List of every registered command, including this one. */
 		allCommands:Record<string, FishCommandData<any>>;
 		/**Timestamp of the last time this command was run successfully by any player. */
@@ -103,6 +105,8 @@ export interface FishConsoleCommandRunner<ArgType extends string> {
 		output:(message:string) => void;
 		/**Executes a server console command. Be careful to not commit recursion as that will cause a crash.*/
 		execServer:(message:string) => void;
+		/** Vars.netServer.admins */
+		admins: Administration;
 		/**Timestamp of the last time this command was run. */
 		lastUsed:number;
 		/**Timestamp of the last time this command was run succesfully. */
@@ -125,6 +129,8 @@ export interface TapHandler<ArgType extends string> {
 		commandLastUsed:number;
 		/**Timestamp of the last time this command was run succesfully. */
 		commandLastUsedSuccessfully:number;
+		/** Vars.netServer.admins */
+		admins: Administration;
 		/**Timestamp of the last time this tap handler was run. */
 		lastUsed:number;
 		/**Timestamp of the last time this tap handler was run succesfully. (without fail() being called) */
