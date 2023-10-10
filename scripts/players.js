@@ -296,7 +296,10 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (fishPlayer.validate()) {
             var message = (0, utils_1.isImpersonator)(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
             if (message !== false) {
-                fishPlayer.sendMessage("Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\nReason: ".concat(message, "\nChange your name to remove the tag."));
+                fishPlayer.sendMessage("[gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ".concat(message, "\n[gold]Change your name to remove the tag."));
+            }
+            else if (/hack[3e]r/i.test((0, utils_1.cleanText)(this.name, true))) {
+                fishPlayer.sendMessage("Don't be a script kiddie!");
             }
             fishPlayer.updateName();
             fishPlayer.updateAdminStatus();
@@ -408,10 +411,15 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.player.name = prefix + " " + this.name;
         else
             this.player.name = this.name;
-        if (/hack[3e]r/i.test((0, utils_1.cleanText)(this.name, true))) {
+        if ((0, utils_1.cleanText)(this.name, true).includes("hacker")) {
             //"Don't be a script kiddie"
             //-LiveOverflow, 2015
-            this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "script kiddie");
+            if (/h.*a.*c.*k.*[3e].*r/i.test(this.name)) {
+                this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "[brown]script kiddie[]");
+            }
+            else {
+                this.player.name = "[brown]script kiddie";
+            }
         }
     };
     FishPlayer.prototype.updateAdminStatus = function () {
