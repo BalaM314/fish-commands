@@ -6,7 +6,7 @@ import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
 import {
-	StringIO, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative,
+	StringIO, cleanText, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative,
 	isImpersonator, logAction, matchFilter, parseError, setToArray
 } from "./utils";
 
@@ -313,10 +313,10 @@ export class FishPlayer {
 		else
 			this.player.name = this.name;
 
-		if(/hack[3e]r/.test(Strings.stripColors(this.name).toLowerCase().replace(/[^a-z]/g, ""))){
+		if(/hack[3e]r/i.test(cleanText(this.name, true))){
 			//"Don't be a script kiddie"
 			//-LiveOverflow, 2015
-			this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/g, "script kiddie");
+			this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "script kiddie");
 		}
 	}
 	updateAdminStatus(){
@@ -366,13 +366,14 @@ export class FishPlayer {
 
 If you are unable to change it, please download Mindustry from Steam or itch.io.`
 			, 1);
-		}
-		if(Strings.stripColors(this.name).replace(/ /g, "").length == 0){
+		} else if(Strings.stripColors(this.name).trim().length == 0){
 			this.player.kick(
 `[scarlet]"${escapeStringColorsClient(this.name)}[scarlet]" is not an allowed name because it is blank. Please change it.`
 			, 1);
+		} else {
+			return true;
 		}
-		return true;
+		return false;
 	}
 	/**Checks if this player's USID is correct. */
 	checkUsid(){

@@ -408,10 +408,10 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             this.player.name = prefix + " " + this.name;
         else
             this.player.name = this.name;
-        if (/hack[3e]r/.test(Strings.stripColors(this.name).toLowerCase().replace(/[^a-z]/g, ""))) {
+        if (/hack[3e]r/i.test((0, utils_1.cleanText)(this.name, true))) {
             //"Don't be a script kiddie"
             //-LiveOverflow, 2015
-            this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/g, "script kiddie");
+            this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "script kiddie");
         }
     };
     FishPlayer.prototype.updateAdminStatus = function () {
@@ -464,10 +464,13 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if ((0, utils_1.matchFilter)(this.name, "name")) {
             this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
-        if (Strings.stripColors(this.name).replace(/ /g, "").length == 0) {
+        else if (Strings.stripColors(this.name).trim().length == 0) {
             this.player.kick("[scarlet]\"".concat((0, utils_1.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is blank. Please change it."), 1);
         }
-        return true;
+        else {
+            return true;
+        }
+        return false;
     };
     /**Checks if this player's USID is correct. */
     FishPlayer.prototype.checkUsid = function () {

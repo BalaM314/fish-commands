@@ -274,7 +274,7 @@ export function escapeTextDiscord(text:string):string {
  */
 export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | "name"):boolean {
 	//Replace substitutions
-	const replacedText = Strings.stripColors(text).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
+	const replacedText = cleanText(text, true);
 	for(const [word, whitelist] of bannedWords.concat(strict == "strict" ? strictBannedWords : []).concat(strict == "name" ? bannedInNamesWords : [])){
 		if(word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)){
 			let moreReplacedText = replacedText;
@@ -289,7 +289,7 @@ export function repeatAlternate(a:string, b:string, numARepeats:number){
 	return Array.from({length: numARepeats * 2 - 1}, (_, i) => i % 2 ? b : a).join("");
 }
 
-export function deSussifyText(text:string, applyAntiEvasion = false){
+export function cleanText(text:string, applyAntiEvasion = false){
 	//Replace substitutions
 	let replacedText =
 		Strings.stripColors(text)
@@ -312,7 +312,7 @@ export function deSussifyText(text:string, applyAntiEvasion = false){
 }
 
 export function isImpersonator(name:string, isStaff:boolean):false | string {
-	const replacedText = deSussifyText(name, true);
+	const replacedText = cleanText(name, true);
 	//very clean code i know
 	const filters:[check:Boolf<string>, message:string][] = (
 		(input: (string | [string | RegExp | Boolf<string>, string])[]) =>

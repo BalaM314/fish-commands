@@ -36,7 +36,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.deSussifyText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -343,7 +343,7 @@ function matchFilter(text, strict) {
     var e_1, _a;
     if (strict === void 0) { strict = "chat"; }
     //Replace substitutions
-    var replacedText = Strings.stripColors(text).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
+    var replacedText = cleanText(text, true);
     var _loop_1 = function (word, whitelist) {
         if (word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)) {
             var moreReplacedText_1 = replacedText;
@@ -374,7 +374,7 @@ function repeatAlternate(a, b, numARepeats) {
     return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
 }
 exports.repeatAlternate = repeatAlternate;
-function deSussifyText(text, applyAntiEvasion) {
+function cleanText(text, applyAntiEvasion) {
     if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
     //Replace substitutions
     var replacedText = Strings.stripColors(text)
@@ -395,10 +395,10 @@ function deSussifyText(text, applyAntiEvasion) {
     }
     return replacedText;
 }
-exports.deSussifyText = deSussifyText;
+exports.cleanText = cleanText;
 function isImpersonator(name, isStaff) {
     var e_2, _a;
-    var replacedText = deSussifyText(name, true);
+    var replacedText = cleanText(name, true);
     //very clean code i know
     var filters = (function (input) {
         return input.map(function (i) {
