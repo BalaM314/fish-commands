@@ -3,6 +3,7 @@ import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, stri
 import { fishState } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
+import { Boolf } from './types';
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -288,10 +289,11 @@ export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | 
 
 export function isImpersonator(name:string, isStaff:boolean):boolean {
 	//Replace substitutions
-	const replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase();
-	if(replacedText.includes("server")) return true; //name contains server
-	if(/^[ ]*<.{1,3}>/.test(replacedText)) return true; //name starts with <c>, fake role prefix
-	if(!isStaff && adminNames.includes(replacedText.trim())) return true;
+	const replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase().trim();
+	if(replacedText.includes("server") || replacedText.includes("admin") || replacedText.includes("moderator") || replacedText.includes("staff") || replacedText.includes(">|||>")) return true; //name contains suspicious string
+	if(/[\uE817\uE82C\uE88E]/.test(replacedText)) return true; //name contains a staff-reserved icon
+	if(/^<.{1,3}>/.test(replacedText)) return true; //name starts with <***>, fake role prefix
+	if(!isStaff && adminNames.includes(replacedText)) return true;
 	return false;
 }
 

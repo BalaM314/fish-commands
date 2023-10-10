@@ -372,12 +372,14 @@ function matchFilter(text, strict) {
 exports.matchFilter = matchFilter;
 function isImpersonator(name, isStaff) {
     //Replace substitutions
-    var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase();
-    if (replacedText.includes("server"))
-        return true; //name contains server
-    if (/^[ ]*<.{1,3}>/.test(replacedText))
-        return true; //name starts with <c>, fake role prefix
-    if (!isStaff && config_1.adminNames.includes(replacedText.trim()))
+    var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase().trim();
+    if (replacedText.includes("server") || replacedText.includes("admin") || replacedText.includes("moderator") || replacedText.includes("staff") || replacedText.includes(">|||>"))
+        return true; //name contains suspicious string
+    if (/[\uE817\uE82C\uE88E]/.test(replacedText))
+        return true; //name contains a staff-reserved icon
+    if (/^<.{1,3}>/.test(replacedText))
+        return true; //name starts with <***>, fake role prefix
+    if (!isStaff && config_1.adminNames.includes(replacedText))
         return true;
     return false;
 }
