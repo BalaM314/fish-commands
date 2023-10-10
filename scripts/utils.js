@@ -378,8 +378,8 @@ function isImpersonator(name, isStaff) {
     var e_2, _a;
     //Replace substitutions
     var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase().trim();
-    var alphaChars = "a-z\u00E0-\u00F6\u00F8-\u017F";
-    var nonAlphaChars = "'a-z\u00E0-\u00F6\u00F8-\u017F";
+    var alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+    var nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
     var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4), "i");
     if (antiEvasionRegex.test(replacedText)) {
         //If there are 3 groups of non alphabetic characters separating alphabetic characters, such as: "a_d_m_i" but not "i am a sussy impostor"

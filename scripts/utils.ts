@@ -292,8 +292,8 @@ export function repeatAlternate(a:string, b:string, numARepeats:number){
 export function isImpersonator(name:string, isStaff:boolean):false | string {
 	//Replace substitutions
 	let replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase().trim();
-	const alphaChars = "a-z\u00E0-\u00F6\u00F8-\u017F";
-	const nonAlphaChars = "'a-z\u00E0-\u00F6\u00F8-\u017F";
+	const alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+	const nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
 	const antiEvasionRegex = new RegExp(repeatAlternate(`[${alphaChars}]`, `[^${nonAlphaChars}]`, 4), "i");
 	if(antiEvasionRegex.test(replacedText)){
 		//If there are 3 groups of non alphabetic characters separating alphabetic characters, such as: "a_d_m_i" but not "i am a sussy impostor"
