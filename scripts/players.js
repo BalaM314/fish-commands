@@ -298,7 +298,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             if (message !== false) {
                 fishPlayer.sendMessage("[gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ".concat(message, "\n[gold]Change your name to remove the tag."));
             }
-            else if (/hack[3e]r/i.test((0, utils_1.cleanText)(this.name, true))) {
+            else if ((0, utils_1.cleanText)(player.name, true).includes("hacker")) {
                 fishPlayer.sendMessage("Don't be a script kiddie!");
             }
             fishPlayer.updateName();

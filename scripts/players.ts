@@ -244,7 +244,7 @@ export class FishPlayer {
 			const message = isImpersonator(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
 			if(message !== false){
 				fishPlayer.sendMessage(`[gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ${message}\n[gold]Change your name to remove the tag.`);
-			} else if(/hack[3e]r/i.test(cleanText(this.name, true))){
+			} else if(cleanText(player.name, true).includes("hacker")){
 				fishPlayer.sendMessage("Don't be a script kiddie!");
 			}
 			fishPlayer.updateName();
