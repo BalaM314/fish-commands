@@ -294,6 +294,10 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
         fishPlayer.updateSavedInfoFromPlayer(player);
         if (fishPlayer.validate()) {
+            var message = (0, utils_1.isImpersonator)(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
+            if (message !== false) {
+                fishPlayer.sendMessage("Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\nReason: ".concat(message, "\nChange your name to remove the tag."));
+            }
             fishPlayer.updateName();
             fishPlayer.updateAdminStatus();
             api.getStopped(player.uuid(), function (unmarked) {
