@@ -243,9 +243,9 @@ export class FishPlayer {
 		if(fishPlayer.validate()){
 			const message = isImpersonator(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
 			if(message !== false){
-				fishPlayer.sendMessage(`[gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ${message}\n[gold]Change your name to remove the tag.`);
+				fishPlayer.sendMessage(`[scarlet]\u26A0[] [gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ${message}\n[gold]Change your name to remove the tag.`);
 			} else if(cleanText(player.name, true).includes("hacker")){
-				fishPlayer.sendMessage("Don't be a script kiddie!");
+				fishPlayer.sendMessage("[scarlet]\u26A0 Don't be a script kiddie!");
 			}
 			fishPlayer.updateName();
 			fishPlayer.updateAdminStatus();

@@ -5,8 +5,8 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
 	"uwu", //lol
-	"nig"+"ger", "nig" + "ga", "niger",
-	"re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co"+"ck", "co"+"ck sucker", "iamasussyimposter", "cu"+"nt",
+	"nig"+"ger", "nig" + "ga", "niger", //our apologies to citizens of the Republic of Niger
+	"re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co"+"ck", "iamasussyimposter", "cu"+"nt",
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
 	["fa"+"g", "fage"],
 	/\bcum\b/,
