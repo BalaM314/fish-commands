@@ -80,6 +80,9 @@ export const substitutions:Record<string, string> = Object.fromEntries(Object.en
 	"Y":["\u01B3","\u0232","\u03A5","\u03AB","\u03D3","\u0423","\u04AE","\u04B0","\u1E8E","\u1EF2","\u1EF4"],
 	"Z":["\u0179","\u017B","\u017D","\u0224","\u0396","\u1E90","\u1E92","\u1E94"],
 }).map(([char, alts]) => alts.map(alt => [alt, char])).flat(1));
+export const multiCharSubstitutions:[RegExp, string][] = [
+	[/\|-\|/g, "H"]
+];
 // export const ip = 'localhost';
 export const ip = '45.79.202.111';
 export const FishServers = {

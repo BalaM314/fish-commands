@@ -377,8 +377,11 @@ exports.repeatAlternate = repeatAlternate;
 function cleanText(text, applyAntiEvasion) {
     if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
     //Replace substitutions
-    var replacedText = Strings.stripColors(text)
-        .split("").map(function (c) { var _a; return (_a = config_1.substitutions[c]) !== null && _a !== void 0 ? _a : c; }).join("")
+    var replacedText = config_1.multiCharSubstitutions.reduce(function (acc, _a) {
+        var _b = __read(_a, 2), from = _b[0], to = _b[1];
+        return acc.replace(from, to);
+    }, Strings.stripColors(text)
+        .split("").map(function (c) { var _a; return (_a = config_1.substitutions[c]) !== null && _a !== void 0 ? _a : c; }).join(""))
         .toLowerCase()
         .trim();
     if (applyAntiEvasion) {

@@ -1,5 +1,5 @@
 import * as api from './api';
-import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, strictBannedWords, substitutions } from "./config";
+import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
 import { fishState } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
@@ -292,8 +292,10 @@ export function repeatAlternate(a:string, b:string, numARepeats:number){
 export function cleanText(text:string, applyAntiEvasion = false){
 	//Replace substitutions
 	let replacedText =
-		Strings.stripColors(text)
-		.split("").map(c => substitutions[c] ?? c).join("")
+		multiCharSubstitutions.reduce((acc, [from, to]) => acc.replace(from, to),
+			Strings.stripColors(text)
+			.split("").map(c => substitutions[c] ?? c).join("")
+		)
 		.toLowerCase()
 		.trim();
 	if(applyAntiEvasion){

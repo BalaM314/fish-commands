@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
@@ -99,6 +99,9 @@ exports.substitutions = Object.fromEntries(Object.entries({
     var _b = __read(_a, 2), char = _b[0], alts = _b[1];
     return alts.map(function (alt) { return [alt, char]; });
 }).flat(1));
+exports.multiCharSubstitutions = [
+    [/\|-\|/g, "H"]
+];
 // export const ip = 'localhost';
 exports.ip = '45.79.202.111';
 exports.FishServers = {
