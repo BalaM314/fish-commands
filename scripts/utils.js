@@ -36,7 +36,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.deSussifyText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -374,19 +374,31 @@ function repeatAlternate(a, b, numARepeats) {
     return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
 }
 exports.repeatAlternate = repeatAlternate;
-function isImpersonator(name, isStaff) {
-    var e_2, _a;
+function deSussifyText(text, applyAntiEvasion) {
+    if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
     //Replace substitutions
-    var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase().trim();
-    var alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-    var nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-    var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4), "i");
-    if (antiEvasionRegex.test(replacedText)) {
-        //If there are 3 groups of non alphabetic characters separating alphabetic characters, such as: "a_d_m_i" but not "i am a sussy impostor"
+    var replacedText = Strings.stripColors(text)
+        .split("").map(function (c) { var _a; return (_a = config_1.substitutions[c]) !== null && _a !== void 0 ? _a : c; }).join("")
+        .toLowerCase()
+        .trim();
+    if (applyAntiEvasion) {
+        //If there are 3 groups of non alphabetic characters separating alphabetic characters,
+        //such as: "a_d_m_i" but not "i am a sussy impostor"
         //remove all the non alphabetic characters
         //this should stop people naming themselves s e r v e r and getting away with it
-        replacedText = replacedText.replace(new RegExp("[^".concat(nonAlphaChars, "]"), "gi"), "");
+        var alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+        var nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+        var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4), "i");
+        if (antiEvasionRegex.test(replacedText)) {
+            replacedText = replacedText.replace(new RegExp("[^".concat(nonAlphaChars, "]"), "gi"), "");
+        }
     }
+    return replacedText;
+}
+exports.deSussifyText = deSussifyText;
+function isImpersonator(name, isStaff) {
+    var e_2, _a;
+    var replacedText = deSussifyText(name, true);
     //very clean code i know
     var filters = (function (input) {
         return input.map(function (i) {

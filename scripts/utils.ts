@@ -289,18 +289,30 @@ export function repeatAlternate(a:string, b:string, numARepeats:number){
 	return Array.from({length: numARepeats * 2 - 1}, (_, i) => i % 2 ? b : a).join("");
 }
 
-export function isImpersonator(name:string, isStaff:boolean):false | string {
+export function deSussifyText(text:string, applyAntiEvasion = false){
 	//Replace substitutions
-	let replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase().trim();
-	const alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-	const nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-	const antiEvasionRegex = new RegExp(repeatAlternate(`[${alphaChars}]`, `[^${nonAlphaChars}]`, 4), "i");
-	if(antiEvasionRegex.test(replacedText)){
-		//If there are 3 groups of non alphabetic characters separating alphabetic characters, such as: "a_d_m_i" but not "i am a sussy impostor"
+	let replacedText =
+		Strings.stripColors(text)
+		.split("").map(c => substitutions[c] ?? c).join("")
+		.toLowerCase()
+		.trim();
+	if(applyAntiEvasion){
+		//If there are 3 groups of non alphabetic characters separating alphabetic characters,
+		//such as: "a_d_m_i" but not "i am a sussy impostor"
 		//remove all the non alphabetic characters
 		//this should stop people naming themselves s e r v e r and getting away with it
-		replacedText = replacedText.replace(new RegExp(`[^${nonAlphaChars}]`, "gi"), "");
+		const alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+		const nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+		const antiEvasionRegex = new RegExp(repeatAlternate(`[${alphaChars}]`, `[^${nonAlphaChars}]`, 4), "i");
+		if(antiEvasionRegex.test(replacedText)){
+			replacedText = replacedText.replace(new RegExp(`[^${nonAlphaChars}]`, "gi"), "");
+		}
 	}
+	return replacedText;
+}
+
+export function isImpersonator(name:string, isStaff:boolean):false | string {
+	const replacedText = deSussifyText(name, true);
 	//very clean code i know
 	const filters:[check:Boolf<string>, message:string][] = (
 		(input: (string | [string | RegExp | Boolf<string>, string])[]) =>
