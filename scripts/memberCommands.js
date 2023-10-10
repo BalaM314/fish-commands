@@ -57,7 +57,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.member,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
-            if (args.color == null) {
+            if (args.color == null || args.color.length == 0) {
                 if (sender.highlight != null) {
                     sender.highlight = null;
                     outputSuccess("Cleared your highlight.");

@@ -58,7 +58,7 @@ export const commands = commandList({
 		description: 'Makes your chat text colored by default.',
 		perm: Perm.member,
 		handler({args, sender, outputFail, outputSuccess}){
-			if(args.color == null){
+			if(args.color == null || args.color.length == 0){
 				if(sender.highlight != null){
 					sender.highlight = null;
 					outputSuccess("Cleared your highlight.");
