@@ -43,7 +43,7 @@ exports.bannedInNamesWords = (function (words) {
 exports.adminNames = ["fish", "balame14", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 exports.substitutions = Object.fromEntries(Object.entries({
-    "a": ["\u0430", "\u0105", "\u1E9A", "\u1EA1", "\u1E01", "\u00E4", "\u03B1", "@"],
+    "a": ["\u0430", "\u1E9A", "\u1EA1", "\u1E01", "\u00E4", "\u03B1", "@", "\u0101", "\u0103", "\u0105"],
     "b": ["\u1E03", "\u1E07", "\u1E03", "\u0253", "\u0185"],
     "c": ["\u0441", "\u217D", "\u00E7", "\u03C2", "\u010B"],
     "d": ["\u217E", "\u1E0B", "\u1E11", "\u010F", "\u1E13", "\u1E0D", "\u1E0F", "\u0257", "\u20AB", "\u0256", "\u056A"],
@@ -59,7 +59,7 @@ exports.substitutions = Object.fromEntries(Object.entries({
     "n": ["n", "\u00F1", "\u0144", "\u0146", "\u0148", "\u0149", "\u01F9", "\u03AE", "\u03B7", "\u0578", "\u057C", "\u0580", "\u1E45", "\u1E47"],
     "o": ["o", "\u00F2", "\u1ED9", "\u1EDB", "\u1EDD", "\u1EDF", "\u1EE1", "\u1EE3", "\u1F40", "\u1F41", "\u1F42", "\u1F43", "\u1F44", "\u1F45", "\u1F78", "\u1F79", "\u03C3", "\u0E50", "\u00F6", "\u014D", "\u014F", "\u0151", "\u01A1", "\u01D2", "0"],
     "p": ["p", "\u03C1", "\u0440", "\u048F", "\u1E55", "\u1E57", "\u1FE4", "\u1FE5", "\u2374"],
-    "q": ["\u051B", "\u0563", "\u0566", "q", "\u0563", "\u0566"],
+    "q": ["\u051B", "\u0563", "\u0566", "\u0563", "\u0566"],
     "r": ["\u0155", "\u0157", "\u0159", "\u0211", "\u0213", "\u027C", "\u027D", "\u0433", "\u0453", "\u0491", "\u04F7", "\u1E59", "\u1E5B", "\u1E5D"],
     "s": ["\u015B", "\u015D", "\u015F", "\u0161", "\u0219", "\u0282", "\u0455", "\u1E61", "\u1E63", "\u1E65", "\u1E67", "\u1E69"],
     "t": ["\u0163", "\u0165", "\u01AB", "\u021B", "\u0288", "\u1E6B", "\u1E6D", "\u1E6F", "\u1E71", "\u1E97", "\u0236", "\u2020", "\u04AD"],
@@ -69,7 +69,7 @@ exports.substitutions = Object.fromEntries(Object.entries({
     "x": ["\u0445", "\u04B3", "\u1E8B", "\u1E8D"],
     "y": ["\u00FD", "\u00FF", "\u0177", "\u01B4", "\u0233", "\u03B3", "\u0443", "\u045E", "\u04EF", "\u04F1", "\u04F3", "\u1E8F", "\u1E99", "\u1EF3", "\u1EF5", "\u1EF7", "\u1EF9", "\u04AF", "\u04B1"],
     "z": ["\u017A", "\u017C", "\u017E", "\u01B6", "\u0225", "\u0290", "\u1E91", "\u1E93", "\u1E95"],
-    "A": ["\u1E00", "\u1EA0", "\u1EA2", "\u1EA4", "\u1EA6", "\u1EA8", "\u1EAC", "\u1F08", "\u1F09", "\u1F88", "\u1F89", "\u1FB8", "\u1FB9", "\u1FBA", "\u1FBC", "\u212B"],
+    "A": ["\u1E00", "\u1EA0", "\u1EA2", "\u1EA4", "\u1EA6", "\u1EA8", "\u1EAC", "\u1F08", "\u1F09", "\u1F88", "\u1F89", "\u1FB8", "\u1FB9", "\u1FBA", "\u1FBC", "\u212B", "\u0100", "\u0102", "\u0104"],
     "B": ["\u0181", "\u0392", "\u0412", "\u1E02", "\u1E04", "\u1E06"],
     "C": ["\u00C7", "\u0106", "\u0108", "\u010A", "\u010C", "\u0187", "\u0421", "\u04AA", "\u1E08", "\u216D", "\u03F9"],
     "D": ["\u00D0", "\u010E", "\u0110", "\u0189", "\u018A", "\u1E0A", "\u1E0C", "\u1E0E", "\u216E"],
@@ -78,7 +78,7 @@ exports.substitutions = Object.fromEntries(Object.entries({
     "G": ["\u011C", "\u011E", "\u0120", "\u0122", "\u0193", "\u01E6", "\u01F4", "\u1E20"],
     "H": ["\u0124", "\u021E", "\u0397", "\u041D", "\u04A2", "\u04A4", "\u04C7", "\u04C9", "\u1E22", "\u1E24", "\u1E26", "\u1E28", "\u1E2A", "\u1FCC", "\uA726"],
     "I": ["\u038A", "\u00CC", "\u00CD", "\u00CE", "\u00CF", "\u0128", "\u012A", "\u012C", "\u012E", "\u0130", "\u0196", "\u0208", "\u020A", "\u0399", "\u03AA", "\u0406", "\u0407", "\u04C0", "\u04CF", "\u1E2C", "\u1EC8", "\u1F38", "\u1F39", "\u1FD8", "\u1FD9", "\u1FDA", "\u01D0", "\u217C", "\u1E3D", "\u1E3B", "\u026B", "\u013E", "\u0140", "\u013C", "\u1E39"],
-    "J": ["\u0134", "\u0408", "J"],
+    "J": ["\u0134", "\u0408"],
     "K": ["\u0136", "\u0198", "\u01E8", "\u039A", "\u040C", "\u041A", "\u051E", "\u1E30", "\u1E32", "\u1E34", "\u20AD", "\u212A"],
     "L": ["\u0139", "\u013B", "\u013D", "\u013F", "\u0141", "\u053C", "\u1E36", "\u1E38", "\u1E3A", "\u1E3C", "\u216C"],
     "M": ["\u039C", "\u041C", "\u04CD", "\u1E3E", "\u1E40", "\u1E42", "\u216F"],
