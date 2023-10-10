@@ -380,12 +380,12 @@ function isImpersonator(name, isStaff) {
     var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase().trim();
     var alphaChars = "a-z\u00E0-\u00F6\u00F8-\u017F";
     var nonAlphaChars = "'a-z\u00E0-\u00F6\u00F8-\u017F";
-    var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4));
+    var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4), "i");
     if (antiEvasionRegex.test(replacedText)) {
         //If there are 3 groups of non alphabetic characters separating alphabetic characters, such as: "a_d_m_i" but not "i am a sussy impostor"
         //remove all the non alphabetic characters
         //this should stop people naming themselves s e r v e r and getting away with it
-        replacedText = replacedText.replace(new RegExp("[^".concat(nonAlphaChars, "]"), "g"), "");
+        replacedText = replacedText.replace(new RegExp("[^".concat(nonAlphaChars, "]"), "gi"), "");
     }
     //very clean code i know
     var filters = (function (input) {
