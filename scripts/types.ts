@@ -227,3 +227,5 @@ export interface FlaggedIPData {
 	ip: string;
 	moderated: boolean;
 };
+
+export type Boolf<T> = (input:T) => boolean;
