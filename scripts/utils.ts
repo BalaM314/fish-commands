@@ -285,16 +285,21 @@ export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | 
 	return false;
 }
 
-
+export function repeatAlternate(a:string, b:string, numARepeats:number){
+	return Array.from({length: numARepeats * 2 - 1}, (_, i) => i % 2 ? b : a).join("");
+}
 
 export function isImpersonator(name:string, isStaff:boolean):false | string {
 	//Replace substitutions
 	let replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase().trim();
-	if(replacedText.match(/[a-z\u00E0-\u00F6\u00F8-\u017F][^a-z'\u00E0-\u00F6\u00F8-\u017F]+[a-z\u00E0-\u00F6\u00F8-\u017F][^a-z'\u00E0-\u00F6\u00F8-\u017F]+[a-z\u00E0-\u00F6\u00F8-\u017F][^a-z'\u00E0-\u00F6\u00F8-\u017F]+/)){
+	const alphaChars = "a-z\u00E0-\u00F6\u00F8-\u017F";
+	const nonAlphaChars = "'a-z\u00E0-\u00F6\u00F8-\u017F";
+	const antiEvasionRegex = new RegExp(repeatAlternate(`[${alphaChars}]`, `[^${nonAlphaChars}]`, 4));
+	if(antiEvasionRegex.test(replacedText)){
 		//If there are 3 groups of non alphabetic characters separating alphabetic characters, such as: "a_d_m_i" but not "i am a sussy impostor"
 		//remove all the non alphabetic characters
 		//this should stop people naming themselves s e r v e r and getting away with it
-		replacedText = replacedText.replace(/[ -_+=]/g, "");
+		replacedText = replacedText.replace(new RegExp(`[^${nonAlphaChars}]`, "g"), "");
 	}
 	//very clean code i know
 	const filters:[check:Boolf<string>, message:string][] = (
