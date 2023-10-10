@@ -287,13 +287,35 @@ export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | 
 
 
 
-export function isImpersonator(name:string, isStaff:boolean):boolean {
+export function isImpersonator(name:string, isStaff:boolean):false | string {
 	//Replace substitutions
 	const replacedText = Strings.stripColors(name).split("").map(char => substitutions[char] ?? char).join("").toLowerCase().trim();
-	if(replacedText.includes("server") || replacedText.includes("admin") || replacedText.includes("moderator") || replacedText.includes("staff") || replacedText.includes(">|||>")) return true; //name contains suspicious string
-	if(/[\uE817\uE82C\uE88E]/.test(replacedText)) return true; //name contains a staff-reserved icon
-	if(/^<.{1,3}>/.test(replacedText)) return true; //name starts with <***>, fake role prefix
-	if(!isStaff && adminNames.includes(replacedText)) return true;
+	//very clean code i know
+	const filters:[check:Boolf<string>, message:string][] = (
+		(input: (string | [string | RegExp | Boolf<string>, string])[]) =>
+		input.map(i =>
+			Array.isArray(i)
+			? [
+				typeof i[0] == "string" ? replacedText => replacedText.includes(<string>i[0]) :
+				i[0] instanceof RegExp ? replacedText => (<RegExp>i[0]).test(replacedText) :
+				i[0]
+				, i[1]
+			]
+			: [
+				replacedText => replacedText.includes(i),
+				`Name contains disallowed ${i.length == 1 ? "icon" : "word"} ${i}`
+			]
+		)
+	)([
+		"server", "admin", "moderator", "staff",
+		[">|||>", "Name contains >|||> which is reserved for the server owner"],
+		"\uE817", "\uE82C", "\uE88E",
+		[/^<.{1,3}>/, "Name contains a prefix such as <a> which is used for role prefixes"],
+		[(replacedText) => !isStaff && adminNames.includes(replacedText), "One of our admins uses this name"]
+	]);
+	for(const [check, message] of filters){
+		if(check(replacedText)) return message;
+	}
 	return false;
 }
 

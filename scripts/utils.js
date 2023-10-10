@@ -371,16 +371,45 @@ function matchFilter(text, strict) {
 }
 exports.matchFilter = matchFilter;
 function isImpersonator(name, isStaff) {
+    var e_2, _a;
     //Replace substitutions
     var replacedText = Strings.stripColors(name).split("").map(function (char) { var _a; return (_a = config_1.substitutions[char]) !== null && _a !== void 0 ? _a : char; }).join("").toLowerCase().trim();
-    if (replacedText.includes("server") || replacedText.includes("admin") || replacedText.includes("moderator") || replacedText.includes("staff") || replacedText.includes(">|||>"))
-        return true; //name contains suspicious string
-    if (/[\uE817\uE82C\uE88E]/.test(replacedText))
-        return true; //name contains a staff-reserved icon
-    if (/^<.{1,3}>/.test(replacedText))
-        return true; //name starts with <***>, fake role prefix
-    if (!isStaff && config_1.adminNames.includes(replacedText))
-        return true;
+    //very clean code i know
+    var filters = (function (input) {
+        return input.map(function (i) {
+            return Array.isArray(i)
+                ? [
+                    typeof i[0] == "string" ? function (replacedText) { return replacedText.includes(i[0]); } :
+                        i[0] instanceof RegExp ? function (replacedText) { return i[0].test(replacedText); } :
+                            i[0],
+                    i[1]
+                ]
+                : [
+                    function (replacedText) { return replacedText.includes(i); },
+                    "Name contains disallowed ".concat(i.length == 1 ? "icon" : "word", " ").concat(i)
+                ];
+        });
+    })([
+        "server", "admin", "moderator", "staff",
+        [">|||>", "Name contains >|||> which is reserved for the server owner"],
+        "\uE817", "\uE82C", "\uE88E",
+        [/^<.{1,3}>/, "Name contains a prefix such as <a> which is used for role prefixes"],
+        [function (replacedText) { return !isStaff && config_1.adminNames.includes(replacedText); }, "One of our admins uses this name"]
+    ]);
+    try {
+        for (var filters_1 = __values(filters), filters_1_1 = filters_1.next(); !filters_1_1.done; filters_1_1 = filters_1.next()) {
+            var _b = __read(filters_1_1.value, 2), check = _b[0], message = _b[1];
+            if (check(replacedText))
+                return message;
+        }
+    }
+    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    finally {
+        try {
+            if (filters_1_1 && !filters_1_1.done && (_a = filters_1.return)) _a.call(filters_1);
+        }
+        finally { if (e_2) throw e_2.error; }
+    }
     return false;
 }
 exports.isImpersonator = isImpersonator;
@@ -410,7 +439,7 @@ function logAction(action, by, to, reason, duration) {
 exports.logAction = logAction;
 /**@returns the number of milliseconds. */
 function parseTimeString(str) {
-    var e_2, _a;
+    var e_3, _a;
     var formats = [
         [/(\d+)s/, 1],
         [/(\d+)m/, 60],
@@ -435,12 +464,12 @@ function parseTimeString(str) {
             }
         }
     }
-    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
     finally {
         try {
             if (formats_1_1 && !formats_1_1.done && (_a = formats_1.return)) _a.call(formats_1);
         }
-        finally { if (e_2) throw e_2.error; }
+        finally { if (e_3) throw e_3.error; }
     }
     return null;
 }
