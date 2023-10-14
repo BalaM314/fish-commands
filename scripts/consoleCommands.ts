@@ -24,6 +24,13 @@ export const commands = consoleCommandList({
 			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.color}${rank.name}[]`);
 		}
 	},
+	admin: {
+		args: ["nothing:string?"],
+		description: "Use the setrank command instead.",
+		handler(){
+			fail(`Use the "setrank" command instead. Hint: "setrank player admin"`);
+		}
+	},
 	setflag: {
 		args: ["player:player", "role:string", "value:boolean"],
 		description: "Set a player's role flags.",

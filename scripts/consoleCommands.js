@@ -54,6 +54,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));
         }
     },
+    admin: {
+        args: ["nothing:string?"],
+        description: "Use the setrank command instead.",
+        handler: function () {
+            (0, commands_1.fail)("Use the \"setrank\" command instead. Hint: \"setrank player admin\"");
+        }
+    },
     setflag: {
         args: ["player:player", "role:string", "value:boolean"],
         description: "Set a player's role flags.",
