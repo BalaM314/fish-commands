@@ -55,6 +55,7 @@ export class FishPlayer {
 	};
 	lastJoined:number = -1;
 	lastShownAd:number = config.maxTime;
+	showAdNext:boolean = false;
 
 	//Stored data
 	uuid: string;
@@ -419,10 +420,14 @@ We apologize for the inconvenience.`
 			let showAd = false;
 			if(Date.now() - this.lastShownAd > 86400000){
 				this.lastShownAd = Date.now();
-				showAd = true;
+				this.showAdNext = true;
 			} else if(this.lastShownAd == config.maxTime){
 				//this is the first time they joined, show ad the next time they join
-				this.lastShownAd = -1;
+				this.showAdNext = true;
+				this.lastShownAd = Date.now();
+			} else if(this.showAdNext){
+				this.showAdNext = false;
+				showAd = true;
 			}
 			const messagePool = showAd ? config.tips.ads : config.tips.normal;
 			const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];

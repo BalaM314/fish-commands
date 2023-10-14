@@ -70,6 +70,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         };
         this.lastJoined = -1;
         this.lastShownAd = config.maxTime;
+        this.showAdNext = false;
         this.chatStrictness = "chat";
         this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_m = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _m !== void 0 ? _m : "Unnamed player [ERROR]";
@@ -510,11 +511,16 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             var showAd = false;
             if (Date.now() - this.lastShownAd > 86400000) {
                 this.lastShownAd = Date.now();
-                showAd = true;
+                this.showAdNext = true;
             }
             else if (this.lastShownAd == config.maxTime) {
                 //this is the first time they joined, show ad the next time they join
-                this.lastShownAd = -1;
+                this.showAdNext = true;
+                this.lastShownAd = Date.now();
+            }
+            else if (this.showAdNext) {
+                this.showAdNext = false;
+                showAd = true;
             }
             var messagePool = showAd ? config.tips.ads : config.tips.normal;
             var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
