@@ -1,5 +1,5 @@
 import * as api from './api';
-import { adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
+import { Mode, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
 import { fishState } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
@@ -500,4 +500,9 @@ export function definitelyRealMemoryCorruption(){
 	const hexString = Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, "0");
 	Call.sendMessage("[scarlet]Error: internal server error.");
 	Call.sendMessage(`[scarlet]Error: memory corruption: mindustry.world.modules.ItemModule@${hexString}`);
+}
+
+export function getEnemyTeam():Team {
+	if(Mode.pvp()) return Team.derelict;
+	else return Vars.state.rules.waveTeam;
 }
