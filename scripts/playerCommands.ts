@@ -5,9 +5,37 @@ import { recentWhispers, tileHistory, uuidPattern } from './globals';
 import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
-import { capitalizeText, formatTimeRelative, getColor, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
+import {
+	capitalizeText, formatTimeRelative, getColor, neutralGameover, StringBuilder, StringIO,
+	teleportPlayer, to2DArray
+} from './utils';
 // import { votekickmanager } from './votes';
 
+const votes = new Set<string>();
+const ratio = 0.6;
+
+Events.on(EventType.PlayerLeave, (e) => {
+	const player = e.player;
+	const pid = player.uuid();
+
+	if(votes.has(pid)){
+		votes.delete(pid);
+		const currentVotes = votes.size;
+		const requiredVotes = Math.ceil(ratio * Groups.player.size());
+		Call.sendMessage(
+			`RTV: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+		);
+		if(currentVotes >= requiredVotes){
+			votes.clear();
+			Call.sendMessage('RTV: [green] vote passed, changing map.');
+			neutralGameover();
+		}
+	}
+});
+
+Events.on(EventType.GameOverEvent, (e) => {
+	votes.clear();
+});
 
 export const commands = commandList({
 	unpause: {
@@ -411,9 +439,40 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Displays the rank of a player.',
 		perm: Perm.none,
-		handler({ args, output }) {
+		handler({args, output}) {
 			output(`Player ${args.player.cleanedName}'s rank is ${args.player.rank.color}${args.player.rank.name}[].`);
 		},
+	},
+
+	forcertv: {
+		args: [],
+		description: 'Force skip to the next map.',
+		perm: Perm.admin,
+		handler({sender}){
+			votes.clear();
+			Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);
+			neutralGameover();
+		}
+	},
+
+	rtv: {
+		args: [],
+		description: 'Rock the vote to change map',
+		perm: Perm.play,
+		handler({sender}){
+			votes.add(sender.uuid);
+		
+			let currentVotes = votes.size;
+			let requiredVotes = Math.ceil(ratio * Groups.player.size());
+			Call.sendMessage(
+				`RTV: [accent]${sender.cleanedName}[] wants to change the map, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+			);
+			if(currentVotes >= requiredVotes){
+				votes.clear();
+				Call.sendMessage('RTV: [green] vote passed, changing map.');
+				neutralGameover();
+			}
+		}
 	},
 
 	// votekick: {

@@ -506,3 +506,7 @@ export function getEnemyTeam():Team {
 	if(Mode.pvp()) return Team.derelict;
 	else return Vars.state.rules.waveTeam;
 }
+
+export function neutralGameover(){
+	Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+}
