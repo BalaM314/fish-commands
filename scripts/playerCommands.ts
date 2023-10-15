@@ -26,7 +26,6 @@ Events.on(EventType.PlayerLeave, (e) => {
 			`RTV: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
 		);
 		if(currentVotes >= requiredVotes){
-			votes.clear();
 			Call.sendMessage('RTV: [green] vote passed, changing map.');
 			neutralGameover();
 		}
@@ -449,7 +448,6 @@ export const commands = commandList({
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
 		handler({sender}){
-			votes.clear();
 			Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);
 			neutralGameover();
 		}
@@ -468,7 +466,6 @@ export const commands = commandList({
 				`RTV: [accent]${sender.cleanedName}[] wants to change the map, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
 			);
 			if(currentVotes >= requiredVotes){
-				votes.clear();
 				Call.sendMessage('RTV: [green] vote passed, changing map.');
 				neutralGameover();
 			}

@@ -48,7 +48,6 @@ Events.on(EventType.PlayerLeave, function (e) {
         var requiredVotes = Math.ceil(ratio * Groups.player.size());
         Call.sendMessage("RTV: [accent]".concat(player.name, "[] left, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
         if (currentVotes >= requiredVotes) {
-            votes.clear();
             Call.sendMessage('RTV: [green] vote passed, changing map.');
             (0, utils_1.neutralGameover)();
         }
@@ -461,7 +460,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var sender = _a.sender;
-            votes.clear();
             Call.sendMessage("RTV: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
             (0, utils_1.neutralGameover)();
         }
@@ -476,7 +474,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var requiredVotes = Math.ceil(ratio * Groups.player.size());
             Call.sendMessage("RTV: [accent]".concat(sender.cleanedName, "[] wants to change the map, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
             if (currentVotes >= requiredVotes) {
-                votes.clear();
                 Call.sendMessage('RTV: [green] vote passed, changing map.');
                 (0, utils_1.neutralGameover)();
             }
