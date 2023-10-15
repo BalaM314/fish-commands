@@ -12,7 +12,9 @@ declare const Strings: {
 declare const Vars: any;
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
+	fire(event:Event);
 }
+type Event = any;
 declare type Tile = {
 	x:number; y:number;
 	build: Building | null;
