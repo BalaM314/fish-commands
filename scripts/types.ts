@@ -86,7 +86,7 @@ export interface FishCommandRunner<ArgType extends string> {
 		lastUsedSender:number;
 		/**Timestamp of the last time this command was run succesfully by the current sender. */
 		lastUsedSuccessfullySender:number;
-	}): unknown;
+	}):unknown;
 }
 
 export interface FishConsoleCommandRunner<ArgType extends string> {
@@ -149,6 +149,8 @@ export interface FishCommandData<ArgType extends string> {
 	perm: Perm;
 	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
+	/** Called exactly once at server start. Use this to add event handlers. */
+	init?: () => unknown;
 	handler: FishCommandRunner<ArgType>;
 	tapped?: TapHandler<ArgType>;
 	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
@@ -158,6 +160,8 @@ export interface FishConsoleCommandData<ArgType extends string> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
 	description: string;
+	/** Called exactly once at server start. Use this to add event handlers. */
+	init?: () => unknown;
 	handler: FishConsoleCommandRunner<ArgType>;
 }
 

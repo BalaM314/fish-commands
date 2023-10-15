@@ -38,7 +38,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allCommands = void 0;
+exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -46,6 +46,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.allCommands = {};
+exports.allConsoleCommands = {};
 var globalUsageData = {};
 var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid", "offlinePlayer"];
 /** Use this to get the correct type for command lists. */
@@ -570,6 +571,7 @@ function registerConsole(commands, serverHandler) {
                     }
                 }
             } }));
+        exports.allConsoleCommands[name] = data;
     };
     try {
         for (var _b = __values(Object.entries(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
@@ -608,3 +610,34 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
         }, true, function (player) { return player.name; });
     }
 }
+function initialize() {
+    var e_5, _a, e_6, _b;
+    var _c, _d;
+    try {
+        for (var _e = __values(Object.entries(exports.allConsoleCommands)), _f = _e.next(); !_f.done; _f = _e.next()) {
+            var _g = __read(_f.value, 2), key = _g[0], command = _g[1];
+            (_c = command.init) === null || _c === void 0 ? void 0 : _c.call(command);
+        }
+    }
+    catch (e_5_1) { e_5 = { error: e_5_1 }; }
+    finally {
+        try {
+            if (_f && !_f.done && (_a = _e.return)) _a.call(_e);
+        }
+        finally { if (e_5) throw e_5.error; }
+    }
+    try {
+        for (var _h = __values(Object.entries(exports.allCommands)), _j = _h.next(); !_j.done; _j = _h.next()) {
+            var _k = __read(_j.value, 2), key = _k[0], command = _k[1];
+            (_d = command.init) === null || _d === void 0 ? void 0 : _d.call(command);
+        }
+    }
+    catch (e_6_1) { e_6 = { error: e_6_1 }; }
+    finally {
+        try {
+            if (_j && !_j.done && (_b = _h.return)) _b.call(_h);
+        }
+        finally { if (e_6) throw e_6.error; }
+    }
+}
+exports.initialize = initialize;

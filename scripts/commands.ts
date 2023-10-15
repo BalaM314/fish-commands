@@ -11,6 +11,7 @@ import type {
 import { escapeStringColorsServer, getBlock, getTeam, getUnitType, isBuildable, parseError, parseTimeString, tagProcessor } from "./utils";
 
 export const allCommands:Record<string, FishCommandData<any>> = {};
+export const allConsoleCommands:Record<string, FishConsoleCommandData<any>> = {};
 const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
@@ -478,6 +479,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 				}
 			}})
 		);
+		allConsoleCommands[name] = data;
 	}
 }
 
@@ -502,3 +504,11 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 
 }
 
+export function initialize(){
+	for(const [key, command] of Object.entries(allConsoleCommands)){
+		command.init?.();
+	}
+	for(const [key, command] of Object.entries(allCommands)){
+		command.init?.();
+	}
+}
