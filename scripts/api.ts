@@ -8,17 +8,10 @@ export function addStopped(uuid: string, time:number) {
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-
-	try {
-		req.submit((response, exception) => {
-			//Log.info(response.getResultAsString());
-			if (exception || !response) {
-				Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
-	}
+	req.error(() => Log.err(`[API] Network error when trying to call api.addStopped()`));
+	req.submit((response) => {
+		//Log.info(response.getResultAsString());
+	});
 }
 
 /** Mark a player as freed */
@@ -28,23 +21,16 @@ export function free(uuid: string) {
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-
-	try {
-		req.submit((response, exception) => {
-			//Log.info(response.getResultAsString());
-			if (exception || !response) {
-				Log.info('\n\nStopped API encountered an error while trying to free a stopped player.\n\n');
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nStopped API encountered an error while trying to free a stopped player.\n\n');
-	}
+	req.error(() => Log.err(`[API] Network error when trying to call api.free()`));
+	req.submit((response) => {
+		//Log.info(response.getResultAsString());
+	});
 }
 
 /** Gets player's unmark time */
 export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 	if(localDebug){
-		Log.info(`Attempted to getStopped("${uuid}"), assuming -1 due to local debug`);
+		Log.info(`[API] Attempted to getStopped("${uuid}"), assuming -1 due to local debug`);
 		callback(-1);
 		return;
 	}
@@ -52,46 +38,34 @@ export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-
-	try {
-		req.submit((response, exception) => {
-			if (exception || !response) {
-				Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
-			} else {
-				const temp = response.getResultAsString();
-				if(!temp.length) return false;
-				const time = JSON.parse(temp).time;
-				if(isNaN(Number(time))){
-					Log.err(`API IS BROKEN!!! Invalid unmark time "${time}": not a number`);
-				} else if(time.toString().length > 13){
-					callback(maxTime);
-				} else {
-					callback(Number(time));
-				}
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
-	}
+	req.error(() => Log.err(`[API] Network error when trying to call api.getStopped()`)); //TODO increase robustness
+	req.submit((response) => {
+		const temp = response.getResultAsString();
+		if(!temp.length) return false;
+		const time = JSON.parse(temp).time;
+		if(isNaN(Number(time))){
+			Log.err(`[API] API IS BROKEN!!! Invalid unmark time "${time}": not a number`);
+		} else if(time.toString().length > 13){
+			callback(maxTime);
+		} else {
+			callback(Number(time));
+		}
+	});
 }
 
 let cachedIps:Record<string, boolean | undefined> = {};
 /**Make an API request to see if an IP is likely VPN. */
-export function isVpn(ip: string, callback: (isVpn: boolean) => unknown, callbackError?: (errorMessage: any) => unknown) {
+export function isVpn(ip: string, callback: (isVpn: boolean) => unknown, callbackError: (errorMessage: any) => unknown = Log.err) {
 	if(ip in cachedIps) return callback(cachedIps[ip]!);
-	try {
-		Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, (res) => {
-			const data = res.getResultAsString();
-			const json = JSON.parse(data);
-			const isVpn = json.proxy || json.hosting;
-			cachedIps[ip] = isVpn;
-			FishPlayer.stats.numIpsChecked ++;
-			if(isVpn) FishPlayer.stats.numIpsFlagged ++;
-			callback(isVpn);
-		});
-	} catch (err) {
-		callbackError?.(err);
-	}
+	Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, (res) => {
+		const data = res.getResultAsString();
+		const json = JSON.parse(data);
+		const isVpn = json.proxy || json.hosting;
+		cachedIps[ip] = isVpn;
+		FishPlayer.stats.numIpsChecked ++;
+		if(isVpn) FishPlayer.stats.numIpsFlagged ++;
+		callback(isVpn);
+	}, callbackError);
 }
 
 /**Send text to the moderation logs channel in Discord. */
@@ -103,62 +77,43 @@ export function sendModerationMessage(message: string) {
 	const req = Http.post(`http://${ip}:5000/api/mod-dump`, JSON.stringify({ message })).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 
-	try {
-		req.submit((response, exception) => {
-			if (exception || !response) {
-				Log.info('\n\nError occured when trying to log moderation action.\n\n');
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nError occured when trying to log moderation action.\n\n');
-	}
+	req.error(() => Log.err(`[API] Network error when trying to call api.sendModerationMessage()`));
+	req.submit((response) => {
+		//Log.info(response.getResultAsString());
+	});
 }
 
 /**Get staff messages from discord. */
 export function getStaffMessages(callback: (messages: string) => unknown) {
 	if(localDebug) return;
 	const server = getGamemode();
-	const req = Http.post(`http://${ip}:5000/api/getStaffMessages`, JSON.stringify({ server })).header('Content-Type', 'application/json').header('Accept', '*/*');
+	const req = Http.post(`http://${ip}:5000/api/getStaffMessages`, JSON.stringify({ server }))
+		.header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
-
-	try {
-		req.submit((response, exception) => {
-			if (exception || !response) {
-				Log.info('\n\nError occured when trying to fetch staff chat.\n\n');
-			} else {
-				const temp = response.getResultAsString();
-				if (!temp.length) return false;
-				callback(JSON.parse(temp).messages);
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nError occured when trying to fetch staff chat.\n\n');
-	}
+	req.error(() => Log.err(`[API] Network error when trying to call api.getStaffMessages()`));
+	req.submit((response) => {
+		const temp = response.getResultAsString();
+		if(!temp.length) Log.err(`[API] Network error(empty response) when trying to call api.getStaffMessages()`);
+		else callback(JSON.parse(temp).messages);
+	});
 }
 
 /**Send staff messages from server. */
 export function sendStaffMessage(message: string, playerName: string, callback: (sent: boolean) => unknown = () => {}) {
 	if(localDebug) return;
 	const server = getGamemode();
-	const req = Http.post(`http://${ip}:5000/api/sendStaffMessage`,
-	// need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
-	JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server }))
-	.header('Content-Type', 'application/json').header('Accept', '*/*');
+	const req = Http.post(
+		`http://${ip}:5000/api/sendStaffMessage`,
+		// need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
+		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server })
+	).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
-
-	try {
-		req.submit((response, exception) => {
-			if (exception || !response) {
-				Log.info('\n\nError occured when trying to send staff chat.\n\n');
-			} else {
-				const temp = response.getResultAsString();
-				if (!temp.length) return false;
-				callback(JSON.parse(temp).data);
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nError occured when trying to send staff chat.\n\n');
-	}
+	req.error(() => Log.err(`[API] Network error when trying to call api.sendStaffMessage()`));
+	req.submit((response) => {
+		const temp = response.getResultAsString();
+		if(!temp.length) Log.err(`[API] Network error(empty response) when trying to call api.sendStaffMessage()`);
+		else callback(JSON.parse(temp).data);
+	});
 }
 
 /** Bans the provided ip and/or uuid. */
@@ -168,20 +123,12 @@ export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) =
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-
-	try {
-		req.submit((response, exception) => {
-			//Log.info(response.getResultAsString());
-			if (exception || !response) {
-				Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
-			} else {
-				let str = response.getResultAsString();
-				if(str.length) callback(JSON.parse(str).data);
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nStopped API encountered an error while trying to add a stopped player.\n\n');
-	}
+	req.error(() => Log.err(`[API] Network error when trying to call api.ban(${data.ip}, ${data.uuid})`));
+	req.submit((response) => {
+		let str = response.getResultAsString();
+		if(!str.length) return Log.err(`[API] Network error(empty response) when trying to call api.ban()`);
+		callback(JSON.parse(str).data);
+	});
 }
 
 /** Unbans the provided ip and/or uuid. */
@@ -191,21 +138,12 @@ export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string,
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-
-	try {
-		req.submit((response, exception) => {
-			//Log.info(response.getResultAsString());
-			if (exception || !response) {
-				Log.err('Error while trying to unban a player.');
-			} else {
-				let str = response.getResultAsString();
-				const parsedData = JSON.parse(str);
-				if(str.length) callback(parsedData.status, parsedData.error);
-			}
-		});
-	} catch (e) {
-		Log.err('Error while trying to unban a player.');
-	}
+	req.submit((response) => {
+		let str = response.getResultAsString();
+		if(!str.length) return Log.err(`[API] Network error(empty response) when trying to call api.unban()`);
+		const parsedData = JSON.parse(str);
+		callback(parsedData.status, parsedData.error);
+	});
 }
 
 /** Gets if either the provided uuid or ip is banned. */
@@ -216,16 +154,9 @@ export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:bool
 		.header('Accept', '*/*');
 	req.timeout = 10000;
 
-	try {
-		req.submit((response, exception) => {
-			if (exception || !response) {
-				Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
-			} else {
-				let temp = response.getResultAsString();
-				if(temp.length) callback(JSON.parse(temp).data);
-			}
-		});
-	} catch (e) {
-		Log.info('\n\nStopped API encountered an error while trying to retrieve stopped players.\n\n');
-	}
+	req.submit((response) => {
+		const str = response.getResultAsString();
+		if(!str.length) return Log.err(`[API] Network error(empty response) when trying to call api.getBanned()`);
+		callback(JSON.parse(str).data);
+	});
 }
