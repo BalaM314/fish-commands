@@ -27,8 +27,11 @@ export function free(uuid: string) {
 	});
 }
 
-/** Gets player's unmark time */
-export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
+/**
+ * Gets a player's unmark time from the API.
+ * If callbackError is undefined, callback will be called with -1 on error.
+ **/
+export function getStopped(uuid:string, callback: (unmark:number) => unknown, callbackError?: (errorMessage:any) => unknown){
 	if(localDebug){
 		Log.info(`[API] Attempted to getStopped("${uuid}"), assuming -1 due to local debug`);
 		callback(-1);
@@ -38,7 +41,10 @@ export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-	req.error(() => Log.err(`[API] Network error when trying to call api.getStopped()`)); //TODO increase robustness
+	req.error(callbackError ?? ((err) => {
+		Log.err(`[API] Network error when trying to call api.getStopped()`);
+		callback(-1);
+	}));
 	req.submit((response) => {
 		const temp = response.getResultAsString();
 		if(!temp.length) return false;
@@ -55,7 +61,7 @@ export function getStopped(uuid: string, callback: (unmark:number) => unknown) {
 
 let cachedIps:Record<string, boolean | undefined> = {};
 /**Make an API request to see if an IP is likely VPN. */
-export function isVpn(ip: string, callback: (isVpn: boolean) => unknown, callbackError: (errorMessage: any) => unknown = Log.err) {
+export function isVpn(ip:string, callback: (isVpn:boolean) => unknown, callbackError?: (errorMessage:any) => unknown){
 	if(ip in cachedIps) return callback(cachedIps[ip]!);
 	Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, (res) => {
 		const data = res.getResultAsString();
@@ -65,7 +71,11 @@ export function isVpn(ip: string, callback: (isVpn: boolean) => unknown, callbac
 		FishPlayer.stats.numIpsChecked ++;
 		if(isVpn) FishPlayer.stats.numIpsFlagged ++;
 		callback(isVpn);
-	}, callbackError);
+	}, callbackError ?? ((err) => {
+		Log.err(`[API] Network error when trying to call api.isVpn()`);
+		FishPlayer.stats.numIpsErrored ++;
+		callback(false);
+	}));
 }
 
 /**Send text to the moderation logs channel in Discord. */
@@ -99,7 +109,7 @@ export function getStaffMessages(callback: (messages: string) => unknown) {
 }
 
 /**Send staff messages from server. */
-export function sendStaffMessage(message: string, playerName: string, callback: (sent: boolean) => unknown = () => {}) {
+export function sendStaffMessage(message:string, playerName:string, callback?: (sent:boolean) => unknown){
 	if(localDebug) return;
 	const server = getGamemode();
 	const req = Http.post(
@@ -108,11 +118,14 @@ export function sendStaffMessage(message: string, playerName: string, callback: 
 		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server })
 	).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
-	req.error(() => Log.err(`[API] Network error when trying to call api.sendStaffMessage()`));
+	req.error(() => {
+		Log.err(`[API] Network error when trying to call api.sendStaffMessage()`);
+		callback?.(false);
+	});
 	req.submit((response) => {
 		const temp = response.getResultAsString();
 		if(!temp.length) Log.err(`[API] Network error(empty response) when trying to call api.sendStaffMessage()`);
-		else callback(JSON.parse(temp).data);
+		else callback?.(JSON.parse(temp).data);
 	});
 }
 

@@ -31,8 +31,11 @@ function free(uuid) {
     });
 }
 exports.free = free;
-/** Gets player's unmark time */
-function getStopped(uuid, callback) {
+/**
+ * Gets a player's unmark time from the API.
+ * If callbackError is undefined, callback will be called with -1 on error.
+ **/
+function getStopped(uuid, callback, callbackError) {
     if (config_1.localDebug) {
         Log.info("[API] Attempted to getStopped(\"".concat(uuid, "\"), assuming -1 due to local debug"));
         callback(-1);
@@ -42,7 +45,10 @@ function getStopped(uuid, callback) {
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
-    req.error(function () { return Log.err("[API] Network error when trying to call api.getStopped()"); }); //TODO increase robustness
+    req.error(callbackError !== null && callbackError !== void 0 ? callbackError : (function (err) {
+        Log.err("[API] Network error when trying to call api.getStopped()");
+        callback(-1);
+    }));
     req.submit(function (response) {
         var temp = response.getResultAsString();
         if (!temp.length)
@@ -63,7 +69,6 @@ exports.getStopped = getStopped;
 var cachedIps = {};
 /**Make an API request to see if an IP is likely VPN. */
 function isVpn(ip, callback, callbackError) {
-    if (callbackError === void 0) { callbackError = Log.err; }
     if (ip in cachedIps)
         return callback(cachedIps[ip]);
     Http.get("http://ip-api.com/json/".concat(ip, "?fields=proxy,hosting"), function (res) {
@@ -75,7 +80,11 @@ function isVpn(ip, callback, callbackError) {
         if (isVpn)
             players_1.FishPlayer.stats.numIpsFlagged++;
         callback(isVpn);
-    }, callbackError);
+    }, callbackError !== null && callbackError !== void 0 ? callbackError : (function (err) {
+        Log.err("[API] Network error when trying to call api.isVpn()");
+        players_1.FishPlayer.stats.numIpsErrored++;
+        callback(false);
+    }));
 }
 exports.isVpn = isVpn;
 /**Send text to the moderation logs channel in Discord. */
@@ -112,7 +121,6 @@ function getStaffMessages(callback) {
 exports.getStaffMessages = getStaffMessages;
 /**Send staff messages from server. */
 function sendStaffMessage(message, playerName, callback) {
-    if (callback === void 0) { callback = function () { }; }
     if (config_1.localDebug)
         return;
     var server = (0, config_1.getGamemode)();
@@ -120,13 +128,16 @@ function sendStaffMessage(message, playerName, callback) {
     // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
     JSON.stringify({ message: message, playerName: playerName, cleanedName: Strings.stripColors(playerName), server: server })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
-    req.error(function () { return Log.err("[API] Network error when trying to call api.sendStaffMessage()"); });
+    req.error(function () {
+        Log.err("[API] Network error when trying to call api.sendStaffMessage()");
+        callback === null || callback === void 0 ? void 0 : callback(false);
+    });
     req.submit(function (response) {
         var temp = response.getResultAsString();
         if (!temp.length)
             Log.err("[API] Network error(empty response) when trying to call api.sendStaffMessage()");
         else
-            callback(JSON.parse(temp).data);
+            callback === null || callback === void 0 ? void 0 : callback(JSON.parse(temp).data);
     });
 }
 exports.sendStaffMessage = sendStaffMessage;
