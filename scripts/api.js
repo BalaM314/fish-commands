@@ -157,6 +157,7 @@ function unban(data, callback) {
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
+    req.error(function () { return Log.err("[API] Network error when trying to call api.ban({".concat(data.ip, ", ").concat(data.uuid, "})")); });
     req.submit(function (response) {
         var str = response.getResultAsString();
         if (!str.length)
@@ -174,6 +175,7 @@ function getBanned(data, callback) {
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
+    req.error(function () { return Log.err("[API] Network error when trying to call api.getBanned()"); });
     req.submit(function (response) {
         var str = response.getResultAsString();
         if (!str.length)

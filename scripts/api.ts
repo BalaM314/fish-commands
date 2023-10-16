@@ -138,6 +138,7 @@ export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string,
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
+	req.error(() => Log.err(`[API] Network error when trying to call api.ban({${data.ip}, ${data.uuid}})`));
 	req.submit((response) => {
 		let str = response.getResultAsString();
 		if(!str.length) return Log.err(`[API] Network error(empty response) when trying to call api.unban()`);
@@ -153,7 +154,7 @@ export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:bool
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-
+	req.error(() => Log.err(`[API] Network error when trying to call api.getBanned()`));
 	req.submit((response) => {
 		const str = response.getResultAsString();
 		if(!str.length) return Log.err(`[API] Network error(empty response) when trying to call api.getBanned()`);
