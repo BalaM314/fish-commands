@@ -120,7 +120,8 @@ declare const GameState: {
 	State: Record<"playing" | "paused", any>;
 }
 declare class HttpRequest {
-	submit(func:(response:HttpResponse, exception:any) => void):void;
+	submit(func:(response:HttpResponse) => void):void;
+	error(func:(exception:any) => void):void;
 	header(name:string, value:string):HttpRequest;
 	timeout: number;
 }
@@ -130,7 +131,7 @@ declare class HttpResponse {
 declare const Http: {
 	post(url:string, content:string):HttpRequest;
 	get(url:string):HttpRequest;
-	get(url:string, callback:(res:HttpResponse) => unknown):void;
+	get(url:string, callback:(res:HttpResponse) => unknown, error:(err:any) => unknown):void;
 }
 type Administration = any;
 declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
