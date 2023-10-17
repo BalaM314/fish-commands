@@ -17,7 +17,6 @@ var commands_1 = require("./commands");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
-var ohno_1 = require("./ohno");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -178,9 +177,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         customUnauthorizedMessage: "[yellow]You're a [scarlet]monster[].",
         handler: function (_a) {
-            var output = _a.output;
-            var numOhnos = ohno_1.Ohnos.amount();
-            ohno_1.Ohnos.killAll();
+            var output = _a.output, allCommands = _a.allCommands;
+            var Ohnos = allCommands["ohno"].data; //this is not ideal... TODO commit omega shenanigans
+            var numOhnos = Ohnos.amount();
+            Ohnos.killAll();
             output("[orange]You massacred [cyan]".concat(numOhnos, "[] helpless ohno crawlers."));
         }
     }, stop_offline: {

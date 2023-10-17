@@ -10,7 +10,6 @@ import * as consoleCommands from "./consoleCommands";
 import { fishState, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
 import * as menus from "./menus";
-import { Ohnos } from "./ohno";
 import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
@@ -231,7 +230,6 @@ Events.on(EventType.BlockDestroyEvent, addToTileHistory);
 Events.on(EventType.TapEvent, handleTapEvent);
 
 Events.on(EventType.GameOverEvent, (e) => {
-	Ohnos.onGameOver();
 	for(const [key, value] of Object.entries(tileHistory)){
 		//clear tilelog
 		tileHistory[key] = null!;

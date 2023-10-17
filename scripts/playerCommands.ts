@@ -2,11 +2,10 @@ import * as api from './api';
 import { command, commandList, fail, formatArg, Perm } from './commands';
 import { FishServers, getGamemode, Mode } from './config';
 import { recentWhispers, tileHistory, uuidPattern } from './globals';
-import { Ohnos } from './ohno';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import {
-	capitalizeText, formatTimeRelative, getColor, neutralGameover, StringBuilder, StringIO,
+	capitalizeText, formatTimeRelative, getColor, nearbyEnemyTile, neutralGameover, StringBuilder, StringIO,
 	teleportPlayer, to2DArray
 } from './utils';
 // import { votekickmanager } from './votes';
@@ -365,11 +364,50 @@ export const commands = commandList({
 		},
 	},
 
-	ohno: {
+	ohno: command({
 		args: [],
 		description: 'Spawns an ohno.',
 		perm: Perm.spawnOhnos,
-		handler({ sender, outputFail }) {
+		init(){
+			const Ohnos = {
+				enabled: true,
+				ohnos: new Array<Unit>(),
+				lastSpawned: 0,
+				makeOhno(team:Team, x:number, y:number){
+					const ohno = UnitTypes.atrax.spawn(team, x, y);
+					ohno.type = UnitTypes.alpha;
+					ohno.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+					ohno.resetController(); //does this work?
+					this.ohnos.push(ohno);
+					this.lastSpawned = Date.now();
+					return ohno;
+				},
+				canSpawn(player:FishPlayer):true | string {
+					if(!this.enabled) return `Ohnos have been temporarily disabled.`;
+					if(!player.connected() || !player.unit().added || player.unit().dead) return `You cannot spawn ohnos while dead.`
+					this.updateLength();
+					if(this.ohnos.length >= (Groups.player.size() + 1)) return `Sorry, the max number of ohno units has been reached.`;
+					if(nearbyEnemyTile(player.unit(), 6) != null) return `Too close to an enemy tile!`;
+					// if(Date.now() - this.lastSpawned < 3000) return `This command is currently on cooldown.`;
+					return true;
+				},
+				updateLength(){
+					this.ohnos = this.ohnos.filter(o => o && o.isAdded() && !o.dead);
+				},
+				killAll(){
+					this.ohnos.forEach(ohno => ohno?.kill?.());
+					this.ohnos = [];
+				},
+				amount(){
+					return this.ohnos.length;
+				},
+			};
+			Events.on(EventType.GameOverEvent, (e) => {
+				Ohnos.killAll();
+			});
+			return Ohnos;
+		},
+		handler({ sender, outputFail, data:Ohnos }) {
 			const canSpawn = Ohnos.canSpawn(sender);
 			if (canSpawn === true) {
 				Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
@@ -377,7 +415,7 @@ export const commands = commandList({
 				outputFail(canSpawn);
 			}
 		},
-	},
+	}),
 
 	ranks: {
 		args: [],

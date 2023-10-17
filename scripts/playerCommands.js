@@ -32,7 +32,6 @@ var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
-var ohno_1 = require("./ohno");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -387,21 +386,64 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 outputFail("[scarlet]Sorry, \"".concat(args.color, "\" is not a valid color.\n[yellow]Color can be in the following formats:\n[pink]pink [white]| [gray]#696969 [white]| 255,0,0."));
             }
         },
-    }, ohno: {
+    }, ohno: (0, commands_1.command)({
         args: [],
         description: 'Spawns an ohno.',
         perm: commands_1.Perm.spawnOhnos,
+        init: function () {
+            var Ohnos = {
+                enabled: true,
+                ohnos: new Array(),
+                lastSpawned: 0,
+                makeOhno: function (team, x, y) {
+                    var ohno = UnitTypes.atrax.spawn(team, x, y);
+                    ohno.type = UnitTypes.alpha;
+                    ohno.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+                    ohno.resetController(); //does this work?
+                    this.ohnos.push(ohno);
+                    this.lastSpawned = Date.now();
+                    return ohno;
+                },
+                canSpawn: function (player) {
+                    if (!this.enabled)
+                        return "Ohnos have been temporarily disabled.";
+                    if (!player.connected() || !player.unit().added || player.unit().dead)
+                        return "You cannot spawn ohnos while dead.";
+                    this.updateLength();
+                    if (this.ohnos.length >= (Groups.player.size() + 1))
+                        return "Sorry, the max number of ohno units has been reached.";
+                    if ((0, utils_1.nearbyEnemyTile)(player.unit(), 6) != null)
+                        return "Too close to an enemy tile!";
+                    // if(Date.now() - this.lastSpawned < 3000) return `This command is currently on cooldown.`;
+                    return true;
+                },
+                updateLength: function () {
+                    this.ohnos = this.ohnos.filter(function (o) { return o && o.isAdded() && !o.dead; });
+                },
+                killAll: function () {
+                    this.ohnos.forEach(function (ohno) { var _a; return (_a = ohno === null || ohno === void 0 ? void 0 : ohno.kill) === null || _a === void 0 ? void 0 : _a.call(ohno); });
+                    this.ohnos = [];
+                },
+                amount: function () {
+                    return this.ohnos.length;
+                },
+            };
+            Events.on(EventType.GameOverEvent, function (e) {
+                Ohnos.killAll();
+            });
+            return Ohnos;
+        },
         handler: function (_a) {
-            var sender = _a.sender, outputFail = _a.outputFail;
-            var canSpawn = ohno_1.Ohnos.canSpawn(sender);
+            var sender = _a.sender, outputFail = _a.outputFail, Ohnos = _a.data;
+            var canSpawn = Ohnos.canSpawn(sender);
             if (canSpawn === true) {
-                ohno_1.Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
+                Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
             }
             else {
                 outputFail(canSpawn);
             }
         },
-    }, ranks: {
+    }), ranks: {
         args: [],
         description: 'Displays information about all ranks.',
         perm: commands_1.Perm.none,

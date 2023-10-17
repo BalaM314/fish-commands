@@ -38,7 +38,6 @@ var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
 var memberCommands = require("./memberCommands");
 var menus = require("./menus");
-var ohno_1 = require("./ohno");
 var playerCommands = require("./playerCommands");
 var players_1 = require("./players");
 var staffCommands = require("./staffCommands");
@@ -257,7 +256,6 @@ Events.on(EventType.BlockDestroyEvent, addToTileHistory);
 Events.on(EventType.TapEvent, commands_1.handleTapEvent);
 Events.on(EventType.GameOverEvent, function (e) {
     var e_1, _a;
-    ohno_1.Ohnos.onGameOver();
     try {
         for (var _b = __values(Object.entries(globals_1.tileHistory)), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), key = _d[0], value = _d[1];

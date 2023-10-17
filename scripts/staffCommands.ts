@@ -3,7 +3,6 @@ import { Perm, commandList, fail } from "./commands";
 import { getGamemode, maxTime } from "./config";
 import { uuidPattern } from "./globals";
 import { menu } from './menus';
-import { Ohnos } from "./ohno";
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
@@ -164,7 +163,8 @@ export const commands = commandList({
 		description: 'Kills all ohno units',
 		perm: Perm.mod,
 		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
-		handler({output}){
+		handler({output, allCommands}){
+			const Ohnos = allCommands["ohno"].data! as any; //this is not ideal... TODO commit omega shenanigans
 			const numOhnos = Ohnos.amount();
 			Ohnos.killAll();
 			output(`[orange]You massacred [cyan]${numOhnos}[] helpless ohno crawlers.`);
