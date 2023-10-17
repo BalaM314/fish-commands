@@ -60,7 +60,7 @@ export type ObjectTypeFor<ArgString> =
 
 export type TapHandleMode = "off" | "once" | "on";
 
-export interface FishCommandRunner<ArgType extends string> {
+export interface FishCommandRunner<ArgType extends string, StoredData> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
 		rawArgs:(string | undefined)[];
@@ -75,11 +75,12 @@ export interface FishCommandRunner<ArgType extends string> {
 		execServer:(message:string) => void;
 		/**Call this function to set tap handling mode. */
 		handleTaps:(mode:TapHandleMode) => void;
+		data:StoredData;
 		currentTapMode:TapHandleMode;
 		/** Vars.netServer.admins */
 		admins: Administration;
 		/**List of every registered command, including this one. */
-		allCommands:Record<string, FishCommandData<any>>;
+		allCommands:Record<string, FishCommandData<any, unknown>>;
 		/**Timestamp of the last time this command was run successfully by any player. */
 		lastUsedSuccessfully:number;
 		/**Timestamp of the last time this command was run by the current sender. */
@@ -89,7 +90,7 @@ export interface FishCommandRunner<ArgType extends string> {
 	}):unknown;
 }
 
-export interface FishConsoleCommandRunner<ArgType extends string> {
+export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
 		rawArgs:(string | undefined)[];
@@ -100,6 +101,7 @@ export interface FishConsoleCommandRunner<ArgType extends string> {
 		 * An argument can only be null if it was optional, otherwise the command will error before the handler runs.
 		 **/
 		args:ArgsFromArgStringUnion<ArgType>;
+		data:StoredData;
 		outputSuccess:(message:string) => void;
 		outputFail:(message:string) => void;
 		output:(message:string) => void;
@@ -114,7 +116,7 @@ export interface FishConsoleCommandRunner<ArgType extends string> {
 	}): unknown;
 }
 
-export interface TapHandler<ArgType extends string> {
+export interface TapHandler<ArgType extends string, StoredData> {
 	(_:{
 		/**Last args used to call the parent command. **/
 		args:ArgsFromArgStringUnion<ArgType>;
@@ -122,6 +124,7 @@ export interface TapHandler<ArgType extends string> {
 		x:number;
 		y:number;
 		tile:Tile;
+		data:StoredData;
 		output:(message:string) => void;
 		outputFail:(message:string) => void;
 		outputSuccess:(message:string) => void;
@@ -138,7 +141,7 @@ export interface TapHandler<ArgType extends string> {
 	}):unknown;
 }
 
-export interface FishCommandData<ArgType extends string> {
+export interface FishCommandData<ArgType extends string, StoredData> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
 	description: string;
@@ -150,19 +153,21 @@ export interface FishCommandData<ArgType extends string> {
 	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
 	/** Called exactly once at server start. Use this to add event handlers. */
-	init?: () => unknown;
-	handler: FishCommandRunner<ArgType>;
-	tapped?: TapHandler<ArgType>;
+	init?: () => StoredData;
+	data?: StoredData;
+	handler: FishCommandRunner<ArgType, StoredData>;
+	tapped?: TapHandler<ArgType, StoredData>;
 	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
 	isHidden?: boolean;
 }
-export interface FishConsoleCommandData<ArgType extends string> {
+export interface FishConsoleCommandData<ArgType extends string, StoredData> {
 	/**Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
 	description: string;
 	/** Called exactly once at server start. Use this to add event handlers. */
-	init?: () => unknown;
-	handler: FishConsoleCommandRunner<ArgType>;
+	init?: () => StoredData;
+	data?: StoredData;
+	handler: FishConsoleCommandRunner<ArgType, StoredData>;
 }
 
 

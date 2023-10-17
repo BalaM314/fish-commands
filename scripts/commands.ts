@@ -5,30 +5,28 @@ import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
-	SelectClasslikeEnumKeys,
-	ServerCommandHandler
+	SelectClasslikeEnumKeys, ServerCommandHandler
 } from "./types";
 import { escapeStringColorsServer, getBlock, getTeam, getUnitType, isBuildable, parseError, parseTimeString, tagProcessor } from "./utils";
 
-export const allCommands:Record<string, FishCommandData<any>> = {};
-export const allConsoleCommands:Record<string, FishConsoleCommandData<any>> = {};
+export const allCommands:Record<string, FishCommandData<any, any>> = {};
+export const allConsoleCommands:Record<string, FishConsoleCommandData<any, any>> = {};
 const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
 }> = {};
 const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid", "offlinePlayer"] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
-
 /** Use this to get the correct type for command lists. */
-export const commandList = <A extends Record<string, string>>(list:{
+export const commandList = <const A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
-	[K in keyof A]: FishCommandData<A[K]>;
-}):Record<string, FishCommandData<any>> => list;
+	[K in keyof A]: FishCommandData<A[K], unknown>;
+}):Record<string, FishCommandData<any, any>> => list;
 /** Use this to get the correct type for command lists. */
 export const consoleCommandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
-	[K in keyof A]: FishConsoleCommandData<A[K]>;
-}):Record<string, FishConsoleCommandData<any>> => list;
+	[K in keyof A]: FishConsoleCommandData<A[K], unknown>;
+}):Record<string, FishConsoleCommandData<any, any>> => list;
 
 
 /** Represents a permission that is required to do something. */
@@ -306,6 +304,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 		let failed = false;
 		command.tapped?.({
 			args: sender.tapInfo.lastArgs,
+			data: command.data,
 			outputFail: message => {outputFail(message, sender); failed = true;},
 			outputSuccess: message => outputSuccess(message, sender),
 			output: message => outputMessage(message, sender),
@@ -343,7 +342,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 /**
  * Registers all commands in a list to a client command handler.
  **/
-export function register(commands:Record<string, FishCommandData<any>>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
+export function register(commands:Record<string, FishCommandData<any, unknown>>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
 
 	for(const [name, data] of Object.entries(commands)){
 
@@ -384,6 +383,7 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 							rawArgs,
 							args: output.processedArgs,
 							sender: fishSender,
+							data: data.data,
 							outputFail: message => {outputFail(message, sender); failed = true;},
 							outputSuccess: message => outputSuccess(message, sender),
 							output: message => outputMessage(message, sender),
@@ -430,7 +430,7 @@ export function register(commands:Record<string, FishCommandData<any>>, clientHa
 	}
 }
 
-export function registerConsole(commands:Record<string, FishConsoleCommandData<any>>, serverHandler:ServerCommandHandler){
+export function registerConsole(commands:Record<string, FishConsoleCommandData<any, unknown>>, serverHandler:ServerCommandHandler){
 
 	for(const [name, data] of Object.entries(commands)){
 		//Cursed for of loop due to lack of object.entries
@@ -459,6 +459,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 					data.handler({
 						rawArgs,
 						args: output.processedArgs,
+						data: data.data,
 						outputFail: message => {Log.err(`${message}`); failed = true;},
 						outputSuccess: message => Log.info(`${message}`),
 						output: message => Log.info(message),
@@ -504,11 +505,16 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 
 }
 
+let initialized = false;
 export function initialize(){
+	if(initialized){
+		throw new Error("Already initialized commands.");
+	}
 	for(const [key, command] of Object.entries(allConsoleCommands)){
-		command.init?.();
+		command.data = command.init?.();
 	}
 	for(const [key, command] of Object.entries(allCommands)){
-		command.init?.();
+		command.data = command.init?.();
 	}
+	initialized = true;
 }

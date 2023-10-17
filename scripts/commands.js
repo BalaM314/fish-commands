@@ -396,6 +396,7 @@ function handleTapEvent(event) {
         var failed_1 = false;
         (_a = command.tapped) === null || _a === void 0 ? void 0 : _a.call(command, {
             args: sender.tapInfo.lastArgs,
+            data: command.data,
             outputFail: function (message) { outputFail(message, sender); failed_1 = true; },
             outputSuccess: function (message) { return outputSuccess(message, sender); },
             output: function (message) { return outputMessage(message, sender); },
@@ -471,6 +472,7 @@ function register(commands, clientHandler, serverHandler) {
                             rawArgs: rawArgs,
                             args: output.processedArgs,
                             sender: fishSender,
+                            data: data.data,
                             outputFail: function (message) { outputFail(message, sender); failed = true; },
                             outputSuccess: function (message) { return outputSuccess(message, sender); },
                             output: function (message) { return outputMessage(message, sender); },
@@ -555,7 +557,7 @@ function registerConsole(commands, serverHandler) {
                 var usageData = ((_a = globalUsageData[_b = "_console_" + name]) !== null && _a !== void 0 ? _a : (globalUsageData[_b] = { lastUsed: -1, lastUsedSuccessfully: -1 }));
                 try {
                     var failed_2 = false;
-                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, outputFail: function (message) { Log.err("".concat(message)); failed_2 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); }, admins: Vars.netServer.admins }, usageData));
+                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, data: data.data, outputFail: function (message) { Log.err("".concat(message)); failed_2 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); }, admins: Vars.netServer.admins }, usageData));
                     usageData.lastUsed = Date.now();
                     if (!failed_2)
                         usageData.lastUsedSuccessfully = Date.now();
@@ -610,13 +612,17 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
         }, true, function (player) { return player.name; });
     }
 }
+var initialized = false;
 function initialize() {
     var e_5, _a, e_6, _b;
     var _c, _d;
+    if (initialized) {
+        throw new Error("Already initialized commands.");
+    }
     try {
         for (var _e = __values(Object.entries(exports.allConsoleCommands)), _f = _e.next(); !_f.done; _f = _e.next()) {
             var _g = __read(_f.value, 2), key = _g[0], command = _g[1];
-            (_c = command.init) === null || _c === void 0 ? void 0 : _c.call(command);
+            command.data = (_c = command.init) === null || _c === void 0 ? void 0 : _c.call(command);
         }
     }
     catch (e_5_1) { e_5 = { error: e_5_1 }; }
@@ -629,7 +635,7 @@ function initialize() {
     try {
         for (var _h = __values(Object.entries(exports.allCommands)), _j = _h.next(); !_j.done; _j = _h.next()) {
             var _k = __read(_j.value, 2), key = _k[0], command = _k[1];
-            (_d = command.init) === null || _d === void 0 ? void 0 : _d.call(command);
+            command.data = (_d = command.init) === null || _d === void 0 ? void 0 : _d.call(command);
         }
     }
     catch (e_6_1) { e_6 = { error: e_6_1 }; }
@@ -639,5 +645,6 @@ function initialize() {
         }
         finally { if (e_6) throw e_6.error; }
     }
+    initialized = true;
 }
 exports.initialize = initialize;

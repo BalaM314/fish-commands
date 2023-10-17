@@ -111,7 +111,7 @@ export const commands = commandList({
 		}
 	},
 
-	...Object.fromEntries(["admin", "mod"].map<[string, FishCommandData<never>]>(n => [n, {
+	...Object.fromEntries(["admin", "mod"].map<[string, FishCommandData<never, unknown>]>(n => [n, {
 		args: [],
 		description: "This command was moved to /setrank.",
 		perm: Perm.mod,
