@@ -503,7 +503,10 @@ export const commands = commandList({
 				votes, ratio
 			};
 		},
-		handler({sender, data:{votes, ratio}}){
+		handler({sender, data:{votes, ratio}, lastUsedSuccessfullySender}){
+			if(Vars.state.gameOver) fail(`This map is already finished, cannot RTV. Wait until the next map loads.`);
+			if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
+
 			votes.add(sender.uuid);
 		
 			let currentVotes = votes.size;

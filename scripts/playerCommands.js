@@ -522,7 +522,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             };
         },
         handler: function (_a) {
-            var sender = _a.sender, _b = _a.data, votes = _b.votes, ratio = _b.ratio;
+            var sender = _a.sender, _b = _a.data, votes = _b.votes, ratio = _b.ratio, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+            if (Vars.state.gameOver)
+                (0, commands_1.fail)("This map is already finished, cannot RTV. Wait until the next map loads.");
+            if (Date.now() - lastUsedSuccessfullySender < 3000)
+                (0, commands_1.fail)("This command was run recently and is on cooldown.");
             votes.add(sender.uuid);
             var currentVotes = votes.size;
             var requiredVotes = Math.ceil(ratio * Groups.player.size());
