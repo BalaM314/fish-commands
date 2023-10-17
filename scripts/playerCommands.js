@@ -37,25 +37,6 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 // import { votekickmanager } from './votes';
-var votes = new Set();
-var ratio = 0.6;
-Events.on(EventType.PlayerLeave, function (e) {
-    var player = e.player;
-    var pid = player.uuid();
-    if (votes.has(pid)) {
-        votes.delete(pid);
-        var currentVotes = votes.size;
-        var requiredVotes = Math.ceil(ratio * Groups.player.size());
-        Call.sendMessage("RTV: [accent]".concat(player.name, "[] left, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
-        if (currentVotes >= requiredVotes) {
-            Call.sendMessage('RTV: [green] vote passed, changing map.');
-            (0, utils_1.neutralGameover)();
-        }
-    }
-});
-Events.on(EventType.GameOverEvent, function (e) {
-    votes.clear();
-});
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
         description: 'Unpauses the game.',
@@ -463,12 +444,37 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             Call.sendMessage("RTV: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
             (0, utils_1.neutralGameover)();
         }
-    }, rtv: {
+    }, rtv: (0, commands_1.command)({
         args: [],
         description: 'Rock the vote to change map',
         perm: commands_1.Perm.play,
+        init: function () {
+            var votes = new Set();
+            var ratio = 0.6;
+            Events.on(EventType.PlayerLeave, function (e) {
+                var player = e.player;
+                var pid = player.uuid();
+                if (votes.has(pid)) {
+                    votes.delete(pid);
+                    var currentVotes = votes.size;
+                    var requiredVotes = Math.ceil(ratio * Groups.player.size());
+                    Call.sendMessage("RTV: [accent]".concat(player.name, "[] left, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
+                    if (currentVotes >= requiredVotes) {
+                        Call.sendMessage('RTV: [green] vote passed, changing map.');
+                        (0, utils_1.neutralGameover)();
+                    }
+                }
+            });
+            Events.on(EventType.GameOverEvent, function (e) {
+                votes.clear();
+            });
+            return {
+                votes: votes,
+                ratio: ratio
+            };
+        },
         handler: function (_a) {
-            var sender = _a.sender;
+            var sender = _a.sender, _b = _a.data, votes = _b.votes, ratio = _b.ratio;
             votes.add(sender.uuid);
             var currentVotes = votes.size;
             var requiredVotes = Math.ceil(ratio * Groups.player.size());
@@ -478,4 +484,4 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 (0, utils_1.neutralGameover)();
             }
         }
-    } }));
+    }) }));

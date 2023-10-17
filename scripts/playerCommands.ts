@@ -1,5 +1,5 @@
 import * as api from './api';
-import { commandList, fail, formatArg, Perm } from './commands';
+import { command, commandList, fail, formatArg, Perm } from './commands';
 import { FishServers, getGamemode, Mode } from './config';
 import { recentWhispers, tileHistory, uuidPattern } from './globals';
 import { Ohnos } from './ohno';
@@ -10,31 +10,6 @@ import {
 	teleportPlayer, to2DArray
 } from './utils';
 // import { votekickmanager } from './votes';
-
-const votes = new Set<string>();
-const ratio = 0.6;
-
-Events.on(EventType.PlayerLeave, (e) => {
-	const player = e.player;
-	const pid = player.uuid();
-
-	if(votes.has(pid)){
-		votes.delete(pid);
-		const currentVotes = votes.size;
-		const requiredVotes = Math.ceil(ratio * Groups.player.size());
-		Call.sendMessage(
-			`RTV: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
-		);
-		if(currentVotes >= requiredVotes){
-			Call.sendMessage('RTV: [green] vote passed, changing map.');
-			neutralGameover();
-		}
-	}
-});
-
-Events.on(EventType.GameOverEvent, (e) => {
-	votes.clear();
-});
 
 export const commands = commandList({
 	unpause: {
@@ -453,11 +428,39 @@ export const commands = commandList({
 		}
 	},
 
-	rtv: {
+	rtv: command({
 		args: [],
 		description: 'Rock the vote to change map',
 		perm: Perm.play,
-		handler({sender}){
+		init(){
+			const votes = new Set<string>();
+			const ratio = 0.6;
+			Events.on(EventType.PlayerLeave, (e) => {
+				const player = e.player;
+				const pid = player.uuid();
+			
+				if(votes.has(pid)){
+					votes.delete(pid);
+					const currentVotes = votes.size;
+					const requiredVotes = Math.ceil(ratio * Groups.player.size());
+					Call.sendMessage(
+						`RTV: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+					);
+					if(currentVotes >= requiredVotes){
+						Call.sendMessage('RTV: [green] vote passed, changing map.');
+						neutralGameover();
+					}
+				}
+			});
+			
+			Events.on(EventType.GameOverEvent, (e) => {
+				votes.clear();
+			});
+			return {
+				votes, ratio
+			};
+		},
+		handler({sender, data:{votes, ratio}}){
 			votes.add(sender.uuid);
 		
 			let currentVotes = votes.size;
@@ -470,7 +473,7 @@ export const commands = commandList({
 				neutralGameover();
 			}
 		}
-	},
+	}),
 
 	// votekick: {
 	//	 args: ["target:player"],
