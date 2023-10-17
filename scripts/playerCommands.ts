@@ -477,7 +477,7 @@ export const commands = commandList({
 		perm: Perm.play,
 		init(){
 			const votes = new Set<string>();
-			const ratio = 0.6;
+			const ratio = 0.5;
 			Events.on(EventType.PlayerLeave, (e) => {
 				const player = e.player;
 				const pid = player.uuid();

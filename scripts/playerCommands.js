@@ -498,7 +498,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.play,
         init: function () {
             var votes = new Set();
-            var ratio = 0.6;
+            var ratio = 0.5;
             Events.on(EventType.PlayerLeave, function (e) {
                 var player = e.player;
                 var pid = player.uuid();
