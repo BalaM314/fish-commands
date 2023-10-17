@@ -38,7 +38,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.formatArg = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
+exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.formatArg = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -55,6 +55,11 @@ exports.commandList = commandList;
 /** Use this to get the correct type for command lists. */
 var consoleCommandList = function (list) { return list; };
 exports.consoleCommandList = consoleCommandList;
+/** Use this wrapper function to get the correct type definitions for commands using "data" or init(). */
+function command(input) {
+    return input;
+}
+exports.command = command;
 /** Represents a permission that is required to do something. */
 var Perm = exports.Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
@@ -621,8 +626,8 @@ function initialize() {
     }
     try {
         for (var _e = __values(Object.entries(exports.allConsoleCommands)), _f = _e.next(); !_f.done; _f = _e.next()) {
-            var _g = __read(_f.value, 2), key = _g[0], command = _g[1];
-            command.data = (_c = command.init) === null || _c === void 0 ? void 0 : _c.call(command);
+            var _g = __read(_f.value, 2), key = _g[0], command_1 = _g[1];
+            command_1.data = (_c = command_1.init) === null || _c === void 0 ? void 0 : _c.call(command_1);
         }
     }
     catch (e_5_1) { e_5 = { error: e_5_1 }; }
@@ -634,8 +639,8 @@ function initialize() {
     }
     try {
         for (var _h = __values(Object.entries(exports.allCommands)), _j = _h.next(); !_j.done; _j = _h.next()) {
-            var _k = __read(_j.value, 2), key = _k[0], command = _k[1];
-            command.data = (_d = command.init) === null || _d === void 0 ? void 0 : _d.call(command);
+            var _k = __read(_j.value, 2), key = _k[0], command_2 = _k[1];
+            command_2.data = (_d = command_2.init) === null || _d === void 0 ? void 0 : _d.call(command_2);
         }
     }
     catch (e_6_1) { e_6 = { error: e_6_1 }; }

@@ -27,7 +27,12 @@ export const consoleCommandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishConsoleCommandData<A[K], unknown>;
 }):Record<string, FishConsoleCommandData<any, any>> => list;
-
+export function command<TParam extends string, TData>(cmd:FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;
+export function command<TParam extends string, TData>(cmd:FishConsoleCommandData<TParam, TData>):FishConsoleCommandData<TParam, TData>;
+/** Use this wrapper function to get the correct type definitions for commands using "data" or init(). */
+export function command(input:unknown){
+	return input;
+}
 
 /** Represents a permission that is required to do something. */
 export class Perm {
