@@ -20,12 +20,12 @@ export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer 
 /** Use this to get the correct type for command lists. */
 export const commandList = <const A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
-	[K in keyof A]: FishCommandData<A[K], unknown>;
+	[K in keyof A]: FishCommandData<A[K], any>;
 }):Record<string, FishCommandData<any, any>> => list;
 /** Use this to get the correct type for command lists. */
 export const consoleCommandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
-	[K in keyof A]: FishConsoleCommandData<A[K], unknown>;
+	[K in keyof A]: FishConsoleCommandData<A[K], any>;
 }):Record<string, FishConsoleCommandData<any, any>> => list;
 export function command<TParam extends string, TData>(cmd:FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;
 export function command<TParam extends string, TData>(cmd:FishConsoleCommandData<TParam, TData>):FishConsoleCommandData<TParam, TData>;
