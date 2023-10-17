@@ -457,12 +457,17 @@ export const commands = commandList({
 	},
 
 	forcertv: {
-		args: [],
+		args: ["force:boolean?"],
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
-		handler({sender}){
-			Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);
-			neutralGameover();
+		handler({args, sender, allCommands}){
+			if(args.force === false){
+				Call.sendMessage(`RTV: [red] votes cleared by admin [yellow]${sender.name}[green].`);
+				allCommands.rtv.data.votes.clear();
+			} else {
+				Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);
+				neutralGameover();
+			}
 		}
 	},
 

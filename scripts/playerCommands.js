@@ -478,13 +478,19 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             output("Player ".concat(args.player.cleanedName, "'s rank is ").concat(args.player.rank.color).concat(args.player.rank.name, "[]."));
         },
     }, forcertv: {
-        args: [],
+        args: ["force:boolean?"],
         description: 'Force skip to the next map.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var sender = _a.sender;
-            Call.sendMessage("RTV: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
-            (0, utils_1.neutralGameover)();
+            var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
+            if (args.force === false) {
+                Call.sendMessage("RTV: [red] votes cleared by admin [yellow]".concat(sender.name, "[green]."));
+                allCommands.rtv.data.votes.clear();
+            }
+            else {
+                Call.sendMessage("RTV: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
+                (0, utils_1.neutralGameover)();
+            }
         }
     }, rtv: (0, commands_1.command)({
         args: [],
