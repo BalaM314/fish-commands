@@ -5,7 +5,6 @@ const { commands: consoleCommands } = require("./consoleCommands");
 const globals = require("./globals");
 const { commands: memberCommands } = require("./memberCommands");
 const menus = require("./menus");
-const ohno = require("./ohno");
 const packetHandlers = require("./packetHandlers");
 const { commands: playerCommands } = require("./playerCommands");
 const players = require("./players");
