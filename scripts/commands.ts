@@ -356,7 +356,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 /**
  * Registers all commands in a list to a client command handler.
  **/
-export function register(commands:Record<string, FishCommandData<any, unknown>>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
+export function register(commands:Record<string, FishCommandData<any, any>>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
 
 	for(const [name, data] of Object.entries(commands)){
 
@@ -446,7 +446,7 @@ export function register(commands:Record<string, FishCommandData<any, unknown>>,
 	}
 }
 
-export function registerConsole(commands:Record<string, FishConsoleCommandData<any, unknown>>, serverHandler:ServerCommandHandler){
+export function registerConsole(commands:Record<string, FishConsoleCommandData<any, any>>, serverHandler:ServerCommandHandler){
 
 	for(const [name, data] of Object.entries(commands)){
 		//Cursed for of loop due to lack of object.entries

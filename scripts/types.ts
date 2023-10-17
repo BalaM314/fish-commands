@@ -80,7 +80,7 @@ export interface FishCommandRunner<ArgType extends string, StoredData> {
 		/** Vars.netServer.admins */
 		admins: Administration;
 		/**List of every registered command, including this one. */
-		allCommands:Record<string, FishCommandData<any, unknown>>;
+		allCommands:Record<string, FishCommandData<any, any>>;
 		/**Timestamp of the last time this command was run successfully by any player. */
 		lastUsedSuccessfully:number;
 		/**Timestamp of the last time this command was run by the current sender. */
