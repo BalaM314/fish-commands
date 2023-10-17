@@ -45,10 +45,15 @@ var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
+//Behold, the power of typescript!
+var initialized = false;
 exports.allCommands = {};
 exports.allConsoleCommands = {};
 var globalUsageData = {};
-var commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid", "offlinePlayer"];
+var commandArgTypes = [
+    "string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block",
+    "uuid", "offlinePlayer",
+];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
 exports.commandList = commandList;
@@ -450,6 +455,8 @@ function register(commands, clientHandler, serverHandler) {
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
         clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
                 var _a;
+                if (!initialized)
+                    throw new Error("Commands not initialized!");
                 var fishSender = players_1.FishPlayer.get(sender);
                 //Verify authorization
                 //as a bonus, this crashes if data.perm is undefined
@@ -551,6 +558,8 @@ function registerConsole(commands, serverHandler) {
         serverHandler.register(name, convertArgs(processedCmdArgs, false), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs) {
                 var _a;
                 var _b;
+                if (!initialized)
+                    throw new Error("Commands not initialized!");
                 //closure over processedCmdArgs, should be fine
                 //Process the args
                 var output = processArgs(rawArgs, processedCmdArgs, false);
@@ -617,7 +626,6 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
         }, true, function (player) { return player.name; });
     }
 }
-var initialized = false;
 function initialize() {
     var e_5, _a, e_6, _b;
     var _c, _d;

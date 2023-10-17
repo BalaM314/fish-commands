@@ -7,15 +7,24 @@ import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
 	SelectClasslikeEnumKeys, ServerCommandHandler
 } from "./types";
-import { escapeStringColorsServer, getBlock, getTeam, getUnitType, isBuildable, parseError, parseTimeString, tagProcessor } from "./utils";
+import {
+	escapeStringColorsServer, getBlock, getTeam, getUnitType, parseError, parseTimeString,
+	tagProcessor
+} from "./utils";
 
+//Behold, the power of typescript!
+
+let initialized = false;
 export const allCommands:Record<string, FishCommandData<any, any>> = {};
 export const allConsoleCommands:Record<string, FishConsoleCommandData<any, any>> = {};
 const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
 }> = {};
-const commandArgTypes = ["string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block", "uuid", "offlinePlayer"] as const;
+const commandArgTypes = [
+	"string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block",
+	"uuid", "offlinePlayer",
+] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 /** Use this to get the correct type for command lists. */
 export const commandList = <const A extends Record<string, string>>(list:{
@@ -359,6 +368,8 @@ export function register(commands:Record<string, FishCommandData<any, unknown>>,
 			convertArgs(processedCmdArgs, true),
 			data.description,
 			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (unjoinedRawArgs:string[], sender:mindustryPlayer) => {
+				if(!initialized) throw new Error(`Commands not initialized!`);
+
 				const fishSender = FishPlayer.get(sender);
 
 				//Verify authorization
@@ -448,7 +459,8 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 			convertArgs(processedCmdArgs, false),
 			data.description,
 			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[]) => {
-				
+				if(!initialized) throw new Error(`Commands not initialized!`);
+
 				//closure over processedCmdArgs, should be fine
 				//Process the args
 				const output = processArgs(rawArgs, processedCmdArgs, false);
@@ -510,7 +522,6 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 
 }
 
-let initialized = false;
 export function initialize(){
 	if(initialized){
 		throw new Error("Already initialized commands.");

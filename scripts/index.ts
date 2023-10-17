@@ -15,7 +15,7 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, formatTimeRelative, logErrors, matchFilter, serverRestartLoop } from "./utils";
+import { StringIO, logErrors, matchFilter, serverRestartLoop } from "./utils";
 
 
 
@@ -114,8 +114,8 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	//commands.register(packetHandlers.commands, clientHandler, serverHandler);
 	commands.registerConsole(consoleCommands.commands, serverHandler);
 	//packetHandlers.loadPacketHandlers();
-	// stored for limiting /reset frequency
-	Core.settings.remove('lastRestart');
+	
+	commands.initialize();
 
 	//const getIp = Http.get('https://api.ipify.org?format=js');
 	//getIp.submit((r) => {

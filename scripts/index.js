@@ -125,8 +125,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     //commands.register(packetHandlers.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
     //packetHandlers.loadPacketHandlers();
-    // stored for limiting /reset frequency
-    Core.settings.remove('lastRestart');
+    commands.initialize();
     //const getIp = Http.get('https://api.ipify.org?format=js');
     //getIp.submit((r) => {
     //	//serverIp = r.getResultAsString();
