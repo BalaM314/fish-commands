@@ -1,7 +1,7 @@
 import { FishPlayer } from "./players";
 import { getStaffMessages } from './api'
 import * as config from "./config";
-import { definitelyRealMemoryCorruption } from "./utils";
+import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
 
 
 export function initializeTimers(){
@@ -41,4 +41,12 @@ export function initializeTimers(){
 		const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`
 		Call.sendMessage(message);
 	}, 0, 15 * 60);
+	//State check
+	Timer.schedule(() => {
+		if(Groups.unit.size() > 10000){
+			Call.sendMessage(`\n[scarlet]!!!!!\n[scarlet]Way too many units! Game over!\n[scarlet]!!!!!\n`);
+			Groups.unit.clear();
+			neutralGameover();
+		}
+	}, 0, 1);
 }

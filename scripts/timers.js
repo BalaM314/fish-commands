@@ -43,5 +43,13 @@ function initializeTimers() {
         var message = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
         Call.sendMessage(message);
     }, 0, 15 * 60);
+    //State check
+    Timer.schedule(function () {
+        if (Groups.unit.size() > 10000) {
+            Call.sendMessage("\n[scarlet]!!!!!\n[scarlet]Way too many units! Game over!\n[scarlet]!!!!!\n");
+            Groups.unit.clear();
+            (0, utils_1.neutralGameover)();
+        }
+    }, 0, 1);
 }
 exports.initializeTimers = initializeTimers;

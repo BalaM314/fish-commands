@@ -170,6 +170,7 @@ declare class EntityGroup<T> {
 	contains(pred:(item:T) => boolean):boolean;
 	find(pred:(item:T) => boolean):T;
 	first():T;
+	clear();
 }
 
 declare function importPackage(package:any):void;
