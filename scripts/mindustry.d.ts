@@ -142,11 +142,15 @@ declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
 	static with<T>(items:Iterable<T>):Seq<T>;
 	contains(item:T):boolean;
 	contains(pred:(item:T) => boolean):boolean;
+	/** @deprecated Use select() or retainAll() */
 	filter(pred:(item:T) => boolean):Seq<T>;
+	retainAll(pred:(item:T) => boolean):Seq<T>;
+	select(pred:(item:T) => boolean):Seq<T>;
 	find(pred:(item:T) => boolean):T;
 	each(func:(item:T) => unknown);
 	isEmpty():boolean;
 	map<R>(mapFunc:(item:T) => R):Seq<R>;
+	toString(separator:string, stringifier:(item:T) => string);
 }
 
 declare class ObjectSet<T> {
