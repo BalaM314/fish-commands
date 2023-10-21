@@ -9,7 +9,7 @@ declare const Log: {
 declare const Strings: {
 	stripColors(string:string): string;
 }
-declare const Vars: any;
+declare const Vars: any; //TODO
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
 	fire(event:Event);
@@ -23,7 +23,6 @@ declare type Tile = {
 	removeNet():void;
 	getLinkedTiles(callback:(t:Tile) => void):void;
 };//TODO fix
-declare const ServerLoadEvent: any;
 declare const Menus: {
 	registerMenu(listener:MenuListener):number;
 }
@@ -280,19 +279,25 @@ interface MapTags {
 	build?:number;
 	genfilters?:string;
 }
-declare const Maps: {
-	setNextMapOverride(map:Map);
-	all():Seq<Map>;
-	customMaps():Seq<Map>;
-	byName(name:string):Map;
+declare class Maps {
+	setNextMapOverride(map:MMap);
+	all():Seq<MMap>;
+	customMaps():Seq<MMap>;
+	byName(name:string):MMap | Null;
 	reload():void;
-	saveMap(baseTags:MapTags):Map;
-};
-declare class Map {
+	saveMap(baseTags:MapTags):MMap;
+}
+declare class MMap {
 	readonly custom:boolean;
 	readonly file:Fi;
 	width:number;
 	height:number;
 	build:number;
+	name():string;
+	author():string;
+	description():string;
+	plainName():string;
+	plainAuthor():string;
+	plainDescription():string;
 }
 
