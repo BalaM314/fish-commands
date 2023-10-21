@@ -510,3 +510,26 @@ export function getEnemyTeam():Team {
 export function neutralGameover(){
 	Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
 }
+
+/** Chooses a random number between 0 and max. */
+export function random(max:number):number;
+/** Chooses a random number between min and max. */
+export function random(min:number, max:number):number;
+/** Selects a random element from an array. */
+export function random<T>(list:T[]):T;
+
+export function random(arg0:unknown, arg1?:number):any {
+	if(typeof arg0 == "number"){
+		let max:number, min:number;
+		if(arg1 == undefined){
+			max = arg0;
+			min = 0;
+		} else {
+			min = arg0;
+			max = arg1;
+		}
+		return Math.random()*(max-min) + min;
+	} else if(arg0 instanceof Array){
+		return arg0[Math.floor(Math.random() * arg0.length)];
+	}
+}
