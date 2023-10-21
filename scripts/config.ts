@@ -8,7 +8,7 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	"nig"+"ger", "nig" + "ga", "niger", //our apologies to citizens of the Republic of Niger
 	"re"+"tard", 'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"], "co"+"ck", "iamasussyimposter", "cu"+"nt",
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
-	["fa"+"g", "fage"],
+	/(?<!hal)(fa)(g)(?!o)/,
 	/\bcum\b/,
 	"porn", "ur gay", "your gay", "youre gay", "you're gay"
 ]);
