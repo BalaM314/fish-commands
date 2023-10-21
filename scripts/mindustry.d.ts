@@ -270,3 +270,29 @@ declare class MissileUnitType extends UnitType {}
 declare class LogicAI {
 	controller: Building | null;
 }
+interface MapTags {
+	name:string;
+	description?:string;
+	author?:string;
+	steamid?:string;
+	/** JSON rules */
+	rules?:string;
+	build?:number;
+	genfilters?:string;
+}
+declare const Maps: {
+	setNextMapOverride(map:Map);
+	all():Seq<Map>;
+	customMaps():Seq<Map>;
+	byName(name:string):Map;
+	reload():void;
+	saveMap(baseTags:MapTags):Map;
+};
+declare class Map {
+	readonly custom:boolean;
+	readonly file:Fi;
+	width:number;
+	height:number;
+	build:number;
+}
+
