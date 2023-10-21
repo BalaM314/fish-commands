@@ -52,7 +52,7 @@ exports.allConsoleCommands = {};
 var globalUsageData = {};
 var commandArgTypes = [
     "string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block",
-    "uuid", "offlinePlayer",
+    "uuid", "offlinePlayer", "map"
 ];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
@@ -277,8 +277,13 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     break;
                 case "uuid":
                     if (!globals_1.uuidPattern.test(args[i]))
-                        return { error: "Invalid uuid string ".concat(args[i]) };
+                        return { error: "Invalid uuid string \"".concat(args[i], "\"") };
                     outputArgs[cmdArg.name] = args[i];
+                    break;
+                case "map":
+                    var map = Vars.maps.byName(args[i]);
+                    if (map == null)
+                        return { error: "Unknown map \"".concat(args[i], "\". Run [cyan]/maps[] to get a list of all maps.") };
                     break;
             }
         }

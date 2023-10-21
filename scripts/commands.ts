@@ -23,7 +23,7 @@ const globalUsageData:Record<string, {
 }> = {};
 const commandArgTypes = [
 	"string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block",
-	"uuid", "offlinePlayer",
+	"uuid", "offlinePlayer", "map"
 ] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 /** Use this to get the correct type for command lists. */
@@ -213,8 +213,12 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				outputArgs[cmdArg.name] = unit;
 				break;
 			case "uuid":
-				if(!uuidPattern.test(args[i])) return {error: `Invalid uuid string ${args[i]}`};
+				if(!uuidPattern.test(args[i])) return {error: `Invalid uuid string "${args[i]}"`};
 				outputArgs[cmdArg.name] = args[i];
+				break;
+			case "map":
+				const map = Vars.maps.byName(args[i]);
+				if(map == null) return {error: `Unknown map "${args[i]}". Run [cyan]/maps[] to get a list of all maps.`};
 				break;
 		}
 	}
