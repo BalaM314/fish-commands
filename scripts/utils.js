@@ -401,7 +401,8 @@ function cleanText(text, applyAntiEvasion) {
 exports.cleanText = cleanText;
 function isImpersonator(name, isStaff) {
     var e_2, _a;
-    var replacedText = cleanText(name, true);
+    var replacedText = cleanText(name);
+    var antiEvasionText = cleanText(name, true);
     //very clean code i know
     var filters = (function (input) {
         return input.map(function (i) {
@@ -428,6 +429,8 @@ function isImpersonator(name, isStaff) {
         for (var filters_1 = __values(filters), filters_1_1 = filters_1.next(); !filters_1_1.done; filters_1_1 = filters_1.next()) {
             var _b = __read(filters_1_1.value, 2), check = _b[0], message = _b[1];
             if (check(replacedText))
+                return message;
+            if (check(antiEvasionText))
                 return message;
         }
     }

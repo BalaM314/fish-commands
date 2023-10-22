@@ -314,7 +314,8 @@ export function cleanText(text:string, applyAntiEvasion = false){
 }
 
 export function isImpersonator(name:string, isStaff:boolean):false | string {
-	const replacedText = cleanText(name, true);
+	const replacedText = cleanText(name);
+	const antiEvasionText = cleanText(name, true);
 	//very clean code i know
 	const filters:[check:Boolf<string>, message:string][] = (
 		(input: (string | [string | RegExp | Boolf<string>, string])[]) =>
@@ -340,6 +341,7 @@ export function isImpersonator(name:string, isStaff:boolean):false | string {
 	]);
 	for(const [check, message] of filters){
 		if(check(replacedText)) return message;
+		if(check(antiEvasionText)) return message;
 	}
 	return false;
 }
