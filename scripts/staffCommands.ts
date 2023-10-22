@@ -8,7 +8,7 @@ import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
 import {
 	colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative,
-	logAction, parseError, setToArray
+	logAction, parseError, serverRestartLoop, setToArray
 } from "./utils";
 
 const spawnedUnits:Unit[] = [];
@@ -237,36 +237,7 @@ export const commands = commandList({
 		description: "Stops and restarts the server. Do not run when the player count is high.",
 		perm: Perm.admin,
 		handler(){
-			const now = Date.now();
-			const lastRestart = Core.settings.get("lastRestart", "");
-			if(lastRestart != ""){
-				const numOld = Number(lastRestart);
-				if(now - numOld < 600000) fail(`You need to wait at least 10 minutes between restarts.`);
-			}
-			Core.settings.put("lastRestart", String(now));
-			Core.settings.manualSave();
-			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-			const restartLoop = (sec:number) => {
-				if(sec === 5){
-					Call.sendMessage('[green]Game saved. [scarlet]Server restarting in:');
-				}
-
-				Call.sendMessage('[scarlet]' + String(sec));
-
-				if(sec <= 0){
-					Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
-					Core.app.post(() => {
-						SaveIO.save(file);
-						Core.app.exit();
-					});
-					return;
-				}
-				Timer.schedule(() => {
-					const newSec = sec - 1;
-					restartLoop(newSec);
-				}, 1);
-			};
-			restartLoop(5);
+			serverRestartLoop(30);
 		}
 	},
 

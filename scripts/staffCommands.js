@@ -250,35 +250,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: "Stops and restarts the server. Do not run when the player count is high.",
         perm: commands_1.Perm.admin,
         handler: function () {
-            var now = Date.now();
-            var lastRestart = Core.settings.get("lastRestart", "");
-            if (lastRestart != "") {
-                var numOld = Number(lastRestart);
-                if (now - numOld < 600000)
-                    (0, commands_1.fail)("You need to wait at least 10 minutes between restarts.");
-            }
-            Core.settings.put("lastRestart", String(now));
-            Core.settings.manualSave();
-            var file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
-            var restartLoop = function (sec) {
-                if (sec === 5) {
-                    Call.sendMessage('[green]Game saved. [scarlet]Server restarting in:');
-                }
-                Call.sendMessage('[scarlet]' + String(sec));
-                if (sec <= 0) {
-                    Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
-                    Core.app.post(function () {
-                        SaveIO.save(file);
-                        Core.app.exit();
-                    });
-                    return;
-                }
-                Timer.schedule(function () {
-                    var newSec = sec - 1;
-                    restartLoop(newSec);
-                }, 1);
-            };
-            restartLoop(5);
+            (0, utils_1.serverRestartLoop)(30);
         }
     }, history: {
         args: ["player:player"],
