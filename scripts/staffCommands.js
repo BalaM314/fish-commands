@@ -328,9 +328,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: "Bans a player's IP.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, execServer = _a.execServer;
-            var playerList = (0, utils_1.setToArray)(Groups.player);
-            (0, menus_1.menu)("IP BAN", "Choose a player to IP ban.", playerList, sender, function (_a) {
+            var sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, admins = _a.admins;
+            (0, menus_1.menu)("IP BAN", "Choose a player to IP ban.", (0, utils_1.setToArray)(Groups.player), sender, function (_a) {
                 var option = _a.option;
                 if (option.admin) {
                     outputFail("Cannot ip ban an admin.");
@@ -339,7 +338,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     (0, menus_1.menu)("Confirm", "Are you sure you want to IP-ban ".concat(option.name, "?"), ["Yes", "Cancel"], sender, function (_a) {
                         var confirm = _a.option;
                         if (confirm == "Yes") {
-                            execServer("ban ip ".concat(option.ip()));
+                            admins.banPlayerIP(option.ip());
                             api.ban({ ip: option.ip() });
                             Log.info("".concat(option.ip(), " was banned."));
                             (0, utils_1.logAction)("ip-banned", sender, option.getInfo());
@@ -405,6 +404,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess;
+            args;
+            //^?
             var x = args.x ? (args.x * 8) : sender.player.x;
             var y = args.y ? (args.y * 8) : sender.player.y;
             var unit = args.type.spawn(sender.team(), x, y);

@@ -323,15 +323,14 @@ export const commands = commandList({
 		args: [],
 		description: "Bans a player's IP.",
 		perm: Perm.admin,
-		handler({sender, outputFail, outputSuccess, execServer}){
-			const playerList = setToArray(Groups.player);
-			menu(`IP BAN`, "Choose a player to IP ban.", playerList, sender, ({option}) => {
+		handler({sender, outputFail, outputSuccess, admins}){
+			menu(`IP BAN`, "Choose a player to IP ban.", setToArray(Groups.player), sender, ({option}) => {
 				if(option.admin){
 					outputFail(`Cannot ip ban an admin.`);
 				} else {
 					menu("Confirm", `Are you sure you want to IP-ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
 						if(confirm == "Yes"){
-							execServer(`ban ip ${option.ip()}`);
+							admins.banPlayerIP(option.ip());
 							api.ban({ip: option.ip()});
 							Log.info(`${option.ip()} was banned.`);
 							logAction("ip-banned", sender, option.getInfo());
@@ -416,6 +415,8 @@ export const commands = commandList({
 		description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
 		perm: Perm.admin,
 		handler({sender, args, outputSuccess}){
+			args;
+			//^?
 			const x = args.x ? (args.x * 8) : sender.player.x;
 			const y = args.y ? (args.y * 8) : sender.player.y;
 			const unit = args.type.spawn(sender.team(), x, y);
