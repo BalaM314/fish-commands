@@ -120,7 +120,7 @@ export const tips = {
 		`Tilelog stores when a building is placed, broken, rotated, configured, and picked up/dropped by a payload unit. Access it with [white]/tilelog[]`,
 		`Tilelog doesn't just log tile actions, it also logs unit deaths! Access it with [white]/tilelog[]`,
 		`You can mark yourself as AFK(away from keyboard) with [white]/afk[].`,
-		`Run /survival, /attack, /pvp, or /sandbox to quickly change to another server.`,
+		`Run /survival, /attack, or /pvp to quickly change to another server.`,
 		`Need to get rid of an active griefer? Use [#6FFC7C]/s[] to send a message to all staff members across all servers.`,
 		`Use [white]/help to get more information about a specific command.`,
 		`If you want to send a message to just one player, you can use the [white]/msg[] command.`,
