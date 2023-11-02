@@ -38,7 +38,7 @@ exports.strictBannedWords = (function (words) {
 exports.bannedInNamesWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([
-    "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin"
+    "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/
 ]);
 exports.adminNames = ["fish", "balame14", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
