@@ -343,6 +343,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                             Log.info("".concat(option.ip(), " was banned."));
                             (0, utils_1.logAction)("ip-banned", sender, option.getInfo());
                             outputSuccess("IP-banned player ".concat(option.name, "."));
+                            Groups.player.each(function (player) {
+                                if (admins.isIDBanned(player.uuid())) {
+                                    api.addStopped(player.uuid(), config_1.maxTime);
+                                    player.con.kick(Packets.KickReason.banned);
+                                    Call.sendMessage("[scarlet]Player [yellow]".concat(player.name, " [scarlet] has been whacked."));
+                                }
+                            });
                         }
                         else {
                             outputFail("Cancelled.");

@@ -335,6 +335,13 @@ export const commands = commandList({
 							Log.info(`${option.ip()} was banned.`);
 							logAction("ip-banned", sender, option.getInfo());
 							outputSuccess(`IP-banned player ${option.name}.`);
+							Groups.player.each(player => {
+								if(admins.isIDBanned(player.uuid())){
+									api.addStopped(player.uuid(), maxTime);
+									player.con.kick(Packets.KickReason.banned);
+									Call.sendMessage(`[scarlet]Player [yellow]${player.name} [scarlet] has been whacked.`);
+								}
+							});
 						} else {
 							outputFail("Cancelled.");
 						}
