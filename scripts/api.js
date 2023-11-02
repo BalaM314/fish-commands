@@ -180,8 +180,11 @@ function unban(data, callback) {
 exports.unban = unban;
 /** Gets if either the provided uuid or ip is banned. */
 function getBanned(data, callback) {
-    if (config_1.localDebug)
+    if (config_1.localDebug) {
+        Log.info("[API] Attempted to getBanned(".concat(data.uuid, "/").concat(data.ip, "), assuming false due to local debug"));
+        callback(false);
         return;
+    }
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/checkIsBanned"), JSON.stringify(data))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');

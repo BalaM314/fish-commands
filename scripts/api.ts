@@ -162,7 +162,11 @@ export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string,
 
 /** Gets if either the provided uuid or ip is banned. */
 export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:boolean) => unknown){
-	if(localDebug) return;
+	if(localDebug){
+		Log.info(`[API] Attempted to getBanned(${data.uuid}/${data.ip}), assuming false due to local debug`);
+		callback(false);
+		return;
+	}
 	const req = Http.post(`http://${ip}:5000/api/checkIsBanned`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
