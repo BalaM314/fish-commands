@@ -155,8 +155,8 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 	} else if(e instanceof EventType.BlockDestroyEvent){
 		if(Mode.attack() && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
 		tile = e.tile;
-		uuid = "something";
-		action = "destroyed";
+		uuid = "[[something]";
+		action = "killed";
 		type = e.tile.block()?.name ?? "air";
 	} else if(e instanceof EventType.PayloadDropEvent){
 		action = "pay-dropped";

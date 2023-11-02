@@ -168,8 +168,8 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
         if (config_1.Mode.attack() && ((_p = e.tile.build) === null || _p === void 0 ? void 0 : _p.team) != Vars.state.rules.defaultTeam)
             return; //Don't log destruction of enemy blocks
         tile = e.tile;
-        uuid = "something";
-        action = "destroyed";
+        uuid = "[[something]";
+        action = "killed";
         type = (_r = (_q = e.tile.block()) === null || _q === void 0 ? void 0 : _q.name) !== null && _r !== void 0 ? _r : "air";
     }
     else if (e instanceof EventType.PayloadDropEvent) {
