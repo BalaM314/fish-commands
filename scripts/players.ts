@@ -242,11 +242,13 @@ export class FishPlayer {
 		let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
 		fishPlayer.updateSavedInfoFromPlayer(player);
 		if(fishPlayer.validate()){
-			const message = isImpersonator(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
-			if(message !== false){
-				fishPlayer.sendMessage(`[scarlet]\u26A0[] [gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ${message}\n[gold]Change your name to remove the tag.`);
-			} else if(cleanText(player.name, true).includes("hacker")){
-				fishPlayer.sendMessage("[scarlet]\u26A0 Don't be a script kiddie!");
+			if(!fishPlayer.hasPerm("bypassNameCheck")){
+				const message = isImpersonator(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
+				if(message !== false){
+					fishPlayer.sendMessage(`[scarlet]\u26A0[] [gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ${message}\n[gold]Change your name to remove the tag.`);
+				} else if(cleanText(player.name, true).includes("hacker")){
+					fishPlayer.sendMessage("[scarlet]\u26A0 Don't be a script kiddie!");
+				}
 			}
 			fishPlayer.updateName();
 			fishPlayer.updateAdminStatus();
@@ -303,7 +305,7 @@ export class FishPlayer {
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
 		let prefix = '';
-		if(isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
+		if(!this.hasPerm("bypassNameCheck") && isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
 		if(this.marked()) prefix += config.MARKED_PREFIX;
 		else if(this.autoflagged) prefix += "[yellow]\u26A0[scarlet]Flagged[]\u26A0[]";
 		if(this.muted) prefix += config.MUTED_PREFIX;

@@ -295,12 +295,14 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
         fishPlayer.updateSavedInfoFromPlayer(player);
         if (fishPlayer.validate()) {
-            var message = (0, utils_1.isImpersonator)(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
-            if (message !== false) {
-                fishPlayer.sendMessage("[scarlet]\u26A0[] [gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ".concat(message, "\n[gold]Change your name to remove the tag."));
-            }
-            else if ((0, utils_1.cleanText)(player.name, true).includes("hacker")) {
-                fishPlayer.sendMessage("[scarlet]\u26A0 Don't be a script kiddie!");
+            if (!fishPlayer.hasPerm("bypassNameCheck")) {
+                var message = (0, utils_1.isImpersonator)(fishPlayer.name, fishPlayer.ranksAtLeast("admin"));
+                if (message !== false) {
+                    fishPlayer.sendMessage("[scarlet]\u26A0[] [gold]Oh no! Our systems think you are a [scarlet]SUSSY IMPERSONATOR[]!\n[gold]Reason: ".concat(message, "\n[gold]Change your name to remove the tag."));
+                }
+                else if ((0, utils_1.cleanText)(player.name, true).includes("hacker")) {
+                    fishPlayer.sendMessage("[scarlet]\u26A0 Don't be a script kiddie!");
+                }
             }
             fishPlayer.updateName();
             fishPlayer.updateAdminStatus();
@@ -386,7 +388,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
-        if ((0, utils_1.isImpersonator)(this.name, this.ranksAtLeast("admin")))
+        if (!this.hasPerm("bypassNameCheck") && (0, utils_1.isImpersonator)(this.name, this.ranksAtLeast("admin")))
             prefix += "[scarlet]SUSSY IMPOSTOR[]";
         if (this.marked())
             prefix += config.MARKED_PREFIX;

@@ -67,6 +67,7 @@ export class Perm {
 	static spawnOhnos = new Perm("spawnOhnos", () => !Mode.pvp(), "", "Ohnos are disabled in PVP.");
 	static usidCheck = new Perm("usidCheck", "trusted");
 	static runJS = new Perm("runJS", "manager");
+	static bypassNameCheck = new Perm("bypassNameCheck", "fish");
 
 	check:(fishP:FishPlayer) => boolean;
 	constructor(public name:string, check:RankName | ((fishP:FishPlayer) => boolean), public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){

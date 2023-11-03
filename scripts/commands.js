@@ -107,6 +107,7 @@ var Perm = exports.Perm = /** @class */ (function () {
     Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Mode.pvp(); }, "", "Ohnos are disabled in PVP.");
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");
+    Perm.bypassNameCheck = new Perm("bypassNameCheck", "fish");
     return Perm;
 }());
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
