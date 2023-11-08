@@ -151,6 +151,8 @@ export const commands = commandList({
 			if(flag == null) fail(`Unknown role flag ${args.roleflag}`);
 			if(!sender.canModerate(args.player))
 				fail(`You do not have permission to modify the role flags of player "${args.player.name}"`);
+			if(!sender.hasPerm("admin") && !flag.assignableByModerators)
+				fail(`You do not have permission to change the value of role flag ${flag.coloredName()}`);
 
 			args.player.setFlag(flag, args.value);
 			logAction(`set roleflag ${flag.name} to ${args.value} for`, sender, args.player);

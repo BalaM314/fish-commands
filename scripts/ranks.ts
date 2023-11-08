@@ -35,8 +35,8 @@ export type RankName = SelectEnumClassKeys<typeof Rank>;
 
 export class RoleFlag {
 	static flags:Record<string, RoleFlag> = {};
-	static developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]");
-	static member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]");
+	static developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]", true, false);
+	static member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]", true, false);
 	static afk = new RoleFlag("afk", "[orange]\uE876 AFK \uE876 | [white]", "Used for players who are idle for longer than 2 minutes.", "[orange]", false);
 	constructor(
 		public name:string,
@@ -44,6 +44,7 @@ export class RoleFlag {
 		public description:string,
 		public color:string,
 		public peristent:boolean = true,
+		public assignableByModerators = true,
 	){RoleFlag.flags[name] = this;}
 	static getByName(name:string):RoleFlag | null {
 		return RoleFlag.flags[name] ?? null;

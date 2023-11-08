@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleFlag = exports.Rank = void 0;
-var Rank = exports.Rank = /** @class */ (function () {
+var Rank = /** @class */ (function () {
     function Rank(name, 
     /** Used to determine whether a rank outranks another. */ level, description, prefix, color) {
         if (color === void 0) { color = ""; }
@@ -34,14 +34,17 @@ var Rank = exports.Rank = /** @class */ (function () {
     Rank.fish = new Rank("fish", 999, "Owner.", "[blue]>|||>[] ", "[blue]"); //Might want to change this to like owner or something
     return Rank;
 }());
-var RoleFlag = exports.RoleFlag = /** @class */ (function () {
-    function RoleFlag(name, prefix, description, color, peristent) {
+exports.Rank = Rank;
+var RoleFlag = /** @class */ (function () {
+    function RoleFlag(name, prefix, description, color, peristent, assignableByModerators) {
         if (peristent === void 0) { peristent = true; }
+        if (assignableByModerators === void 0) { assignableByModerators = true; }
         this.name = name;
         this.prefix = prefix;
         this.description = description;
         this.color = color;
         this.peristent = peristent;
+        this.assignableByModerators = assignableByModerators;
         RoleFlag.flags[name] = this;
     }
     RoleFlag.getByName = function (name) {
@@ -55,8 +58,9 @@ var RoleFlag = exports.RoleFlag = /** @class */ (function () {
         return this.color + this.name + "[]";
     };
     RoleFlag.flags = {};
-    RoleFlag.developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]");
-    RoleFlag.member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]");
+    RoleFlag.developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]", true, false);
+    RoleFlag.member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]", true, false);
     RoleFlag.afk = new RoleFlag("afk", "[orange]\uE876 AFK \uE876 | [white]", "Used for players who are idle for longer than 2 minutes.", "[orange]", false);
     return RoleFlag;
 }());
+exports.RoleFlag = RoleFlag;
