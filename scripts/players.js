@@ -46,7 +46,7 @@ var config_1 = require("./config");
 var menus_1 = require("./menus");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
-var FishPlayer = exports.FishPlayer = /** @class */ (function () {
+var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, _k = _a.chatStrictness, chatStrictness = _k === void 0 ? "chat" : _k, 
         //deprecated
@@ -306,6 +306,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             }
             fishPlayer.updateName();
             fishPlayer.updateAdminStatus();
+            fishPlayer.updateMemberExclusiveState();
             api.getStopped(player.uuid(), function (unmarked) {
                 fishPlayer.unmarkTime = unmarked;
                 fishPlayer.sendWelcomeMessage();
@@ -381,6 +382,12 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
         });
         this.cleanedName = Strings.stripColors(player.name);
         this.lastJoined = Date.now();
+    };
+    FishPlayer.prototype.updateMemberExclusiveState = function () {
+        if (!this.hasPerm("member")) {
+            this.highlight = null;
+            this.rainbow = null;
+        }
     };
     /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
@@ -840,6 +847,7 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
             else {
                 this.flags.delete(flag);
             }
+            this.updateMemberExclusiveState();
             this.updateName();
             FishPlayer.saveAll();
         }
@@ -1025,3 +1033,4 @@ var FishPlayer = exports.FishPlayer = /** @class */ (function () {
     FishPlayer.lastAuthKicked = null;
     return FishPlayer;
 }());
+exports.FishPlayer = FishPlayer;

@@ -252,6 +252,7 @@ export class FishPlayer {
 			}
 			fishPlayer.updateName();
 			fishPlayer.updateAdminStatus();
+			fishPlayer.updateMemberExclusiveState();
 			api.getStopped(player.uuid(), (unmarked) => {
 				fishPlayer.unmarkTime = unmarked;
 				fishPlayer.sendWelcomeMessage();
@@ -300,7 +301,12 @@ export class FishPlayer {
 		this.cleanedName = Strings.stripColors(player.name);
 		this.lastJoined = Date.now();
 	}
-
+	updateMemberExclusiveState(){
+		if(!this.hasPerm("member")){
+			this.highlight = null;
+			this.rainbow = null;
+		}
+	}
 	/**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
 	updateName(){
 		if(!this.connected()) return;//No player, no need to update
@@ -709,6 +715,7 @@ We apologize for the inconvenience.`
 			} else {
 				this.flags.delete(flag);
 			}
+			this.updateMemberExclusiveState();
 			this.updateName();
 			FishPlayer.saveAll();
 		}
