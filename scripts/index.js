@@ -38,6 +38,7 @@ var consoleCommands = require("./consoleCommands");
 var globals_1 = require("./globals");
 var memberCommands = require("./memberCommands");
 var menus = require("./menus");
+var packetHandlers = require("./packetHandlers");
 var playerCommands = require("./playerCommands");
 var players_1 = require("./players");
 var staffCommands = require("./staffCommands");
@@ -121,9 +122,9 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.register(staffCommands.commands, clientHandler, serverHandler);
     commands.register(playerCommands.commands, clientHandler, serverHandler);
     commands.register(memberCommands.commands, clientHandler, serverHandler);
-    //commands.register(packetHandlers.commands, clientHandler, serverHandler);
+    commands.register(packetHandlers.commands, clientHandler, serverHandler);
     commands.registerConsole(consoleCommands.commands, serverHandler);
-    //packetHandlers.loadPacketHandlers();
+    packetHandlers.loadPacketHandlers();
     commands.initialize();
     //const getIp = Http.get('https://api.ipify.org?format=js');
     //getIp.submit((r) => {

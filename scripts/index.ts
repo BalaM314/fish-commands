@@ -10,6 +10,7 @@ import * as consoleCommands from "./consoleCommands";
 import { fishState, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
 import * as menus from "./menus";
+import * as packetHandlers from './packetHandlers';
 import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
@@ -110,9 +111,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	commands.register(staffCommands.commands, clientHandler, serverHandler);
 	commands.register(playerCommands.commands, clientHandler, serverHandler);
 	commands.register(memberCommands.commands, clientHandler, serverHandler);
-	//commands.register(packetHandlers.commands, clientHandler, serverHandler);
+	commands.register(packetHandlers.commands, clientHandler, serverHandler);
 	commands.registerConsole(consoleCommands.commands, serverHandler);
-	//packetHandlers.loadPacketHandlers();
+	packetHandlers.loadPacketHandlers();
 	
 	commands.initialize();
 
