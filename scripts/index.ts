@@ -247,10 +247,3 @@ Events.on(EventType.GameOverEvent, (e) => {
 Events.on(EventType.DisposeEvent, (e) => {
 	FishPlayer.saveAll();
 });
-
-Events.on(EventType.PlayerConnectionConfirmed, (e) => {
-	const info = e.player.getInfo();
-	if(info.timesJoined == 1){
-		Log.info(`&lrNew player joined: name &c${e.player.name}&lr, uuid &c${e.player.uuid()}&lr, ip &c${e.player.ip()}&lr`);
-	}
-});

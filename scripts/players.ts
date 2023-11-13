@@ -261,7 +261,7 @@ export class FishPlayer {
 			fishPlayer.updateName();
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
-			fishPlayer.checkVPN();
+			fishPlayer.checkVPNAndJoins();
 			api.getStopped(player.uuid(), (unmarked) => {
 				fishPlayer.unmarkTime = unmarked;
 				fishPlayer.sendWelcomeMessage();
@@ -351,7 +351,7 @@ export class FishPlayer {
 			this.player.admin = false;
 		}
 	}
-	checkVPN(){
+	checkVPNAndJoins(){
 		const ip = this.player.ip();
 		const info:mindustryPlayerData = this.info()!;
 		api.isVpn(ip, isVpn => {
@@ -376,8 +376,11 @@ export class FishPlayer {
 				}
 			} else {
 				if(info.timesJoined == 1){
-					FishPlayer.messageStaff(`[scarlet]Player "${this.cleanedName}" is on first join.`);
+					FishPlayer.messageTrusted(`[yellow]Player "${this.cleanedName}" is on first join.`);
 				}
+			}
+			if(info.timesJoined == 1){
+				Log.info(`&lrNew player joined: &c${this.cleanedName}&lr (&c${this.uuid}&lr/&c${this.con.ip}&lr)`);
 			}
 		}, err => {
 			Log.err(`Error while checking for VPN status of ip ${ip}!`);
@@ -895,6 +898,17 @@ We apologize for the inconvenience.`
 			}
 		});
 		return messageReceived;
+	}
+	/**
+	 * Sends a message to trusted players only.
+	 */
+	static messageTrusted(senderName:string, message:string):void;
+	static messageTrusted(message:string):void;
+	static messageTrusted(arg1:string, arg2?:string){
+		const message = arg2 ? `[gray]<[${Rank.trusted.color}]trusted[gray]>[white]${arg1}[green]: [cyan]${arg2}` : arg1;
+		FishPlayer.forEachPlayer(fishP => {
+			if(fishP.ranksAtLeast("trusted")) fishP.sendMessage(message);
+		});
 	}
 	/**
 	 * Sends a message to muted players only.

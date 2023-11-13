@@ -311,7 +311,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateName();
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
-            fishPlayer.checkVPN();
+            fishPlayer.checkVPNAndJoins();
             api.getStopped(player.uuid(), function (unmarked) {
                 fishPlayer.unmarkTime = unmarked;
                 fishPlayer.sendWelcomeMessage();
@@ -446,7 +446,7 @@ var FishPlayer = /** @class */ (function () {
             this.player.admin = false;
         }
     };
-    FishPlayer.prototype.checkVPN = function () {
+    FishPlayer.prototype.checkVPNAndJoins = function () {
         var _this = this;
         var ip = this.player.ip();
         var info = this.info();
@@ -475,8 +475,11 @@ var FishPlayer = /** @class */ (function () {
             }
             else {
                 if (info.timesJoined == 1) {
-                    FishPlayer.messageStaff("[scarlet]Player \"".concat(_this.cleanedName, "\" is on first join."));
+                    FishPlayer.messageTrusted("[yellow]Player \"".concat(_this.cleanedName, "\" is on first join."));
                 }
+            }
+            if (info.timesJoined == 1) {
+                Log.info("&lrNew player joined: &c".concat(_this.cleanedName, "&lr (&c").concat(_this.uuid, "&lr/&c").concat(_this.con.ip, "&lr)"));
             }
         }, function (err) {
             Log.err("Error while checking for VPN status of ip ".concat(ip, "!"));
@@ -1018,6 +1021,13 @@ var FishPlayer = /** @class */ (function () {
             }
         });
         return messageReceived;
+    };
+    FishPlayer.messageTrusted = function (arg1, arg2) {
+        var message = arg2 ? "[gray]<[".concat(ranks_1.Rank.trusted.color, "]trusted[gray]>[white]").concat(arg1, "[green]: [cyan]").concat(arg2) : arg1;
+        FishPlayer.forEachPlayer(function (fishP) {
+            if (fishP.ranksAtLeast("trusted"))
+                fishP.sendMessage(message);
+        });
     };
     FishPlayer.messageMuted = function (arg1, arg2) {
         var message = arg2 ? "[gray]<[red]muted[gray]>[white]".concat(arg1, "[coral]: [lightgray]").concat(arg2) : arg1;
