@@ -479,7 +479,7 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
             if (info.timesJoined == 1) {
-                Log.info("&lrNew player joined: &c".concat(_this.cleanedName, "&lr (&c").concat(_this.uuid, "&lr/&c").concat(_this.con.ip, "&lr)"));
+                Log.info("&lrNew player joined: &c".concat(_this.cleanedName, "&lr (&c").concat(_this.uuid, "&lr/&c").concat(_this.player.ip(), "&lr)"));
             }
         }, function (err) {
             Log.err("Error while checking for VPN status of ip ".concat(ip, "!"));

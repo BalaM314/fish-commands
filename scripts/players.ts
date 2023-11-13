@@ -380,7 +380,7 @@ export class FishPlayer {
 				}
 			}
 			if(info.timesJoined == 1){
-				Log.info(`&lrNew player joined: &c${this.cleanedName}&lr (&c${this.uuid}&lr/&c${this.con.ip}&lr)`);
+				Log.info(`&lrNew player joined: &c${this.cleanedName}&lr (&c${this.uuid}&lr/&c${this.player.ip()}&lr)`);
 			}
 		}, err => {
 			Log.err(`Error while checking for VPN status of ip ${ip}!`);
