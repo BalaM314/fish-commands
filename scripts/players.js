@@ -71,6 +71,10 @@ var FishPlayer = /** @class */ (function () {
         this.lastJoined = -1;
         this.lastShownAd = config.maxTime;
         this.showAdNext = false;
+        this.heuristicsData = {
+            blocksBroken: 0,
+            hasSentChatOrCmd: false,
+        };
         this.chatStrictness = "chat";
         this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
         this.name = (_m = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _m !== void 0 ? _m : "Unnamed player [ERROR]";
@@ -307,12 +311,12 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateName();
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
+            fishPlayer.checkVPN();
             api.getStopped(player.uuid(), function (unmarked) {
                 fishPlayer.unmarkTime = unmarked;
                 fishPlayer.sendWelcomeMessage();
                 fishPlayer.updateName();
             });
-            fishPlayer.checkVPN();
         }
     };
     /**Must be run on PlayerLeaveEvent. */
@@ -400,7 +404,7 @@ var FishPlayer = /** @class */ (function () {
         if (this.marked())
             prefix += config.MARKED_PREFIX;
         else if (this.autoflagged)
-            prefix += "[yellow]\u26A0[scarlet]Flagged[]\u26A0[]";
+            prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
         if (this.muted)
             prefix += config.MUTED_PREFIX;
         try {
@@ -457,16 +461,21 @@ var FishPlayer = /** @class */ (function () {
                     api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
                     FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
                     Log.warn("Player ".concat(_this.name, " (").concat(_this.uuid, ") was autoflagged."));
-                    (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be a [pink]bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "Discord"], _this, function (_a) {
+                    (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "Discord"], _this, function (_a) {
                         var option = _a.option, sender = _a.sender;
                         if (option == "Discord") {
                             Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
                         }
                     }, false);
-                    _this.sendMessage("[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be a [pink]bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");
+                    _this.sendMessage("[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");
                 }
                 else if (info.timesJoined < 5) {
                     FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
+                }
+            }
+            else {
+                if (info.timesJoined == 1) {
+                    FishPlayer.messageStaff("[scarlet]Player \"".concat(_this.cleanedName, "\" is on first join."));
                 }
             }
         }, function (err) {
@@ -872,6 +881,8 @@ var FishPlayer = /** @class */ (function () {
             tapLastUsed: -1,
             tapLastUsedSuccessfully: -1,
         });
+    };
+    FishPlayer.prototype.isFirstJoin = function () {
     };
     //#endregion
     //#region moderation
