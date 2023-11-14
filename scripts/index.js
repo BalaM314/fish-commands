@@ -279,6 +279,9 @@ Events.on(EventType.GameOverEvent, function (e) {
     }
     players_1.FishPlayer.onGameOver();
 });
+Events.on(EventType.PlayerChatEvent, function (e) {
+    players_1.FishPlayer.onPlayerChat(e.player, e.message);
+});
 Events.on(EventType.DisposeEvent, function (e) {
     players_1.FishPlayer.saveAll();
 });

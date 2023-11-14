@@ -328,6 +328,20 @@ var FishPlayer = /** @class */ (function () {
         fishPlayer.activeMenu.callback = undefined;
         fishPlayer.tapInfo.commandName = null;
     };
+    //used for heuristics
+    FishPlayer.onPlayerChat = function (player, message) {
+        var fishP = this.get(player);
+        if (fishP.isFirstJoin()) {
+            if (Date.now() - fishP.lastJoined < 5000) {
+                if (message.trim() == "/vote y") {
+                    //Sends /vote y within 5 seconds of joining
+                    (0, utils_1.logHTrip)(fishP, "votekick bot");
+                    fishP.player.kick(Packets.KickReason.kick, 30000);
+                    //TODO IP sus system
+                }
+            }
+        }
+    };
     FishPlayer.onGameOver = function () {
         var e_5, _a;
         try {
@@ -837,6 +851,9 @@ var FishPlayer = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    FishPlayer.prototype.ip = function () {
+        return this.player.con.address;
+    };
     FishPlayer.prototype.info = function () {
         return Vars.netServer.admins.getInfo(this.uuid);
     };
@@ -886,6 +903,7 @@ var FishPlayer = /** @class */ (function () {
         });
     };
     FishPlayer.prototype.isFirstJoin = function () {
+        return this.info().timesJoined == 1;
     };
     //#endregion
     //#region moderation

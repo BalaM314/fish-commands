@@ -7,7 +7,7 @@ import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
 import {
 	StringIO, cleanText, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative,
-	isImpersonator, logAction, matchFilter, parseError, setToArray
+	isImpersonator, logAction, logHTrip, matchFilter, parseError, setToArray
 } from "./utils";
 
 
@@ -276,6 +276,20 @@ export class FishPlayer {
 		//Clear temporary states such as menu and taphandler
 		fishPlayer.activeMenu.callback = undefined;
 		fishPlayer.tapInfo.commandName = null;
+	}
+	//used for heuristics
+	static onPlayerChat(player:mindustryPlayer, message:string){
+		const fishP = this.get(player);
+		if(fishP.isFirstJoin()){
+			if(Date.now() - fishP.lastJoined < 5000){
+				if(message.trim() == "/vote y"){
+					//Sends /vote y within 5 seconds of joining
+					logHTrip(fishP, "votekick bot");
+					fishP.player.kick(Packets.KickReason.kick, 30000);
+					//TODO IP sus system
+				}
+			}
+		}
 	}
 	static onGameOver() {
 		for(const [uuid, fishPlayer] of Object.entries(this.cachedPlayers)){
@@ -711,6 +725,9 @@ We apologize for the inconvenience.`
 	get con():NetConnection {
 		return this.player?.con;
 	}
+	ip():string {
+		return this.player.con.address;
+	}
 	info():mindustryPlayerData {
 		return Vars.netServer.admins.getInfo(this.uuid);
 	}
@@ -755,7 +772,7 @@ We apologize for the inconvenience.`
 		};
 	}
 	isFirstJoin(){
-
+		return this.info().timesJoined == 1;
 	}
 	//#endregion
 
@@ -929,6 +946,9 @@ We apologize for the inconvenience.`
 		return messageReceived;
 	}
 
+	//#endregion
+	//#region heuristics
+	
 	//#endregion
 
 }
