@@ -535,3 +535,8 @@ export function random(arg0:unknown, arg1?:number):any {
 		return arg0[Math.floor(Math.random() * arg0.length)];
 	}
 }
+
+export function logHTrip(player:FishPlayer, name:string, message?:string){
+	Log.warn(`&yPlayer &b"${player.cleanedName}"&y (&b${player.uuid}&y/&b${player.ip()}&y) tripped heuristic ${name}` + (message ? `: ${message}` : ""));
+}
+
