@@ -1072,11 +1072,21 @@ var FishPlayer = /** @class */ (function () {
         var _this = this;
         //Blocks broken check
         if (this.joinsLessThan(5)) {
+            var tripped_1 = false;
+            FishPlayer.stats.heuristics.total++;
             Timer.schedule(function () {
-                if (_this.connected()) {
+                if (_this.connected() && !tripped_1) {
                     if (_this.tstats.blocksBroken > config_1.heuristics.blocksBrokenAfterJoin) {
+                        tripped_1 = true;
                         (0, utils_1.logHTrip)(_this, "blocks broken after join", "".concat(_this.tstats.blocksBroken, "/").concat(config_1.heuristics.blocksBrokenAfterJoin));
-                        _this.player.kick(Packets.KickReason.kick, 3600 * 1000);
+                        FishPlayer.stats.heuristics.numTripped++;
+                        FishPlayer.stats.heuristics.tripped[_this.uuid] = "waiting";
+                        Timer.schedule(function () {
+                            FishPlayer.stats.heuristics.tripped[_this.uuid] = _this.marked();
+                            if (_this.marked())
+                                FishPlayer.stats.heuristics.trippedCorrect++;
+                        }, 1200);
+                        //this.player.kick(Packets.KickReason.kick, 3600*1000);
                     }
                 }
             }, 5, 5, 2);
@@ -1091,6 +1101,12 @@ var FishPlayer = /** @class */ (function () {
         numIpsChecked: 0,
         numIpsFlagged: 0,
         numIpsErrored: 0,
+        heuristics: {
+            tripped: {},
+            numTripped: 0,
+            total: 0,
+            trippedCorrect: 0,
+        }
     };
     FishPlayer.lastAuthKicked = null;
     return FishPlayer;

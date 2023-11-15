@@ -23,6 +23,12 @@ export class FishPlayer {
 		numIpsChecked: 0,
 		numIpsFlagged: 0,
 		numIpsErrored: 0,
+		heuristics: {
+			tripped: {} as Record<string, "waiting" | false | true>,
+			numTripped: 0,
+			total: 0,
+			trippedCorrect: 0,
+		}
 	};
 	static lastAuthKicked:FishPlayer | null = null;
 	
@@ -957,11 +963,20 @@ We apologize for the inconvenience.`
 	activateHeuristics(){
 		//Blocks broken check
 		if(this.joinsLessThan(5)){
+			let tripped = false;
+			FishPlayer.stats.heuristics.total ++;	
 			Timer.schedule(() => {
-				if(this.connected()){
+				if(this.connected() && !tripped){
 					if(this.tstats.blocksBroken > heuristics.blocksBrokenAfterJoin){
+						tripped = true;
 						logHTrip(this, "blocks broken after join", `${this.tstats.blocksBroken}/${heuristics.blocksBrokenAfterJoin}`);
-						this.player.kick(Packets.KickReason.kick, 3600*1000);
+						FishPlayer.stats.heuristics.numTripped ++;
+						FishPlayer.stats.heuristics.tripped[this.uuid] = "waiting";
+						Timer.schedule(() => {
+							FishPlayer.stats.heuristics.tripped[this.uuid] = this.marked();
+							if(this.marked()) FishPlayer.stats.heuristics.trippedCorrect ++;
+						}, 1200);
+						//this.player.kick(Packets.KickReason.kick, 3600*1000);
 					}
 				}
 			}, 5, 5, 2);
