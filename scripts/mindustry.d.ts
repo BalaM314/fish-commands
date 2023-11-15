@@ -9,7 +9,22 @@ declare const Log: {
 declare const Strings: {
 	stripColors(string:string): string;
 }
-declare const Vars: any; //TODO
+declare const Vars: any;
+declare class Administration {
+	findByName(info:string):ObjectSet<mindustryPlayerData>;
+	searchNames(name:string):ObjectSet<mindustryPlayerData>;
+	getInfo(uuid:string):mindustryPlayerData;
+	getInfoOptional(uuid:string):mindustryPlayerData | null;
+	dosBlacklist: ObjectSet<string>;
+	findByIP(ip:string):mindustryPlayerData | null;
+	isIPBanned(ip:string):boolean;
+	isIDBanned(uuid:string):boolean;
+	banPlayerIP(ip:string):boolean;
+	banPlayerID(uuid:string):boolean;
+	banPlayer(uuid:string):boolean;
+	unbanPlayerIP(ip:string):boolean;
+	unbanPlayerID(uuid:string):boolean;
+}
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
 	fire(event:Event);

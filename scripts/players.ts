@@ -856,7 +856,7 @@ We apologize for the inconvenience.`
 	}
 	stop(by:FishPlayer | string, duration:number, message?:string){
 		this.updateStopTime(duration);
-		this.addHistoryEntry({ //TODO rip out the history system
+		this.addHistoryEntry({
 			action: 'stopped',
 			by: by instanceof FishPlayer ? by.name : by,
 			time: Date.now(),
