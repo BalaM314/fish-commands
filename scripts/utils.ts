@@ -539,6 +539,6 @@ export function random(arg0:unknown, arg1?:number):any {
 export function logHTrip(player:FishPlayer, name:string, message?:string){
 	Log.warn(`&yPlayer &b"${player.cleanedName}"&y (&b${player.uuid}&y/&b${player.ip()}&y) tripped &c${name}&y` + (message ? `: ${message}` : ""));
 	FishPlayer.messageStaff(`[yellow]Player [blue]"${player.cleanedName}"[] ([blue]${player.uuid}[]/[blue]${player.ip()}[]) tripped [cyan]${name}[]` + (message ? `: ${message}` : ""));
-	api.sendModerationMessage(`Player \`${player.cleanedName}\` (\`${player.uuid}\`/\`${player.ip()}\`) tripped \`${name}\`${message ? `: ${message}` : ""}\n**Server:** ${Mode.name()}`);
+	api.sendModerationMessage(`Player \`${player.cleanedName}\` (\`${player.uuid}\`/\`${player.ip()}\`) tripped **${name}**${message ? `: ${message}` : ""}\n**Server:** ${Mode.name()}`);
 }
 
