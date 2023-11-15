@@ -31,6 +31,7 @@ export class FishPlayer {
 		}
 	};
 	static lastAuthKicked:FishPlayer | null = null;
+	static stoppedIPs = [] as [ip:string, expiryTime:number][];
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -809,6 +810,7 @@ We apologize for the inconvenience.`
 	/**Sets the unmark time but doesn't stop the player's unit or send them a message. */
 	updateStopTime(time:number):void {
 		this.unmarkTime = Date.now() + time;
+		if(this.unmarkTime > config.maxTime) this.unmarkTime = config.maxTime;
 		api.addStopped(this.uuid, this.unmarkTime);
 		FishPlayer.saveAll();
 		//Set unmark timer
@@ -823,47 +825,50 @@ We apologize for the inconvenience.`
 			}
 		}, time / 1000);
 	}
-	stop(by:FishPlayer | "api" | string, time:number, message?:string){
-		this.updateStopTime(time);
+	stop(by:FishPlayer | "api" | string, duration:number, message?:string){
+		this.updateStopTime(duration);
 		if(by !== "api"){
+			//TODO is this necessary
 			api.addStopped(this.uuid, this.unmarkTime);
 		}
-		this.addHistoryEntry({
+		this.addHistoryEntry({ //TODO rip out the history system
 			action: 'stopped',
 			by: by instanceof FishPlayer ? by.name : by,
 			time: Date.now(),
 		});
-		if(!this.connected()) return;
-		this.stopUnit();
-		this.updateName();
-		this.sendMessage(
-			message
-			? `[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]${message}[]`
-			: `[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.`);
-		if(time < 3600000){
-			//less than one hour
-			this.sendMessage(`[yellow]Your mark will expire in ${formatTime(time)}.`);
+		if(this.connected()){
+			this.stopUnit();
+			this.updateName();
+			this.sendMessage(
+				message
+				? `[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]${message}[]`
+				: `[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.`);
+			if(duration < 3600000){
+				//less than one hour
+				this.sendMessage(`[yellow]Your mark will expire in ${formatTime(duration)}.`);
+			}
 		}
-
 	}
 	free(by:FishPlayer | "api" | string){
 		if(!this.marked()) return;
+		by ??= "console";
 
 		this.autoflagged = false; //Might as well set autoflagged to false
 		this.unmarkTime = -1;
-		this.sendMessage('[yellow]Looks like someone had mercy on you.');
 		if(by !== "api"){
 			api.free(this.uuid);
 		}
-		this.addHistoryEntry({
-			action: 'freed',
-			by: by instanceof FishPlayer ? by.name : by,
-			time: Date.now(),
-		});
 		FishPlayer.saveAll();
-		
-		this.updateName();
-		this.forceRespawn();
+		if(this.connected()){
+			this.addHistoryEntry({
+				action: 'freed',
+				by: by instanceof FishPlayer ? by.name : by,
+				time: Date.now(),
+			});
+			this.sendMessage('[yellow]Looks like someone had mercy on you.');
+			this.updateName();
+			this.forceRespawn();
+		}
 	}
 	freeze(){
 		this.frozen = true;

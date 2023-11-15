@@ -144,3 +144,4 @@ export const tips = {
 export const heuristics = {
 	blocksBrokenAfterJoin: 50
 };
+export const stopAntiEvadeTime = 300000; //5 minutes

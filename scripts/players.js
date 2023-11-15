@@ -935,6 +935,8 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.updateStopTime = function (time) {
         var _this = this;
         this.unmarkTime = Date.now() + time;
+        if (this.unmarkTime > config.maxTime)
+            this.unmarkTime = config.maxTime;
         api.addStopped(this.uuid, this.unmarkTime);
         FishPlayer.saveAll();
         //Set unmark timer
@@ -949,9 +951,10 @@ var FishPlayer = /** @class */ (function () {
             }
         }, time / 1000);
     };
-    FishPlayer.prototype.stop = function (by, time, message) {
-        this.updateStopTime(time);
+    FishPlayer.prototype.stop = function (by, duration, message) {
+        this.updateStopTime(duration);
         if (by !== "api") {
+            //TODO is this necessary
             api.addStopped(this.uuid, this.unmarkTime);
         }
         this.addHistoryEntry({
@@ -959,35 +962,38 @@ var FishPlayer = /** @class */ (function () {
             by: by instanceof FishPlayer ? by.name : by,
             time: Date.now(),
         });
-        if (!this.connected())
-            return;
-        this.stopUnit();
-        this.updateName();
-        this.sendMessage(message
-            ? "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]".concat(message, "[]")
-            : "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
-        if (time < 3600000) {
-            //less than one hour
-            this.sendMessage("[yellow]Your mark will expire in ".concat((0, utils_1.formatTime)(time), "."));
+        if (this.connected()) {
+            this.stopUnit();
+            this.updateName();
+            this.sendMessage(message
+                ? "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]".concat(message, "[]")
+                : "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
+            if (duration < 3600000) {
+                //less than one hour
+                this.sendMessage("[yellow]Your mark will expire in ".concat((0, utils_1.formatTime)(duration), "."));
+            }
         }
     };
     FishPlayer.prototype.free = function (by) {
         if (!this.marked())
             return;
+        by !== null && by !== void 0 ? by : (by = "console");
         this.autoflagged = false; //Might as well set autoflagged to false
         this.unmarkTime = -1;
-        this.sendMessage('[yellow]Looks like someone had mercy on you.');
         if (by !== "api") {
             api.free(this.uuid);
         }
-        this.addHistoryEntry({
-            action: 'freed',
-            by: by instanceof FishPlayer ? by.name : by,
-            time: Date.now(),
-        });
         FishPlayer.saveAll();
-        this.updateName();
-        this.forceRespawn();
+        if (this.connected()) {
+            this.addHistoryEntry({
+                action: 'freed',
+                by: by instanceof FishPlayer ? by.name : by,
+                time: Date.now(),
+            });
+            this.sendMessage('[yellow]Looks like someone had mercy on you.');
+            this.updateName();
+            this.forceRespawn();
+        }
     };
     FishPlayer.prototype.freeze = function () {
         this.frozen = true;
@@ -1109,6 +1115,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.lastAuthKicked = null;
+    FishPlayer.stoppedIPs = [];
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;
