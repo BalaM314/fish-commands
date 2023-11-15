@@ -134,6 +134,9 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 		if(e.breaking){
 			action = "broke";
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
+			if(e.unit?.player?.uuid()){
+				FishPlayer.get(e.unit.player).tstats.blocksBroken ++;
+			}
 		} else {
 			action = "built";
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";

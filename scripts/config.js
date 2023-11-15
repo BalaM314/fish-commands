@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.heuristics = exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
@@ -157,4 +157,7 @@ exports.tips = {
         "All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.",
     ],
     staff: []
+};
+exports.heuristics = {
+    blocksBrokenAfterJoin: 50
 };

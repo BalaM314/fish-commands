@@ -133,7 +133,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
 var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entry", function (e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         tile = e.tile;
@@ -141,6 +141,9 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
         if (e.breaking) {
             action = "broke";
             type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
+            if ((_g = (_f = e.unit) === null || _f === void 0 ? void 0 : _f.player) === null || _g === void 0 ? void 0 : _g.uuid()) {
+                players_1.FishPlayer.get(e.unit.player).tstats.blocksBroken++;
+            }
         }
         else {
             action = "built";
@@ -149,34 +152,34 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     }
     else if (e instanceof EventType.ConfigEvent) {
         tile = e.tile.tile;
-        uuid = (_g = (_f = e.player) === null || _f === void 0 ? void 0 : _f.uuid()) !== null && _g !== void 0 ? _g : "unknown";
+        uuid = (_j = (_h = e.player) === null || _h === void 0 ? void 0 : _h.uuid()) !== null && _j !== void 0 ? _j : "unknown";
         action = "configured";
         type = e.tile.block.name;
     }
     else if (e instanceof EventType.BuildRotateEvent) {
         tile = e.build.tile;
-        uuid = (_m = (_k = (_j = (_h = e.unit) === null || _h === void 0 ? void 0 : _h.player) === null || _j === void 0 ? void 0 : _j.uuid()) !== null && _k !== void 0 ? _k : (_l = e.unit) === null || _l === void 0 ? void 0 : _l.type.name) !== null && _m !== void 0 ? _m : "unknown";
+        uuid = (_p = (_m = (_l = (_k = e.unit) === null || _k === void 0 ? void 0 : _k.player) === null || _l === void 0 ? void 0 : _l.uuid()) !== null && _m !== void 0 ? _m : (_o = e.unit) === null || _o === void 0 ? void 0 : _o.type.name) !== null && _p !== void 0 ? _p : "unknown";
         action = "rotated";
         type = e.build.block.name;
     }
     else if (e instanceof EventType.UnitDestroyEvent) {
         tile = e.unit.tileOn();
-        uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_o = e.unit.lastCommanded) !== null && _o !== void 0 ? _o : "unknown";
+        uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_q = e.unit.lastCommanded) !== null && _q !== void 0 ? _q : "unknown";
         action = "killed";
         type = e.unit.type.name;
     }
     else if (e instanceof EventType.BlockDestroyEvent) {
-        if (config_1.Mode.attack() && ((_p = e.tile.build) === null || _p === void 0 ? void 0 : _p.team) != Vars.state.rules.defaultTeam)
+        if (config_1.Mode.attack() && ((_r = e.tile.build) === null || _r === void 0 ? void 0 : _r.team) != Vars.state.rules.defaultTeam)
             return; //Don't log destruction of enemy blocks
         tile = e.tile;
         uuid = "[[something]";
         action = "killed";
-        type = (_r = (_q = e.tile.block()) === null || _q === void 0 ? void 0 : _q.name) !== null && _r !== void 0 ? _r : "air";
+        type = (_t = (_s = e.tile.block()) === null || _s === void 0 ? void 0 : _s.name) !== null && _t !== void 0 ? _t : "air";
     }
     else if (e instanceof EventType.PayloadDropEvent) {
         action = "pay-dropped";
         var controller = e.carrier.controller();
-        uuid = (_u = (_t = (_s = e.carrier.player) === null || _s === void 0 ? void 0 : _s.uuid()) !== null && _t !== void 0 ? _t : (controller instanceof LogicAI ? "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _u !== void 0 ? _u : e.carrier.type.name;
+        uuid = (_w = (_v = (_u = e.carrier.player) === null || _u === void 0 ? void 0 : _u.uuid()) !== null && _v !== void 0 ? _v : (controller instanceof LogicAI ? "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _w !== void 0 ? _w : e.carrier.type.name;
         if (e.build) {
             tile = e.build.tile;
             type = e.build.block.name;

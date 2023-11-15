@@ -140,3 +140,6 @@ export const tips = {
 
 	]
 };
+export const heuristics = {
+	blocksBrokenAfterJoin: 50
+};

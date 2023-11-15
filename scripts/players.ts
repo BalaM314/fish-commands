@@ -1,6 +1,7 @@
 import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as config from "./config";
+import { heuristics } from "./config";
 import { Mode } from "./config";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
@@ -56,16 +57,14 @@ export class FishPlayer {
 	lastJoined:number = -1;
 	lastShownAd:number = config.maxTime;
 	showAdNext:boolean = false;
-	heuristicsData = {
+	tstats = {
 		blocksBroken: 0,
-		hasSentChatOrCmd: false,
 	};
-	//List of heuristics:
-	//Breaks too many blocks after joining... WIP
-	//sends /vote y immediately after joining
-	// 
 
 	//Stored data
+	// stats = {
+
+	// };
 	uuid: string;
 	name: string;
 	muted: boolean;
@@ -262,6 +261,7 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
+			fishPlayer.activateHeuristics();
 			api.getStopped(player.uuid(), (unmarked) => {
 				fishPlayer.unmarkTime = unmarked;
 				fishPlayer.sendWelcomeMessage();
@@ -280,7 +280,7 @@ export class FishPlayer {
 	//used for heuristics
 	static onPlayerChat(player:mindustryPlayer, message:string){
 		const fishP = this.get(player);
-		if(fishP.isFirstJoin()){
+		if(fishP.firstJoin()){
 			if(Date.now() - fishP.lastJoined < 5000){
 				if(message.trim() == "/vote y"){
 					//Sends /vote y within 5 seconds of joining
@@ -771,8 +771,14 @@ We apologize for the inconvenience.`
 			tapLastUsedSuccessfully: -1,
 		};
 	}
-	isFirstJoin(){
+	firstJoin(){
 		return this.info().timesJoined == 1;
+	}
+	joinsAtLeast(amount:number){
+		return this.info().timesJoined >= amount;
+	}
+	joinsLessThan(amount:number){
+		return this.info().timesJoined < amount;
 	}
 	//#endregion
 
@@ -948,7 +954,19 @@ We apologize for the inconvenience.`
 
 	//#endregion
 	//#region heuristics
-	
+	activateHeuristics(){
+		//Blocks broken check
+		if(this.joinsLessThan(5)){
+			Timer.schedule(() => {
+				if(this.connected()){
+					if(this.tstats.blocksBroken > heuristics.blocksBrokenAfterJoin){
+						logHTrip(this, "blocks broken after join", `${this.tstats.blocksBroken}/${heuristics.blocksBrokenAfterJoin}`);
+						this.player.kick(Packets.KickReason.kick, 3600*1000);
+					}
+				}
+			}, 5, 5, 2);
+		}
+	}
 	//#endregion
 
 }

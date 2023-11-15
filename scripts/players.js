@@ -43,6 +43,7 @@ var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
 var config_1 = require("./config");
+var config_2 = require("./config");
 var menus_1 = require("./menus");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -71,9 +72,8 @@ var FishPlayer = /** @class */ (function () {
         this.lastJoined = -1;
         this.lastShownAd = config.maxTime;
         this.showAdNext = false;
-        this.heuristicsData = {
+        this.tstats = {
             blocksBroken: 0,
-            hasSentChatOrCmd: false,
         };
         this.chatStrictness = "chat";
         this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
@@ -312,6 +312,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
+            fishPlayer.activateHeuristics();
             api.getStopped(player.uuid(), function (unmarked) {
                 fishPlayer.unmarkTime = unmarked;
                 fishPlayer.sendWelcomeMessage();
@@ -331,7 +332,7 @@ var FishPlayer = /** @class */ (function () {
     //used for heuristics
     FishPlayer.onPlayerChat = function (player, message) {
         var fishP = this.get(player);
-        if (fishP.isFirstJoin()) {
+        if (fishP.firstJoin()) {
             if (Date.now() - fishP.lastJoined < 5000) {
                 if (message.trim() == "/vote y") {
                     //Sends /vote y within 5 seconds of joining
@@ -750,7 +751,7 @@ var FishPlayer = /** @class */ (function () {
         Core.settings.manualSave();
     };
     FishPlayer.prototype.shouldCache = function () {
-        return config_1.Mode.sandbox() || (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
+        return config_2.Mode.sandbox() || (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
     };
     FishPlayer.getFishPlayersString = function () {
         if (Core.settings.has("fish-subkeys")) {
@@ -902,8 +903,14 @@ var FishPlayer = /** @class */ (function () {
             tapLastUsedSuccessfully: -1,
         });
     };
-    FishPlayer.prototype.isFirstJoin = function () {
+    FishPlayer.prototype.firstJoin = function () {
         return this.info().timesJoined == 1;
+    };
+    FishPlayer.prototype.joinsAtLeast = function (amount) {
+        return this.info().timesJoined >= amount;
+    };
+    FishPlayer.prototype.joinsLessThan = function (amount) {
+        return this.info().timesJoined < amount;
     };
     //#endregion
     //#region moderation
@@ -1058,6 +1065,22 @@ var FishPlayer = /** @class */ (function () {
             }
         });
         return messageReceived;
+    };
+    //#endregion
+    //#region heuristics
+    FishPlayer.prototype.activateHeuristics = function () {
+        var _this = this;
+        //Blocks broken check
+        if (this.joinsLessThan(5)) {
+            Timer.schedule(function () {
+                if (_this.connected()) {
+                    if (_this.tstats.blocksBroken > config_1.heuristics.blocksBrokenAfterJoin) {
+                        (0, utils_1.logHTrip)(_this, "blocks broken after join", "".concat(_this.tstats.blocksBroken, "/").concat(config_1.heuristics.blocksBrokenAfterJoin));
+                        _this.player.kick(Packets.KickReason.kick, 3600 * 1000);
+                    }
+                }
+            }, 5, 5, 2);
+        }
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
