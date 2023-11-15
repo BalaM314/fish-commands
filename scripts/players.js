@@ -313,8 +313,9 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
             fishPlayer.activateHeuristics();
-            api.getStopped(player.uuid(), function (unmarked) {
-                fishPlayer.unmarkTime = unmarked;
+            api.getStopped(player.uuid(), function (unmarkTime) {
+                if (unmarkTime)
+                    fishPlayer.unmarkTime = unmarkTime;
                 fishPlayer.sendWelcomeMessage();
                 fishPlayer.updateName();
             });

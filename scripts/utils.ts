@@ -542,3 +542,4 @@ export function logHTrip(player:FishPlayer, name:string, message?:string){
 	api.sendModerationMessage(`Player \`${player.cleanedName}\` (\`${player.uuid}\`/\`${player.ip()}\`) tripped **${name}**${message ? `: ${message}` : ""}\n**Server:** ${Mode.name()}`);
 }
 
+export function setType<T>(input:unknown):asserts input is T {}

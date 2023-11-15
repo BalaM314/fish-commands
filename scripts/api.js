@@ -31,38 +31,33 @@ function free(uuid) {
     });
 }
 exports.free = free;
-/**
- * Gets a player's unmark time from the API.
- * If callbackError is undefined, callback will be called with -1 on error.
- **/
 function getStopped(uuid, callback, callbackError) {
-    if (config_1.localDebug) {
-        Log.info("[API] Attempted to getStopped(\"".concat(uuid, "\"), assuming -1 due to local debug"));
-        callback(-1);
-        return;
+    function fail(err) {
+        Log.err("[API] Network error when trying to call api.getStopped()");
+        if (err)
+            Log.err(err);
+        if (callbackError)
+            callbackError(err);
+        else
+            callback(null);
     }
+    if (config_1.localDebug)
+        return fail("local debug mode");
     var req = Http.post("http://".concat(config_1.ip, ":5000/api/getStopped"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
-    req.error(callbackError !== null && callbackError !== void 0 ? callbackError : (function (err) {
-        Log.err("[API] Network error when trying to call api.getStopped()");
-        callback(-1);
-    }));
+    req.error(fail);
     req.submit(function (response) {
         var temp = response.getResultAsString();
         if (!temp.length)
-            return false;
+            return fail("reponse empty");
         var time = JSON.parse(temp).time;
-        if (isNaN(Number(time))) {
-            Log.err("[API] API IS BROKEN!!! Invalid unmark time \"".concat(time, "\": not a number"));
-        }
-        else if (time.toString().length > 13) {
+        if (isNaN(Number(time)))
+            return fail("API IS BROKEN!!! Invalid unmark time \"".concat(time, "\": not a number"));
+        if (time.toString().length > 13)
             callback(config_1.maxTime);
-        }
-        else {
-            callback(Number(time));
-        }
+        callback(Number(time));
     });
 }
 exports.getStopped = getStopped;

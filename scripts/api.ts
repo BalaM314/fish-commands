@@ -29,33 +29,32 @@ export function free(uuid: string) {
 
 /**
  * Gets a player's unmark time from the API.
- * If callbackError is undefined, callback will be called with -1 on error.
+ * If callbackError is undefined, callback will be called with null on error.
  **/
-export function getStopped(uuid:string, callback: (unmark:number) => unknown, callbackError?: (errorMessage:any) => unknown){
-	if(localDebug){
-		Log.info(`[API] Attempted to getStopped("${uuid}"), assuming -1 due to local debug`);
-		callback(-1);
-		return;
+export function getStopped(uuid:string, callback: (unmark:number | null) => unknown):void;
+export function getStopped(uuid:string, callback: (unmark:number) => unknown, callbackError: (errorMessage:any) => unknown):void;
+export function getStopped(uuid:string, callback: (unmark:any) => unknown, callbackError?: (errorMessage:any) => unknown){
+	function fail(err:string){
+		Log.err(`[API] Network error when trying to call api.getStopped()`);
+		if(err) Log.err(err);
+		if(callbackError) callbackError(err)
+		else callback(null);
 	}
+
+	if(localDebug) return fail("local debug mode");
+
 	const req = Http.post(`http://${ip}:5000/api/getStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
-	req.error(callbackError ?? ((err) => {
-		Log.err(`[API] Network error when trying to call api.getStopped()`);
-		callback(-1);
-	}));
+	req.error(fail);
 	req.submit((response) => {
 		const temp = response.getResultAsString();
-		if(!temp.length) return false;
+		if(!temp.length) return fail("reponse empty");
 		const time = JSON.parse(temp).time;
-		if(isNaN(Number(time))){
-			Log.err(`[API] API IS BROKEN!!! Invalid unmark time "${time}": not a number`);
-		} else if(time.toString().length > 13){
-			callback(maxTime);
-		} else {
-			callback(Number(time));
-		}
+		if(isNaN(Number(time))) return fail(`API IS BROKEN!!! Invalid unmark time "${time}": not a number`);
+		if(time.toString().length > 13) callback(maxTime);
+		callback(Number(time));
 	});
 }
 

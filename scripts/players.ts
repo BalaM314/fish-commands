@@ -270,8 +270,9 @@ export class FishPlayer {
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
 			fishPlayer.activateHeuristics();
-			api.getStopped(player.uuid(), (unmarked) => {
-				fishPlayer.unmarkTime = unmarked;
+			api.getStopped(player.uuid(), (unmarkTime) => {
+				if(unmarkTime)
+					fishPlayer.unmarkTime = unmarkTime;
 				fishPlayer.sendWelcomeMessage();
 				fishPlayer.updateName();
 			});
