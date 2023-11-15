@@ -655,6 +655,8 @@ function random(arg0, arg1) {
 }
 exports.random = random;
 function logHTrip(player, name, message) {
-    Log.warn("&yPlayer &b\"".concat(player.cleanedName, "\"&y (&b").concat(player.uuid, "&y/&b").concat(player.ip(), "&y) tripped heuristic ").concat(name) + (message ? ": ".concat(message) : ""));
+    Log.warn("&yPlayer &b\"".concat(player.cleanedName, "\"&y (&b").concat(player.uuid, "&y/&b").concat(player.ip(), "&y) tripped &c").concat(name, "&y") + (message ? ": ".concat(message) : ""));
+    players_1.FishPlayer.messageStaff("[yellow]Player [blue]\"".concat(player.cleanedName, "\"[] ([blue]").concat(player.uuid, "[]/[blue]").concat(player.ip(), "[]) tripped [cyan]").concat(name, "[]") + (message ? ": ".concat(message) : ""));
+    api.sendModerationMessage("Player `".concat(player.cleanedName, "` (`").concat(player.uuid, "`/`").concat(player.ip(), "`) tripped `").concat(name, "`").concat(message ? ": ".concat(message) : "", "\n**Server:** ").concat(config_1.Mode.name()));
 }
 exports.logHTrip = logHTrip;

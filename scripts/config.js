@@ -117,6 +117,7 @@ exports.Mode = {
     survival: function () { return (0, exports.getGamemode)() == "survival"; },
     pvp: function () { return (0, exports.getGamemode)() == "pvp"; },
     sandbox: function () { return (0, exports.getGamemode)() == "sandbox"; },
+    name: function () { return Vars.state.rules.mode().name(); }
 };
 exports.localDebug = new Fi("config/.debug").exists();
 exports.maxTime = 9999999999999;

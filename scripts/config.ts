@@ -97,6 +97,7 @@ export const Mode = {
 	survival: () => getGamemode() == "survival",
 	pvp: () => getGamemode() == "pvp",
 	sandbox: () => getGamemode() == "sandbox",
+	name: () => Vars.state.rules.mode().name()
 };
 export const localDebug = new Fi("config/.debug").exists();
 export const maxTime = 9999999999999;
