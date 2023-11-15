@@ -294,8 +294,8 @@ export class FishPlayer {
 				if(message.trim() == "/vote y"){
 					//Sends /vote y within 5 seconds of joining
 					logHTrip(fishP, "votekick bot");
+					FishPlayer.punishedIPs.push([player.ip(), "_", 1000]);//If there are any further joins within 1 second, its definitely a bot, just ban
 					fishP.player.kick(Packets.KickReason.kick, 30000);
-					//TODO IP sus system
 				}
 			}
 		}
@@ -854,12 +854,8 @@ We apologize for the inconvenience.`
 			}
 		}, time / 1000);
 	}
-	stop(by:FishPlayer | "api" | string, duration:number, message?:string){
+	stop(by:FishPlayer | string, duration:number, message?:string){
 		this.updateStopTime(duration);
-		if(by !== "api"){
-			//TODO is this necessary
-			api.addStopped(this.uuid, this.unmarkTime);
-		}
 		this.addHistoryEntry({ //TODO rip out the history system
 			action: 'stopped',
 			by: by instanceof FishPlayer ? by.name : by,
@@ -879,15 +875,13 @@ We apologize for the inconvenience.`
 			}
 		}
 	}
-	free(by:FishPlayer | "api" | string){
+	free(by:FishPlayer | string){
 		if(!this.marked()) return;
 		by ??= "console";
 
 		this.autoflagged = false; //Might as well set autoflagged to false
 		this.unmarkTime = -1;
-		if(by !== "api"){
-			api.free(this.uuid);
-		}
+		api.free(this.uuid);
 		FishPlayer.saveAll();
 		if(this.connected()){
 			this.addHistoryEntry({
@@ -907,7 +901,7 @@ We apologize for the inconvenience.`
 	unfreeze(){
 		this.frozen = false;
 	}
-	mute(by:FishPlayer | "api" | string){
+	mute(by:FishPlayer | string){
 		if(this.muted) return;
 		this.muted = true;
 		this.updateName();
@@ -919,7 +913,7 @@ We apologize for the inconvenience.`
 		});
 		FishPlayer.saveAll();
 	}
-	unmute(by:FishPlayer | "api" | "vpn"){
+	unmute(by:FishPlayer){
 		if(!this.muted) return;
 		this.muted = false;
 		this.updateName();

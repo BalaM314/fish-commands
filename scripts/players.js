@@ -338,8 +338,8 @@ var FishPlayer = /** @class */ (function () {
                 if (message.trim() == "/vote y") {
                     //Sends /vote y within 5 seconds of joining
                     (0, utils_1.logHTrip)(fishP, "votekick bot");
+                    FishPlayer.punishedIPs.push([player.ip(), "_", 1000]); //If there are any further joins within 1 second, its definitely a bot, just ban
                     fishP.player.kick(Packets.KickReason.kick, 30000);
-                    //TODO IP sus system
                 }
             }
         }
@@ -987,10 +987,6 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.stop = function (by, duration, message) {
         this.updateStopTime(duration);
-        if (by !== "api") {
-            //TODO is this necessary
-            api.addStopped(this.uuid, this.unmarkTime);
-        }
         this.addHistoryEntry({
             action: 'stopped',
             by: by instanceof FishPlayer ? by.name : by,
@@ -1015,9 +1011,7 @@ var FishPlayer = /** @class */ (function () {
         by !== null && by !== void 0 ? by : (by = "console");
         this.autoflagged = false; //Might as well set autoflagged to false
         this.unmarkTime = -1;
-        if (by !== "api") {
-            api.free(this.uuid);
-        }
+        api.free(this.uuid);
         FishPlayer.saveAll();
         if (this.connected()) {
             this.addHistoryEntry({

@@ -15,14 +15,14 @@ declare const Events: {
 	fire(event:Event);
 }
 type Event = any;
-declare type Tile = {
+declare class Tile {
 	x:number; y:number;
 	build: Building | null;
 	breakable():boolean;
 	block():Block;
 	removeNet():void;
 	getLinkedTiles(callback:(t:Tile) => void):void;
-};//TODO fix
+}
 declare const Menus: {
 	registerMenu(listener:MenuListener):number;
 }
