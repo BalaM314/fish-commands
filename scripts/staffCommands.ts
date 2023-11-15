@@ -1,6 +1,6 @@
 import * as api from "./api";
 import { Perm, commandList, fail } from "./commands";
-import { getGamemode, maxTime } from "./config";
+import { getGamemode, maxTime, stopAntiEvadeTime } from "./config";
 import { uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
@@ -61,6 +61,7 @@ export const commands = commandList({
 			const reason = args.reason ?? 'A staff member did not like your actions.';
 			args.player.player.kick(reason);
 			logAction('kicked', sender, args.player);
+			FishPlayer.punishedIPs.push([args.player.ip(), args.player.uuid, Date.now() + stopAntiEvadeTime]);
 			outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}"`);
 		}
 	},

@@ -461,6 +461,39 @@ var FishPlayer = /** @class */ (function () {
             this.player.admin = false;
         }
     };
+    FishPlayer.prototype.checkAntiEvasion = function () {
+        var e_8, _a;
+        var _b, _c;
+        FishPlayer.updatePunishedIPs();
+        try {
+            for (var _d = __values(FishPlayer.punishedIPs), _e = _d.next(); !_e.done; _e = _d.next()) {
+                var _f = __read(_e.value, 2), ip = _f[0], uuid = _f[1];
+                if (ip == this.ip() && uuid != this.uuid) {
+                    api.sendModerationMessage("Automatically banned player `".concat(this.cleanedName, "` (`").concat(this.uuid, "`/`").concat(this.ip(), "`) for suspected stop evasion.\nPreviously used UUID `").concat(uuid, "`(").concat((_b = Vars.netServer.admins.getInfoOptional(uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), "), currently using UUID `").concat(this.uuid, "`"));
+                    Log.warn("&yAutomatically banned player &b".concat(this.cleanedName, "&y (&b").concat(this.uuid, "&y/&b").concat(this.ip(), "&y) for suspected stop evasion.\n&yPreviously used UUID &b").concat(uuid, "&y(&b").concat((_c = Vars.netServer.admins.getInfoOptional(uuid)) === null || _c === void 0 ? void 0 : _c.plainLastName(), "&y), currently using UUID &b").concat(this.uuid, "&y"));
+                    FishPlayer.messageStaff("Automatically banned player ".concat(this.cleanedName, " for suspected stop evasion."));
+                    Vars.netServer.admins.banPlayerIP(ip);
+                    this.player.kick(Packets.KickReason.banned);
+                    return false;
+                }
+            }
+        }
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        finally {
+            try {
+                if (_e && !_e.done && (_a = _d.return)) _a.call(_d);
+            }
+            finally { if (e_8) throw e_8.error; }
+        }
+        return true;
+    };
+    FishPlayer.updatePunishedIPs = function () {
+        for (var i = 0; i < this.punishedIPs.length; i++) {
+            if (this.punishedIPs[i][2] < Date.now()) {
+                this.punishedIPs.splice(i, 1);
+            }
+        }
+    };
     FishPlayer.prototype.checkVPNAndJoins = function () {
         var _this = this;
         var ip = this.player.ip();
@@ -502,7 +535,7 @@ var FishPlayer = /** @class */ (function () {
         });
     };
     FishPlayer.prototype.validate = function () {
-        return this.checkName() && this.checkUsid();
+        return this.checkName() && this.checkUsid() && this.checkAntiEvasion();
     };
     /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
@@ -790,7 +823,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_8, _a;
+        var e_9, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -804,12 +837,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        catch (e_9_1) { e_9 = { error: e_9_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_8) throw e_8.error; }
+            finally { if (e_9) throw e_9.error; }
         }
     };
     //#endregion
@@ -962,6 +995,7 @@ var FishPlayer = /** @class */ (function () {
             by: by instanceof FishPlayer ? by.name : by,
             time: Date.now(),
         });
+        FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
         if (this.connected()) {
             this.stopUnit();
             this.updateName();
@@ -1115,7 +1149,8 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.lastAuthKicked = null;
-    FishPlayer.stoppedIPs = [];
+    //If a new account joins from one of these IPs, the IP gets banned.
+    FishPlayer.punishedIPs = [];
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;

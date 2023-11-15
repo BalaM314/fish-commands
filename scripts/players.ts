@@ -31,7 +31,8 @@ export class FishPlayer {
 		}
 	};
 	static lastAuthKicked:FishPlayer | null = null;
-	static stoppedIPs = [] as [ip:string, expiryTime:number][];
+	//If a new account joins from one of these IPs, the IP gets banned.
+	static punishedIPs = [] as [ip:string, uuid:string, expiryTime:number][];
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -372,6 +373,33 @@ export class FishPlayer {
 			this.player.admin = false;
 		}
 	}
+	checkAntiEvasion(){
+		FishPlayer.updatePunishedIPs();
+		for(const [ip, uuid] of FishPlayer.punishedIPs){
+			if(ip == this.ip() && uuid != this.uuid){
+				api.sendModerationMessage(
+`Automatically banned player \`${this.cleanedName}\` (\`${this.uuid}\`/\`${this.ip()}\`) for suspected stop evasion.
+Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.plainLastName()}), currently using UUID \`${this.uuid}\``
+				);
+				Log.warn(
+`&yAutomatically banned player &b${this.cleanedName}&y (&b${this.uuid}&y/&b${this.ip()}&y) for suspected stop evasion.
+&yPreviously used UUID &b${uuid}&y(&b${Vars.netServer.admins.getInfoOptional(uuid)?.plainLastName()}&y), currently using UUID &b${this.uuid}&y`
+				);
+				FishPlayer.messageStaff(`Automatically banned player ${this.cleanedName} for suspected stop evasion.`);
+				Vars.netServer.admins.banPlayerIP(ip);
+				this.player.kick(Packets.KickReason.banned);
+				return false;
+			}
+		}
+		return true;
+	}
+	static updatePunishedIPs(){
+		for(let i = 0; i < this.punishedIPs.length; i ++){
+			if(this.punishedIPs[i][2] < Date.now()){
+				this.punishedIPs.splice(i, 1);
+			}
+		}
+	}
 	checkVPNAndJoins(){
 		const ip = this.player.ip();
 		const info:mindustryPlayerData = this.info()!;
@@ -409,7 +437,7 @@ export class FishPlayer {
 		});
 	}
 	validate(){
-		return this.checkName() && this.checkUsid();
+		return this.checkName() && this.checkUsid() && this.checkAntiEvasion();
 	}
 	/**Checks if this player's name is allowed. */
 	checkName(){
@@ -836,6 +864,7 @@ We apologize for the inconvenience.`
 			by: by instanceof FishPlayer ? by.name : by,
 			time: Date.now(),
 		});
+		FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
 		if(this.connected()){
 			this.stopUnit();
 			this.updateName();

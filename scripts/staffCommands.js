@@ -73,6 +73,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
             args.player.player.kick(reason);
             (0, utils_1.logAction)('kicked', sender, args.player);
+            players_1.FishPlayer.punishedIPs.push([args.player.ip(), args.player.uuid, Date.now() + config_1.stopAntiEvadeTime]);
             outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
         }
     }, stop: {
