@@ -398,5 +398,20 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 			logAction('stopped', "console", info, undefined, stopTime);
 			outputSuccess(`Player "${info.lastName}" was marked for ${formatTime(stopTime)}.`);
 		}
-	}
+	},
+	checkstats: {
+		args: [],
+		description: "Views statistics related to in-development features.",
+		handler({output, admins}){
+			output(
+`Blocks broken heuristic:
+Tripped: ${FishPlayer.stats.heuristics.numTripped}/${FishPlayer.stats.heuristics.total}
+Marked within 20 minutes: ${FishPlayer.stats.heuristics.trippedCorrect}/${FishPlayer.stats.heuristics.numTripped}
+List of all players that tripped:
+${Object.entries(FishPlayer.stats.heuristics.tripped).map(([uuid, tripped]) =>
+	`${admins.getInfoOptional(uuid)?.plainLastName()} &k(${uuid})&fr: ${tripped}`
+).join("\n")}`
+			);
+		}
+	},
 });

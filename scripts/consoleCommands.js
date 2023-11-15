@@ -487,5 +487,17 @@ exports.commands = (0, commands_1.consoleCommandList)({
             (0, utils_1.logAction)('stopped', "console", info, undefined, stopTime);
             outputSuccess("Player \"".concat(info.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(stopTime), "."));
         }
-    }
+    },
+    checkstats: {
+        args: [],
+        description: "Views statistics related to in-development features.",
+        handler: function (_a) {
+            var output = _a.output, admins = _a.admins;
+            output("Blocks broken heuristic:\nTripped: ".concat(players_1.FishPlayer.stats.heuristics.numTripped, "/").concat(players_1.FishPlayer.stats.heuristics.total, "\nMarked within 20 minutes: ").concat(players_1.FishPlayer.stats.heuristics.trippedCorrect, "/").concat(players_1.FishPlayer.stats.heuristics.numTripped, "\nList of all players that tripped:\n").concat(Object.entries(players_1.FishPlayer.stats.heuristics.tripped).map(function (_a) {
+                var _b;
+                var _c = __read(_a, 2), uuid = _c[0], tripped = _c[1];
+                return "".concat((_b = admins.getInfoOptional(uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " &k(").concat(uuid, ")&fr: ").concat(tripped);
+            }).join("\n")));
+        }
+    },
 });
