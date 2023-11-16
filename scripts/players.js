@@ -73,6 +73,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastShownAd = config.maxTime;
         this.showAdNext = false;
         this.tstats = {
+            //remember to clear this in updateSavedInfoFromPlayer!
             blocksBroken: 0,
         };
         this.chatStrictness = "chat";
@@ -402,6 +403,9 @@ var FishPlayer = /** @class */ (function () {
         });
         this.cleanedName = Strings.stripColors(player.name);
         this.lastJoined = Date.now();
+        this.tstats = {
+            blocksBroken: 0
+        };
     };
     FishPlayer.prototype.updateMemberExclusiveState = function () {
         if (!this.hasPerm("member")) {

@@ -66,6 +66,7 @@ export class FishPlayer {
 	lastShownAd:number = config.maxTime;
 	showAdNext:boolean = false;
 	tstats = {
+		//remember to clear this in updateSavedInfoFromPlayer!
 		blocksBroken: 0,
 	};
 
@@ -331,6 +332,9 @@ export class FishPlayer {
 		});
 		this.cleanedName = Strings.stripColors(player.name);
 		this.lastJoined = Date.now();
+		this.tstats = {
+			blocksBroken: 0
+		};
 	}
 	updateMemberExclusiveState(){
 		if(!this.hasPerm("member")){
