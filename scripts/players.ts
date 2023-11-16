@@ -379,16 +379,17 @@ export class FishPlayer {
 		for(const [ip, uuid] of FishPlayer.punishedIPs){
 			if(ip == this.ip() && uuid != this.uuid){
 				api.sendModerationMessage(
-`Automatically frowned at player \`${this.cleanedName}\` (\`${this.uuid}\`/\`${this.ip()}\`) for suspected stop evasion.
+`Automatically banned player \`${this.cleanedName}\` (\`${this.uuid}\`/\`${this.ip()}\`) for suspected stop evasion.
 Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.plainLastName()}), currently using UUID \`${this.uuid}\``
 				);
 				Log.warn(
-`&yAutomatically frowned at player &b${this.cleanedName}&y (&b${this.uuid}&y/&b${this.ip()}&y) for suspected stop evasion.
+`&yAutomatically banned player &b${this.cleanedName}&y (&b${this.uuid}&y/&b${this.ip()}&y) for suspected stop evasion.
 &yPreviously used UUID &b${uuid}&y(&b${Vars.netServer.admins.getInfoOptional(uuid)?.plainLastName()}&y), currently using UUID &b${this.uuid}&y`
 				);
-				FishPlayer.messageStaff(`Automatically frowned at player ${this.cleanedName} for suspected stop evasion.`);
-				//Vars.netServer.admins.banPlayerIP(ip);
-				//this.player.kick(Packets.KickReason.banned);
+				FishPlayer.messageStaff(`Automatically banned player ${this.cleanedName} for suspected stop evasion.`);
+				Vars.netServer.admins.banPlayerIP(ip);
+				api.ban({ip, uuid});
+				this.player.kick(Packets.KickReason.banned);
 				return false;
 			}
 		}
