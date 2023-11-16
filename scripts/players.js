@@ -1129,7 +1129,7 @@ var FishPlayer = /** @class */ (function () {
                         //this.player.kick(Packets.KickReason.kick, 3600*1000);
                     }
                 }
-            }, 5, 5, 2);
+            }, 5, 5, 4);
         }
     };
     FishPlayer.cachedPlayers = {};
