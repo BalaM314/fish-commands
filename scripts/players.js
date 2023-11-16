@@ -473,10 +473,10 @@ var FishPlayer = /** @class */ (function () {
         try {
             for (var _d = __values(FishPlayer.punishedIPs), _e = _d.next(); !_e.done; _e = _d.next()) {
                 var _f = __read(_e.value, 2), ip = _f[0], uuid = _f[1];
-                if (ip == this.ip() && uuid != this.uuid) {
+                if (ip == this.ip() && uuid != this.uuid && !this.ranksAtLeast("mod")) {
                     api.sendModerationMessage("Automatically banned player `".concat(this.cleanedName, "` (`").concat(this.uuid, "`/`").concat(this.ip(), "`) for suspected stop evasion.\nPreviously used UUID `").concat(uuid, "`(").concat((_b = Vars.netServer.admins.getInfoOptional(uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), "), currently using UUID `").concat(this.uuid, "`"));
                     Log.warn("&yAutomatically banned player &b".concat(this.cleanedName, "&y (&b").concat(this.uuid, "&y/&b").concat(this.ip(), "&y) for suspected stop evasion.\n&yPreviously used UUID &b").concat(uuid, "&y(&b").concat((_c = Vars.netServer.admins.getInfoOptional(uuid)) === null || _c === void 0 ? void 0 : _c.plainLastName(), "&y), currently using UUID &b").concat(this.uuid, "&y"));
-                    FishPlayer.messageStaff("Automatically banned player ".concat(this.cleanedName, " for suspected stop evasion."));
+                    FishPlayer.messageStaff("[yellow]Automatically banned player [cyan]".concat(this.cleanedName, "[] for suspected stop evasion."));
                     Vars.netServer.admins.banPlayerIP(ip);
                     api.ban({ ip: ip, uuid: uuid });
                     this.player.kick(Packets.KickReason.banned);
