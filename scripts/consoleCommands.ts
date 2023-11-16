@@ -197,6 +197,11 @@ export const commands = consoleCommandList({
 		handler({args, output, admins}){
 			if(ipPattern.test(args.target)){
 				//target is an ip
+				let ipIndex:number;
+				if((ipIndex = FishPlayer.punishedIPs.findIndex(([ip]) => ip == args.target)) != -1){
+					FishPlayer.punishedIPs.splice(ipIndex, 1);
+					output(`Removed IP &c"${args.target}"&fr from the anti-evasion list.`);
+				}
 				output("Checking ban status...");
 				api.getBanned({ip: args.target}, (banned) => {
 					if(banned){
@@ -214,6 +219,11 @@ export const commands = consoleCommandList({
 					}
 				});
 			} else if(uuidPattern.test(args.target)){
+				let uuidIndex:number;
+				if((uuidIndex = FishPlayer.punishedIPs.findIndex(([, uuid]) => uuid == args.target)) != -1){
+					FishPlayer.punishedIPs.splice(uuidIndex, 1);
+					output(`Removed UUID &c"${args.target}"&fr from the anti-evasion list.`);
+				}
 				output("Checking ban status...");
 				const info = admins.findByIP(args.target);
 				api.getBanned({uuid: args.target}, (banned) => {
