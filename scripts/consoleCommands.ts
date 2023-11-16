@@ -132,11 +132,10 @@ export const commands = consoleCommandList({
 			if(ipPattern.test(args.target)){
 				//target is an ip
 				api.ban({ip: args.target});
-				const info:mindustryPlayerData = admins.findByIP(args.target);
-				if(info)
-					logAction("whacked", "console", info);
-				else
-					logAction(`console ip-whacked ${args.target}`);
+				const info = admins.findByIP(args.target);
+				if(info) logAction("whacked", "console", info);
+				else logAction(`console ip-whacked ${args.target}`);
+
 				if(admins.isIPBanned(args.target)){
 					output(`IP &c"${args.target}"&fr is already banned. Ban was synced to other servers.`);
 				} else {
@@ -144,9 +143,10 @@ export const commands = consoleCommandList({
 					output(`&lrIP &c"${args.target}"&lr was banned. Ban was synced to other servers.`);
 				}
 			} else if(uuidPattern.test(args.target)){
-				const info:mindustryPlayerData = admins.getInfoOptional(args.target);
+				const info = admins.getInfoOptional(args.target);
 				if(info) logAction("whacked", "console", info);
 				else logAction(`console ip-whacked ${args.target}`);
+
 				api.addStopped(args.target, config.maxTime);
 				if(admins.isIDBanned(args.target)){
 					api.ban({uuid: args.target});
@@ -198,7 +198,6 @@ export const commands = consoleCommandList({
 			if(ipPattern.test(args.target)){
 				//target is an ip
 				output("Checking ban status...");
-				const info:mindustryPlayerData = admins.findByIP(args.target);
 				api.getBanned({ip: args.target}, (banned) => {
 					if(banned){
 						api.unban({ip: args.target});
@@ -216,7 +215,7 @@ export const commands = consoleCommandList({
 				});
 			} else if(uuidPattern.test(args.target)){
 				output("Checking ban status...");
-				const info:mindustryPlayerData = admins.findByIP(args.target);
+				const info = admins.findByIP(args.target);
 				api.getBanned({uuid: args.target}, (banned) => {
 					if(banned){
 						api.unban({uuid: args.target});

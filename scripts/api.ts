@@ -32,8 +32,8 @@ export function free(uuid: string) {
  * If callbackError is undefined, callback will be called with null on error.
  **/
 export function getStopped(uuid:string, callback: (unmark:number | null) => unknown):void;
-export function getStopped(uuid:string, callback: (unmark:number) => unknown, callbackError: (errorMessage:any) => unknown):void;
-export function getStopped(uuid:string, callback: (unmark:any) => unknown, callbackError?: (errorMessage:any) => unknown){
+export function getStopped(uuid:string, callback: (unmark:number) => unknown, callbackError: (errorMessage:Throwable) => unknown):void;
+export function getStopped(uuid:string, callback: (unmark:any) => unknown, callbackError?: (errorMessage:Throwable) => unknown){
 	function fail(err:string){
 		Log.err(`[API] Network error when trying to call api.getStopped()`);
 		if(err) Log.err(err);
@@ -60,7 +60,7 @@ export function getStopped(uuid:string, callback: (unmark:any) => unknown, callb
 
 let cachedIps:Record<string, boolean | undefined> = {};
 /**Make an API request to see if an IP is likely VPN. */
-export function isVpn(ip:string, callback: (isVpn:boolean) => unknown, callbackError?: (errorMessage:any) => unknown){
+export function isVpn(ip:string, callback: (isVpn:boolean) => unknown, callbackError?: (errorMessage:Throwable) => unknown){
 	if(ip in cachedIps) return callback(cachedIps[ip]!);
 	Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, (res) => {
 		const data = res.getResultAsString();

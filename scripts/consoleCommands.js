@@ -258,7 +258,6 @@ exports.commands = (0, commands_1.consoleCommandList)({
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
                 output("Checking ban status...");
-                var info = admins.findByIP(args.target);
                 api.getBanned({ ip: args.target }, function (banned) {
                     if (banned) {
                         api.unban({ ip: args.target });

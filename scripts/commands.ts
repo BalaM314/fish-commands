@@ -348,7 +348,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 			sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 			if(sender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
 			Log.err(`Unhandled error in command execution: ${sender.cleanedName} ran /${sender.tapInfo.commandName} and tapped`);
-			Log.err(err as any);
+			Log.err(err as Error);
 		}
 	} finally {
 		if(sender.tapInfo.mode == "once"){
@@ -438,7 +438,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 							sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 							if(fishSender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
 							Log.err(`Unhandled error in command execution: ${sender.cleanedName} ran /${sender.tapInfo.commandName}`);
-							Log.err(err as any);
+							Log.err(err as Error);
 						}
 					} finally {
 						usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();

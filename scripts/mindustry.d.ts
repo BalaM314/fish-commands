@@ -5,11 +5,13 @@ declare const Log: {
 	info(message:string);
 	warn(message:string);
 	err(message:string);
+	err(error:Error);
 };
 declare const Strings: {
 	stripColors(string:string): string;
 }
 declare const Vars: any;
+declare type Throwable = any;
 declare class Administration {
 	findByName(info:string):ObjectSet<mindustryPlayerData>;
 	searchNames(name:string):ObjectSet<mindustryPlayerData>;

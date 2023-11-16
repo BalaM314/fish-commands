@@ -49,7 +49,7 @@ function menu<T>(
 		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
 	}) => void,
 	includeCancel:boolean = true,
-	optionStringifier:(opt:T) => string = t => t as any as string, //this is dubious
+	optionStringifier:(opt:T) => string = t => t as unknown as string, //this is dubious
 	columns:number = 3,
 ){
 
