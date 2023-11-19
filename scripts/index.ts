@@ -21,8 +21,8 @@ import { StringIO, logErrors, matchFilter, serverRestartLoop } from "./utils";
 
 
 Events.on(EventType.PlayerConnect, (e) => {
-	if(FishPlayer.flagCount >= 8 && e.player.info.timesJoined == 1){
-		e.player.kick(Packets.KickReason.kick, 1000000);
+	if(FishPlayer.antiBotMode() && e.player.info.timesJoined == 1){
+		Vars.netServer.admins.blacklistDos(e.player.connection.address);
 	}
 	FishPlayer.onPlayerJoin(e.player);
 });
@@ -30,6 +30,7 @@ Events.on(EventType.PlayerLeave, (e) => {
 	FishPlayer.onPlayerLeave(e.player);
 });
 Events.on(EventType.ConnectPacketEvent, (e) => {
+	FishPlayer.playersJoinedLast15Seconds ++;
 	api.getBanned({
 		ip: e.connection.address,
 		uuid: e.packet.uuid

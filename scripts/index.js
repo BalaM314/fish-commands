@@ -45,8 +45,8 @@ var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
 Events.on(EventType.PlayerConnect, function (e) {
-    if (players_1.FishPlayer.flagCount >= 8 && e.player.info.timesJoined == 1) {
-        e.player.kick(Packets.KickReason.kick, 1000000);
+    if (players_1.FishPlayer.antiBotMode() && e.player.info.timesJoined == 1) {
+        Vars.netServer.admins.blacklistDos(e.player.connection.address);
     }
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
@@ -54,6 +54,7 @@ Events.on(EventType.PlayerLeave, function (e) {
     players_1.FishPlayer.onPlayerLeave(e.player);
 });
 Events.on(EventType.ConnectPacketEvent, function (e) {
+    players_1.FishPlayer.playersJoinedLast15Seconds++;
     api.getBanned({
         ip: e.connection.address,
         uuid: e.packet.uuid
