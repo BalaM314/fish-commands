@@ -33,6 +33,7 @@ export class FishPlayer {
 	static lastAuthKicked:FishPlayer | null = null;
 	//If a new account joins from one of these IPs, the IP gets banned.
 	static punishedIPs = [] as [ip:string, uuid:string, expiryTime:number][];
+	static flagCount = 0;
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -416,6 +417,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					this.autoflagged = true;
 					this.stopUnit();
 					this.updateName();
+					FishPlayer.flagCount ++
 					logAction("autoflagged", "AntiVPN", this);
 					api.sendStaffMessage(`Autoflagged player ${this.name} for suspected vpn!`, "AntiVPN");
 					FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);

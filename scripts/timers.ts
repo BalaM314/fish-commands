@@ -49,4 +49,7 @@ export function initializeTimers(){
 			neutralGameover();
 		}
 	}, 0, 1);
+	Timer.schedule(() => {
+		FishPlayer.flagCount = 0;
+	}, 0, 60);
 }

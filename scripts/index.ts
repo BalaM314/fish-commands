@@ -21,6 +21,9 @@ import { StringIO, logErrors, matchFilter, serverRestartLoop } from "./utils";
 
 
 Events.on(EventType.PlayerConnect, (e) => {
+	if(FishPlayer.flagCount >= 10 && e.player.info.timesJoined == 1){
+		e.player.kick(Packets.KickReason.kicked, 1000000);
+	}
 	FishPlayer.onPlayerJoin(e.player);
 });
 Events.on(EventType.PlayerLeave, (e) => {

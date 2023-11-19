@@ -45,6 +45,9 @@ var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
 Events.on(EventType.PlayerConnect, function (e) {
+    if (players_1.FishPlayer.flagCount >= 10 && e.player.info.timesJoined == 1) {
+        e.player.kick(Packets.KickReason.kicked, 1000000);
+    }
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
 Events.on(EventType.PlayerLeave, function (e) {

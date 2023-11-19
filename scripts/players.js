@@ -511,6 +511,7 @@ var FishPlayer = /** @class */ (function () {
                     _this.autoflagged = true;
                     _this.stopUnit();
                     _this.updateName();
+                    FishPlayer.flagCount++;
                     (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);
                     api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
                     FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
@@ -1151,6 +1152,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.lastAuthKicked = null;
     //If a new account joins from one of these IPs, the IP gets banned.
     FishPlayer.punishedIPs = [];
+    FishPlayer.flagCount = 0;
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;

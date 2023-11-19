@@ -51,5 +51,8 @@ function initializeTimers() {
             (0, utils_1.neutralGameover)();
         }
     }, 0, 1);
+    Timer.schedule(function () {
+        players_1.FishPlayer.flagCount = 0;
+    }, 0, 60);
 }
 exports.initializeTimers = initializeTimers;
