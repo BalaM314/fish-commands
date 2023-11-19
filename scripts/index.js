@@ -59,6 +59,7 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
         Log.info("Antibot killed connection ".concat(e.connection.address));
+        Call.infoToast("[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ".concat(Vars.netServer.admins.dosBlacklist.size), 2);
         return;
     }
     api.getBanned({
