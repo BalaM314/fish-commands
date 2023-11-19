@@ -58,12 +58,12 @@ function initializeTimers() {
         if (players_1.FishPlayer.flagCount > 10 || players_1.FishPlayer.playersJoinedLast15Seconds > 50)
             players_1.FishPlayer.antiBotModePersistent = true;
         players_1.FishPlayer.flagCount = 0;
+        globals_1.ipJoins.clear();
     }, 0, 60);
     Timer.schedule(function () {
         if (players_1.FishPlayer.playersJoinedLast15Seconds > 50)
             players_1.FishPlayer.antiBotModePersistent = true;
         players_1.FishPlayer.playersJoinedLast15Seconds = 0;
-        globals_1.ipJoins.clear();
     }, 0, 15);
     Timer.schedule(function () {
         if (players_1.FishPlayer.antiBotMode()) {

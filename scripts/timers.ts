@@ -55,11 +55,11 @@ export function initializeTimers(){
 		//dubious code, will keep antibot mode on for the next minute after it was triggered by high flag count or high join count
 		if(FishPlayer.flagCount > 10 || FishPlayer.playersJoinedLast15Seconds > 50) FishPlayer.antiBotModePersistent = true;
 		FishPlayer.flagCount = 0;
+		ipJoins.clear();
 	}, 0, 60);
 	Timer.schedule(() => {
 		if(FishPlayer.playersJoinedLast15Seconds > 50) FishPlayer.antiBotModePersistent = true;
 		FishPlayer.playersJoinedLast15Seconds = 0;
-		ipJoins.clear();
 	}, 0, 15);
 	Timer.schedule(() => {
 		if(FishPlayer.antiBotMode()){
