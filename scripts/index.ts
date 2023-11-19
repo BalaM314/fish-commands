@@ -34,15 +34,17 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 	Log.debug(`Incremnted ${e.connection.address}`);
 	const info = Vars.netServer.admins.getInfoOptional(e.packet.uuid) as mindustryPlayerData;
 	const sus = (FishPlayer.antiBotMode() && (!info || info.timesJoined < 10));
+	const longModName = e.packet.mods.contains((str:string) => str.length > 50);
+	const veryLongModName = e.packet.mods.contains((str:string) => str.length > 100);
 	if(
-		sus ? (e.packet.mods.size > 2 || e.packet.mods.contains((str:string) => str.length > 50))
-		: (e.packet.mods.contains((str:string) => str.length > 50))
+		(sus && e.packet.mods.size > 2) ||
+		(sus && longModName) ||
+		(veryLongModName)
 	){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
 		e.connection.kicked = true;
 		FishPlayer.antiBotModePersist = true;
-		Log.info(`&yAntibot killed connection ${e.connection.address} because it had mods`);
-		Call.infoToast(`[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ${Vars.netServer.admins.dosBlacklist.size}`, 2);
+		Log.info(`&yAntibot killed connection ${e.connection.address} because ${veryLongModName ? "very long mod name" : longModName ? "long mod name" : "it had mods while under attack"}`);
 		return;
 	}
 	if(ipJoins.get(e.connection.address) >= ( sus ? 3 : 15 )){
