@@ -1,4 +1,5 @@
 import * as api from "./api";
+import * as fjsContext from "./fjsContext";
 import { Perm, commandList, fail } from "./commands";
 import { getGamemode, maxTime, stopAntiEvadeTime } from "./config";
 import { uuidPattern } from "./globals";
@@ -501,6 +502,26 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 			} catch(err){
 				outputFail(parseError(err));
 			}
+		}
+	},
+	fjs: {
+		args: ["javascript:string"],
+		description: "Run arbitrary javascript in the fish-commands context.",
+		perm: Perm.runJS,
+		handler({args: {javascript}, output, outputFail, sender}){
+			
+			//Additional validation couldn't hurt...
+			const playerInfo_AdminUsid = sender.info().adminUsid;
+			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()){
+				api.sendModerationMessage(
+`# !!!!! /js authentication failed !!!!!
+Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+<@!709904412033810533>`
+				);
+				fail(`Authentication failure`);
+			}
+
+			fjsContext.runJS(javascript, output, outputFail);
 		}
 	},
 	antibot: {

@@ -42,20 +42,22 @@ const $ = Object.assign(
 	}
 );
 
-exports.runJS = function(input){
+exports.runJS = function(input, outputFunction, errorFunction){
+	if(outputFunction == undefined) outputFunction = Log.info;
+	if(errorFunction == undefined) errorFunction = Log.err;
 	try {
 		const admins = Vars.netServer.admins;
 		const output = eval(input);
 		if(output instanceof Array){
-			Log.info("&cArray: [&fr" + output.join(", ") + "&c]&fr");
+			outputFunction("&cArray: [&fr" + output.join(", ") + "&c]&fr");
 		} else if(output === undefined){
-			Log.info("undefined");
+			outputFunction("undefined");
 		} else if(output === null){
-			Log.info("null");
+			outputFunction("null");
 		} else {
-			Log.info(output);
+			outputFunction(output);
 		}
 	} catch(err){
-		Log.err(err);
+		errorFunction(err);
 	}
 }

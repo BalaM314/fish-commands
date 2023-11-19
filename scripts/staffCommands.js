@@ -13,6 +13,7 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var api = require("./api");
+var fjsContext = require("./fjsContext");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -492,6 +493,20 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             catch (err) {
                 outputFail((0, utils_1.parseError)(err));
             }
+        }
+    }, fjs: {
+        args: ["javascript:string"],
+        description: "Run arbitrary javascript in the fish-commands context.",
+        perm: commands_1.Perm.runJS,
+        handler: function (_a) {
+            var javascript = _a.args.javascript, output = _a.output, outputFail = _a.outputFail, sender = _a.sender;
+            //Additional validation couldn't hurt...
+            var playerInfo_AdminUsid = sender.info().adminUsid;
+            if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat((0, config_1.getGamemode)(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                (0, commands_1.fail)("Authentication failure");
+            }
+            fjsContext.runJS(javascript, output, outputFail);
         }
     }, antibot: {
         args: ["state:boolean"],
