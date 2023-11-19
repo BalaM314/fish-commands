@@ -512,7 +512,7 @@ var FishPlayer = /** @class */ (function () {
                     _this.stopUnit();
                     _this.updateName();
                     FishPlayer.flagCount++;
-                    if (FishPlayer.flagCount >= 15) {
+                    if (FishPlayer.flagCount >= 8) {
                         Vars.netServer.admins.blacklistDos(ip);
                         return;
                     }

@@ -418,7 +418,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					this.stopUnit();
 					this.updateName();
 					FishPlayer.flagCount ++
-					if(FishPlayer.flagCount >= 15){
+					if(FishPlayer.flagCount >= 8){
 						Vars.netServer.admins.blacklistDos(ip);
 						return;
 					}
