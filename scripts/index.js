@@ -59,7 +59,7 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
     Log.debug("Incremnted ".concat(e.connection.address));
     var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
     var sus = (players_1.FishPlayer.antiBotMode() && (!info || info.timesJoined < 10));
-    if (sus ? e.packet.mods.size > 2
+    if (sus ? (e.packet.mods.size > 2 || e.packet.mods.contains(function (str) { return str.length > 50; }))
         : (e.packet.mods.contains(function (str) { return str.length > 50; }))) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;

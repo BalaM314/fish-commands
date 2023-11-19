@@ -35,7 +35,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 	const info = Vars.netServer.admins.getInfoOptional(e.packet.uuid) as mindustryPlayerData;
 	const sus = (FishPlayer.antiBotMode() && (!info || info.timesJoined < 10));
 	if(
-		sus ? e.packet.mods.size > 2
+		sus ? (e.packet.mods.size > 2 || e.packet.mods.contains((str:string) => str.length > 50))
 		: (e.packet.mods.contains((str:string) => str.length > 50))
 	){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
