@@ -420,9 +420,10 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					this.autoflagged = true;
 					this.stopUnit();
 					this.updateName();
-					FishPlayer.flagCount ++
+					FishPlayer.flagCount ++;
 					if(FishPlayer.antiBotMode()){
 						Vars.netServer.admins.blacklistDos(ip);
+						FishPlayer.antiBotModePersistent = true;
 						Log.info(`&yAntibot killed connection ${ip} due to flagged while under attack`);
 						this.player.kick(Packets.KickReason.banned, 10000000);
 						return;

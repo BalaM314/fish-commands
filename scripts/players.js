@@ -514,6 +514,7 @@ var FishPlayer = /** @class */ (function () {
                     FishPlayer.flagCount++;
                     if (FishPlayer.antiBotMode()) {
                         Vars.netServer.admins.blacklistDos(ip);
+                        FishPlayer.antiBotModePersistent = true;
                         Log.info("&yAntibot killed connection ".concat(ip, " due to flagged while under attack"));
                         _this.player.kick(Packets.KickReason.banned, 10000000);
                         return;
