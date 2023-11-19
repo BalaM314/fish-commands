@@ -31,7 +31,7 @@ Events.on(EventType.PlayerLeave, (e) => {
 });
 Events.on(EventType.ConnectPacketEvent, (e) => {
 	FishPlayer.playersJoinedLast15Seconds ++;
-	if(FishPlayer.antiBotMode() && (e.packet.mods.size > 2 || e.packet.mods.first().length > 50)){
+	if(FishPlayer.antiBotMode() && (e.packet.mods.size > 2)){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
 		return;
 	}
