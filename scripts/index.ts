@@ -41,7 +41,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 			return;
 		}
 		const info = Vars.netServer.admins.getInfoOptional(e.packet.uuid) as mindustryPlayerData;
-		if(info && info.timesJoined < 10 && ipJoins.get(e.connection.address) >= 5){
+		if((!info || info.timesJoined < 10) && ipJoins.get(e.connection.address) >= 5){
 			Vars.netServer.admins.blacklistDos(e.connection.address);
 			e.connection.kicked = true;
 			Log.info(`&oAntibot killed connection ${e.connection.address} due to at least 5 connections`);

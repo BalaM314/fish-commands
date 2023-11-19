@@ -66,7 +66,7 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
             return;
         }
         var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
-        if (info && info.timesJoined < 10 && globals_1.ipJoins.get(e.connection.address) >= 5) {
+        if ((!info || info.timesJoined < 10) && globals_1.ipJoins.get(e.connection.address) >= 5) {
             Vars.netServer.admins.blacklistDos(e.connection.address);
             e.connection.kicked = true;
             Log.info("&oAntibot killed connection ".concat(e.connection.address, " due to at least 5 connections"));
