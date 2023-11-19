@@ -53,16 +53,16 @@ function initializeTimers() {
         }
     }, 0, 1);
     Timer.schedule(function () {
-        players_1.FishPlayer.antiBotModePersistent = false;
+        players_1.FishPlayer.antiBotModePersist = false;
         //dubious code, will keep antibot mode on for the next minute after it was triggered by high flag count or high join count
         if (players_1.FishPlayer.flagCount > 10 || players_1.FishPlayer.playersJoinedRecent > 50)
-            players_1.FishPlayer.antiBotModePersistent = true;
+            players_1.FishPlayer.antiBotModePersist = true;
         players_1.FishPlayer.flagCount = 0;
         globals_1.ipJoins.clear();
     }, 0, 60);
     Timer.schedule(function () {
         if (players_1.FishPlayer.playersJoinedRecent > 50)
-            players_1.FishPlayer.antiBotModePersistent = true;
+            players_1.FishPlayer.antiBotModePersist = true;
         players_1.FishPlayer.playersJoinedRecent = 0;
     }, 0, 40);
     Timer.schedule(function () {

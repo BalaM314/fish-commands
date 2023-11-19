@@ -40,7 +40,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 	){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
 		e.connection.kicked = true;
-		FishPlayer.antiBotModePersistent = true;
+		FishPlayer.antiBotModePersist = true;
 		Log.info(`&yAntibot killed connection ${e.connection.address} because it had mods`);
 		Call.infoToast(`[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ${Vars.netServer.admins.dosBlacklist.size}`, 2);
 		return;
@@ -48,7 +48,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 	if(ipJoins.get(e.connection.address) >= ( sus ? 3 : 15 )){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
 		e.connection.kicked = true;
-		FishPlayer.antiBotModePersistent = true;
+		FishPlayer.antiBotModePersist = true;
 		Log.info(`&yAntibot killed connection ${e.connection.address} due to too many connections`);
 	}
 	api.getBanned({

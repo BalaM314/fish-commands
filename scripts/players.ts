@@ -35,8 +35,8 @@ export class FishPlayer {
 	static punishedIPs = [] as [ip:string, uuid:string, expiryTime:number][];
 	static flagCount = 0;
 	static playersJoinedRecent = 0;
-	static antiBotModePersistent = false;
-	static antiBotModeForce = false;
+	static antiBotModePersist = false;
+	static antiBotModeOverride = false;
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -423,7 +423,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					FishPlayer.flagCount ++;
 					if(FishPlayer.antiBotMode()){
 						Vars.netServer.admins.blacklistDos(ip);
-						FishPlayer.antiBotModePersistent = true;
+						FishPlayer.antiBotModePersist = true;
 						Log.info(`&yAntibot killed connection ${ip} due to flagged while under attack`);
 						this.player.kick(Packets.KickReason.banned, 10000000);
 						return;
@@ -749,7 +749,7 @@ We apologize for the inconvenience.`
 	
 	//#region util
 	static antiBotMode(){
-		return this.flagCount >= 4 || this.playersJoinedRecent > 50 || this.antiBotModePersistent || this.antiBotModeForce;
+		return this.flagCount >= 4 || this.playersJoinedRecent > 50 || this.antiBotModePersist || this.antiBotModeOverride;
 	}
 	connected(){
 		return this.player && !this.con.hasDisconnected;

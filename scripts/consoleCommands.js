@@ -159,20 +159,28 @@ exports.commands = (0, commands_1.consoleCommandList)({
         }
     },
     blacklist: {
-        args: [],
+        args: ["rich:boolean?"],
         description: "Allows you to view the DOS blacklist.",
         handler: function (_a) {
-            var output = _a.output, admins = _a.admins;
+            var args = _a.args, output = _a.output, admins = _a.admins;
             var blacklist = admins.dosBlacklist;
             if (blacklist.isEmpty())
                 (0, commands_1.fail)("The blacklist is empty");
-            var outputString = ["DOS Blacklist:"];
-            blacklist.each(function (ip) {
-                return admins.findByName(ip).each(function (data) {
-                    return outputString.push("IP: &c".concat(ip, "&fr UUID: &c\"").concat(data.id, "\"&fr Last name used: &c\"").concat(data.plainLastName(), "\"&fr"));
+            if (args.rich) {
+                var outputString_1 = ["DOS Blacklist:"];
+                blacklist.each(function (ip) {
+                    var info = admins.findByIP(ip);
+                    if (info) {
+                        outputString_1.push("IP: &c".concat(ip, "&fr UUID: &c\"").concat(info.id, "\"&fr Last name used: &c\"").concat(info.plainLastName(), "\"&fr"));
+                    }
                 });
-            });
-            output(outputString.join("\n"));
+                output(outputString_1.join("\n"));
+                output("".concat(blacklist.size, " blacklisted IPs"));
+            }
+            else {
+                output(blacklist.toString());
+                output("".concat(blacklist.size, " blacklisted IPs"));
+            }
         }
     },
     whack: {

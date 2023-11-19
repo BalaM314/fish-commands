@@ -525,11 +525,23 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 		}
 	},
 	antibot: {
-		args: ["state:boolean"],
-		description: "Force enables anti bot mode, MAKE SURE TO TURN IT OFF",
+		args: ["state:boolean?"],
+		description: "Checks anti bot stats, or force enables anti bot mode, MAKE SURE TO TURN IT OFF",
 		perm: Perm.admin,
-		handler({args}){
-			FishPlayer.antiBotModeForce = args.state;
+		handler({args, outputSuccess, output}){
+			if(args.state){
+				outputSuccess(`Set antibot mode override to ${args.state}`);
+				FishPlayer.antiBotModeOverride = args.state;
+			} else {
+				output(
+`[acid]Antibot status:
+[acid]Enabled: ${colorBadBoolean(FishPlayer.antiBotMode())}
+[acid]Flag count(last 1 minute period): ${FishPlayer.flagCount}
+[acid]Recent connect packets(last 1 minute period): ${FishPlayer.playersJoinedRecent}
+[acid]Persist: ${FishPlayer.antiBotModePersist}
+[acid]Override: ${FishPlayer.antiBotModeOverride}`
+				);
+			}
 		}
 	}
 

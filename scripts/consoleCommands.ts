@@ -109,20 +109,28 @@ export const commands = consoleCommandList({
 		}
 	},
 	blacklist: {
-		args: [],
+		args: ["rich:boolean?"],
 		description: "Allows you to view the DOS blacklist.",
-		handler({output, admins}){
+		handler({args, output, admins}){
 			const blacklist = admins.dosBlacklist;
 			if(blacklist.isEmpty()) fail("The blacklist is empty");
 			
-			let outputString = ["DOS Blacklist:"];
-			blacklist.each((ip:string) =>
-				(admins.findByName(ip) as ObjectSet<mindustryPlayerData>).each(data =>
-					outputString.push(`IP: &c${ip}&fr UUID: &c"${data.id}"&fr Last name used: &c"${data.plainLastName()}"&fr`)
-				)
-			);
+			if(args.rich){
+				let outputString = ["DOS Blacklist:"];
+				blacklist.each((ip:string) => {
+					const info = admins.findByIP(ip);
+					if(info){
+						outputString.push(`IP: &c${ip}&fr UUID: &c"${info.id}"&fr Last name used: &c"${info.plainLastName()}"&fr`);
+					}
+				});
+	
+				output(outputString.join("\n"));
+				output(`${blacklist.size} blacklisted IPs`);
+			} else {
+				output(blacklist.toString());
+				output(`${blacklist.size} blacklisted IPs`);
+			}
 
-			output(outputString.join("\n"));
 		}
 	},
 	whack: {

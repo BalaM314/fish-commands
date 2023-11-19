@@ -509,11 +509,17 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             fjsContext.runJS(javascript, output, outputFail);
         }
     }, antibot: {
-        args: ["state:boolean"],
-        description: "Force enables anti bot mode, MAKE SURE TO TURN IT OFF",
+        args: ["state:boolean?"],
+        description: "Checks anti bot stats, or force enables anti bot mode, MAKE SURE TO TURN IT OFF",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args;
-            players_1.FishPlayer.antiBotModeForce = args.state;
+            var args = _a.args, outputSuccess = _a.outputSuccess, output = _a.output;
+            if (args.state) {
+                outputSuccess("Set antibot mode override to ".concat(args.state));
+                players_1.FishPlayer.antiBotModeOverride = args.state;
+            }
+            else {
+                output("[acid]Antibot status:\n[acid]Enabled: ".concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.antiBotMode()), "\n[acid]Flag count(last 1 minute period): ").concat(players_1.FishPlayer.flagCount, "\n[acid]Recent connect packets(last 1 minute period): ").concat(players_1.FishPlayer.playersJoinedRecent, "\n[acid]Persist: ").concat(players_1.FishPlayer.antiBotModePersist, "\n[acid]Override: ").concat(players_1.FishPlayer.antiBotModeOverride));
+            }
         }
     } }));
