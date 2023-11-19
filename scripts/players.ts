@@ -34,7 +34,7 @@ export class FishPlayer {
 	//If a new account joins from one of these IPs, the IP gets banned.
 	static punishedIPs = [] as [ip:string, uuid:string, expiryTime:number][];
 	static flagCount = 0;
-	static playersJoinedLast15Seconds = 0;
+	static playersJoinedRecent = 0;
 	static antiBotModePersistent = false;
 	static antiBotModeForce = false;
 	
@@ -748,7 +748,7 @@ We apologize for the inconvenience.`
 	
 	//#region util
 	static antiBotMode(){
-		return this.flagCount >= 8 || this.playersJoinedLast15Seconds > 50 || this.antiBotModePersistent || this.antiBotModeForce;
+		return this.flagCount >= 8 || this.playersJoinedRecent > 50 || this.antiBotModePersistent || this.antiBotModeForce;
 	}
 	connected(){
 		return this.player && !this.con.hasDisconnected;

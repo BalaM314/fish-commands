@@ -54,7 +54,7 @@ Events.on(EventType.PlayerLeave, function (e) {
     players_1.FishPlayer.onPlayerLeave(e.player);
 });
 Events.on(EventType.ConnectPacketEvent, function (e) {
-    players_1.FishPlayer.playersJoinedLast15Seconds++;
+    players_1.FishPlayer.playersJoinedRecent++;
     globals_1.ipJoins.increment(e.connection.address);
     Log.debug("Incremnted ".concat(e.connection.address));
     if (players_1.FishPlayer.antiBotMode()) {

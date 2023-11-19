@@ -861,7 +861,7 @@ var FishPlayer = /** @class */ (function () {
     //#endregion
     //#region util
     FishPlayer.antiBotMode = function () {
-        return this.flagCount >= 8 || this.playersJoinedLast15Seconds > 50 || this.antiBotModePersistent || this.antiBotModeForce;
+        return this.flagCount >= 8 || this.playersJoinedRecent > 50 || this.antiBotModePersistent || this.antiBotModeForce;
     };
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;
@@ -1162,7 +1162,7 @@ var FishPlayer = /** @class */ (function () {
     //If a new account joins from one of these IPs, the IP gets banned.
     FishPlayer.punishedIPs = [];
     FishPlayer.flagCount = 0;
-    FishPlayer.playersJoinedLast15Seconds = 0;
+    FishPlayer.playersJoinedRecent = 0;
     FishPlayer.antiBotModePersistent = false;
     FishPlayer.antiBotModeForce = false;
     return FishPlayer;

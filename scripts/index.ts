@@ -29,7 +29,7 @@ Events.on(EventType.PlayerLeave, (e) => {
 	FishPlayer.onPlayerLeave(e.player);
 });
 Events.on(EventType.ConnectPacketEvent, (e) => {
-	FishPlayer.playersJoinedLast15Seconds ++;
+	FishPlayer.playersJoinedRecent ++;
 	ipJoins.increment(e.connection.address);
 	Log.debug(`Incremnted ${e.connection.address}`);
 	if(FishPlayer.antiBotMode()){
