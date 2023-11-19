@@ -5,6 +5,7 @@ var players_1 = require("./players");
 var api_1 = require("./api");
 var config = require("./config");
 var utils_1 = require("./utils");
+var globals_1 = require("./globals");
 function initializeTimers() {
     //Autosave
     Timer.schedule(function () {
@@ -62,6 +63,7 @@ function initializeTimers() {
         if (players_1.FishPlayer.playersJoinedLast15Seconds > 50)
             players_1.FishPlayer.antiBotModePersistent = true;
         players_1.FishPlayer.playersJoinedLast15Seconds = 0;
+        globals_1.ipJoins.clear();
     }, 0, 15);
     Timer.schedule(function () {
         if (players_1.FishPlayer.antiBotMode()) {

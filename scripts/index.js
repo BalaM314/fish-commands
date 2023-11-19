@@ -55,12 +55,21 @@ Events.on(EventType.PlayerLeave, function (e) {
 });
 Events.on(EventType.ConnectPacketEvent, function (e) {
     players_1.FishPlayer.playersJoinedLast15Seconds++;
-    if (players_1.FishPlayer.antiBotMode() && (e.packet.mods.size > 2)) {
-        Vars.netServer.admins.blacklistDos(e.connection.address);
-        e.connection.kicked = true;
-        Log.info("Antibot killed connection ".concat(e.connection.address));
-        Call.infoToast("[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ".concat(Vars.netServer.admins.dosBlacklist.size), 2);
-        return;
+    globals_1.ipJoins.increment(e.connection.address);
+    if (players_1.FishPlayer.antiBotMode()) {
+        if (e.packet.mods.size > 2) {
+            Vars.netServer.admins.blacklistDos(e.connection.address);
+            e.connection.kicked = true;
+            Log.info("&oAntibot killed connection ".concat(e.connection.address));
+            Call.infoToast("[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ".concat(Vars.netServer.admins.dosBlacklist.size), 2);
+            return;
+        }
+        var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
+        if (info && info.timesJoined < 10 && globals_1.ipJoins.get(e.connection.address) >= 5) {
+            Vars.netServer.admins.blacklistDos(e.connection.address);
+            e.connection.kicked = true;
+            Log.info("&oAntibot killed connection ".concat(e.connection.address, " due to at least 5 connections"));
+        }
     }
     api.getBanned({
         ip: e.connection.address,

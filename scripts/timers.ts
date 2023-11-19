@@ -2,6 +2,7 @@ import { FishPlayer } from "./players";
 import { getStaffMessages } from './api'
 import * as config from "./config";
 import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
+import { ipJoins } from "./globals";
 
 
 export function initializeTimers(){
@@ -58,6 +59,7 @@ export function initializeTimers(){
 	Timer.schedule(() => {
 		if(FishPlayer.playersJoinedLast15Seconds > 50) FishPlayer.antiBotModePersistent = true;
 		FishPlayer.playersJoinedLast15Seconds = 0;
+		ipJoins.clear();
 	}, 0, 15);
 	Timer.schedule(() => {
 		if(FishPlayer.antiBotMode()){

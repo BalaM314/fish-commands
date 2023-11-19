@@ -181,6 +181,12 @@ declare class ObjectSet<T> {
 	get(key:T):T;
 	first():T;
 }
+declare class ObjectIntMap<K> {
+	put(key:K, value:number):void;
+	get(key:K):number;
+	increment(key:K):void;
+	clear():void;
+}
 declare class EntityGroup<T> {
 	copy(seq:Seq<T>):Seq<T>;
 	each(func:(item:T) => unknown):void;
