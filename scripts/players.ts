@@ -418,6 +418,10 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					this.stopUnit();
 					this.updateName();
 					FishPlayer.flagCount ++
+					if(FishPlayer.flagCount >= 15){
+						Vars.netServer.admins.blacklistDos(ip);
+						return;
+					}
 					logAction("autoflagged", "AntiVPN", this);
 					api.sendStaffMessage(`Autoflagged player ${this.name} for suspected vpn!`, "AntiVPN");
 					FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);

@@ -512,6 +512,10 @@ var FishPlayer = /** @class */ (function () {
                     _this.stopUnit();
                     _this.updateName();
                     FishPlayer.flagCount++;
+                    if (FishPlayer.flagCount >= 15) {
+                        Vars.netServer.admins.blacklistDos(ip);
+                        return;
+                    }
                     (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);
                     api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
                     FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
