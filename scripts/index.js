@@ -46,7 +46,7 @@ var timers = require("./timers");
 var utils_1 = require("./utils");
 Events.on(EventType.PlayerConnect, function (e) {
     if (players_1.FishPlayer.antiBotMode() && e.player.info.timesJoined == 1) {
-        Vars.netServer.admins.blacklistDos(e.player.connection.address);
+        e.player.kick(Packets.KickReason.kick, 3600000);
     }
     players_1.FishPlayer.onPlayerJoin(e.player);
 });
