@@ -493,4 +493,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 outputFail((0, utils_1.parseError)(err));
             }
         }
+    }, antibot: {
+        args: ["state:boolean"],
+        description: "Force enables anti bot mode, MAKE SURE TO TURN IT OFF",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var args = _a.args;
+            players_1.FishPlayer.antiBotModeForce = args.state;
+        }
     } }));

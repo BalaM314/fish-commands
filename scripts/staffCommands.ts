@@ -502,6 +502,14 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 				outputFail(parseError(err));
 			}
 		}
+	},
+	antibot: {
+		args: ["state:boolean"],
+		description: "Force enables anti bot mode, MAKE SURE TO TURN IT OFF",
+		perm: Perm.admin,
+		handler({args}){
+			FishPlayer.antiBotModeForce = args.state;
+		}
 	}
 
 });

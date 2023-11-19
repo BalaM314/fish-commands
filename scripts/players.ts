@@ -36,6 +36,7 @@ export class FishPlayer {
 	static flagCount = 0;
 	static playersJoinedLast15Seconds = 0;
 	static antiBotModePersistent = false;
+	static antiBotModeForce = false;
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -747,7 +748,7 @@ We apologize for the inconvenience.`
 	
 	//#region util
 	static antiBotMode(){
-		return this.flagCount >= 8 || this.playersJoinedLast15Seconds > 50 || this.antiBotModePersistent;
+		return this.flagCount >= 8 || this.playersJoinedLast15Seconds > 50 || this.antiBotModePersistent || this.antiBotModeForce;
 	}
 	connected(){
 		return this.player && !this.con.hasDisconnected;
