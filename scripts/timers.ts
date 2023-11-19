@@ -64,6 +64,9 @@ export function initializeTimers(){
 	Timer.schedule(() => {
 		if(FishPlayer.antiBotMode()){
 			Call.infoToast(`[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ${Vars.netServer.admins.dosBlacklist.size}`, 2);
+			FishPlayer.forEachPlayer(p => {
+				if(p.autoflagged) p.player.kick(Packets.KickReason.banned, 10000000);
+			})
 		}
 	}, 0, 1);
 }

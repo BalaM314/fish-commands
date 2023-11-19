@@ -421,10 +421,10 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					this.stopUnit();
 					this.updateName();
 					FishPlayer.flagCount ++
-					if(FishPlayer.flagCount >= 8){
+					if(FishPlayer.antiBotMode()){
 						Vars.netServer.admins.blacklistDos(ip);
-						Log.info(`&yAntibot killed connection ${ip}`);
-						this.player.con.kicked = true;
+						Log.info(`&yAntibot killed connection ${ip} due to flagged while under attack`);
+						this.player.kick(Packets.KickReason.banned, 10000000);
 						return;
 					}
 					logAction("autoflagged", "AntiVPN", this);

@@ -512,10 +512,10 @@ var FishPlayer = /** @class */ (function () {
                     _this.stopUnit();
                     _this.updateName();
                     FishPlayer.flagCount++;
-                    if (FishPlayer.flagCount >= 8) {
+                    if (FishPlayer.antiBotMode()) {
                         Vars.netServer.admins.blacklistDos(ip);
-                        Log.info("&yAntibot killed connection ".concat(ip));
-                        _this.player.con.kicked = true;
+                        Log.info("&yAntibot killed connection ".concat(ip, " due to flagged while under attack"));
+                        _this.player.kick(Packets.KickReason.banned, 10000000);
                         return;
                     }
                     (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);
