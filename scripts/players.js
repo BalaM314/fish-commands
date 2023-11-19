@@ -864,6 +864,9 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.antiBotMode = function () {
         return this.flagCount >= 3 || this.playersJoinedRecent > 50 || this.antiBotModePersist || this.antiBotModeOverride;
     };
+    FishPlayer.kickNewPlayers = function () {
+        return this.antiBotModeOverride;
+    };
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;
     };

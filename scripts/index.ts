@@ -20,7 +20,7 @@ import { StringIO, logErrors, matchFilter, serverRestartLoop } from "./utils";
 
 
 Events.on(EventType.PlayerConnect, (e) => {
-	if(FishPlayer.antiBotMode() && e.player.info.timesJoined == 1){
+	if(FishPlayer.kickNewPlayers() && e.player.info.timesJoined == 1){
 		e.player.kick(Packets.KickReason.kick, 3600000);
 	}
 	FishPlayer.onPlayerJoin(e.player);
