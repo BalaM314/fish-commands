@@ -55,6 +55,10 @@ Events.on(EventType.PlayerLeave, function (e) {
 });
 Events.on(EventType.ConnectPacketEvent, function (e) {
     players_1.FishPlayer.playersJoinedLast15Seconds++;
+    if (players_1.FishPlayer.antiBotMode() && (e.packet.mods.size > 2 || e.packet.mods.first().length > 50)) {
+        Vars.netServer.admins.blacklistDos(e.connection.address);
+        return;
+    }
     api.getBanned({
         ip: e.connection.address,
         uuid: e.packet.uuid
