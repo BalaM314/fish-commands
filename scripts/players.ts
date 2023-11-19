@@ -748,7 +748,7 @@ We apologize for the inconvenience.`
 	
 	//#region util
 	static antiBotMode(){
-		return this.flagCount >= 8 || this.playersJoinedRecent > 50 || this.antiBotModePersistent || this.antiBotModeForce;
+		return this.flagCount >= 4 || this.playersJoinedRecent > 50 || this.antiBotModePersistent || this.antiBotModeForce;
 	}
 	connected(){
 		return this.player && !this.con.hasDisconnected;

@@ -861,7 +861,7 @@ var FishPlayer = /** @class */ (function () {
     //#endregion
     //#region util
     FishPlayer.antiBotMode = function () {
-        return this.flagCount >= 8 || this.playersJoinedRecent > 50 || this.antiBotModePersistent || this.antiBotModeForce;
+        return this.flagCount >= 4 || this.playersJoinedRecent > 50 || this.antiBotModePersistent || this.antiBotModeForce;
     };
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;

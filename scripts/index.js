@@ -57,15 +57,17 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
     players_1.FishPlayer.playersJoinedRecent++;
     globals_1.ipJoins.increment(e.connection.address);
     Log.debug("Incremnted ".concat(e.connection.address));
-    if (players_1.FishPlayer.antiBotMode() && e.packet.mods.size > 2) {
+    var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
+    var sus = (players_1.FishPlayer.antiBotMode() && (!info || info.timesJoined < 10));
+    if (sus ? e.packet.mods.size > 2
+        : (e.packet.mods.contains(function (str) { return str.length > 50; }))) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " because it had mods"));
         Call.infoToast("[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ".concat(Vars.netServer.admins.dosBlacklist.size), 2);
         return;
     }
-    var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
-    if (globals_1.ipJoins.get(e.connection.address) >= ((players_1.FishPlayer.antiBotMode() && (!info || info.timesJoined < 10)) ? 3 : 15)) {
+    if (globals_1.ipJoins.get(e.connection.address) >= (sus ? 3 : 15)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to too many connections"));
