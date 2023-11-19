@@ -40,7 +40,7 @@ exports.bannedInNamesWords = (function (words) {
 })([
     "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/
 ]);
-exports.adminNames = ["fish", "balame14", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
+exports.adminNames = ["fish", "balamei4", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 exports.substitutions = Object.fromEntries(Object.entries({
     "a": ["\u0430", "\u1E9A", "\u1EA1", "\u1E01", "\u00E4", "\u03B1", "@", "\u0101", "\u0103", "\u0105"],
