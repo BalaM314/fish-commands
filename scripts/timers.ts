@@ -60,7 +60,7 @@ export function initializeTimers(){
 		FishPlayer.playersJoinedLast15Seconds = 0;
 	}, 0, 15);
 	Timer.schedule(() => {
-		if(FishPlayer.flagCount > 8){
+		if(FishPlayer.antiBotMode()){
 			Call.infoToast(`[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ${Vars.netServer.admins.dosBlacklist.size}`, 2);
 		}
 	}, 0, 1);
