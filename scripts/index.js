@@ -65,7 +65,7 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         return;
     }
     var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
-    if ((!info || info.timesJoined < 10) && globals_1.ipJoins.get(e.connection.address) >= (players_1.FishPlayer.antiBotMode() ? 5 : 15)) {
+    if (globals_1.ipJoins.get(e.connection.address) >= ((players_1.FishPlayer.antiBotMode() && (!info || info.timesJoined < 10)) ? 3 : 15)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to too many connections"));
