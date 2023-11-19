@@ -36,7 +36,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		if(e.packet.mods.size > 2){
 			Vars.netServer.admins.blacklistDos(e.connection.address);
 			e.connection.kicked = true;
-			Log.info(`&oAntibot killed connection ${e.connection.address}`);
+			Log.info(`&yAntibot killed connection ${e.connection.address}`);
 			Call.infoToast(`[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ${Vars.netServer.admins.dosBlacklist.size}`, 2);
 			return;
 		}
@@ -44,7 +44,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		if((!info || info.timesJoined < 10) && ipJoins.get(e.connection.address) >= 5){
 			Vars.netServer.admins.blacklistDos(e.connection.address);
 			e.connection.kicked = true;
-			Log.info(`&oAntibot killed connection ${e.connection.address} due to at least 5 connections`);
+			Log.info(`&yAntibot killed connection ${e.connection.address} due to at least 5 connections`);
 		}
 	}
 	api.getBanned({
