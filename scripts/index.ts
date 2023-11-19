@@ -32,20 +32,18 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 	FishPlayer.playersJoinedRecent ++;
 	ipJoins.increment(e.connection.address);
 	Log.debug(`Incremnted ${e.connection.address}`);
-	if(FishPlayer.antiBotMode()){
-		if(e.packet.mods.size > 2){
-			Vars.netServer.admins.blacklistDos(e.connection.address);
-			e.connection.kicked = true;
-			Log.info(`&yAntibot killed connection ${e.connection.address}`);
-			Call.infoToast(`[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ${Vars.netServer.admins.dosBlacklist.size}`, 2);
-			return;
-		}
-		const info = Vars.netServer.admins.getInfoOptional(e.packet.uuid) as mindustryPlayerData;
-		if((!info || info.timesJoined < 10) && ipJoins.get(e.connection.address) >= 5){
-			Vars.netServer.admins.blacklistDos(e.connection.address);
-			e.connection.kicked = true;
-			Log.info(`&yAntibot killed connection ${e.connection.address} due to at least 5 connections`);
-		}
+	if(FishPlayer.antiBotMode() && e.packet.mods.size > 2){
+		Vars.netServer.admins.blacklistDos(e.connection.address);
+		e.connection.kicked = true;
+		Log.info(`&yAntibot killed connection ${e.connection.address} because it had mods`);
+		Call.infoToast(`[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ${Vars.netServer.admins.dosBlacklist.size}`, 2);
+		return;
+	}
+	const info = Vars.netServer.admins.getInfoOptional(e.packet.uuid) as mindustryPlayerData;
+	if((!info || info.timesJoined < 10) && ipJoins.get(e.connection.address) >= (FishPlayer.antiBotMode() ? 5 : 15)){
+		Vars.netServer.admins.blacklistDos(e.connection.address);
+		e.connection.kicked = true;
+		Log.info(`&yAntibot killed connection ${e.connection.address} due to too many connections`);
 	}
 	api.getBanned({
 		ip: e.connection.address,
