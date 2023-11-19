@@ -422,6 +422,8 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					FishPlayer.flagCount ++
 					if(FishPlayer.flagCount >= 8){
 						Vars.netServer.admins.blacklistDos(ip);
+						this.player.connection.kicked = true;
+						Log.info(`Antibot killed connection ${ip}`);
 						return;
 					}
 					logAction("autoflagged", "AntiVPN", this);

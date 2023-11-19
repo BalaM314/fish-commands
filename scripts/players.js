@@ -514,6 +514,8 @@ var FishPlayer = /** @class */ (function () {
                     FishPlayer.flagCount++;
                     if (FishPlayer.flagCount >= 8) {
                         Vars.netServer.admins.blacklistDos(ip);
+                        _this.player.connection.kicked = true;
+                        Log.info("Antibot killed connection ".concat(ip));
                         return;
                     }
                     (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);

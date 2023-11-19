@@ -57,6 +57,8 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
     players_1.FishPlayer.playersJoinedLast15Seconds++;
     if (players_1.FishPlayer.antiBotMode() && (e.packet.mods.size > 2)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
+        e.connection.kicked = true;
+        Log.info("Antibot killed connection ".concat(e.connection.address));
         return;
     }
     api.getBanned({
