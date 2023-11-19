@@ -514,7 +514,7 @@ var FishPlayer = /** @class */ (function () {
                     FishPlayer.flagCount++;
                     if (FishPlayer.antiBotMode()) {
                         Vars.netServer.admins.blacklistDos(ip);
-                        FishPlayer.antiBotModePersist = true;
+                        FishPlayer.onBotWhack();
                         Log.info("&yAntibot killed connection ".concat(ip, " due to flagged while under attack"));
                         _this.player.kick(Packets.KickReason.banned, 10000000);
                         return;
@@ -867,6 +867,13 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.kickNewPlayers = function () {
         return this.antiBotModeOverride;
     };
+    FishPlayer.kickFlaggedPlayers = function () {
+        return (Date.now() - this.botsSlightlySusTime) < 300000; //5 minutes
+    };
+    FishPlayer.onBotWhack = function () {
+        this.antiBotModePersist = true;
+        this.botsSlightlySusTime = Date.now();
+    };
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;
     };
@@ -1169,6 +1176,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.playersJoinedRecent = 0;
     FishPlayer.antiBotModePersist = false;
     FishPlayer.antiBotModeOverride = false;
+    FishPlayer.botsSlightlySusTime = 0;
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;

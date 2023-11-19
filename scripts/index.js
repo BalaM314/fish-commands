@@ -66,14 +66,14 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         (veryLongModName)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
-        players_1.FishPlayer.antiBotModePersist = true;
+        players_1.FishPlayer.onBotWhack();
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " because ").concat(veryLongModName ? "very long mod name" : longModName ? "long mod name" : "it had mods while under attack"));
         return;
     }
     if (globals_1.ipJoins.get(e.connection.address) >= (sus ? 3 : 15)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
-        players_1.FishPlayer.antiBotModePersist = true;
+        players_1.FishPlayer.onBotWhack();
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to too many connections"));
     }
     api.getBanned({
