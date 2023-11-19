@@ -56,6 +56,7 @@ Events.on(EventType.PlayerLeave, function (e) {
 Events.on(EventType.ConnectPacketEvent, function (e) {
     players_1.FishPlayer.playersJoinedLast15Seconds++;
     globals_1.ipJoins.increment(e.connection.address);
+    Log.debug("Incremnted ".concat(e.connection.address));
     if (players_1.FishPlayer.antiBotMode()) {
         if (e.packet.mods.size > 2) {
             Vars.netServer.admins.blacklistDos(e.connection.address);
