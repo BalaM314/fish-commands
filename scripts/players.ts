@@ -760,9 +760,10 @@ We apologize for the inconvenience.`
 	}
 	static onBotWhack(){
 		this.antiBotModePersist = true;
-		if(Date.now() - this.lastBotWhacked > 600000){ //10 minutes
+		if(Date.now() - this.lastBotWhacked > 3600000) //1 hour since last bot whack
+			api.sendModerationMessage(`!!! <@&1040193678817378305> Possible ongoing bot attack in **${Mode.name()}**`);
+		else if(Date.now() - this.lastBotWhacked > 600000) //10 minutes
 			api.sendModerationMessage(`!!! Possible ongoing bot attack in **${Mode.name()}**`);
-		}
 		this.lastBotWhacked = Date.now();
 	}
 	connected(){

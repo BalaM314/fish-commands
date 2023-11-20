@@ -868,11 +868,15 @@ var FishPlayer = /** @class */ (function () {
         return this.antiBotModeOverride;
     };
     FishPlayer.kickFlaggedPlayers = function () {
-        return (Date.now() - this.botsSlightlySusTime) < 300000; //5 minutes
+        return (Date.now() - this.lastBotWhacked) < 300000; //5 minutes
     };
     FishPlayer.onBotWhack = function () {
         this.antiBotModePersist = true;
-        this.botsSlightlySusTime = Date.now();
+        if (Date.now() - this.lastBotWhacked > 3600000) //1 hour since last bot whack
+            api.sendModerationMessage("!!! <@&1040193678817378305> Possible ongoing bot attack in **".concat(config_2.Mode.name(), "**"));
+        else if (Date.now() - this.lastBotWhacked > 600000) //10 minutes
+            api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_2.Mode.name(), "**"));
+        this.lastBotWhacked = Date.now();
     };
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;
@@ -1176,7 +1180,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.playersJoinedRecent = 0;
     FishPlayer.antiBotModePersist = false;
     FishPlayer.antiBotModeOverride = false;
-    FishPlayer.botsSlightlySusTime = 0;
+    FishPlayer.lastBotWhacked = 0;
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;
