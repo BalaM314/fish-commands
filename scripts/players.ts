@@ -37,7 +37,7 @@ export class FishPlayer {
 	static playersJoinedRecent = 0;
 	static antiBotModePersist = false;
 	static antiBotModeOverride = false;
-	static botsSlightlySusTime = 0;
+	static lastBotWhacked = 0;
 	
 	//Transients
 	player:mindustryPlayer | null = null;
@@ -756,11 +756,14 @@ We apologize for the inconvenience.`
 		return this.antiBotModeOverride;
 	}
 	static kickFlaggedPlayers(){
-		return (Date.now() - this.botsSlightlySusTime) < 300000; //5 minutes
+		return (Date.now() - this.lastBotWhacked) < 300000; //5 minutes
 	}
 	static onBotWhack(){
 		this.antiBotModePersist = true;
-		this.botsSlightlySusTime = Date.now();
+		if(Date.now() - this.lastBotWhacked > 600000){ //10 minutes
+			api.sendModerationMessage(`!!! Possible ongoing bot attack in **${Mode.name()}**`);
+		}
+		this.lastBotWhacked = Date.now();
 	}
 	connected(){
 		return this.player && !this.con.hasDisconnected;
