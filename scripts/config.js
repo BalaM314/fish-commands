@@ -160,6 +160,6 @@ exports.tips = {
     staff: []
 };
 exports.heuristics = {
-    blocksBrokenAfterJoin: 50 //Will trip if more than this many blocks are broken within 25 seconds of joining.
+    blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };
 exports.stopAntiEvadeTime = 300000; //5 minutes
