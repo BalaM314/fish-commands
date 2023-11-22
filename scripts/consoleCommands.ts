@@ -420,14 +420,19 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 		args: [],
 		description: "Views statistics related to in-development features.",
 		handler({output, admins}){
+			const data = Seq.with(...Object.values(FishPlayer.stats.heuristics.blocksBroken));
+			Sort.instance().sort(data);
+			const zeroes = data.count(i => i == 0);
 			output(
 `Blocks broken heuristic:
 Tripped: ${FishPlayer.stats.heuristics.numTripped}/${FishPlayer.stats.heuristics.total}
 Marked within 20 minutes: ${FishPlayer.stats.heuristics.trippedCorrect}/${FishPlayer.stats.heuristics.numTripped}
+${zeroes}/${data.size} (${Mathf.round(zeroes / data.size, 0.0001)}) of players broke 0 blocks
 List of all players that tripped:
 ${Object.entries(FishPlayer.stats.heuristics.tripped).map(([uuid, tripped]) =>
 	`${admins.getInfoOptional(uuid)?.plainLastName()} &k(${uuid})&fr: ${tripped}`
-).join("\n")}`
+).join("\n")}
+Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 			);
 		}
 	},

@@ -28,6 +28,7 @@ export class FishPlayer {
 			numTripped: 0,
 			total: 0,
 			trippedCorrect: 0,
+			blocksBroken: {} as Record<string, number>
 		}
 	};
 	static lastAuthKicked:FishPlayer | null = null;
@@ -1048,6 +1049,7 @@ We apologize for the inconvenience.`
 			FishPlayer.stats.heuristics.total ++;	
 			Timer.schedule(() => {
 				if(this.connected() && !tripped){
+					FishPlayer.stats.heuristics.blocksBroken[this.uuid] = this.tstats.blocksBroken;
 					if(this.tstats.blocksBroken > heuristics.blocksBrokenAfterJoin){
 						tripped = true;
 						logHTrip(this, "blocks broken after join", `${this.tstats.blocksBroken}/${heuristics.blocksBrokenAfterJoin}`);

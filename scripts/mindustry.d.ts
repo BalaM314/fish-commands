@@ -122,6 +122,7 @@ declare const Core: {
 }
 declare const Mathf: {
 	ceil(val:number):number;
+	round(val:number, step?:number):number;
 }
 declare const SaveIO: {
 	save(name:string):void;
@@ -159,6 +160,7 @@ declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
 	static with<T>(items:Iterable<T>):Seq<T>;
 	contains(item:T):boolean;
 	contains(pred:(item:T) => boolean):boolean;
+	count(pred:(item:T) => boolean):number;
 	/** @deprecated Use select() or retainAll() */
 	filter(pred:(item:T) => boolean):Seq<T>;
 	retainAll(pred:(item:T) => boolean):Seq<T>;
@@ -328,3 +330,8 @@ declare class MMap {
 	plainDescription():string;
 }
 
+declare class Sort {
+	static instance():Sort;
+	sort(input:Seq<unknown> | unknown[]);
+	sort(input:Seq<unknown> | unknown[], fromIndex:number, toIndex:number);
+}

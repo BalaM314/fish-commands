@@ -26,6 +26,15 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var api = require("./api");
@@ -516,11 +525,14 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Views statistics related to in-development features.",
         handler: function (_a) {
             var output = _a.output, admins = _a.admins;
-            output("Blocks broken heuristic:\nTripped: ".concat(players_1.FishPlayer.stats.heuristics.numTripped, "/").concat(players_1.FishPlayer.stats.heuristics.total, "\nMarked within 20 minutes: ").concat(players_1.FishPlayer.stats.heuristics.trippedCorrect, "/").concat(players_1.FishPlayer.stats.heuristics.numTripped, "\nList of all players that tripped:\n").concat(Object.entries(players_1.FishPlayer.stats.heuristics.tripped).map(function (_a) {
+            var data = Seq.with.apply(Seq, __spreadArray([], __read(Object.values(players_1.FishPlayer.stats.heuristics.blocksBroken)), false));
+            Sort.instance().sort(data);
+            var zeroes = data.count(function (i) { return i == 0; });
+            output("Blocks broken heuristic:\nTripped: ".concat(players_1.FishPlayer.stats.heuristics.numTripped, "/").concat(players_1.FishPlayer.stats.heuristics.total, "\nMarked within 20 minutes: ").concat(players_1.FishPlayer.stats.heuristics.trippedCorrect, "/").concat(players_1.FishPlayer.stats.heuristics.numTripped, "\n").concat(zeroes, "/").concat(data.size, " (").concat(Mathf.round(zeroes / data.size, 0.0001), ") of players broke 0 blocks\nList of all players that tripped:\n").concat(Object.entries(players_1.FishPlayer.stats.heuristics.tripped).map(function (_a) {
                 var _b;
                 var _c = __read(_a, 2), uuid = _c[0], tripped = _c[1];
                 return "".concat((_b = admins.getInfoOptional(uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " &k(").concat(uuid, ")&fr: ").concat(tripped);
-            }).join("\n")));
+            }).join("\n"), "\nRaw data for blocks tripped: ").concat(data.toString(" ", function (i) { return i.toString(); })));
         }
     },
 });

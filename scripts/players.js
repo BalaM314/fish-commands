@@ -1149,6 +1149,7 @@ var FishPlayer = /** @class */ (function () {
             FishPlayer.stats.heuristics.total++;
             Timer.schedule(function () {
                 if (_this.connected() && !tripped_1) {
+                    FishPlayer.stats.heuristics.blocksBroken[_this.uuid] = _this.tstats.blocksBroken;
                     if (_this.tstats.blocksBroken > config_1.heuristics.blocksBrokenAfterJoin) {
                         tripped_1 = true;
                         (0, utils_1.logHTrip)(_this, "blocks broken after join", "".concat(_this.tstats.blocksBroken, "/").concat(config_1.heuristics.blocksBrokenAfterJoin));
@@ -1182,6 +1183,7 @@ var FishPlayer = /** @class */ (function () {
             numTripped: 0,
             total: 0,
             trippedCorrect: 0,
+            blocksBroken: {}
         }
     };
     FishPlayer.lastAuthKicked = null;
