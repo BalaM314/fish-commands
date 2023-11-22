@@ -852,7 +852,8 @@ var FishPlayer = /** @class */ (function () {
         return this.flagCount >= 3 || this.playersJoinedRecent > 50 || this.antiBotModePersist || this.antiBotModeOverride;
     };
     FishPlayer.shouldKickNewPlayers = function () {
-        return this.antiBotModeOverride;
+        //return this.antiBotModeOverride;
+        return false;
     };
     FishPlayer.shouldWhackFlaggedPlayers = function () {
         return (Date.now() - this.lastBotWhacked) < 300000; //5 minutes

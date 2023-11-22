@@ -751,7 +751,8 @@ We apologize for the inconvenience.`
 		return this.flagCount >= 3 || this.playersJoinedRecent > 50 || this.antiBotModePersist || this.antiBotModeOverride;
 	}
 	static shouldKickNewPlayers(){
-		return this.antiBotModeOverride;
+		//return this.antiBotModeOverride;
+		return false;
 	}
 	static shouldWhackFlaggedPlayers(){
 		return (Date.now() - this.lastBotWhacked) < 300000; //5 minutes
