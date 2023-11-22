@@ -323,6 +323,7 @@ export class FishPlayer {
 		if(fishP.stelled()) fishP.stopUnit();
 	}
 	static forEachPlayer(func:(player:FishPlayer) => unknown){
+		//TODO improve implementation, laggy once cachedPlayers becomes large
 		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
 			if(player.connected()) func(player);
 		}
@@ -422,12 +423,8 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 					this.stopUnit();
 					this.updateName();
 					FishPlayer.flagCount ++;
-					if(FishPlayer.antiBotMode()){
-						Vars.netServer.admins.blacklistDos(ip);
-						FishPlayer.onBotWhack();
-						Log.info(`&yAntibot killed connection ${ip} due to flagged while under attack`);
-						this.player.kick(Packets.KickReason.banned, 10000000);
-						return;
+					if(FishPlayer.shouldWhackFlaggedPlayers()){
+						FishPlayer.onBotWhack(); //calls whack all flagged players
 					}
 					logAction("autoflagged", "AntiVPN", this);
 					api.sendStaffMessage(`Autoflagged player ${this.name} for suspected vpn!`, "AntiVPN");
@@ -752,11 +749,20 @@ We apologize for the inconvenience.`
 	static antiBotMode(){
 		return this.flagCount >= 3 || this.playersJoinedRecent > 50 || this.antiBotModePersist || this.antiBotModeOverride;
 	}
-	static kickNewPlayers(){
+	static shouldKickNewPlayers(){
 		return this.antiBotModeOverride;
 	}
-	static kickFlaggedPlayers(){
+	static shouldWhackFlaggedPlayers(){
 		return (Date.now() - this.lastBotWhacked) < 300000; //5 minutes
+	}
+	static whackFlaggedPlayers(){
+		this.forEachPlayer(p => {
+			if(p.autoflagged){
+				Vars.netServer.admins.blacklistDos(p.ip());
+				Log.info(`&yAntibot killed connection ${p.ip()} due to flagged while under attack`);
+				p.player.kick(Packets.KickReason.banned, 10000000);
+			}
+		});
 	}
 	static onBotWhack(){
 		this.antiBotModePersist = true;
@@ -765,6 +771,7 @@ We apologize for the inconvenience.`
 		else if(Date.now() - this.lastBotWhacked > 600000) //10 minutes
 			api.sendModerationMessage(`!!! Possible ongoing bot attack in **${Mode.name()}**`);
 		this.lastBotWhacked = Date.now();
+		this.whackFlaggedPlayers();
 	}
 	connected(){
 		return this.player && !this.con.hasDisconnected;

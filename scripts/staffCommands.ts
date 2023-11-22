@@ -537,7 +537,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 `[acid]Antibot status:
 [acid]Enabled: ${colorBadBoolean(FishPlayer.antiBotMode())}
 [acid]Flag count(last 1 minute period): ${FishPlayer.flagCount}
-[acid]Autobanning flagged players: ${colorBadBoolean(FishPlayer.kickFlaggedPlayers())}
+[acid]Autobanning flagged players: ${colorBadBoolean(FishPlayer.shouldWhackFlaggedPlayers())}
 [acid]Recent connect packets(last 1 minute period): ${FishPlayer.playersJoinedRecent}
 [acid]Persist: ${FishPlayer.antiBotModePersist}
 [acid]Override: ${FishPlayer.antiBotModeOverride}`

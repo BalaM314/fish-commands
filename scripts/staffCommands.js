@@ -519,7 +519,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 players_1.FishPlayer.antiBotModeOverride = args.state;
             }
             else {
-                output("[acid]Antibot status:\n[acid]Enabled: ".concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.antiBotMode()), "\n[acid]Flag count(last 1 minute period): ").concat(players_1.FishPlayer.flagCount, "\n[acid]Autobanning flagged players: ").concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.kickFlaggedPlayers()), "\n[acid]Recent connect packets(last 1 minute period): ").concat(players_1.FishPlayer.playersJoinedRecent, "\n[acid]Persist: ").concat(players_1.FishPlayer.antiBotModePersist, "\n[acid]Override: ").concat(players_1.FishPlayer.antiBotModeOverride));
+                output("[acid]Antibot status:\n[acid]Enabled: ".concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.antiBotMode()), "\n[acid]Flag count(last 1 minute period): ").concat(players_1.FishPlayer.flagCount, "\n[acid]Autobanning flagged players: ").concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.shouldWhackFlaggedPlayers()), "\n[acid]Recent connect packets(last 1 minute period): ").concat(players_1.FishPlayer.playersJoinedRecent, "\n[acid]Persist: ").concat(players_1.FishPlayer.antiBotModePersist, "\n[acid]Override: ").concat(players_1.FishPlayer.antiBotModeOverride));
             }
         }
     } }));

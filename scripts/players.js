@@ -376,6 +376,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.forEachPlayer = function (func) {
         var e_6, _a;
         try {
+            //TODO improve implementation, laggy once cachedPlayers becomes large
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
                 if (player.connected())
@@ -512,12 +513,8 @@ var FishPlayer = /** @class */ (function () {
                     _this.stopUnit();
                     _this.updateName();
                     FishPlayer.flagCount++;
-                    if (FishPlayer.antiBotMode()) {
-                        Vars.netServer.admins.blacklistDos(ip);
-                        FishPlayer.onBotWhack();
-                        Log.info("&yAntibot killed connection ".concat(ip, " due to flagged while under attack"));
-                        _this.player.kick(Packets.KickReason.banned, 10000000);
-                        return;
+                    if (FishPlayer.shouldWhackFlaggedPlayers()) {
+                        FishPlayer.onBotWhack(); //calls whack all flagged players
                     }
                     (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);
                     api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
@@ -864,11 +861,20 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.antiBotMode = function () {
         return this.flagCount >= 3 || this.playersJoinedRecent > 50 || this.antiBotModePersist || this.antiBotModeOverride;
     };
-    FishPlayer.kickNewPlayers = function () {
+    FishPlayer.shouldKickNewPlayers = function () {
         return this.antiBotModeOverride;
     };
-    FishPlayer.kickFlaggedPlayers = function () {
+    FishPlayer.shouldWhackFlaggedPlayers = function () {
         return (Date.now() - this.lastBotWhacked) < 300000; //5 minutes
+    };
+    FishPlayer.whackFlaggedPlayers = function () {
+        this.forEachPlayer(function (p) {
+            if (p.autoflagged) {
+                Vars.netServer.admins.blacklistDos(p.ip());
+                Log.info("&yAntibot killed connection ".concat(p.ip(), " due to flagged while under attack"));
+                p.player.kick(Packets.KickReason.banned, 10000000);
+            }
+        });
     };
     FishPlayer.onBotWhack = function () {
         this.antiBotModePersist = true;
@@ -877,6 +883,7 @@ var FishPlayer = /** @class */ (function () {
         else if (Date.now() - this.lastBotWhacked > 600000) //10 minutes
             api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_2.Mode.name(), "**"));
         this.lastBotWhacked = Date.now();
+        this.whackFlaggedPlayers();
     };
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;
