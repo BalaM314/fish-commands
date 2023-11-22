@@ -775,6 +775,9 @@ We apologize for the inconvenience.`
 		this.lastBotWhacked = Date.now();
 		this.whackFlaggedPlayers();
 	}
+	position():string {
+		return `(${Math.floor(this.player.x / 8)}, ${Math.floor(this.player.y / 8)})`
+	}
 	connected(){
 		return this.player && !this.con.hasDisconnected;
 	}
@@ -898,7 +901,7 @@ We apologize for the inconvenience.`
 			}
 		}, time / 1000);
 	}
-	stop(by:FishPlayer | string, duration:number, message?:string){
+	stop(by:FishPlayer | string, duration:number, message?:string, notify = true){
 		this.updateStopTime(duration);
 		this.addHistoryEntry({
 			action: 'stopped',
@@ -906,7 +909,7 @@ We apologize for the inconvenience.`
 			time: Date.now(),
 		});
 		FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
-		if(this.connected()){
+		if(this.connected() && notify){
 			this.stopUnit();
 			this.updateName();
 			this.sendMessage(
@@ -1030,6 +1033,11 @@ We apologize for the inconvenience.`
 		});
 		return messageReceived;
 	}
+	static messageAllExcept(exclude:FishPlayer, message:string){
+		FishPlayer.forEachPlayer(fishP => {
+			if(fishP !== exclude) fishP.sendMessage(message);
+		});
+	}
 
 	//#endregion
 	//#region heuristics
@@ -1043,10 +1051,15 @@ We apologize for the inconvenience.`
 					if(this.tstats.blocksBroken > heuristics.blocksBrokenAfterJoin){
 						tripped = true;
 						logHTrip(this, "blocks broken after join", `${this.tstats.blocksBroken}/${heuristics.blocksBrokenAfterJoin}`);
+						this.stop("automod", config.maxTime, `Automatic stop due to suspicious activity`, false);
+						FishPlayer.messageAllExcept(this,
+`[yellow]Player ${this.cleanedName} has been stopped automatically due to suspected griefing.
+Please look at ${this.position()} and see if they were actually griefing. If they were not, please inform a staff member.`);
 						FishPlayer.stats.heuristics.numTripped ++;
 						FishPlayer.stats.heuristics.tripped[this.uuid] = "waiting";
 						Timer.schedule(() => {
-							FishPlayer.stats.heuristics.tripped[this.uuid] = this.marked();
+							if(FishPlayer.stats.heuristics.tripped[this.uuid] == "waiting")
+								FishPlayer.stats.heuristics.tripped[this.uuid] = this.marked();
 							if(this.marked()) FishPlayer.stats.heuristics.trippedCorrect ++;
 						}, 1200);
 						//this.player.kick(Packets.KickReason.kick, 3600*1000);

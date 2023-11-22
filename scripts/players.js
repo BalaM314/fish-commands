@@ -876,6 +876,9 @@ var FishPlayer = /** @class */ (function () {
         this.lastBotWhacked = Date.now();
         this.whackFlaggedPlayers();
     };
+    FishPlayer.prototype.position = function () {
+        return "(".concat(Math.floor(this.player.x / 8), ", ").concat(Math.floor(this.player.y / 8), ")");
+    };
     FishPlayer.prototype.connected = function () {
         return this.player && !this.con.hasDisconnected;
     };
@@ -1013,7 +1016,8 @@ var FishPlayer = /** @class */ (function () {
             }
         }, time / 1000);
     };
-    FishPlayer.prototype.stop = function (by, duration, message) {
+    FishPlayer.prototype.stop = function (by, duration, message, notify) {
+        if (notify === void 0) { notify = true; }
         this.updateStopTime(duration);
         this.addHistoryEntry({
             action: 'stopped',
@@ -1021,7 +1025,7 @@ var FishPlayer = /** @class */ (function () {
             time: Date.now(),
         });
         FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
-        if (this.connected()) {
+        if (this.connected() && notify) {
             this.stopUnit();
             this.updateName();
             this.sendMessage(message
@@ -1129,6 +1133,12 @@ var FishPlayer = /** @class */ (function () {
         });
         return messageReceived;
     };
+    FishPlayer.messageAllExcept = function (exclude, message) {
+        FishPlayer.forEachPlayer(function (fishP) {
+            if (fishP !== exclude)
+                fishP.sendMessage(message);
+        });
+    };
     //#endregion
     //#region heuristics
     FishPlayer.prototype.activateHeuristics = function () {
@@ -1142,10 +1152,13 @@ var FishPlayer = /** @class */ (function () {
                     if (_this.tstats.blocksBroken > config_1.heuristics.blocksBrokenAfterJoin) {
                         tripped_1 = true;
                         (0, utils_1.logHTrip)(_this, "blocks broken after join", "".concat(_this.tstats.blocksBroken, "/").concat(config_1.heuristics.blocksBrokenAfterJoin));
+                        _this.stop("automod", config.maxTime, "Automatic stop due to suspicious activity", false);
+                        FishPlayer.messageAllExcept(_this, "[yellow]Player ".concat(_this.cleanedName, " has been stopped automatically due to suspected griefing.\nPlease look at ").concat(_this.position(), " and see if they were actually griefing. If they were not, please inform a staff member."));
                         FishPlayer.stats.heuristics.numTripped++;
                         FishPlayer.stats.heuristics.tripped[_this.uuid] = "waiting";
                         Timer.schedule(function () {
-                            FishPlayer.stats.heuristics.tripped[_this.uuid] = _this.marked();
+                            if (FishPlayer.stats.heuristics.tripped[_this.uuid] == "waiting")
+                                FishPlayer.stats.heuristics.tripped[_this.uuid] = _this.marked();
                             if (_this.marked())
                                 FishPlayer.stats.heuristics.trippedCorrect++;
                         }, 1200);
