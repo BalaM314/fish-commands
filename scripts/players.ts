@@ -324,9 +324,10 @@ export class FishPlayer {
 	}
 	static forEachPlayer(func:(player:FishPlayer) => unknown){
 		//TODO improve implementation, laggy once cachedPlayers becomes large
-		for(const [uuid, player] of Object.entries(this.cachedPlayers)){
-			if(player.connected()) func(player);
-		}
+		Groups.player.each(player => {
+			const fishP = this.get(player);
+			func(fishP);
+		});
 	}
 	/**Must be called at player join, before updateName(). */
 	updateSavedInfoFromPlayer(player:mindustryPlayer){

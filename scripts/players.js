@@ -374,22 +374,12 @@ var FishPlayer = /** @class */ (function () {
             fishP.stopUnit();
     };
     FishPlayer.forEachPlayer = function (func) {
-        var e_6, _a;
-        try {
-            //TODO improve implementation, laggy once cachedPlayers becomes large
-            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var _d = __read(_c.value, 2), uuid = _d[0], player = _d[1];
-                if (player.connected())
-                    func(player);
-            }
-        }
-        catch (e_6_1) { e_6 = { error: e_6_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_6) throw e_6.error; }
-        }
+        var _this = this;
+        //TODO improve implementation, laggy once cachedPlayers becomes large
+        Groups.player.each(function (player) {
+            var fishP = _this.get(player);
+            func(fishP);
+        });
     };
     /**Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
@@ -416,7 +406,7 @@ var FishPlayer = /** @class */ (function () {
     };
     /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
-        var e_7, _a;
+        var e_6, _a;
         if (!this.connected())
             return; //No player, no need to update
         var prefix = '';
@@ -434,12 +424,12 @@ var FishPlayer = /** @class */ (function () {
                 prefix += flag.prefix;
             }
         }
-        catch (e_7_1) { e_7 = { error: e_7_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_7) throw e_7.error; }
+            finally { if (e_6) throw e_6.error; }
         }
         prefix += this.rank.prefix;
         if (prefix != "")
@@ -468,7 +458,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.prototype.checkAntiEvasion = function () {
-        var e_8, _a;
+        var e_7, _a;
         var _b, _c;
         FishPlayer.updatePunishedIPs();
         try {
@@ -485,12 +475,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (_e && !_e.done && (_a = _d.return)) _a.call(_d);
             }
-            finally { if (e_8) throw e_8.error; }
+            finally { if (e_7) throw e_7.error; }
         }
         return true;
     };
@@ -834,7 +824,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_9, _a;
+        var e_8, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -848,12 +838,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_9_1) { e_9 = { error: e_9_1 }; }
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_9) throw e_9.error; }
+            finally { if (e_8) throw e_8.error; }
         }
     };
     //#endregion
