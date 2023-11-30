@@ -327,31 +327,31 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             args.player.setFlag("member", args.value);
             outputSuccess("Set membership status of player \"".concat(args.player.name, "\" to ").concat(args.value, "."));
         }
-    }, ipban: {
+    }, ban: {
         args: [],
-        description: "Bans a player's IP.",
+        description: "Bans a player by UUID and IP.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, admins = _a.admins;
-            (0, menus_1.menu)("IP BAN", "Choose a player to IP ban.", (0, utils_1.setToArray)(Groups.player), sender, function (_a) {
+            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, utils_1.setToArray)(Groups.player), sender, function (_a) {
                 var option = _a.option;
                 if (option.admin) {
                     outputFail("Cannot ip ban an admin.");
                 }
                 else {
-                    (0, menus_1.menu)("Confirm", "Are you sure you want to IP-ban ".concat(option.name, "?"), ["Yes", "Cancel"], sender, function (_a) {
+                    (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(option.name, "?"), ["Yes", "Cancel"], sender, function (_a) {
                         var confirm = _a.option;
                         if (confirm == "Yes") {
-                            admins.banPlayerIP(option.ip());
-                            api.ban({ ip: option.ip() });
-                            Log.info("".concat(option.ip(), " was banned."));
+                            admins.banPlayerIP(option.ip()); //this also bans the UUID
+                            api.ban({ ip: option.ip(), uuid: option.uuid() });
+                            Log.info("".concat(option.ip(), "/").concat(option.uuid(), " was banned."));
                             (0, utils_1.logAction)("ip-banned", sender, option.getInfo());
                             outputSuccess("IP-banned player ".concat(option.name, "."));
                             Groups.player.each(function (player) {
                                 if (admins.isIDBanned(player.uuid())) {
                                     api.addStopped(player.uuid(), config_1.maxTime);
                                     player.con.kick(Packets.KickReason.banned);
-                                    Call.sendMessage("[scarlet]Player [yellow]".concat(player.name, " [scarlet] has been whacked."));
+                                    Call.sendMessage("[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked."));
                                 }
                             });
                         }
@@ -361,6 +361,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     }, false);
                 }
             }, true, function (opt) { return opt.name; });
+        }
+    }, ipban: {
+        args: [],
+        description: "This command was moved to /ban.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            (0, commands_1.fail)("This command was moved to [scarlet]/ban[]");
         }
     }, kill: {
         args: ["player:player"],

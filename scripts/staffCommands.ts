@@ -323,27 +323,27 @@ export const commands = commandList({
 		}
 	},
 
-	ipban: {
+	ban: {
 		args: [],
-		description: "Bans a player's IP.",
+		description: "Bans a player by UUID and IP.",
 		perm: Perm.admin,
 		handler({sender, outputFail, outputSuccess, admins}){
-			menu(`IP BAN`, "Choose a player to IP ban.", setToArray(Groups.player), sender, ({option}) => {
+			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
 				if(option.admin){
 					outputFail(`Cannot ip ban an admin.`);
 				} else {
-					menu("Confirm", `Are you sure you want to IP-ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
+					menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
 						if(confirm == "Yes"){
-							admins.banPlayerIP(option.ip());
-							api.ban({ip: option.ip()});
-							Log.info(`${option.ip()} was banned.`);
+							admins.banPlayerIP(option.ip()); //this also bans the UUID
+							api.ban({ip: option.ip(), uuid: option.uuid()});
+							Log.info(`${option.ip()}/${option.uuid()} was banned.`);
 							logAction("ip-banned", sender, option.getInfo());
 							outputSuccess(`IP-banned player ${option.name}.`);
 							Groups.player.each(player => {
 								if(admins.isIDBanned(player.uuid())){
 									api.addStopped(player.uuid(), maxTime);
 									player.con.kick(Packets.KickReason.banned);
-									Call.sendMessage(`[scarlet]Player [yellow]${player.name} [scarlet] has been whacked.`);
+									Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked.`);
 								}
 							});
 						} else {
@@ -352,6 +352,15 @@ export const commands = commandList({
 					}, false);
 				}
 			}, true, opt => opt.name);
+		}
+	},
+
+	ipban: {
+		args: [],
+		description: "This command was moved to /ban.",
+		perm: Perm.admin,
+		handler({}){
+			fail(`This command was moved to [scarlet]/ban[]`);
 		}
 	},
 
