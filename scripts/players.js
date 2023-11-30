@@ -1038,8 +1038,6 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.prototype.free = function (by) {
-        if (!this.marked())
-            return;
         by !== null && by !== void 0 ? by : (by = "console");
         this.autoflagged = false; //Might as well set autoflagged to false
         this.unmarkTime = -1;

@@ -924,9 +924,8 @@ We apologize for the inconvenience.`
 		}
 	}
 	free(by:FishPlayer | string){
-		if(!this.marked()) return;
 		by ??= "console";
-
+		
 		this.autoflagged = false; //Might as well set autoflagged to false
 		this.unmarkTime = -1;
 		api.free(this.uuid);
