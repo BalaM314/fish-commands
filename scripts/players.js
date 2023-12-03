@@ -770,7 +770,7 @@ var FishPlayer = /** @class */ (function () {
         out.writeArray(Object.entries(this.cachedPlayers)
             .filter(function (_a) {
             var _b = __read(_a, 2), uuid = _b[0], fishP = _b[1];
-            return fishP.shouldCache();
+            return fishP.shouldSave();
         }), function (_a) {
             var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
             return player.write(out);
@@ -784,7 +784,7 @@ var FishPlayer = /** @class */ (function () {
         }
         Core.settings.manualSave();
     };
-    FishPlayer.prototype.shouldCache = function () {
+    FishPlayer.prototype.shouldSave = function () {
         return config_2.Mode.sandbox() || (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
     };
     FishPlayer.getFishPlayersString = function () {

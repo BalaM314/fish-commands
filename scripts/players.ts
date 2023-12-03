@@ -686,7 +686,7 @@ We apologize for the inconvenience.`
 		out.writeNumber(this.saveVersion, 2);
 		out.writeArray(
 			Object.entries(this.cachedPlayers)
-				.filter(([uuid, fishP]) => fishP.shouldCache()),
+				.filter(([uuid, fishP]) => fishP.shouldSave()),
 			([uuid, player]) => player.write(out)
 		);
 		let string = out.string;
@@ -698,7 +698,7 @@ We apologize for the inconvenience.`
 		}
 		Core.settings.manualSave();
 	}
-	shouldCache(){
+	shouldSave(){
 		return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
 	}
 	static getFishPlayersString(){
