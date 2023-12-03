@@ -106,9 +106,12 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
+        var highlight = fishPlayer.highlight;
         if ((0, utils_1.matchFilter)(text, fishPlayer.chatStrictness) && !fishPlayer.hasPerm("bypassChatFilter")) {
             Log.info("Censored message from player ".concat(player.name, ": ").concat(text));
-            text = "[#f456f]I really hope everyone is having a fun time :) <3";
+            players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(text, "\""));
+            text = "I really hope everyone is having a fun time :) <3";
+            highlight !== null && highlight !== void 0 ? highlight : (highlight = "[#f456f]");
         }
         if (text.startsWith("./"))
             text = text.replace("./", "/");
@@ -117,10 +120,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             Log.info("<muted>".concat(player.name, ": ").concat(text));
             return null;
         }
-        if (fishPlayer.highlight) {
-            return fishPlayer.highlight + text;
-        }
-        return text;
+        return (highlight !== null && highlight !== void 0 ? highlight : "") + text;
     });
     // Action filters
     Vars.netServer.admins.addActionFilter(function (action) {

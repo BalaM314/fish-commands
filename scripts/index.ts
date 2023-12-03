@@ -88,10 +88,12 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	// Mute muted players
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
 		const fishPlayer = FishPlayer.get(player);
-
+		let highlight = fishPlayer.highlight;
 		if(matchFilter(text, fishPlayer.chatStrictness) && !fishPlayer.hasPerm("bypassChatFilter")){
 			Log.info(`Censored message from player ${player.name}: ${text}`);
-			text = `[#f456f]I really hope everyone is having a fun time :) <3`;
+			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${text}"`);
+			text = `I really hope everyone is having a fun time :) <3`;
+			highlight ??= `[#f456f]`;
 		}
 
 		if(text.startsWith("./")) text = text.replace("./", "/");
@@ -102,13 +104,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 			return null;
 		}
 
-
-		if(fishPlayer.highlight){
-			return fishPlayer.highlight + text;
-		}
-
-		return text;
-
+		return (highlight ?? "") + text;
 	});
 
 	// Action filters
