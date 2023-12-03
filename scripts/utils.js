@@ -515,6 +515,7 @@ function escapeStringColorsServer(str) {
     return str.replace(/&/g, "&&");
 }
 exports.escapeStringColorsServer = escapeStringColorsServer;
+/** Triggers the restart countdown. Execution always returns from this function. */
 function serverRestartLoop(sec) {
     if (sec > 0) {
         if (sec < 15 || sec % 5 == 0)

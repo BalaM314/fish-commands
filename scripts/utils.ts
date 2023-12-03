@@ -412,6 +412,7 @@ export function escapeStringColorsServer(str:string):string {
 	return str.replace(/&/g, "&&");
 }
 
+/** Triggers the restart countdown. Execution always returns from this function. */
 export function serverRestartLoop(sec:number){
 	if(sec > 0){
 		if(sec < 15 || sec % 5 == 0) Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);

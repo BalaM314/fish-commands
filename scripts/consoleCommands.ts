@@ -331,7 +331,10 @@ export const commands = consoleCommandList({
 		description: "Restarts the server.",
 		handler({args}){
 			if(Mode.pvp()){
-				if(args.time === -1){
+				if(Groups.player.isEmpty()){
+					Log.info(`Restarting immediately as no players are online.`);
+					serverRestartLoop(0);
+				} else if(args.time === -1){
 					Log.info(`&rRestarting in 15 seconds (this will interrupt the current PVP match).&fr`);
 					Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---`);
 					serverRestartLoop(15);
