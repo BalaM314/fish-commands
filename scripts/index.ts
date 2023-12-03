@@ -89,7 +89,10 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
 		const fishPlayer = FishPlayer.get(player);
 		let highlight = fishPlayer.highlight;
-		if(matchFilter(text, fishPlayer.chatStrictness) && !fishPlayer.hasPerm("bypassChatFilter")){
+		if(
+			(!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
+			&& matchFilter(text, fishPlayer.chatStrictness)
+		){
 			Log.info(`Censored message from player ${player.name}: ${text}`);
 			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${text}"`);
 			text = `I really hope everyone is having a fun time :) <3`;

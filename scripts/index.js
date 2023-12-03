@@ -107,7 +107,8 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     Vars.netServer.admins.addChatFilter(function (player, text) {
         var fishPlayer = players_1.FishPlayer.get(player);
         var highlight = fishPlayer.highlight;
-        if ((0, utils_1.matchFilter)(text, fishPlayer.chatStrictness) && !fishPlayer.hasPerm("bypassChatFilter")) {
+        if ((!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
+            && (0, utils_1.matchFilter)(text, fishPlayer.chatStrictness)) {
             Log.info("Censored message from player ".concat(player.name, ": ").concat(text));
             players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(text, "\""));
             text = "I really hope everyone is having a fun time :) <3";
