@@ -522,11 +522,27 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, output = _a.output;
             if (args.state !== null) {
-                outputSuccess("Set antibot mode override to ".concat(args.state));
                 players_1.FishPlayer.antiBotModeOverride = args.state;
+                outputSuccess("Set antibot mode override to ".concat(args.state, "."));
+                if (args.state)
+                    output("[scarlet]MAKE SURE TO TURN IT OFF!!!");
             }
             else {
                 output("[acid]Antibot status:\n[acid]Enabled: ".concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.antiBotMode()), "\n[acid]Flag count(last 1 minute period): ").concat(players_1.FishPlayer.flagCount, "\n[acid]Autobanning flagged players: ").concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.shouldWhackFlaggedPlayers()), "\n[acid]Kicking new players: ").concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.shouldKickNewPlayers()), "\n[acid]Recent connect packets(last 1 minute period): ").concat(players_1.FishPlayer.playersJoinedRecent, "\n[acid]Persist: ").concat(players_1.FishPlayer.antiBotModePersist, "\n[acid]Override: ").concat(players_1.FishPlayer.antiBotModeOverride));
             }
+        }
+    }, chatstrictness: {
+        args: ["player:player", "value:string"],
+        description: "Sets chat strictness for a player.",
+        perm: commands_1.Perm.mod,
+        handler: function (_a) {
+            var _b = _a.args, player = _b.player, value = _b.value, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (!sender.canModerate(player, true))
+                (0, commands_1.fail)("You do not have permission to set the chat strictness level of this player.");
+            if (!(value == "chat" || value == "strict"))
+                (0, commands_1.fail)("Invalid chat strictness level: valid levels are \"chat\", \"strict\"");
+            player.chatStrictness = value;
+            //TODO way to reset color for outputSuccess, probably finish outputf
+            outputSuccess("Set chat strictness for player ".concat(player.cleanedName, " to ").concat(value, "."));
         }
     } }));

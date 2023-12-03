@@ -539,8 +539,9 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 		perm: Perm.admin,
 		handler({args, outputSuccess, output}){
 			if(args.state !== null){
-				outputSuccess(`Set antibot mode override to ${args.state}`);
 				FishPlayer.antiBotModeOverride = args.state;
+				outputSuccess(`Set antibot mode override to ${args.state}.`);
+				if(args.state) output(`[scarlet]MAKE SURE TO TURN IT OFF!!!`);
 			} else {
 				output(
 `[acid]Antibot status:
@@ -553,6 +554,18 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 [acid]Override: ${FishPlayer.antiBotModeOverride}`
 				);
 			}
+		}
+	},
+	chatstrictness: {
+		args: ["player:player", "value:string"],
+		description: "Sets chat strictness for a player.",
+		perm: Perm.mod,
+		handler({args:{player, value}, sender, outputSuccess}){
+			if(!sender.canModerate(player, true)) fail(`You do not have permission to set the chat strictness level of this player.`);
+			if(!(value == "chat" || value == "strict")) fail(`Invalid chat strictness level: valid levels are "chat", "strict"`);
+			player.chatStrictness = value;
+			//TODO way to reset color for outputSuccess, probably finish outputf
+			outputSuccess(`Set chat strictness for player ${player.cleanedName} to ${value}.`);
 		}
 	}
 
