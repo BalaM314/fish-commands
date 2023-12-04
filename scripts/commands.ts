@@ -437,7 +437,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 						} else {
 							sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 							if(fishSender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
-							Log.err(`Unhandled error in command execution: ${sender.cleanedName} ran /${sender.tapInfo.commandName}`);
+							Log.err(`Unhandled error in command execution: ${fishSender.cleanedName} ran /${fishSender.tapInfo.commandName}`);
 							Log.err(err as Error);
 						}
 					} finally {

@@ -529,7 +529,7 @@ function register(commands, clientHandler, serverHandler) {
                             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
                             if (fishSender.hasPerm("seeErrorMessages"))
                                 sender.sendMessage((0, utils_1.parseError)(err));
-                            Log.err("Unhandled error in command execution: ".concat(sender.cleanedName, " ran /").concat(sender.tapInfo.commandName));
+                            Log.err("Unhandled error in command execution: ".concat(fishSender.cleanedName, " ran /").concat(fishSender.tapInfo.commandName));
                             Log.err(err);
                         }
                     }
