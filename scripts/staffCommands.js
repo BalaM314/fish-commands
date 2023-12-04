@@ -208,8 +208,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             }
             if (globals_1.uuidPattern.test(args.name)) {
                 var info = admins.getInfoOptional(args.name);
-                if (info != null)
+                if (info != null) {
                     stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : 604800000);
+                }
+                else {
+                    outputFail("Unknown UUID ".concat(args.name));
+                }
                 return;
             }
             var possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));

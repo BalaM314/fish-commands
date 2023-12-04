@@ -195,8 +195,11 @@ export const commands = commandList({
 			
 			if(uuidPattern.test(args.name)){
 				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
-				if(info != null)
+				if(info != null) {
 					stop(info, args.time ?? 604800000);
+				} else {
+					outputFail(`Unknown UUID ${args.name}`);
+				}
 				return;
 			}
 
