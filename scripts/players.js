@@ -918,7 +918,10 @@ var FishPlayer = /** @class */ (function () {
         configurable: true
     });
     FishPlayer.prototype.ip = function () {
-        return this.player.con.address;
+        if (this.connected())
+            return this.player.con.address;
+        else
+            return this.info().lastIP;
     };
     FishPlayer.prototype.info = function () {
         return Vars.netServer.admins.getInfo(this.uuid);

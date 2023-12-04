@@ -810,7 +810,8 @@ We apologize for the inconvenience.`
 		return this.player?.con;
 	}
 	ip():string {
-		return this.player.con.address;
+		if(this.connected()) return this.player.con.address;
+		else return this.info().lastIP;
 	}
 	info():mindustryPlayerData {
 		return Vars.netServer.admins.getInfo(this.uuid);
