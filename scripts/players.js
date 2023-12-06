@@ -543,7 +543,7 @@ var FishPlayer = /** @class */ (function () {
     /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
         if ((0, utils_1.matchFilter)(this.name, "name")) {
-            this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
+            this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name because it contains a banned word.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
         else if (Strings.stripColors(this.name).trim().length == 0) {
             this.player.kick("[scarlet]\"".concat((0, utils_1.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is blank. Please change it."), 1);

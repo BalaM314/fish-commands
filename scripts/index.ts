@@ -15,7 +15,7 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, logErrors, matchFilter, serverRestartLoop } from "./utils";
+import { StringIO, escapeStringColorsServer, logErrors, matchFilter, serverRestartLoop } from "./utils";
 
 
 
@@ -89,12 +89,13 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
 		const fishPlayer = FishPlayer.get(player);
 		let highlight = fishPlayer.highlight;
+		let filterTrip;
 		if(
 			(!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
-			&& matchFilter(text, fishPlayer.chatStrictness)
+			&& (filterTrip = matchFilter(text, fishPlayer.chatStrictness))
 		){
-			Log.info(`Censored message from player ${player.name}: ${text}`);
-			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${text}"`);
+			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(text)}"; contained "${filterTrip}"`);
+			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${text}" contained "${filterTrip}"`);
 			text = `I really hope everyone is having a fun time :) <3`;
 			highlight ??= `[#f456f]`;
 		}

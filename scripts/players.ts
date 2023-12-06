@@ -460,7 +460,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 	checkName(){
 		if(matchFilter(this.name, "name")){
 			this.player.kick(
-`[scarlet]"${this.name}[scarlet]" is not an allowed name.
+`[scarlet]"${this.name}[scarlet]" is not an allowed name because it contains a banned word.
 
 If you are unable to change it, please download Mindustry from Steam or itch.io.`
 			, 1);

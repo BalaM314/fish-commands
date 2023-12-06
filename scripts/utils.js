@@ -349,7 +349,7 @@ function matchFilter(text, strict) {
             var moreReplacedText_1 = replacedText;
             whitelist.forEach(function (w) { return moreReplacedText_1 = moreReplacedText_1.replace(new RegExp(w, "g"), ""); });
             if (word instanceof RegExp ? word.test(moreReplacedText_1) : moreReplacedText_1.includes(word))
-                return { value: true };
+                return { value: word instanceof RegExp ? word.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : word }; //parsing regex with regex, massive hack
         }
     };
     try {

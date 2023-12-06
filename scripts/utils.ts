@@ -272,14 +272,15 @@ export function escapeTextDiscord(text:string):string {
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns 
  */
-export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | "name"):boolean {
+export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | "name"):false | string {
 	//Replace substitutions
 	const replacedText = cleanText(text, true);
 	for(const [word, whitelist] of bannedWords.concat(strict == "strict" ? strictBannedWords : []).concat(strict == "name" ? bannedInNamesWords : [])){
 		if(word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)){
 			let moreReplacedText = replacedText;
 			whitelist.forEach(w => moreReplacedText = moreReplacedText.replace(new RegExp(w, "g"), ""));
-			if(word instanceof RegExp ? word.test(moreReplacedText) : moreReplacedText.includes(word)) return true;
+			if(word instanceof RegExp ? word.test(moreReplacedText) : moreReplacedText.includes(word))
+			return word instanceof RegExp ? word.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : word; //parsing regex with regex, massive hack
 		}
 	}
 	return false;
