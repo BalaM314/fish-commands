@@ -362,20 +362,19 @@ export class FishPlayer {
 			prefix += flag.prefix;
 		}
 		prefix += this.rank.prefix;
-		if(prefix != "")
-			this.player.name = prefix + " " + this.name;
-		else
-			this.player.name = this.name;
-
+		if(prefix.length > 0) prefix = " " + prefix;
+		let replacedName;
 		if(cleanText(this.name, true).includes("hacker")){
 			//"Don't be a script kiddie"
 			//-LiveOverflow, 2015
 			if(/h.*a.*c.*k.*[3e].*r/i.test(this.name)){
-				this.player.name = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "[brown]script kiddie[]");
+				replacedName = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "[brown]script kiddie[]");
 			} else {
-				this.player.name = "[brown]script kiddie";
+				replacedName = "[brown]script kiddie";
 			}
-		}
+		} else replacedName = this.name;
+		this.player.name = prefix + replacedName;
+
 	}
 	updateAdminStatus(){
 		if(this.hasPerm("admin")){
