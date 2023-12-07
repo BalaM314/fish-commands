@@ -15,7 +15,7 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, escapeStringColorsServer, logErrors, matchFilter, serverRestartLoop } from "./utils";
+import { StringIO, crash, escapeStringColorsServer, logErrors, matchFilter, serverRestartLoop } from "./utils";
 
 
 
@@ -217,9 +217,9 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
 		let pos;
 		({pos, uuid, action, type} = e);
-		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]);
+		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]) ?? crash(`Nonexistent tile`);
 	} else return;
-	if(tile == null) return;
+	if(tile == null) crash(`Nonexistent tile`);
 	[tile, uuid, action, type, time] satisfies [Tile, string, string, string, number];
 
 	tile.getLinkedTiles((t:Tile) => {

@@ -77,7 +77,7 @@ var FishPlayer = /** @class */ (function () {
             blocksBroken: 0,
         };
         this.chatStrictness = "chat";
-        this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (function () { throw new Error("Attempted to create FishPlayer with no UUID"); })();
+        this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (0, utils_1.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_m = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _m !== void 0 ? _m : "Unnamed player [ERROR]";
         this.muted = muted;
         this.unmarkTime = unmarked;
@@ -610,7 +610,7 @@ var FishPlayer = /** @class */ (function () {
         switch (version) {
             case 0:
                 return new this({
-                    uuid: (_a = fishPlayerData.readString(2)) !== null && _a !== void 0 ? _a : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    uuid: (_a = fishPlayerData.readString(2)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_b = fishPlayerData.readString(2)) !== null && _b !== void 0 ? _b : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     member: fishPlayerData.readBool(),
@@ -630,7 +630,7 @@ var FishPlayer = /** @class */ (function () {
                 }, player);
             case 1:
                 return new this({
-                    uuid: (_d = fishPlayerData.readString(2)) !== null && _d !== void 0 ? _d : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    uuid: (_d = fishPlayerData.readString(2)) !== null && _d !== void 0 ? _d : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_e = fishPlayerData.readString(2)) !== null && _e !== void 0 ? _e : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     member: fishPlayerData.readBool(),
@@ -650,7 +650,7 @@ var FishPlayer = /** @class */ (function () {
                 }, player);
             case 2:
                 return new this({
-                    uuid: (_g = fishPlayerData.readString(2)) !== null && _g !== void 0 ? _g : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    uuid: (_g = fishPlayerData.readString(2)) !== null && _g !== void 0 ? _g : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_h = fishPlayerData.readString(2)) !== null && _h !== void 0 ? _h : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     stopped: fishPlayerData.readBool(),
@@ -671,7 +671,7 @@ var FishPlayer = /** @class */ (function () {
             case 3:
                 //Extremely cursed due to a catastrophic error
                 var dataPart1 = {
-                    uuid: (_k = fishPlayerData.readString(2)) !== null && _k !== void 0 ? _k : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    uuid: (_k = fishPlayerData.readString(2)) !== null && _k !== void 0 ? _k : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_l = fishPlayerData.readString(2)) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool()
@@ -685,7 +685,7 @@ var FishPlayer = /** @class */ (function () {
                     fishPlayerData.offset -= 13;
                     var chars = fishPlayerData.read(24);
                     if (chars !== dataPart1.uuid)
-                        throw new Error("Unable to repair data: next 24 chars ".concat(chars, " were not equal to uuid ").concat(dataPart1.uuid));
+                        (0, utils_1.crash)("Unable to repair data: next 24 chars ".concat(chars, " were not equal to uuid ").concat(dataPart1.uuid));
                     Log.warn("Repaired stored data for ".concat(chars, "."));
                     unmarkTime = -1; //the data is lost, set as default
                 }
@@ -699,7 +699,7 @@ var FishPlayer = /** @class */ (function () {
                     }), rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)), rank: (_m = fishPlayerData.readString(2)) !== null && _m !== void 0 ? _m : "", flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }), usid: fishPlayerData.readString(2) }), player);
             case 4:
                 return new this({
-                    uuid: (_o = fishPlayerData.readString(2)) !== null && _o !== void 0 ? _o : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    uuid: (_o = fishPlayerData.readString(2)) !== null && _o !== void 0 ? _o : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_p = fishPlayerData.readString(2)) !== null && _p !== void 0 ? _p : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool(),
@@ -720,7 +720,7 @@ var FishPlayer = /** @class */ (function () {
                 }, player);
             case 5:
                 return new this({
-                    uuid: (_r = fishPlayerData.readString(2)) !== null && _r !== void 0 ? _r : (function () { throw new Error("Failed to deserialize FishPlayer: UUID was null."); })(),
+                    uuid: (_r = fishPlayerData.readString(2)) !== null && _r !== void 0 ? _r : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_s = fishPlayerData.readString(2)) !== null && _s !== void 0 ? _s : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool(),
@@ -740,7 +740,7 @@ var FishPlayer = /** @class */ (function () {
                     usid: fishPlayerData.readString(2),
                     chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
                 }, player);
-            default: throw new Error("Unknown save version ".concat(version));
+            default: (0, utils_1.crash)("Unknown save version ".concat(version));
         }
     };
     FishPlayer.prototype.write = function (out) {

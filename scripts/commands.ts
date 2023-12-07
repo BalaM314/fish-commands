@@ -8,6 +8,7 @@ import type {
 	SelectClasslikeEnumKeys, ServerCommandHandler
 } from "./types";
 import {
+	crash,
 	escapeStringColorsServer, getBlock, getTeam, getUnitType, parseError, parseTimeString,
 	tagProcessor
 } from "./utils";
@@ -72,7 +73,7 @@ export class Perm {
 	check:(fishP:FishPlayer) => boolean;
 	constructor(public name:string, check:RankName | ((fishP:FishPlayer) => boolean), public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){
 		if(typeof check == "string"){
-			if(Rank.getByName(check) == null) throw new Error(`Invalid perm ${name}: invalid rank name ${check}`);
+			if(Rank.getByName(check) == null) crash(`Invalid perm ${name}: invalid rank name ${check}`);
 			this.check = fishP => fishP.ranksAtLeast(check as RankName);
 		} else {
 			this.check = check;
@@ -90,13 +91,13 @@ function processArgString(str:string):CommandArg {
 	//this was copypasted from mlogx haha
 	const matchResult = str.match(/(\w+):(\w+)(\?)?/);
 	if(!matchResult){
-		throw new Error(`Bad arg string ${str}: does not match pattern word:word(?)`);
+		crash(`Bad arg string ${str}: does not match pattern word:word(?)`);
 	}
 	const [, name, type, isOptional] = matchResult;
 	if((commandArgTypes.includes as (thing:string) => thing is CommandArgType)(type)){
 		return { name, type, isOptional: !! isOptional };
 	} else {
-		throw new Error(`Bad arg string ${str}: invalid type ${type}`);
+		crash(`Bad arg string ${str}: invalid type ${type}`);
 	}
 }
 
@@ -373,7 +374,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 			convertArgs(processedCmdArgs, true),
 			data.description,
 			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (unjoinedRawArgs:string[], sender:mindustryPlayer) => {
-				if(!initialized) throw new Error(`Commands not initialized!`);
+				if(!initialized) crash(`Commands not initialized!`);
 
 				const fishSender = FishPlayer.get(sender);
 
@@ -416,7 +417,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 							allCommands,
 							currentTapMode: fishSender.tapInfo.commandName == null ? "off" : fishSender.tapInfo.mode,
 							handleTaps(mode){
-								if(data.tapped == undefined) throw new Error(`No tap handler to activate: command "${name}"`);
+								if(data.tapped == undefined) crash(`No tap handler to activate: command "${name}"`);
 								if(mode == "off"){
 									fishSender.tapInfo.commandName = null;
 								} else {
@@ -464,7 +465,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 			convertArgs(processedCmdArgs, false),
 			data.description,
 			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[]) => {
-				if(!initialized) throw new Error(`Commands not initialized!`);
+				if(!initialized) crash(`Commands not initialized!`);
 
 				//closure over processedCmdArgs, should be fine
 				//Process the args
@@ -516,7 +517,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 		//TODO Dubious implementation
 		switch(argToResolve.type){
 			case "player": Groups.player.each(player => optionsList.push(player)); break;
-			default: throw new Error(`Unable to resolve arg of type ${argToResolve.type}`);
+			default: crash(`Unable to resolve arg of type ${argToResolve.type}`);
 		}
 		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, ({option}) => {
 			processedArgs[argToResolve.name] = FishPlayer.get(option);
@@ -529,7 +530,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 
 export function initialize(){
 	if(initialized){
-		throw new Error("Already initialized commands.");
+		crash("Already initialized commands.");
 	}
 	for(const [key, command] of Object.entries(allConsoleCommands)){
 		command.data = command.init?.();

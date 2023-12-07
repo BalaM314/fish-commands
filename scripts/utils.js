@@ -36,7 +36,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -147,7 +147,7 @@ exports.getColor = getColor;
 function nearbyEnemyTile(unit, dist) {
     //because the indexer is buggy
     if (dist > 10)
-        throw new Error("nearbyEnemyTile(): dist (".concat(dist, ") is too high!"));
+        crash("nearbyEnemyTile(): dist (".concat(dist, ") is too high!"));
     var x = Math.floor(unit.x / Vars.tilesize);
     var y = Math.floor(unit.y / Vars.tilesize);
     for (var i = -dist; i <= dist; i++) {
@@ -210,7 +210,7 @@ var StringIO = /** @class */ (function () {
     StringIO.prototype.read = function (length) {
         if (length === void 0) { length = 1; }
         if (this.offset + length > this.string.length)
-            throw new Error("Unexpected EOF");
+            crash("Unexpected EOF");
         return this.string.slice(this.offset, this.offset += length);
     };
     StringIO.prototype.write = function (str) {
@@ -230,7 +230,7 @@ var StringIO = /** @class */ (function () {
             this.string += "0".repeat(lenlen);
         }
         else if (typeof str !== "string") {
-            throw new Error("Attempted to serialize string ".concat(str, ", but it was not a string"));
+            crash("Attempted to serialize string ".concat(str, ", but it was not a string"));
         }
         else if (str.length > (Math.pow(10, lenlen) - 1)) {
             if (truncate) {
@@ -239,7 +239,7 @@ var StringIO = /** @class */ (function () {
                 this.string += str.slice(0, (Math.pow(10, lenlen) - 1));
             }
             else {
-                throw new Error("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1), " (was ").concat(str.length, ")\n String was: \"").concat(str, "\""));
+                crash("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1), " (was ").concat(str.length, ")\n String was: \"").concat(str, "\""));
             }
         }
         else {
@@ -256,7 +256,7 @@ var StringIO = /** @class */ (function () {
         var length = (options.length - 1).toString().length;
         var option = options.indexOf(value);
         if (option == -1)
-            throw new Error("Attempted to write invalid value \"".concat(value, "\" for enum, valid values are (").concat(options.join(", "), ")"));
+            crash("Attempted to write invalid value \"".concat(value, "\" for enum, valid values are (").concat(options.join(", "), ")"));
         this.writeNumber(option, length);
     };
     StringIO.prototype.readNumber = function (size) {
@@ -267,15 +267,15 @@ var StringIO = /** @class */ (function () {
             data = "-" + data.split("-")[1];
         }
         if (isNaN(Number(data)))
-            throw new Error("Attempted to read invalid number: ".concat(data));
+            crash("Attempted to read invalid number: ".concat(data));
         return Number(data);
     };
     StringIO.prototype.writeNumber = function (num, size) {
         if (size === void 0) { size = 4; }
         if (typeof num != "number")
-            throw new Error("".concat(num, " was not a number!"));
+            crash("".concat(num, " was not a number!"));
         if (num.toString().length > size)
-            throw new Error("Cannot write number ".concat(num, " with length ").concat(size, ": too long"));
+            crash("Cannot write number ".concat(num, " with length ").concat(size, ": too long"));
         this.string += num.toString().padStart(size, "0");
     };
     StringIO.prototype.readBool = function () {
@@ -299,7 +299,7 @@ var StringIO = /** @class */ (function () {
     };
     StringIO.prototype.expectEOF = function () {
         if (this.string.length > this.offset)
-            throw new Error("Expected EOF, but found extra data: \"".concat(this.string.slice(this.offset), "\""));
+            crash("Expected EOF, but found extra data: \"".concat(this.string.slice(this.offset), "\""));
     };
     StringIO.read = function (data, func) {
         var str = new StringIO(data);
@@ -667,3 +667,7 @@ function untilForever() {
     return (config_1.maxTime - Date.now() - 10000);
 }
 exports.untilForever = untilForever;
+function crash(message) {
+    throw new Error(message);
+}
+exports.crash = crash;

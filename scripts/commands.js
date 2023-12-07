@@ -75,7 +75,7 @@ var Perm = /** @class */ (function () {
         this.unauthorizedMessage = unauthorizedMessage;
         if (typeof check == "string") {
             if (ranks_1.Rank.getByName(check) == null)
-                throw new Error("Invalid perm ".concat(name, ": invalid rank name ").concat(check));
+                (0, utils_1.crash)("Invalid perm ".concat(name, ": invalid rank name ").concat(check));
             this.check = function (fishP) { return fishP.ranksAtLeast(check); };
         }
         else {
@@ -116,14 +116,14 @@ function processArgString(str) {
     //this was copypasted from mlogx haha
     var matchResult = str.match(/(\w+):(\w+)(\?)?/);
     if (!matchResult) {
-        throw new Error("Bad arg string ".concat(str, ": does not match pattern word:word(?)"));
+        (0, utils_1.crash)("Bad arg string ".concat(str, ": does not match pattern word:word(?)"));
     }
     var _a = __read(matchResult, 4), name = _a[1], type = _a[2], isOptional = _a[3];
     if (commandArgTypes.includes(type)) {
         return { name: name, type: type, isOptional: !!isOptional };
     }
     else {
-        throw new Error("Bad arg string ".concat(str, ": invalid type ").concat(type));
+        (0, utils_1.crash)("Bad arg string ".concat(str, ": invalid type ").concat(type));
     }
 }
 function formatArg(a) {
@@ -463,7 +463,7 @@ function register(commands, clientHandler, serverHandler) {
         clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
                 var _a;
                 if (!initialized)
-                    throw new Error("Commands not initialized!");
+                    (0, utils_1.crash)("Commands not initialized!");
                 var fishSender = players_1.FishPlayer.get(sender);
                 //Verify authorization
                 //as a bonus, this crashes if data.perm is undefined
@@ -504,7 +504,7 @@ function register(commands, clientHandler, serverHandler) {
                             currentTapMode: fishSender.tapInfo.commandName == null ? "off" : fishSender.tapInfo.mode,
                             handleTaps: function (mode) {
                                 if (data.tapped == undefined)
-                                    throw new Error("No tap handler to activate: command \"".concat(name, "\""));
+                                    (0, utils_1.crash)("No tap handler to activate: command \"".concat(name, "\""));
                                 if (mode == "off") {
                                     fishSender.tapInfo.commandName = null;
                                 }
@@ -566,7 +566,7 @@ function registerConsole(commands, serverHandler) {
                 var _a;
                 var _b;
                 if (!initialized)
-                    throw new Error("Commands not initialized!");
+                    (0, utils_1.crash)("Commands not initialized!");
                 //closure over processedCmdArgs, should be fine
                 //Process the args
                 var output = processArgs(rawArgs, processedCmdArgs, false);
@@ -624,7 +624,7 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
             case "player":
                 Groups.player.each(function (player) { return optionsList_1.push(player); });
                 break;
-            default: throw new Error("Unable to resolve arg of type ".concat(argToResolve_1.type));
+            default: (0, utils_1.crash)("Unable to resolve arg of type ".concat(argToResolve_1.type));
         }
         (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList_1, sender, function (_a) {
             var option = _a.option;
@@ -637,7 +637,7 @@ function initialize() {
     var e_5, _a, e_6, _b;
     var _c, _d;
     if (initialized) {
-        throw new Error("Already initialized commands.");
+        (0, utils_1.crash)("Already initialized commands.");
     }
     try {
         for (var _e = __values(Object.entries(exports.allConsoleCommands)), _f = _e.next(); !_f.done; _f = _e.next()) {

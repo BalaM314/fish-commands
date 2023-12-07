@@ -160,7 +160,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
 var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entry", function (e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         tile = e.tile;
@@ -244,12 +244,12 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
         var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
-        tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]);
+        tile = (_x = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _x !== void 0 ? _x : (0, utils_1.crash)("Nonexistent tile");
     }
     else
         return;
     if (tile == null)
-        return;
+        (0, utils_1.crash)("Nonexistent tile");
     [tile, uuid, action, type, time];
     tile.getLinkedTiles(function (t) {
         var pos = "".concat(t.x, ",").concat(t.y);

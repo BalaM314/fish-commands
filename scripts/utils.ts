@@ -109,7 +109,7 @@ export function getColor(input:string):Color | null {
 
 export function nearbyEnemyTile(unit:Unit, dist:number){
 	//because the indexer is buggy
-	if(dist > 10) throw new Error(`nearbyEnemyTile(): dist (${dist}) is too high!`);
+	if(dist > 10) crash(`nearbyEnemyTile(): dist (${dist}) is too high!`);
 
 	let x = Math.floor(unit.x / Vars.tilesize);
 	let y = Math.floor(unit.y / Vars.tilesize);
@@ -161,7 +161,7 @@ export class StringIO {
 	offset:number = 0;
 	constructor(public string:string = ""){}
 	read(length:number = 1){
-		if(this.offset + length > this.string.length) throw new Error(`Unexpected EOF`);
+		if(this.offset + length > this.string.length) crash(`Unexpected EOF`);
 		return this.string.slice(this.offset, this.offset += length);
 	}
 	write(str:string){
@@ -176,14 +176,14 @@ export class StringIO {
 		if(str === null){
 			this.string += "0".repeat(lenlen);
 		} else if(typeof str !== "string"){
-			throw new Error(`Attempted to serialize string ${str}, but it was not a string`);
+			crash(`Attempted to serialize string ${str}, but it was not a string`);
 		} else if(str.length > (10 ** lenlen - 1)){
 			if(truncate){
 				Log.err(`Cannot write strings with length greater than ${(10 ** lenlen - 1)} (was ${str.length}), truncating`);
 				this.string += (10 ** lenlen - 1).toString().padStart(lenlen, "0");
 				this.string += str.slice(0, (10 ** lenlen - 1));
 			} else {
-				throw new Error(`Cannot write strings with length greater than ${(10 ** lenlen - 1)} (was ${str.length})\n String was: "${str}"`);
+				crash(`Cannot write strings with length greater than ${(10 ** lenlen - 1)} (was ${str.length})\n String was: "${str}"`);
 			}
 		} else {
 			this.string += str.length.toString().padStart(lenlen, "0");
@@ -198,7 +198,7 @@ export class StringIO {
 	writeEnumString<const T>(value:T, options:T[]){
 		const length = (options.length - 1).toString().length;
 		const option = options.indexOf(value);
-		if(option == -1) throw new Error(`Attempted to write invalid value "${value}" for enum, valid values are (${options.join(", ")})`);
+		if(option == -1) crash(`Attempted to write invalid value "${value}" for enum, valid values are (${options.join(", ")})`);
 		this.writeNumber(option, length);
 	}
 	readNumber(size:number = 4){
@@ -207,12 +207,12 @@ export class StringIO {
 			//negative numbers were incorrectly stored in previous versions
 			data = "-" + data.split("-")[1];
 		}
-		if(isNaN(Number(data))) throw new Error(`Attempted to read invalid number: ${data}`);
+		if(isNaN(Number(data))) crash(`Attempted to read invalid number: ${data}`);
 		return Number(data);
 	}
 	writeNumber(num:number, size:number = 4){
-		if(typeof num != "number") throw new Error(`${num} was not a number!`);
-		if(num.toString().length > size) throw new Error(`Cannot write number ${num} with length ${size}: too long`);
+		if(typeof num != "number") crash(`${num} was not a number!`);
+		if(num.toString().length > size) crash(`Cannot write number ${num} with length ${size}: too long`);
 		this.string += num.toString().padStart(size, "0");
 	}
 	readBool(){
@@ -234,7 +234,7 @@ export class StringIO {
 		return array;
 	}
 	expectEOF(){
-		if(this.string.length > this.offset) throw new Error(`Expected EOF, but found extra data: "${this.string.slice(this.offset)}"`);
+		if(this.string.length > this.offset) crash(`Expected EOF, but found extra data: "${this.string.slice(this.offset)}"`);
 	}
 	static read<T>(data:string, func:(str:StringIO) => T):T {
 		const str = new StringIO(data);
@@ -548,4 +548,8 @@ export function setType<T>(input:unknown):asserts input is T {}
 
 export function untilForever(){
 	return (maxTime - Date.now() - 10000);
+}
+
+export function crash(message:string):never {
+	throw new Error(message);
 }
