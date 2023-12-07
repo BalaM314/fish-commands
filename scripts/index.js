@@ -56,7 +56,6 @@ Events.on(EventType.PlayerLeave, function (e) {
 Events.on(EventType.ConnectPacketEvent, function (e) {
     players_1.FishPlayer.playersJoinedRecent++;
     globals_1.ipJoins.increment(e.connection.address);
-    Log.debug("Incremnted ".concat(e.connection.address));
     var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
     var sus = (players_1.FishPlayer.antiBotMode() && (!info || info.timesJoined < 10));
     var longModName = e.packet.mods.contains(function (str) { return str.length > 50; });
@@ -75,6 +74,14 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         e.connection.kicked = true;
         players_1.FishPlayer.onBotWhack();
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to too many connections"));
+        return;
+    }
+    if (e.packet.name.includes("discord.gg/GnEdS9TdV6")) {
+        Vars.netServer.admins.blacklistDos(e.connection.address);
+        e.connection.kicked = true;
+        players_1.FishPlayer.onBotWhack();
+        Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to omni discord link"));
+        return;
     }
     api.getBanned({
         ip: e.connection.address,
