@@ -361,7 +361,7 @@ export class FishPlayer {
 			prefix += flag.prefix;
 		}
 		prefix += this.rank.prefix;
-		if(prefix.length > 0) prefix = " " + prefix;
+		if(prefix.length > 0) prefix += " ";
 		let replacedName;
 		if(cleanText(this.name, true).includes("hacker")){
 			//"Don't be a script kiddie"
