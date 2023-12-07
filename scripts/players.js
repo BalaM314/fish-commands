@@ -76,6 +76,8 @@ var FishPlayer = /** @class */ (function () {
             //remember to clear this in updateSavedInfoFromPlayer!
             blocksBroken: 0,
         };
+        this.lastMousePosition = [0, 0];
+        this.lastActive = Date.now();
         this.chatStrictness = "chat";
         this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (0, utils_1.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_m = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _m !== void 0 ? _m : "Unnamed player [ERROR]";
@@ -322,6 +324,17 @@ var FishPlayer = /** @class */ (function () {
             });
         }
     };
+    FishPlayer.updateAFKCheck = function () {
+        this.forEachPlayer(function (p) {
+            if (p.lastMousePosition[0] != p.player.mouseX || p.lastMousePosition[1] != p.player.mouseY) {
+                p.lastActive = Date.now();
+            }
+            p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
+            if (p.lastActive - Date.now() > 60000) {
+                //p.afk = true;
+            }
+        });
+    };
     /**Must be run on PlayerLeaveEvent. */
     FishPlayer.onPlayerLeave = function (player) {
         var fishPlayer = this.cachedPlayers[player.uuid()];
@@ -393,6 +406,8 @@ var FishPlayer = /** @class */ (function () {
         });
         this.cleanedName = Strings.stripColors(player.name);
         this.lastJoined = Date.now();
+        this.lastMousePosition = [0, 0];
+        this.lastActive = Date.now();
         this.tstats = {
             blocksBroken: 0
         };

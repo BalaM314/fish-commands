@@ -75,6 +75,8 @@ export class FishPlayer {
 		//remember to clear this in updateSavedInfoFromPlayer!
 		blocksBroken: 0,
 	};
+	lastMousePosition = [0, 0] as [x:number, y:number];
+	lastActive:number = Date.now();
 
 	//Stored data
 	// stats = {
@@ -285,6 +287,17 @@ export class FishPlayer {
 			});
 		}
 	}
+	static updateAFKCheck(){
+		this.forEachPlayer(p => {
+			if(p.lastMousePosition[0] != p.player.mouseX || p.lastMousePosition[1] != p.player.mouseY){
+				p.lastActive = Date.now();
+			}
+			p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
+			if(p.lastActive - Date.now() > 60000){
+				//p.afk = true;
+			}
+		});
+	}
 	/**Must be run on PlayerLeaveEvent. */
 	static onPlayerLeave(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()];
@@ -339,6 +352,8 @@ export class FishPlayer {
 		});
 		this.cleanedName = Strings.stripColors(player.name);
 		this.lastJoined = Date.now();
+		this.lastMousePosition = [0, 0];
+		this.lastActive = Date.now();
 		this.tstats = {
 			blocksBroken: 0
 		};

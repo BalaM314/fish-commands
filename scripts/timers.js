@@ -17,13 +17,12 @@ function initializeTimers() {
         });
     }, 10, 300);
     //Memory corruption prank
-    if (config.Mode.pvp())
-        Timer.schedule(function () {
-            if (Math.random() < 0.2) {
-                //Timer triggers every 8 hours, and the random chance is 20%, so the average interval between pranks is 40 hours
-                (0, utils_1.definitelyRealMemoryCorruption)();
-            }
-        }, 3600, 28800);
+    Timer.schedule(function () {
+        if (Math.random() < 0.2) {
+            //Timer triggers every 8 hours, and the random chance is 20%, so the average interval between pranks is 40 hours
+            (0, utils_1.definitelyRealMemoryCorruption)();
+        }
+    }, 3600, 28800);
     //Trails
     Timer.schedule(function () {
         return players_1.FishPlayer.forEachPlayer(function (p) { return p.displayTrail(); });
@@ -43,7 +42,7 @@ function initializeTimers() {
         var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
         var message = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
         Call.sendMessage(message);
-    }, 0, 15 * 60);
+    }, 20, 15 * 60);
     //State check
     Timer.schedule(function () {
         if (Groups.unit.size() > 10000) {
@@ -52,6 +51,10 @@ function initializeTimers() {
             (0, utils_1.neutralGameover)();
         }
     }, 0, 1);
+    Timer.schedule(function () {
+        players_1.FishPlayer.updateAFKCheck();
+    }, 0, 1);
+    //Various bad antibot code TODO fix, dont update state on clock tick
     Timer.schedule(function () {
         players_1.FishPlayer.antiBotModePersist = false;
         //dubious code, will keep antibot mode on for the next minute after it was triggered by high flag count or high join count
