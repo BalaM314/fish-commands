@@ -1029,9 +1029,9 @@ var FishPlayer = /** @class */ (function () {
             time: Date.now(),
         });
         FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
+        this.updateName();
         if (this.connected() && notify) {
             this.stopUnit();
-            this.updateName();
             this.sendMessage(message
                 ? "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]".concat(message, "[]")
                 : "[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer.");
@@ -1155,7 +1155,7 @@ var FishPlayer = /** @class */ (function () {
                     if (_this.tstats.blocksBroken > config_1.heuristics.blocksBrokenAfterJoin) {
                         tripped_1 = true;
                         (0, utils_1.logHTrip)(_this, "blocks broken after join", "".concat(_this.tstats.blocksBroken, "/").concat(config_1.heuristics.blocksBrokenAfterJoin));
-                        _this.stop("automod", config.maxTime, "Automatic stop due to suspicious activity", false);
+                        _this.stop("automod", config.maxTime, "Automatic stop due to suspicious activity");
                         FishPlayer.messageAllExcept(_this, "[yellow]Player ".concat(_this.cleanedName, " has been stopped automatically due to suspected griefing.\nPlease look at ").concat(_this.position(), " and see if they were actually griefing. If they were not, please inform a staff member."));
                         FishPlayer.stats.heuristics.numTripped++;
                         FishPlayer.stats.heuristics.tripped[_this.uuid] = "waiting";

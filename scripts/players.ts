@@ -909,9 +909,9 @@ We apologize for the inconvenience.`
 			time: Date.now(),
 		});
 		FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
+		this.updateName();
 		if(this.connected() && notify){
 			this.stopUnit();
-			this.updateName();
 			this.sendMessage(
 				message
 				? `[scarlet]Oopsy Whoopsie! You've been stopped, and marked as a griefer for reason: [white]${message}[]`
@@ -1051,7 +1051,7 @@ We apologize for the inconvenience.`
 					if(this.tstats.blocksBroken > heuristics.blocksBrokenAfterJoin){
 						tripped = true;
 						logHTrip(this, "blocks broken after join", `${this.tstats.blocksBroken}/${heuristics.blocksBrokenAfterJoin}`);
-						this.stop("automod", config.maxTime, `Automatic stop due to suspicious activity`, false);
+						this.stop("automod", config.maxTime, `Automatic stop due to suspicious activity`);
 						FishPlayer.messageAllExcept(this,
 `[yellow]Player ${this.cleanedName} has been stopped automatically due to suspected griefing.
 Please look at ${this.position()} and see if they were actually griefing. If they were not, please inform a staff member.`);
