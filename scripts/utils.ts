@@ -545,3 +545,7 @@ export function logHTrip(player:FishPlayer, name:string, message?:string){
 }
 
 export function setType<T>(input:unknown):asserts input is T {}
+
+export function untilForever(){
+	return (maxTime - Date.now() - 10000);
+}

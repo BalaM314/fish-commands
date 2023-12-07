@@ -95,7 +95,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             }
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
-            var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
+            var time = (_b = args.time) !== null && _b !== void 0 ? _b : (0, utils_1.untilForever)();
             if (time + Date.now() > config_1.maxTime)
                 (0, commands_1.fail)("Error: time too high.");
             args.player.stop(sender, time, (_c = args.message) !== null && _c !== void 0 ? _c : undefined);
@@ -209,7 +209,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             if (globals_1.uuidPattern.test(args.name)) {
                 var info = admins.getInfoOptional(args.name);
                 if (info != null) {
-                    stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : 604800000);
+                    stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : (0, utils_1.untilForever)());
                 }
                 else {
                     outputFail("Unknown UUID ".concat(args.name));

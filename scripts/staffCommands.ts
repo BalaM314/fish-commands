@@ -9,7 +9,7 @@ import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
 import {
 	colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative,
-	logAction, parseError, serverRestartLoop, setToArray
+	logAction, parseError, serverRestartLoop, setToArray, untilForever
 } from "./utils";
 
 const spawnedUnits:Unit[] = [];
@@ -83,7 +83,7 @@ export const commands = commandList({
 			}
 
 			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
-			const time = args.time ?? 604800000;
+			const time = args.time ?? untilForever();
 			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
 			args.player.stop(sender, time, args.message ?? undefined);
 			logAction('stopped', sender, args.player, args.message ?? undefined, time);
@@ -196,7 +196,7 @@ export const commands = commandList({
 			if(uuidPattern.test(args.name)){
 				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
 				if(info != null) {
-					stop(info, args.time ?? 604800000);
+					stop(info, args.time ?? untilForever());
 				} else {
 					outputFail(`Unknown UUID ${args.name}`);
 				}
