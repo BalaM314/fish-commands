@@ -76,6 +76,8 @@ var FishPlayer = /** @class */ (function () {
             //remember to clear this in updateSavedInfoFromPlayer!
             blocksBroken: 0,
         };
+        this.manualAfk = false;
+        this.shouldUpdateName = true;
         this.lastMousePosition = [0, 0];
         this.lastActive = Date.now();
         this.chatStrictness = "chat";
@@ -330,9 +332,7 @@ var FishPlayer = /** @class */ (function () {
                 p.lastActive = Date.now();
             }
             p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
-            if (p.lastActive - Date.now() > 60000) {
-                //p.afk = true;
-            }
+            p.updateName();
         });
     };
     /**Must be run on PlayerLeaveEvent. */
@@ -408,6 +408,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastJoined = Date.now();
         this.lastMousePosition = [0, 0];
         this.lastActive = Date.now();
+        this.shouldUpdateName = true;
         this.tstats = {
             blocksBroken: 0
         };
@@ -421,7 +422,7 @@ var FishPlayer = /** @class */ (function () {
     /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
         var e_6, _a;
-        if (!this.connected())
+        if (!this.connected() || !this.shouldUpdateName)
             return; //No player, no need to update
         var prefix = '';
         if (!this.hasPerm("bypassNameCheck") && (0, utils_1.isImpersonator)(this.name, this.ranksAtLeast("admin")))
@@ -432,6 +433,8 @@ var FishPlayer = /** @class */ (function () {
             prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
         if (this.muted)
             prefix += config.MUTED_PREFIX;
+        if (this.afk())
+            prefix += "[orange]\uE876 AFK \uE876 | [white]";
         try {
             for (var _b = __values(this.flags), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var flag = _c.value;
@@ -1012,6 +1015,9 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.marked = function () {
         return this.unmarkTime > Date.now();
     };
+    FishPlayer.prototype.afk = function () {
+        return Date.now() - this.lastActive > 60000 || this.manualAfk;
+    };
     FishPlayer.prototype.stelled = function () {
         return this.marked() || this.autoflagged;
     };
@@ -1072,6 +1078,10 @@ var FishPlayer = /** @class */ (function () {
             this.updateName();
             this.forceRespawn();
         }
+    };
+    FishPlayer.prototype.trollName = function (name) {
+        this.shouldUpdateName = false;
+        this.player.name = name;
     };
     FishPlayer.prototype.freeze = function () {
         this.frozen = true;

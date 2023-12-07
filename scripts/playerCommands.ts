@@ -114,13 +114,10 @@ export const commands = commandList({
 		description: 'Toggles your afk status.',
 		perm: Perm.none,
 		handler({ sender, outputSuccess }) {
-			sender.setFlag('afk', !sender.hasFlag('afk'));
+			sender.manualAfk = !sender.manualAfk;
 			sender.updateName();
-			if (sender.hasFlag('afk')) {
-				outputSuccess(`You are now marked as AFK.`);
-			} else {
-				outputSuccess(`You are no longer marked as AFK.`);
-			}
+			if(sender.manualAfk) outputSuccess(`You are now marked as AFK.`);
+			else outputSuccess(`You are no longer marked as AFK.`);
 		},
 	},
 

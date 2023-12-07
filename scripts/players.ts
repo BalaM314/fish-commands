@@ -75,6 +75,8 @@ export class FishPlayer {
 		//remember to clear this in updateSavedInfoFromPlayer!
 		blocksBroken: 0,
 	};
+	manualAfk = false;
+	shouldUpdateName = true;
 	lastMousePosition = [0, 0] as [x:number, y:number];
 	lastActive:number = Date.now();
 
@@ -293,9 +295,7 @@ export class FishPlayer {
 				p.lastActive = Date.now();
 			}
 			p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
-			if(p.lastActive - Date.now() > 60000){
-				//p.afk = true;
-			}
+			p.updateName();
 		});
 	}
 	/**Must be run on PlayerLeaveEvent. */
@@ -354,6 +354,7 @@ export class FishPlayer {
 		this.lastJoined = Date.now();
 		this.lastMousePosition = [0, 0];
 		this.lastActive = Date.now();
+		this.shouldUpdateName = true;
 		this.tstats = {
 			blocksBroken: 0
 		};
@@ -366,12 +367,13 @@ export class FishPlayer {
 	}
 	/**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
 	updateName(){
-		if(!this.connected()) return;//No player, no need to update
+		if(!this.connected() || !this.shouldUpdateName) return;//No player, no need to update
 		let prefix = '';
 		if(!this.hasPerm("bypassNameCheck") && isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
 		if(this.marked()) prefix += config.MARKED_PREFIX;
 		else if(this.autoflagged) prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
 		if(this.muted) prefix += config.MUTED_PREFIX;
+		if(this.afk()) prefix += "[orange]\uE876 AFK \uE876 | [white]";
 		for(const flag of this.flags){
 			prefix += flag.prefix;
 		}
@@ -895,6 +897,9 @@ We apologize for the inconvenience.`
 	marked():boolean {
 		return this.unmarkTime > Date.now();
 	}
+	afk():boolean {
+		return Date.now() - this.lastActive > 60000 || this.manualAfk;
+	}
 	stelled():boolean {
 		return this.marked() || this.autoflagged;
 	}
@@ -954,6 +959,10 @@ We apologize for the inconvenience.`
 			this.updateName();
 			this.forceRespawn();
 		}
+	}
+	trollName(name:string){
+		this.shouldUpdateName = false;
+		this.player.name = name;
 	}
 	freeze(){
 		this.frozen = true;

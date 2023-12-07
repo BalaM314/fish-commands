@@ -36,6 +36,7 @@ var Rank = /** @class */ (function () {
 }());
 exports.Rank = Rank;
 var RoleFlag = /** @class */ (function () {
+    //static afk = new RoleFlag("afk", "[orange]\uE876 AFK \uE876 | [white]", "Used for players who are idle for longer than 2 minutes.", "[orange]", false);
     function RoleFlag(name, prefix, description, color, peristent, assignableByModerators) {
         if (peristent === void 0) { peristent = true; }
         if (assignableByModerators === void 0) { assignableByModerators = true; }
@@ -60,7 +61,6 @@ var RoleFlag = /** @class */ (function () {
     RoleFlag.flags = {};
     RoleFlag.developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]", true, false);
     RoleFlag.member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]", true, false);
-    RoleFlag.afk = new RoleFlag("afk", "[orange]\uE876 AFK \uE876 | [white]", "Used for players who are idle for longer than 2 minutes.", "[orange]", false);
     return RoleFlag;
 }());
 exports.RoleFlag = RoleFlag;

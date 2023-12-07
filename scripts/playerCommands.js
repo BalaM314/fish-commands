@@ -141,14 +141,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
-            sender.setFlag('afk', !sender.hasFlag('afk'));
+            sender.manualAfk = !sender.manualAfk;
             sender.updateName();
-            if (sender.hasFlag('afk')) {
+            if (sender.manualAfk)
                 outputSuccess("You are now marked as AFK.");
-            }
-            else {
+            else
                 outputSuccess("You are no longer marked as AFK.");
-            }
         },
     }, tileid: {
         args: [],
