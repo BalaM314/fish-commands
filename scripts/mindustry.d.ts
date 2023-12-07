@@ -9,8 +9,52 @@ declare const Log: {
 };
 declare const Strings: {
 	stripColors(string:string): string;
+};
+declare const Vars: {
+	netServer: {
+		admins: Administration;
+		clientCommands: CommandHandler;
+		kickAll(kickReason:any):void;
+		addPacketHandler(name:string, handler:(player:mindustryPlayer, content:string) => unknown):void;
+	}
+	mods: {
+		getScripts(): Scripts;
+	}
+	maps: Maps;
+	state: {
+		rules: {
+			mode():Gamemode;
+			defaultTeam:Team;
+			waveTeam:Team;
+		}
+		set(state:GameState);
+		gameOver:boolean;
+		wave:number;
+	}
+	saveExtension: string;
+	saveDirectory: Fi;
+	modDirectory: Fi;
+	content: Content;
+	tilesize: 8;
+	world: World;
+};
+type CommandHandler = any;
+type Content = any;
+class World {
+	build(x:number, y:number):Building | null;
+	tile(x:number, y:number):Tile | null;
+	tiles: {
+		eachTile(func:(tile:Tile) => unknown):void;
+	}
 }
-declare const Vars: any;
+class Gamemode {
+	static survival:Gamemode;
+	static attack:Gamemode;
+	static pvp:Gamemode;
+	static sandbox:Gamemode;
+	static editor:Gamemode;
+	name():string;
+}
 declare type Throwable = any;
 declare class Administration {
 	findByName(info:string):ObjectSet<mindustryPlayerData>;
@@ -26,6 +70,13 @@ declare class Administration {
 	banPlayer(uuid:string):boolean;
 	unbanPlayerIP(ip:string):boolean;
 	unbanPlayerID(uuid:string):boolean;
+	adminPlayer(uuid:string, usid:string):boolean;
+	unAdminPlayer(uuid:string):boolean;
+	blacklistDos(ip:string):void;
+	isDosBlacklisted(ip:string):boolean;
+	save():void;
+	addChatFilter(filter:(player:mindustryPlayer, message:string) => string | null):void;
+	addActionFilter(filter:(action:PlayerAction) => boolean):void;
 }
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
@@ -38,6 +89,7 @@ declare class Tile {
 	breakable():boolean;
 	block():Block;
 	removeNet():void;
+	setNet(block:Block, team:Team, rotation:number):void;
 	getLinkedTiles(callback:(t:Tile) => void):void;
 }
 declare const Menus: {
@@ -59,6 +111,7 @@ declare class Block {
 	buildType: Building;
 	id: number;
 }
+type Building = any;
 declare const Items: Record<string, Item>;
 declare class Item {
 	
@@ -73,8 +126,9 @@ declare class Team {
 	static all:Team[];
 	static baseTeams:Team[];
 	name:string;
+	data():TeamData;
 }
-
+type TeamData = any;
 declare const StatusEffects: {
 	[index:string]: StatusEffect;
 }
@@ -125,7 +179,7 @@ declare const Mathf: {
 	round(val:number, step?:number):number;
 }
 declare const SaveIO: {
-	save(name:string):void;
+	save(file:Fi):void;
 }
 declare const Timer: {
 	schedule(func:() => unknown, delaySeconds:number, intervalSeconds?:number, repeatCount?:number);
@@ -227,6 +281,7 @@ declare class Fi {
 	file(): JavaFile;
 	child(path:string): Fi;
 	exists(): boolean;
+	absolutePath():string;
 }
 
 declare class Pattern {

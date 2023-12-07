@@ -86,7 +86,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	menus.registerListeners();
 
 	// Mute muted players
-	Vars.netServer.admins.addChatFilter((player:mindustryPlayer, text:string) => {
+	Vars.netServer.admins.addChatFilter((player, text) => {
 		const fishPlayer = FishPlayer.get(player);
 		let highlight = fishPlayer.highlight;
 		let filterTrip;

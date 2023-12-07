@@ -375,7 +375,6 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.forEachPlayer = function (func) {
         var _this = this;
-        //TODO improve implementation, laggy once cachedPlayers becomes large
         Groups.player.each(function (player) {
             var fishP = _this.get(player);
             func(fishP);

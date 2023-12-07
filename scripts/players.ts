@@ -324,7 +324,6 @@ export class FishPlayer {
 		if(fishP.stelled()) fishP.stopUnit();
 	}
 	static forEachPlayer(func:(player:FishPlayer) => unknown){
-		//TODO improve implementation, laggy once cachedPlayers becomes large
 		Groups.player.each(player => {
 			const fishP = this.get(player);
 			func(fishP);
