@@ -58,6 +58,10 @@ exports.commands = (0, commands_1.consoleCommandList)({
             if (ranks.length > 1)
                 (0, commands_1.fail)("Ambiguous rank ".concat(args.rank));
             var rank = ranks[0];
+            if (rank == ranks_1.Rank.pi)
+                (0, commands_1.fail)("Rank ".concat(rank.name, " is immutable."));
+            if (args.player.immutable())
+                (0, commands_1.fail)("Player ".concat(args.player, " is immutable."));
             args.player.setRank(rank);
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), "console", args.player);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));

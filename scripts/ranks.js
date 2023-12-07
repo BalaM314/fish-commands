@@ -35,6 +35,7 @@ var Rank = /** @class */ (function () {
     return Rank;
 }());
 exports.Rank = Rank;
+Object.freeze(Rank.pi);
 var RoleFlag = /** @class */ (function () {
     //static afk = new RoleFlag("afk", "[orange]\uE876 AFK \uE876 | [white]", "Used for players who are idle for longer than 2 minutes.", "[orange]", false);
     function RoleFlag(name, prefix, description, color, peristent, assignableByModerators) {

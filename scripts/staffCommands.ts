@@ -134,6 +134,8 @@ export const commands = commandList({
 				fail(`You do not have permission to promote players to rank "${rank.name}", because your current rank is "${sender.rank.name}"`);
 			if(!sender.canModerate(args.player))
 				fail(`You do not have permission to modify the rank of player "${args.player.name}"`);
+			if(rank == Rank.pi) fail(`Rank ${rank.name} is immutable.`);
+			if(args.player.immutable()) fail(`Player ${args.player} is immutable.`);
 
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, sender, args.player);

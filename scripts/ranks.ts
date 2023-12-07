@@ -31,6 +31,7 @@ export class Rank {
 		return this.color + this.name + "[]";
 	}
 }
+Object.freeze(Rank.pi);
 export type RankName = SelectEnumClassKeys<typeof Rank>;
 
 export class RoleFlag {
