@@ -778,7 +778,7 @@ var FishPlayer = /** @class */ (function () {
         });
         var string = out.string;
         var numKeys = Math.ceil(string.length / this.chunkSize);
-        Core.settings.put('fish-subkeys', Packages.java.lang.Integer(numKeys));
+        Core.settings.put('fish-subkeys', java.lang.Integer(numKeys));
         for (var i = 1; i <= numKeys; i++) {
             Core.settings.put("fish-playerdata-part-".concat(i), string.slice(0, this.chunkSize));
             string = string.slice(this.chunkSize);

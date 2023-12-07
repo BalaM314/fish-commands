@@ -1,4 +1,6 @@
+//this is fine
 
+declare const java: any;
 declare const Call: any;
 declare const Log: {
 	debug(message:string);
@@ -38,7 +40,8 @@ declare const Vars: {
 	tilesize: 8;
 	world: World;
 };
-type CommandHandler = any;
+declare type CommandHandler = any;
+declare const CommandHandler: CommandHandler;
 type Content = any;
 class World {
 	build(x:number, y:number):Building | null;
@@ -77,6 +80,7 @@ declare class Administration {
 	save():void;
 	addChatFilter(filter:(player:mindustryPlayer, message:string) => string | null):void;
 	addActionFilter(filter:(action:PlayerAction) => boolean):void;
+	static ActionType: ActionType;
 }
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
@@ -149,6 +153,7 @@ declare class Vec2 {
 }
 /* mindustry.gen.Player */
 declare type mindustryPlayer = any;
+declare const Player: mindustryPlayer;
 declare class Color {
 	static [index:string]: Color;
 	constructor();
@@ -389,4 +394,8 @@ declare class Sort {
 	static instance():Sort;
 	sort(input:Seq<unknown> | unknown[]);
 	sort(input:Seq<unknown> | unknown[], fromIndex:number, toIndex:number);
+}
+declare class ServerControl {
+	static instance: ServerControl;
+	handler: CommandHandler;
 }

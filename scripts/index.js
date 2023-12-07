@@ -97,9 +97,8 @@ Events.on(EventType.ContentInitEvent, function () {
     UnitTypes.renale.hidden = false;
 });
 Events.on(EventType.ServerLoadEvent, function (e) {
-    var ActionType = Packages.mindustry.net.Administration.ActionType;
     var clientHandler = Vars.netServer.clientCommands;
-    var serverHandler = Core.app.listeners.find(function (l) { return l instanceof Packages.mindustry.server.ServerControl; }).handler;
+    var serverHandler = ServerControl.instance.handler;
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
     menus.registerListeners();
@@ -135,7 +134,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             return false;
         }
         else {
-            if (action.type === ActionType.pickupBlock) {
+            if (action.type === Administration.ActionType.pickupBlock) {
                 addToTileHistory({
                     pos: "".concat(action.tile.x, ",").concat(action.tile.y),
                     uuid: action.player.uuid(),
@@ -153,10 +152,6 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.registerConsole(consoleCommands.commands, serverHandler);
     packetHandlers.loadPacketHandlers();
     commands.initialize();
-    //const getIp = Http.get('https://api.ipify.org?format=js');
-    //getIp.submit((r) => {
-    //	//serverIp = r.getResultAsString();
-    //});
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
 var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entry", function (e) {

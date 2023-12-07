@@ -4,7 +4,9 @@
  */
 
 importPackage(Packages.arc);
+importClass(Packages.arc.util.CommandHandler);
 importPackage(Packages.mindustry.type);
+importClass(Packages.mindustry.server.ServerControl);
 importPackage(Packages.java.util.regex);
 importClass(Packages.java.lang.Runtime);
 importClass(Packages.java.lang.ProcessBuilder);

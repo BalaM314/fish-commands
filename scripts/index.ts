@@ -5,7 +5,7 @@
 import * as api from './api';
 import * as commands from './commands';
 import { handleTapEvent } from './commands';
-import { Mode, getGamemode } from './config';
+import { Mode } from './config';
 import * as consoleCommands from "./consoleCommands";
 import { fishState, tileHistory, ipJoins } from "./globals";
 import * as memberCommands from './memberCommands';
@@ -75,11 +75,8 @@ Events.on(EventType.ContentInitEvent, () => {
 });
 
 Events.on(EventType.ServerLoadEvent, (e) => {
-	const ActionType = Packages.mindustry.net.Administration.ActionType;
 	const clientHandler = Vars.netServer.clientCommands;
-	const serverHandler = Core.app.listeners.find(
-		(l) => l instanceof Packages.mindustry.server.ServerControl
-	).handler;
+	const serverHandler = ServerControl.instance.handler;
 
 	FishPlayer.loadAll();
 	timers.initializeTimers();
@@ -121,7 +118,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 			action.player.sendMessage('[scarlet]\u26A0 [yellow]You are stopped, you cant perfom this action.');
 			return false;
 		} else {
-			if(action.type === ActionType.pickupBlock){
+			if(action.type === Administration.ActionType.pickupBlock){
 				addToTileHistory({
 					pos: `${action.tile!.x},${action.tile!.y}`,
 					uuid: action.player.uuid(),
@@ -143,10 +140,6 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	
 	commands.initialize();
 
-	//const getIp = Http.get('https://api.ipify.org?format=js');
-	//getIp.submit((r) => {
-	//	//serverIp = r.getResultAsString();
-	//});
 });
 
 /**Keeps track of any action performed on a tile for use in tilelog. */

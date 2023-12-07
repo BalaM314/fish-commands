@@ -247,7 +247,7 @@ const outputFormatter_server = tagProcessor(chunk => {
 		return `&p${chunk.name}&fr`;
 	} else if(chunk instanceof Error){
 		return `&r${chunk.toString()}&fr`;
-	} else if(chunk instanceof Packages.mindustry.gen.Player){
+	} else if(chunk instanceof Player){
 		const player = chunk as mindustryPlayer; //not sure why this is necessary, typescript randomly converts any to unknown
 		return `&cPlayer#${player.id} (${escapeStringColorsServer(Strings.stripColors(player.name))})&fr`
 	} else if(typeof chunk == "string"){
@@ -275,7 +275,7 @@ const outputFormatter_client = tagProcessor(chunk => {
 		return chunk.coloredName();
 	} else if(chunk instanceof Error){
 		return `[red]${chunk.toString()}[]`;
-	} else if(chunk instanceof Packages.mindustry.gen.Player){
+	} else if(chunk instanceof Player){
 		const player = chunk as mindustryPlayer; //not sure why this is necessary, typescript randomly converts any to unknown
 		return `[cyan]Player#${player.id} (${Strings.stripColors(player.name)})&fr`
 	} else if(typeof chunk == "string"){
@@ -373,7 +373,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 			name,
 			convertArgs(processedCmdArgs, true),
 			data.description,
-			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (unjoinedRawArgs:string[], sender:mindustryPlayer) => {
+			new CommandHandler.CommandRunner({ accept(unjoinedRawArgs:string[], sender:mindustryPlayer){
 				if(!initialized) crash(`Commands not initialized!`);
 
 				const fishSender = FishPlayer.get(sender);
@@ -464,7 +464,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 			name,
 			convertArgs(processedCmdArgs, false),
 			data.description,
-			new Packages.arc.util.CommandHandler.CommandRunner({ accept: (rawArgs:string[]) => {
+			new CommandHandler.CommandRunner({ accept: (rawArgs:string[]) => {
 				if(!initialized) crash(`Commands not initialized!`);
 
 				//closure over processedCmdArgs, should be fine

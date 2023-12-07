@@ -321,7 +321,7 @@ var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
     else if (chunk instanceof Error) {
         return "&r".concat(chunk.toString(), "&fr");
     }
-    else if (chunk instanceof Packages.mindustry.gen.Player) {
+    else if (chunk instanceof Player) {
         var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
         return "&cPlayer#".concat(player.id, " (").concat((0, utils_1.escapeStringColorsServer)(Strings.stripColors(player.name)), ")&fr");
     }
@@ -359,7 +359,7 @@ var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk) {
     else if (chunk instanceof Error) {
         return "[red]".concat(chunk.toString(), "[]");
     }
-    else if (chunk instanceof Packages.mindustry.gen.Player) {
+    else if (chunk instanceof Player) {
         var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
         return "[cyan]Player#".concat(player.id, " (").concat(Strings.stripColors(player.name), ")&fr");
     }
@@ -460,7 +460,7 @@ function register(commands, clientHandler, serverHandler) {
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
-        clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
+        clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
                 var _a;
                 if (!initialized)
                     (0, utils_1.crash)("Commands not initialized!");
@@ -562,7 +562,7 @@ function registerConsole(commands, serverHandler) {
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         serverHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
-        serverHandler.register(name, convertArgs(processedCmdArgs, false), data.description, new Packages.arc.util.CommandHandler.CommandRunner({ accept: function (rawArgs) {
+        serverHandler.register(name, convertArgs(processedCmdArgs, false), data.description, new CommandHandler.CommandRunner({ accept: function (rawArgs) {
                 var _a;
                 var _b;
                 if (!initialized)
