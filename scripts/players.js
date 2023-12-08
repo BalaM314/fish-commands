@@ -79,6 +79,7 @@ var FishPlayer = /** @class */ (function () {
         this.manualAfk = false;
         this.shouldUpdateName = true;
         this.lastMousePosition = [0, 0];
+        this.lastUnitPosition = [0, 0];
         this.lastActive = Date.now();
         this.chatStrictness = "chat";
         this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (0, utils_1.crash)("Attempted to create FishPlayer with no UUID");
@@ -332,6 +333,10 @@ var FishPlayer = /** @class */ (function () {
                 p.lastActive = Date.now();
             }
             p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
+            if (p.lastUnitPosition[0] != p.player.x || p.lastUnitPosition[1] != p.player.y) {
+                p.lastActive = Date.now();
+            }
+            p.lastUnitPosition = [p.player.x, p.player.y];
             p.updateName();
         });
     };
@@ -357,6 +362,10 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
+        fishP.lastActive = Date.now();
+    };
+    FishPlayer.onPlayerCommand = function (player, command, unjoinedRawArgs) {
+        player.lastActive = Date.now();
     };
     FishPlayer.onGameOver = function () {
         var e_5, _a;

@@ -465,6 +465,7 @@ function register(commands, clientHandler, serverHandler) {
                 if (!initialized)
                     (0, utils_1.crash)("Commands not initialized!");
                 var fishSender = players_1.FishPlayer.get(sender);
+                players_1.FishPlayer.onPlayerCommand(fishSender, name, unjoinedRawArgs);
                 //Verify authorization
                 //as a bonus, this crashes if data.perm is undefined
                 if (!data.perm.check(fishSender)) {

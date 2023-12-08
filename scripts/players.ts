@@ -78,6 +78,7 @@ export class FishPlayer {
 	manualAfk = false;
 	shouldUpdateName = true;
 	lastMousePosition = [0, 0] as [x:number, y:number];
+	lastUnitPosition = [0, 0] as [x:number, y:number];
 	lastActive:number = Date.now();
 
 	//Stored data
@@ -295,6 +296,10 @@ export class FishPlayer {
 				p.lastActive = Date.now();
 			}
 			p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
+			if(p.lastUnitPosition[0] != p.player.x || p.lastUnitPosition[1] != p.player.y){
+				p.lastActive = Date.now();
+			}
+			p.lastUnitPosition = [p.player.x, p.player.y];
 			p.updateName();
 		});
 	}
@@ -319,6 +324,10 @@ export class FishPlayer {
 				}
 			}
 		}
+		fishP.lastActive = Date.now();
+	}
+	static onPlayerCommand(player:FishPlayer, command:string, unjoinedRawArgs:string[]){
+		player.lastActive = Date.now();
 	}
 	static onGameOver() {
 		for(const [uuid, fishPlayer] of Object.entries(this.cachedPlayers)){

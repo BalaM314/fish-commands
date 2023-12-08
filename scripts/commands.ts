@@ -377,6 +377,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 				if(!initialized) crash(`Commands not initialized!`);
 
 				const fishSender = FishPlayer.get(sender);
+				FishPlayer.onPlayerCommand(fishSender, name, unjoinedRawArgs);
 
 				//Verify authorization
 				//as a bonus, this crashes if data.perm is undefined
