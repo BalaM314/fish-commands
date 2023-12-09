@@ -193,6 +193,8 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     }
     else if (e instanceof EventType.UnitDestroyEvent) {
         tile = e.unit.tileOn();
+        if (!tile)
+            return;
         uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_q = e.unit.lastCommanded) !== null && _q !== void 0 ? _q : "unknown";
         action = "killed";
         type = e.unit.type.name;
@@ -246,12 +248,12 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
         var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
-        tile = (_x = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _x !== void 0 ? _x : (0, utils_1.crash)("Nonexistent tile");
+        tile = (_x = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _x !== void 0 ? _x : (0, utils_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
     }
     else
         return;
     if (tile == null)
-        (0, utils_1.crash)("Nonexistent tile");
+        return;
     [tile, uuid, action, type, time];
     tile.getLinkedTiles(function (t) {
         var pos = "".concat(t.x, ",").concat(t.y);

@@ -179,6 +179,7 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 		type = e.build.block.name;
 	} else if(e instanceof EventType.UnitDestroyEvent){
 		tile = e.unit.tileOn();
+		if(!tile) return;
 		uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : e.unit.lastCommanded ?? "unknown";
 		action = "killed";
 		type = e.unit.type.name;
@@ -217,9 +218,9 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
 		let pos;
 		({pos, uuid, action, type} = e);
-		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]) ?? crash(`Nonexistent tile`);
+		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]) ?? crash(`Cannot log ${action} at ${pos}: Nonexistent tile`);
 	} else return;
-	if(tile == null) crash(`Nonexistent tile`);
+	if(tile == null) return;
 	[tile, uuid, action, type, time] satisfies [Tile, string, string, string, number];
 
 	tile.getLinkedTiles((t:Tile) => {
