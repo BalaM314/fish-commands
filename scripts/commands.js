@@ -226,9 +226,15 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     outputArgs[cmdArg.name] = team;
                     break;
                 case "number":
-                    var number = parseInt(args[i]);
-                    if (isNaN(number))
-                        return { error: "Invalid number \"".concat(args[i], "\"") };
+                    var number = Number(args[i]);
+                    if (isNaN(number)) {
+                        if (/\(\d+,/.test(args[i]))
+                            number = Number(args[i].slice(1, -1));
+                        else if (/\d+\)/.test(args[i]))
+                            number = Number(args[i].slice(0, -1));
+                        if (isNaN(number))
+                            return { error: "Invalid number \"".concat(args[i], "\"") };
+                    }
                     outputArgs[cmdArg.name] = number;
                     break;
                 case "time":

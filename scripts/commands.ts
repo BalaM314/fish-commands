@@ -185,8 +185,16 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				outputArgs[cmdArg.name] = team;
 				break;
 			case "number":
-				const number = parseInt(args[i]);
-				if(isNaN(number)) return {error: `Invalid number "${args[i]}"`};
+				let number = Number(args[i]);
+				if(isNaN(number)){
+					if(/\(\d+,/.test(args[i]))
+						number = Number(args[i].slice(1, -1));
+					else if(/\d+\)/.test(args[i]))
+						number = Number(args[i].slice(0, -1));
+
+					if(isNaN(number))
+						return {error: `Invalid number "${args[i]}"`};
+				}
 				outputArgs[cmdArg.name] = number;
 				break;
 			case "time":
