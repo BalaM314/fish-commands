@@ -327,6 +327,8 @@ export class FishPlayer {
 		fishP.lastActive = Date.now();
 	}
 	static onPlayerCommand(player:FishPlayer, command:string, unjoinedRawArgs:string[]){
+		if(command == "msg" && unjoinedRawArgs[1] == "Please do not use that logic, as it is attem83 logic and is bad to use. For more information please read www.mindustry.dev/attem")
+			return; //Attemwarfare message, not sent by the player
 		player.lastActive = Date.now();
 	}
 	static onGameOver() {

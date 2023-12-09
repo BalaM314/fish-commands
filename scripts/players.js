@@ -365,6 +365,8 @@ var FishPlayer = /** @class */ (function () {
         fishP.lastActive = Date.now();
     };
     FishPlayer.onPlayerCommand = function (player, command, unjoinedRawArgs) {
+        if (command == "msg" && unjoinedRawArgs[1] == "Please do not use that logic, as it is attem83 logic and is bad to use. For more information please read www.mindustry.dev/attem")
+            return; //Attemwarfare message, not sent by the player
         player.lastActive = Date.now();
     };
     FishPlayer.onGameOver = function () {
