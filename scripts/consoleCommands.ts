@@ -363,6 +363,7 @@ export const commands = consoleCommandList({
 			} else {
 				const oldName = args.player.name;
 				args.player.player.name = args.newname;
+				args.player.shouldUpdateName = false;
 				outputSuccess(`Renamed ${oldName} to ${args.newname}.`);
 			}
 		}

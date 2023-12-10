@@ -470,6 +470,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             else {
                 var oldName = args.player.name;
                 args.player.player.name = args.newname;
+                args.player.shouldUpdateName = false;
                 outputSuccess("Renamed ".concat(oldName, " to ").concat(args.newname, "."));
             }
         }
