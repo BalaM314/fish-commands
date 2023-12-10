@@ -23,6 +23,9 @@ Events.on(EventType.PlayerConnect, (e) => {
 	if(FishPlayer.shouldKickNewPlayers() && e.player.info.timesJoined == 1){
 		e.player.kick(Packets.KickReason.kick, 3600000);
 	}
+	FishPlayer.onPlayerConnect(e.player);
+});
+Events.on(EventType.PlayerJoin, (e) => {
 	FishPlayer.onPlayerJoin(e.player);
 });
 Events.on(EventType.PlayerLeave, (e) => {

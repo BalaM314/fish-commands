@@ -264,8 +264,8 @@ export class FishPlayer {
 
 	//#region eventhandling
 	//Contains methods that handle an event and must be called by other code (usually through Events.on).
-	/**Must be run on PlayerJoinEvent. */
-	static onPlayerJoin(player:mindustryPlayer){
+	/**Must be run on PlayerConnectEvent. */
+	static onPlayerConnect(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
 		fishPlayer.updateSavedInfoFromPlayer(player);
 		if(fishPlayer.validate()){
@@ -281,7 +281,6 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
-			fishPlayer.activateHeuristics();
 			api.getStopped(player.uuid(), (unmarkTime) => {
 				if(unmarkTime)
 					fishPlayer.unmarkTime = unmarkTime;
@@ -289,6 +288,19 @@ export class FishPlayer {
 				fishPlayer.updateName();
 			});
 		}
+	}
+	/**Must be run on PlayerJoinEvent. */
+	static onPlayerJoin(player:mindustryPlayer){
+		let fishPlayer = this.cachedPlayers[player.uuid()] ??= (() => {
+			Log.err(`onPlayerJoin: no fish player was created? ${player.uuid()}`);
+			return this.createFromPlayer(player);
+		})();
+		//Don't activate heuristics until they've joined
+		//a lot of time can pass between connect and join
+		//also the player might connect but fail to join for a lot of reasons,
+		//or connect, fail to join, then connect again and join successfully
+		//which would cause heuristics to activate twice
+		fishPlayer.activateHeuristics();
 	}
 	static updateAFKCheck(){
 		this.forEachPlayer(p => {

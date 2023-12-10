@@ -298,8 +298,8 @@ var FishPlayer = /** @class */ (function () {
     //#endregion
     //#region eventhandling
     //Contains methods that handle an event and must be called by other code (usually through Events.on).
-    /**Must be run on PlayerJoinEvent. */
-    FishPlayer.onPlayerJoin = function (player) {
+    /**Must be run on PlayerConnectEvent. */
+    FishPlayer.onPlayerConnect = function (player) {
         var _a;
         var _b, _c;
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
@@ -318,7 +318,6 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
-            fishPlayer.activateHeuristics();
             api.getStopped(player.uuid(), function (unmarkTime) {
                 if (unmarkTime)
                     fishPlayer.unmarkTime = unmarkTime;
@@ -326,6 +325,22 @@ var FishPlayer = /** @class */ (function () {
                 fishPlayer.updateName();
             });
         }
+    };
+    /**Must be run on PlayerJoinEvent. */
+    FishPlayer.onPlayerJoin = function (player) {
+        var _this = this;
+        var _a;
+        var _b, _c;
+        var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = (function () {
+            Log.err("onPlayerJoin: no fish player was created? ".concat(player.uuid()));
+            return _this.createFromPlayer(player);
+        })());
+        //Don't activate heuristics until they've joined
+        //a lot of time can pass between connect and join
+        //also the player might connect but fail to join for a lot of reasons,
+        //or connect, fail to join, then connect again and join successfully
+        //which would cause heuristics to activate twice
+        fishPlayer.activateHeuristics();
     };
     FishPlayer.updateAFKCheck = function () {
         this.forEachPlayer(function (p) {
