@@ -543,4 +543,15 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }).join("\n"), "\nRaw data for blocks tripped: ").concat(data.toString(" ", function (i) { return i.toString(); })));
         }
     },
+    clearfire: {
+        args: [],
+        description: "Clears all the fires.",
+        handler: function (_a) {
+            var output = _a.output, outputSuccess = _a.outputSuccess;
+            output("Removing ".concat(Groups.fire.size(), " fires..."));
+            Groups.fire.each(function (f) { return f.remove(); });
+            Groups.fire.clear();
+            outputSuccess("Fires removed.");
+        }
+    }
 });

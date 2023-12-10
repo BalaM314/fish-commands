@@ -147,7 +147,9 @@ declare const Align: {
 declare const Groups: {
 	player: EntityGroup<mindustryPlayer>;
 	unit: EntityGroup<Unit>;
+	fire: EntityGroup<Fire>;
 }
+type Fire = any;
 declare class Vec2 {
 	constructor(x:number, y:number);
 }
@@ -257,7 +259,7 @@ declare class EntityGroup<T> {
 	contains(pred:(item:T) => boolean):boolean;
 	find(pred:(item:T) => boolean):T;
 	first():T;
-	clear();
+	clear():void;
 }
 
 declare function importPackage(package:any):void;

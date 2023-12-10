@@ -441,4 +441,14 @@ Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 			);
 		}
 	},
+	clearfire: {
+		args: [],
+		description: "Clears all the fires.",
+		handler({output, outputSuccess}){
+			output(`Removing ${Groups.fire.size()} fires...`);
+			Groups.fire.each(f => f.remove());
+			Groups.fire.clear();
+			outputSuccess(`Fires removed.`);
+		}
+	}
 });
