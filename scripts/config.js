@@ -25,7 +25,7 @@ exports.bannedWords = (function (words) {
     "uwu",
     "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger",
     "re" + "tard",
-    'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys"],
+    'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys", "chonkys"],
     "co" + "ck",
     "iamasussyimposter",
     "cu" + "nt",
