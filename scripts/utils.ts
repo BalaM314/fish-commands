@@ -1,6 +1,6 @@
 import * as api from './api';
 import { Mode, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
-import { fishState } from './globals';
+import { fishState, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
 import { Boolf } from './types';
@@ -349,20 +349,39 @@ export function isImpersonator(name:string, isStaff:boolean):false | string {
 
 export function logAction(action:string):void;
 export function logAction(action:string, by:FishPlayer):void;
-export function logAction(action:string, by:FishPlayer | string, to:FishPlayer | mindustryPlayerData, reason?:string, duration?:number):void;
-export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer | mindustryPlayerData, reason?:string, duration?:number) {
-	if(by === undefined){
+export function logAction(action:string, by:FishPlayer | string, to:FishPlayer | mindustryPlayerData | string, reason?:string, duration?:number):void;
+export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer | mindustryPlayerData | string, reason?:string, duration?:number) {
+	if(by === undefined){ //overload 1
 		api.sendModerationMessage(
 `${action}
 **Server:** ${getGamemode()}`
 		);
-	} else if(to){
+		return;
+	}
+	if(to === undefined){ //overload 2
+		api.sendModerationMessage(
+`${(by as FishPlayer).cleanedName} ${action}
+**Server:** ${getGamemode()}`
+		);
+		return;
+	}
+	if(to){ //overload 3
 		let name:string, uuid:string, ip:string;
 		let actor:string = typeof by === "string" ? by : by.name;
 		if(to instanceof FishPlayer){
 			name = escapeTextDiscord(to.name);
 			uuid = to.uuid;
 			ip = to.player.ip();
+		} else if(typeof to == "string"){
+			if(uuidPattern.test(to)){
+				name = `[${to}]`;
+				uuid = to;
+				ip = "[unknown]";
+			} else {
+				name = to;
+				uuid = "[unknown]";
+				ip = "[unknown]";
+			}
 		} else {
 			name = escapeTextDiscord(to.lastName);
 			uuid = to.id;
@@ -374,11 +393,7 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 **uuid:** \`${uuid}\`
 **ip**: \`${ip}\``
 		);
-	} else {
-		api.sendModerationMessage(
-`${(by as FishPlayer).cleanedName} ${action}
-**Server:** ${getGamemode()}`
-		);
+		return;
 	}
 }
 
