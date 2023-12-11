@@ -304,7 +304,7 @@ const outputFormatter_client = tagProcessor(chunk => {
 });
 
 
-const CommandError = (function(){}) as typeof Error;
+export const CommandError = (function(){}) as typeof Error;
 Object.setPrototypeOf(CommandError.prototype, Error.prototype);
 //Shenanigans necessary due to odd behavior of Typescript's compiled error subclass
 export function fail(message:string):never {

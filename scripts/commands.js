@@ -38,7 +38,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.formatArg = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
+exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.CommandError = exports.formatArg = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -390,12 +390,12 @@ var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk) {
         return chunk;
     }
 });
-var CommandError = (function () { });
-Object.setPrototypeOf(CommandError.prototype, Error.prototype);
+exports.CommandError = (function () { });
+Object.setPrototypeOf(exports.CommandError.prototype, Error.prototype);
 //Shenanigans necessary due to odd behavior of Typescript's compiled error subclass
 function fail(message) {
     var err = new Error(message);
-    Object.setPrototypeOf(err, CommandError.prototype);
+    Object.setPrototypeOf(err, exports.CommandError.prototype);
     throw err;
 }
 exports.fail = fail;
@@ -437,7 +437,7 @@ function handleTapEvent(event) {
             usageData.tapLastUsedSuccessfully = Date.now();
     }
     catch (err) {
-        if (err instanceof CommandError) {
+        if (err instanceof exports.CommandError) {
             //If the error is a command error, then just outputFail
             outputFail(err.message, sender);
         }
@@ -528,7 +528,7 @@ function register(commands, clientHandler, serverHandler) {
                         }
                     }
                     catch (err) {
-                        if (err instanceof CommandError) {
+                        if (err instanceof exports.CommandError) {
                             //If the error is a command error, then just outputFail
                             outputFail(err.message, sender);
                         }
@@ -592,7 +592,7 @@ function registerConsole(commands, serverHandler) {
                 }
                 catch (err) {
                     usageData.lastUsed = Date.now();
-                    if (err instanceof CommandError) {
+                    if (err instanceof exports.CommandError) {
                         Log.warn("".concat(err.message));
                     }
                     else {

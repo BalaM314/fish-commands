@@ -1,5 +1,6 @@
+import { CommandError } from "./commands";
 import { FishPlayer } from "./players";
-import { to2DArray } from "./utils";
+import { parseError, to2DArray } from "./utils";
 
 /**Stores a mapping from name to the numeric id of a listener that has been registered. */
 const registeredListeners:{
@@ -68,6 +69,13 @@ function menu<T>(
 		} else {
 			target.activeMenu.cancelOptionId = -1;
 		}
+
+		const outputFail = function(message:string){
+			target.sendMessage(`[scarlet]\u26A0 [yellow]${message}`);
+		}
+		const outputSuccess = function(message:string){
+			target.sendMessage(`[#48e076]\u2714 ${message}`);
+		}
 	
 		//The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
 		target.activeMenu.callback = (fishSender, option) => {
@@ -78,16 +86,24 @@ function menu<T>(
 
 			//We do need to validate option though, as it can be any number.
 			if(!(option in options)) return;
-			callback({
-				option: options[option],
-				sender: target,
-				outputFail(message:string){
-					target.sendMessage(`[scarlet]\u26A0 [yellow]${message}`);
-				},
-				outputSuccess(message:string){
-					target.sendMessage(`[#48e076]\u2714 ${message}`);
+			try {
+				callback({
+					option: options[option],
+					sender: target,
+					outputFail,
+					outputSuccess,
+				});
+			} catch(err){
+				if(err instanceof CommandError){
+					//If the error is a command error, then just outputFail
+					outputFail(err.message);
+				} else {
+					target.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
+					if(target.hasPerm("seeErrorMessages")) target.sendMessage(parseError(err));
+					Log.err(`Unhandled error in menu callback: ${target.cleanedName} submitted menu "${title}" "${description}"`);
+					Log.err(err as Error);
 				}
-			});
+			}
 		};
 	
 		Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);

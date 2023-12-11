@@ -28,6 +28,7 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.menu = exports.listeners = exports.registerListeners = void 0;
+var commands_1 = require("./commands");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
 /**Stores a mapping from name to the numeric id of a listener that has been registered. */
@@ -92,6 +93,12 @@ columns) {
         else {
             target.activeMenu.cancelOptionId = -1;
         }
+        var outputFail_1 = function (message) {
+            target.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
+        };
+        var outputSuccess_1 = function (message) {
+            target.sendMessage("[#48e076]\u2714 ".concat(message));
+        };
         //The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
         target.activeMenu.callback = function (fishSender, option) {
             //Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
@@ -101,16 +108,27 @@ columns) {
             //We do need to validate option though, as it can be any number.
             if (!(option in options))
                 return;
-            callback({
-                option: options[option],
-                sender: target,
-                outputFail: function (message) {
-                    target.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
-                },
-                outputSuccess: function (message) {
-                    target.sendMessage("[#48e076]\u2714 ".concat(message));
+            try {
+                callback({
+                    option: options[option],
+                    sender: target,
+                    outputFail: outputFail_1,
+                    outputSuccess: outputSuccess_1,
+                });
+            }
+            catch (err) {
+                if (err instanceof commands_1.CommandError) {
+                    //If the error is a command error, then just outputFail
+                    outputFail_1(err.message);
                 }
-            });
+                else {
+                    target.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
+                    if (target.hasPerm("seeErrorMessages"))
+                        target.sendMessage((0, utils_1.parseError)(err));
+                    Log.err("Unhandled error in menu callback: ".concat(target.cleanedName, " submitted menu \"").concat(title, "\" \"").concat(description, "\""));
+                    Log.err(err);
+                }
+            }
         };
         Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
     }
