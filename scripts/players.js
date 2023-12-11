@@ -925,7 +925,7 @@ var FishPlayer = /** @class */ (function () {
         return "(".concat(Math.floor(this.player.x / 8), ", ").concat(Math.floor(this.player.y / 8), ")");
     };
     FishPlayer.prototype.connected = function () {
-        return this.player && !this.con.hasDisconnected;
+        return this.player != null && !this.con.hasDisconnected;
     };
     /**
      * @returns whether a player can perform a moderation action on another player.

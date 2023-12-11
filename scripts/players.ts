@@ -817,8 +817,8 @@ We apologize for the inconvenience.`
 	position():string {
 		return `(${Math.floor(this.player.x / 8)}, ${Math.floor(this.player.y / 8)})`
 	}
-	connected(){
-		return this.player && !this.con.hasDisconnected;
+	connected():boolean {
+		return this.player != null && !this.con.hasDisconnected;
 	}
 	/**
 	 * @returns whether a player can perform a moderation action on another player.

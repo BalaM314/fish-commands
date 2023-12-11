@@ -381,7 +381,7 @@ export const commands = commandList({
 				},
 				canSpawn(player:FishPlayer):true | string {
 					if(!this.enabled) return `Ohnos have been temporarily disabled.`;
-					if(!player.connected() || !player.unit().added || player.unit().dead) return `You cannot spawn ohnos while dead.`
+					if(!player.connected() || !player.unit().added || player.unit().dead) return `You cannot spawn ohnos while dead.`;
 					this.updateLength();
 					if(this.ohnos.length >= (Groups.player.size() + 1)) return `Sorry, the max number of ohno units has been reached.`;
 					if(nearbyEnemyTile(player.unit(), 6) != null) return `Too close to an enemy tile!`;
