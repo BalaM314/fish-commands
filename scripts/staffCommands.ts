@@ -1,6 +1,6 @@
 import * as api from "./api";
 import * as fjsContext from "./fjsContext";
-import { Perm, commandList, fail } from "./commands";
+import { Perm, command, commandList, fail } from "./commands";
 import { getGamemode, maxTime, stopAntiEvadeTime } from "./config";
 import { uuidPattern } from "./globals";
 import { menu } from './menus';
@@ -329,10 +329,39 @@ export const commands = commandList({
 	},
 
 	ban: {
-		args: [],
+		args: ["target:uuid"],
 		description: "Bans a player by UUID and IP.",
 		perm: Perm.admin,
-		handler({sender, outputFail, outputSuccess, admins}){
+		handler({args, sender, outputFail, outputSuccess, admins}){
+			if(args.target){
+				let data:mindustryPlayerData | null;
+				if((data = admins.getInfoOptional(args.target)) != null && data.admin){
+					fail(`Cannot ban an admin.`);
+				}
+				menu("Confirm", `Are you sure you want to ban ${data ? `${escapeStringColorsClient(data.plainLastName())} (${args.target}/${data.lastIP})` : args.target}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
+					if(confirm != "Yes") fail("Cancelled.");
+					admins.banPlayerID(args.target);
+					if(data){
+						admins.banPlayerIP(data.lastIP);
+						api.ban({ip: data.lastIP, uuid: args.target});
+						Log.info(`${data.lastIP}/${args.target} was banned.`);
+						logAction("ip-banned", sender, data);
+					} else {
+						api.ban({uuid: args.target});
+						Log.info(`${args.target} was banned.`);
+						logAction("ip-banned", sender, args.target);
+					}
+					outputSuccess(`IP-banned player ${option.name}.`);
+					Groups.player.each(player => {
+						if(admins.isIDBanned(player.uuid())){
+							api.addStopped(player.uuid(), maxTime);
+							player.con.kick(Packets.KickReason.banned);
+							Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked.`);
+						}
+					});
+				}, false);
+				return;
+			}
 			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
 				if(option.admin){
 					outputFail(`Cannot ip ban an admin.`);
