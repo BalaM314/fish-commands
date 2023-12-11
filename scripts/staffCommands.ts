@@ -329,62 +329,58 @@ export const commands = commandList({
 	},
 
 	ban: {
-		args: ["target:uuid"],
+		args: ["uuid:uuid?"],
 		description: "Bans a player by UUID and IP.",
 		perm: Perm.admin,
-		handler({args, sender, outputFail, outputSuccess, admins}){
-			if(args.target){
+		handler({args, sender, outputSuccess, admins}){
+			if(args.uuid){
 				let data:mindustryPlayerData | null;
-				if((data = admins.getInfoOptional(args.target)) != null && data.admin){
+				if((data = admins.getInfoOptional(args.uuid)) != null && data.admin){
 					fail(`Cannot ban an admin.`);
 				}
-				menu("Confirm", `Are you sure you want to ban ${data ? `${escapeStringColorsClient(data.plainLastName())} (${args.target}/${data.lastIP})` : args.target}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
+				menu("Confirm", `Are you sure you want to ban ${data ? `${escapeStringColorsClient(data.plainLastName())} (${args.uuid}/${data.lastIP})` : args.uuid}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
 					if(confirm != "Yes") fail("Cancelled.");
-					admins.banPlayerID(args.target);
+					const uuid = args.uuid!;
+					admins.banPlayerID(uuid);
 					if(data){
-						admins.banPlayerIP(data.lastIP);
-						api.ban({ip: data.lastIP, uuid: args.target});
-						Log.info(`${data.lastIP}/${args.target} was banned.`);
-						logAction("ip-banned", sender, data);
+						const ip = data.lastIP;
+						admins.banPlayerIP(ip);
+						api.ban({ip, uuid});
+						Log.info(`${uuid}/${ip} was banned.`);
+						logAction("banned", sender, data);
+						outputSuccess(`Banned player ${escapeStringColorsClient(data.plainLastName())} (${uuid}/${ip})`);
 					} else {
-						api.ban({uuid: args.target});
-						Log.info(`${args.target} was banned.`);
-						logAction("ip-banned", sender, args.target);
+						api.ban({uuid});
+						Log.info(`${uuid} was banned.`);
+						logAction("banned", sender, uuid);
+						outputSuccess(`Banned player ${uuid}. Unable to determine IP.`);
 					}
-					outputSuccess(`IP-banned player ${option.name}.`);
 					Groups.player.each(player => {
 						if(admins.isIDBanned(player.uuid())){
-							api.addStopped(player.uuid(), maxTime);
 							player.con.kick(Packets.KickReason.banned);
-							Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked.`);
+							Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
 						}
 					});
 				}, false);
 				return;
 			}
 			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
-				if(option.admin){
-					outputFail(`Cannot ip ban an admin.`);
-				} else {
-					menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
-						if(confirm == "Yes"){
-							admins.banPlayerIP(option.ip()); //this also bans the UUID
-							api.ban({ip: option.ip(), uuid: option.uuid()});
-							Log.info(`${option.ip()}/${option.uuid()} was banned.`);
-							logAction("ip-banned", sender, option.getInfo());
-							outputSuccess(`IP-banned player ${option.name}.`);
-							Groups.player.each(player => {
-								if(admins.isIDBanned(player.uuid())){
-									api.addStopped(player.uuid(), maxTime);
-									player.con.kick(Packets.KickReason.banned);
-									Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked.`);
-								}
-							});
-						} else {
-							outputFail("Cancelled.");
+				if(option.admin) fail(`Cannot ban an admin.`);
+				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
+					if(confirm != "Yes") fail("Cancelled.");
+					admins.banPlayerIP(option.ip()); //this also bans the UUID
+					api.ban({ip: option.ip(), uuid: option.uuid()});
+					Log.info(`${option.ip()}/${option.uuid()} was banned.`);
+					logAction("banned", sender, option.getInfo());
+					outputSuccess(`Banned player ${option.name}.`);
+					Groups.player.each(player => {
+						if(admins.isIDBanned(player.uuid())){
+							api.addStopped(player.uuid(), maxTime);
+							player.con.kick(Packets.KickReason.banned);
+							Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
 						}
-					}, false);
-				}
+					});
+				}, false);
 			}, true, opt => opt.name);
 		}
 	},
