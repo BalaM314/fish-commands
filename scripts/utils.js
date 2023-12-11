@@ -551,7 +551,7 @@ function serverRestartLoop(sec) {
 }
 exports.serverRestartLoop = serverRestartLoop;
 function isBuildable(block) {
-    return block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock);
+    return block == Blocks.powerVoid || (block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock));
 }
 exports.isBuildable = isBuildable;
 function getUnitType(type) {

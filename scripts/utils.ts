@@ -447,7 +447,7 @@ export function serverRestartLoop(sec:number){
 }
 
 export function isBuildable(block:Block){
-	return block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock);
+	return block == Blocks.powerVoid || (block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock));
 }
 
 export function getUnitType(type:string):Unit | string {
