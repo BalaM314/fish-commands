@@ -12,7 +12,7 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	"iamasussyimposter",
 	"cu"+"nt",
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
-	["fa"+"g", "halfago", "ofage"],
+	["fa"+"g", "halfago", "ofage", "ofagr"],
 	/\bcum\b/, ["semen", "sement", "horsemen", "housemen", "defensemen"],
 	"porn",
 	"ur gay", "your gay", "youre gay", "you're gay",
