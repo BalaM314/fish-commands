@@ -109,7 +109,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: 'Stops a player.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var _b, _c, _d;
+            var _b, _c, _d, _e;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (args.player.marked()) {
                 //overload: overwrite stoptime
@@ -118,15 +118,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 var previousTime = (0, utils_1.formatTimeRelative)(args.player.unmarkTime, true);
                 args.player.updateStopTime(args.time);
                 outputSuccess("Player \"".concat(args.player.cleanedName, "\"'s stop time has been updated to ").concat((0, utils_1.formatTime)(args.time), " (was ").concat(previousTime, ")."));
+                (0, utils_1.logAction)("updated stop time of", sender, args.player, (_b = args.message) !== null && _b !== void 0 ? _b : undefined, args.time);
                 return;
             }
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to stop this player.");
-            var time = (_b = args.time) !== null && _b !== void 0 ? _b : (0, utils_1.untilForever)();
+            var time = (_c = args.time) !== null && _c !== void 0 ? _c : (0, utils_1.untilForever)();
             if (time + Date.now() > config_1.maxTime)
                 (0, commands_1.fail)("Error: time too high.");
-            args.player.stop(sender, time, (_c = args.message) !== null && _c !== void 0 ? _c : undefined);
-            (0, utils_1.logAction)('stopped', sender, args.player, (_d = args.message) !== null && _d !== void 0 ? _d : undefined, time);
+            args.player.stop(sender, time, (_d = args.message) !== null && _d !== void 0 ? _d : undefined);
+            (0, utils_1.logAction)('stopped', sender, args.player, (_e = args.message) !== null && _e !== void 0 ? _e : undefined, time);
             Call.sendMessage("[orange]Player \"".concat(args.player.name, "[orange]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
         }
     }, free: {

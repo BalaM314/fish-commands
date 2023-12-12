@@ -78,7 +78,7 @@ export const commands = commandList({
 				const previousTime = formatTimeRelative(args.player.unmarkTime, true);
 				args.player.updateStopTime(args.time);
 				outputSuccess(`Player "${args.player.cleanedName}"'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
-
+				logAction("updated stop time of", sender, args.player, args.message ?? undefined, args.time);
 				return;
 			}
 
