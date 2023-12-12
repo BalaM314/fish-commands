@@ -373,6 +373,7 @@ export class FishPlayer {
 		this.flags.forEach(f => {
 			if(!f.peristent) this.flags.delete(f);
 		});
+		this.manualAfk = false;
 		this.cleanedName = Strings.stripColors(player.name);
 		this.lastJoined = Date.now();
 		this.lastMousePosition = [0, 0];

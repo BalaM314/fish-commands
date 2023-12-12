@@ -430,6 +430,7 @@ var FishPlayer = /** @class */ (function () {
             if (!f.peristent)
                 _this.flags.delete(f);
         });
+        this.manualAfk = false;
         this.cleanedName = Strings.stripColors(player.name);
         this.lastJoined = Date.now();
         this.lastMousePosition = [0, 0];
