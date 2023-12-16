@@ -621,6 +621,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 			const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
 			sender.player.unit(emanate);
 			data[sender.uuid] = emanate;
+			logAction("spawned an emanate", sender);
 			outputSuccess("Spawned an emanate.");
 		}
 	}),

@@ -645,6 +645,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
             sender.player.unit(emanate);
             data[sender.uuid] = emanate;
+            (0, utils_1.logAction)("spawned an emanate", sender);
             outputSuccess("Spawned an emanate.");
         }
     }) }));
