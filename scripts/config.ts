@@ -8,6 +8,7 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	"nig"+"ger", "nig" + "ga", "niger", "ni8"+"8ger", //our apologies to citizens of the Republic of Niger
 	"re"+"tard",
 	'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys", "chonkys"],
+	/\bkill blacks\b/,
 	"co"+"ck",
 	"iamasussyimposter",
 	"cu"+"nt",
@@ -27,7 +28,7 @@ export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
-	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/,
+	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]"
 ]);
 export const adminNames = ["fish", "balamei4", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
