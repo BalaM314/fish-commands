@@ -150,4 +150,4 @@ export const tips = {
 export const heuristics = {
 	blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };
-export const stopAntiEvadeTime = 300000; //5 minutes
+export const stopAntiEvadeTime = 1800000; //30 minutes

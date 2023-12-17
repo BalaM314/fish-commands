@@ -168,4 +168,4 @@ exports.tips = {
 exports.heuristics = {
     blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };
-exports.stopAntiEvadeTime = 300000; //5 minutes
+exports.stopAntiEvadeTime = 1800000; //30 minutes
