@@ -361,6 +361,10 @@ export class FishPlayer {
 	}
 	static forEachPlayer(func:(player:FishPlayer) => unknown){
 		Groups.player.each(player => {
+			if(player == null){
+				Log.err(".FINDTAG. Groups.player.each() returned a null player???");
+				return;
+			}
 			const fishP = this.get(player);
 			func(fishP);
 		});

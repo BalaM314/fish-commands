@@ -415,6 +415,10 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.forEachPlayer = function (func) {
         var _this = this;
         Groups.player.each(function (player) {
+            if (player == null) {
+                Log.err(".FINDTAG. Groups.player.each() returned a null player???");
+                return;
+            }
             var fishP = _this.get(player);
             func(fishP);
         });
