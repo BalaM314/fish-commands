@@ -7,11 +7,12 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	"uwu", //lol
 	"nig"+"ger", "nig" + "ga", "niger", "ni8"+"8ger", //our apologies to citizens of the Republic of Niger
 	"re"+"tard",
-	'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys", "chonkys", "funky"],
+	'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys", "chonkys", "funky", "oaky"],
 	/\bkill blacks\b/,
 	"co"+"ck",
 	"iamasussyimposter",
-	"cu"+"nt",
+	["cu"+"nt", "scunthorpe"],
+	["penis", "peniston"],
 	["rape", "grape", "therap", "drape", "scrape", "trapez"],
 	["fa"+"g", "halfago", "ofage", "ofagr"],
 	/\bcum\b/, ["semen", "sement", "horsemen", "housemen", "defensemen"],
