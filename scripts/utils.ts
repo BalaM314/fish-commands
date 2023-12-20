@@ -272,15 +272,16 @@ export function escapeTextDiscord(text:string):string {
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns 
  */
-export function matchFilter(text:string, strict = "chat" as "chat" | "strict" | "name"):false | string {
+export function matchFilter(input:string, strict = "chat" as "chat" | "strict" | "name"):false | string {
 	//Replace substitutions
-	const replacedText = cleanText(text, true);
-	for(const [word, whitelist] of bannedWords.concat(strict == "strict" ? strictBannedWords : []).concat(strict == "name" ? bannedInNamesWords : [])){
-		if(word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)){
-			let moreReplacedText = replacedText;
-			whitelist.forEach(w => moreReplacedText = moreReplacedText.replace(new RegExp(w, "g"), ""));
-			if(word instanceof RegExp ? word.test(moreReplacedText) : moreReplacedText.includes(word))
-			return word instanceof RegExp ? word.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : word; //parsing regex with regex, massive hack
+	for(const [banned, whitelist] of bannedWords.concat(strict == "strict" ? strictBannedWords : []).concat(strict == "name" ? bannedInNamesWords : [])){
+		for(const text of [input, cleanText(input, false), cleanText(input, true)]){
+			if(banned instanceof RegExp ? banned.test(text) : text.includes(banned)){
+				let modifiedText = text;
+				whitelist.forEach(w => modifiedText = modifiedText.replace(new RegExp(w, "g"), "")); //Replace whitelisted words with nothing
+				if(banned instanceof RegExp ? banned.test(modifiedText) : modifiedText.includes(banned)) //If the text still matches, fail
+					return banned instanceof RegExp ? banned.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : banned; //parsing regex with regex, massive hack
+			}
 		}
 	}
 	return false;
@@ -290,6 +291,13 @@ export function repeatAlternate(a:string, b:string, numARepeats:number){
 	return Array.from({length: numARepeats * 2 - 1}, (_, i) => i % 2 ? b : a).join("");
 }
 
+//If there are 3 groups of non alphabetic characters separating alphabetic characters,
+//such as: "a_d_m_i" but not "i am a sussy impostor"
+//remove all the non alphabetic characters
+//this should stop people naming themselves s e r v e r and getting away with it
+const alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+const nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+const antiEvasionRegex = new RegExp(repeatAlternate(`[${alphaChars}]`, `[^${nonAlphaChars}]`, 4), "i");
 export function cleanText(text:string, applyAntiEvasion = false){
 	//Replace substitutions
 	let replacedText =
@@ -300,13 +308,6 @@ export function cleanText(text:string, applyAntiEvasion = false){
 		.toLowerCase()
 		.trim();
 	if(applyAntiEvasion){
-		//If there are 3 groups of non alphabetic characters separating alphabetic characters,
-		//such as: "a_d_m_i" but not "i am a sussy impostor"
-		//remove all the non alphabetic characters
-		//this should stop people naming themselves s e r v e r and getting away with it
-		const alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-		const nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-		const antiEvasionRegex = new RegExp(repeatAlternate(`[${alphaChars}]`, `[^${nonAlphaChars}]`, 4), "i");
 		if(antiEvasionRegex.test(replacedText)){
 			replacedText = replacedText.replace(new RegExp(`[^${nonAlphaChars}]`, "gi"), "");
 		}

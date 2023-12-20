@@ -339,31 +339,42 @@ exports.escapeTextDiscord = escapeTextDiscord;
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns
  */
-function matchFilter(text, strict) {
-    var e_1, _a;
+function matchFilter(input, strict) {
+    var e_1, _a, e_2, _b;
     if (strict === void 0) { strict = "chat"; }
-    //Replace substitutions
-    var replacedText = cleanText(text, true);
-    var _loop_1 = function (word, whitelist) {
-        if (word instanceof RegExp ? word.test(replacedText) : replacedText.includes(word)) {
-            var moreReplacedText_1 = replacedText;
-            whitelist.forEach(function (w) { return moreReplacedText_1 = moreReplacedText_1.replace(new RegExp(w, "g"), ""); });
-            if (word instanceof RegExp ? word.test(moreReplacedText_1) : moreReplacedText_1.includes(word))
-                return { value: word instanceof RegExp ? word.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : word }; //parsing regex with regex, massive hack
-        }
-    };
     try {
-        for (var _b = __values(config_1.bannedWords.concat(strict == "strict" ? config_1.strictBannedWords : []).concat(strict == "name" ? config_1.bannedInNamesWords : [])), _c = _b.next(); !_c.done; _c = _b.next()) {
-            var _d = __read(_c.value, 2), word = _d[0], whitelist = _d[1];
-            var state_1 = _loop_1(word, whitelist);
-            if (typeof state_1 === "object")
-                return state_1.value;
+        //Replace substitutions
+        for (var _c = __values(config_1.bannedWords.concat(strict == "strict" ? config_1.strictBannedWords : []).concat(strict == "name" ? config_1.bannedInNamesWords : [])), _d = _c.next(); !_d.done; _d = _c.next()) {
+            var _e = __read(_d.value, 2), banned = _e[0], whitelist = _e[1];
+            var _loop_1 = function (text) {
+                if (banned instanceof RegExp ? banned.test(text) : text.includes(banned)) {
+                    var modifiedText_1 = text;
+                    whitelist.forEach(function (w) { return modifiedText_1 = modifiedText_1.replace(new RegExp(w, "g"), ""); }); //Replace whitelisted words with nothing
+                    if (banned instanceof RegExp ? banned.test(modifiedText_1) : modifiedText_1.includes(banned)) //If the text still matches, fail
+                        return { value: banned instanceof RegExp ? banned.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : banned }; //parsing regex with regex, massive hack
+                }
+            };
+            try {
+                for (var _f = (e_2 = void 0, __values([input, cleanText(input, false), cleanText(input, true)])), _g = _f.next(); !_g.done; _g = _f.next()) {
+                    var text = _g.value;
+                    var state_1 = _loop_1(text);
+                    if (typeof state_1 === "object")
+                        return state_1.value;
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
         }
     }
     catch (e_1_1) { e_1 = { error: e_1_1 }; }
     finally {
         try {
-            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
         }
         finally { if (e_1) throw e_1.error; }
     }
@@ -374,6 +385,13 @@ function repeatAlternate(a, b, numARepeats) {
     return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
 }
 exports.repeatAlternate = repeatAlternate;
+//If there are 3 groups of non alphabetic characters separating alphabetic characters,
+//such as: "a_d_m_i" but not "i am a sussy impostor"
+//remove all the non alphabetic characters
+//this should stop people naming themselves s e r v e r and getting away with it
+var alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+var nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
+var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4), "i");
 function cleanText(text, applyAntiEvasion) {
     if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
     //Replace substitutions
@@ -385,13 +403,6 @@ function cleanText(text, applyAntiEvasion) {
         .toLowerCase()
         .trim();
     if (applyAntiEvasion) {
-        //If there are 3 groups of non alphabetic characters separating alphabetic characters,
-        //such as: "a_d_m_i" but not "i am a sussy impostor"
-        //remove all the non alphabetic characters
-        //this should stop people naming themselves s e r v e r and getting away with it
-        var alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-        var nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-        var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4), "i");
         if (antiEvasionRegex.test(replacedText)) {
             replacedText = replacedText.replace(new RegExp("[^".concat(nonAlphaChars, "]"), "gi"), "");
         }
@@ -400,7 +411,7 @@ function cleanText(text, applyAntiEvasion) {
 }
 exports.cleanText = cleanText;
 function isImpersonator(name, isStaff) {
-    var e_2, _a;
+    var e_3, _a;
     var replacedText = cleanText(name);
     var antiEvasionText = cleanText(name, true);
     //very clean code i know
@@ -434,12 +445,12 @@ function isImpersonator(name, isStaff) {
                 return message;
         }
     }
-    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
     finally {
         try {
             if (filters_1_1 && !filters_1_1.done && (_a = filters_1.return)) _a.call(filters_1);
         }
-        finally { if (e_2) throw e_2.error; }
+        finally { if (e_3) throw e_3.error; }
     }
     return false;
 }
@@ -485,7 +496,7 @@ function logAction(action, by, to, reason, duration) {
 exports.logAction = logAction;
 /**@returns the number of milliseconds. */
 function parseTimeString(str) {
-    var e_3, _a;
+    var e_4, _a;
     var formats = [
         [/(\d+)s/, 1],
         [/(\d+)m/, 60],
@@ -510,12 +521,12 @@ function parseTimeString(str) {
             }
         }
     }
-    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+    catch (e_4_1) { e_4 = { error: e_4_1 }; }
     finally {
         try {
             if (formats_1_1 && !formats_1_1.done && (_a = formats_1.return)) _a.call(formats_1);
         }
-        finally { if (e_3) throw e_3.error; }
+        finally { if (e_4) throw e_4.error; }
     }
     return null;
 }
