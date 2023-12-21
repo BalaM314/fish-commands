@@ -6,7 +6,7 @@ import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
-import { formatTime, formatTimeRelative, logAction, serverRestartLoop, setToArray } from "./utils";
+import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, logAction, serverRestartLoop, setToArray } from "./utils";
 
 
 export const commands = consoleCommandList({
@@ -450,6 +450,37 @@ Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 			Groups.fire.each(f => f.remove());
 			Groups.fire.clear();
 			outputSuccess(`Fires removed.`);
+		}
+	},
+	status: {
+		args: [],
+		description: "Displays server status.",
+		handler({output}){
+			if(Vars.state.isMenu()) fail(`Status: Server closed.`);
+			const uptime = Packages.java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime();
+			let numStaff = 0;
+			FishPlayer.forEachPlayer(p => {
+				if(p.ranksAtLeast("mod")) numStaff ++;
+			});
+			output(`
+Status:
+	Playing on map &fi${Vars.state.map.plainName()}&fr
+	${Vars.state.rules.waves ? `Wave &b${Vars.state.wave}&fr, &b${Math.ceil(Vars.state.wavetime / 60)}&fr seconds until next wave.\n` : ""}\
+	&b${Groups.unit.size()}&fr units, &b${Vars.state.enemies}&fr enemies, &b${Groups.build.size()}&fr buildings
+	TPS: ${colorNumber(Core.graphics.getFramesPerSecond(), f => f > 58 ? "&g" : f > 30 ? "&y" : f > 10 ? "&r" : "&br&w", "server")}, \
+Memory: &b${Math.round(Core.app.getJavaHeap() / 1048576)}&fr MB
+	Server uptime: ${formatTime(uptime)} (since ${formatTimestamp(Date.now() - uptime)})
+${[
+	fishState.restarting ? "&lrRestart queued&fr" : "",
+	FishPlayer.antiBotMode() ? "&br&wANTIBOT ACTIVE!&fr" + getAntiBotInfo("server") : "",
+].filter(l => l.length > 0).join("\n")}\
+
+${colorNumber(Groups.player.size(), n => n > 0 ? "&b" : "&lr", "server")} players online, ${colorNumber(numStaff, n => n > 0 ? "&b" : "&lr", "server")} staff members.
+${FishPlayer.mapPlayers(p =>
+	`\t${p.rank.shortPrefix} &b${p.uuid}&fr &c${p.name}&fr`
+).join("\n") || "&lrNo players connected.&fr"}
+`
+			);
 		}
 	}
 });
