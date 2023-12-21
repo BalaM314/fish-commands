@@ -369,6 +369,17 @@ export class FishPlayer {
 			func(fishP);
 		});
 	}
+	static mapPlayers<T>(func:(player:FishPlayer) => T):T[]{
+		let out:T[] = [];
+		Groups.player.each(player => {
+			if(player == null){
+				Log.err(".FINDTAG. Groups.player.each() returned a null player???");
+				return;
+			}
+			out.push(func(this.get(player)));
+		});
+		return out;
+	}
 	/**Must be called at player join, before updateName(). */
 	updateSavedInfoFromPlayer(player:mindustryPlayer){
 		this.player = player;
@@ -734,7 +745,7 @@ We apologize for the inconvenience.`
 		);
 		let string = out.string;
 		let numKeys = Math.ceil(string.length / this.chunkSize);
-		Core.settings.put('fish-subkeys', java.lang.Integer(numKeys));
+		Core.settings.put('fish-subkeys', Packages.java.lang.Integer(numKeys));
 		for(let i = 1; i <= numKeys; i ++){
 			Core.settings.put(`fish-playerdata-part-${i}`, string.slice(0, this.chunkSize));
 			string = string.slice(this.chunkSize);

@@ -53,6 +53,11 @@ export function formatTime(time:number){
 	].filter(s => s).join(", ")
 }
 
+export function formatTimestamp(time:number){
+	const date = new Date(time);
+	return `${date.toDateString()}, ${date.toTimeString()}`;
+}
+
 export function formatTimeRelative(time:number, raw?:boolean){
 	const difference = Math.abs(time - Date.now());
 
@@ -568,4 +573,8 @@ export function untilForever(){
 
 export function crash(message:string):never {
 	throw new Error(message);
+}
+
+export function colorNumber(number:number, getColor:(number:number) => string, side:"server" | "client" = "client"):string {
+	return getColor(number) + number.toString() + side == "client" ? "[]" : "&fr";
 }
