@@ -1121,7 +1121,7 @@ Please look at ${this.position()} and see if they were actually griefing. If the
 						//this.player.kick(Packets.KickReason.kick, 3600*1000);
 					}
 				}
-			}, 5, 5, 4);
+			}, 0, 1, this.firstJoin() ? 30 : 20);
 		}
 	}
 	//#endregion
