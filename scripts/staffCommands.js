@@ -592,7 +592,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     output("[scarlet]MAKE SURE TO TURN IT OFF!!!");
             }
             else {
-                output("[acid]Antibot status:\n[acid]Enabled: ".concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.antiBotMode()), "\n[acid]Flag count(last 1 minute period): ").concat(players_1.FishPlayer.flagCount, "\n[acid]Autobanning flagged players: ").concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.shouldWhackFlaggedPlayers()), "\n[acid]Kicking new players: ").concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.shouldKickNewPlayers()), "\n[acid]Recent connect packets(last 1 minute period): ").concat(players_1.FishPlayer.playersJoinedRecent, "\n[acid]Persist: ").concat(players_1.FishPlayer.antiBotModePersist, "\n[acid]Override: ").concat(players_1.FishPlayer.antiBotModeOverride));
+                output("[acid]Antibot status:\n[acid]Enabled: ".concat((0, utils_1.colorBadBoolean)(players_1.FishPlayer.antiBotMode()), "\n").concat((0, utils_1.getAntiBotInfo)("client")));
             }
         }
     }, chatstrictness: {

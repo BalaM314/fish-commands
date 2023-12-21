@@ -11,7 +11,6 @@ var Rank = /** @class */ (function () {
         this.shortPrefix = shortPrefix;
         this.color = color;
         Rank.ranks[name] = this;
-        this.shortPrefix = "[".concat(shortPrefix, "]");
     }
     Rank.getByName = function (name) {
         var _a;

@@ -20,7 +20,6 @@ export class Rank {
 		public color:string,
 	){
 		Rank.ranks[name] = this;
-		this.shortPrefix = `[${shortPrefix}]`;
 	}
 	static getByName(name:string):Rank | null {
 		return Rank.ranks[name] ?? null;

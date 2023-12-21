@@ -9,6 +9,7 @@ import { Rank, RoleFlag } from "./ranks";
 import type { FishCommandData } from "./types";
 import {
 	colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative,
+	getAntiBotInfo,
 	logAction, parseError, serverRestartLoop, setToArray, untilForever
 } from "./utils";
 
@@ -576,12 +577,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 				output(
 `[acid]Antibot status:
 [acid]Enabled: ${colorBadBoolean(FishPlayer.antiBotMode())}
-[acid]Flag count(last 1 minute period): ${FishPlayer.flagCount}
-[acid]Autobanning flagged players: ${colorBadBoolean(FishPlayer.shouldWhackFlaggedPlayers())}
-[acid]Kicking new players: ${colorBadBoolean(FishPlayer.shouldKickNewPlayers())}
-[acid]Recent connect packets(last 1 minute period): ${FishPlayer.playersJoinedRecent}
-[acid]Persist: ${FishPlayer.antiBotModePersist}
-[acid]Override: ${FishPlayer.antiBotModeOverride}`
+${getAntiBotInfo("client")}`
 				);
 			}
 		}

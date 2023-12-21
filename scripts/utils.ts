@@ -576,5 +576,18 @@ export function crash(message:string):never {
 }
 
 export function colorNumber(number:number, getColor:(number:number) => string, side:"server" | "client" = "client"):string {
-	return getColor(number) + number.toString() + side == "client" ? "[]" : "&fr";
+	return getColor(number) + number.toString() + (side == "client" ? "[]" : "&fr");
+}
+
+export function getAntiBotInfo(side:"client" | "server"){
+	let color = side == "client" ? "[acid]" : "&ly";
+	let True = side == "client" ? "[red]true[]" : "&lrtrue";
+	let False = side == "client" ? "[green]false[]" : "&gfalse";
+	return (
+`${color}Flag count(last 1 minute period): ${FishPlayer.flagCount}
+${color}Autobanning flagged players: ${FishPlayer.shouldWhackFlaggedPlayers() ? True : False}
+${color}Kicking new players: ${FishPlayer.shouldKickNewPlayers() ? True : False}
+${color}Recent connect packets(last 1 minute period): ${FishPlayer.playersJoinedRecent}
+${color}Override: ${FishPlayer.antiBotModeOverride ? True : False}`
+	);
 }
