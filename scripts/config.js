@@ -34,7 +34,7 @@ exports.bannedWords = (function (words) {
     ["rape", "grape", "therap", "drape", "scrape", "trapez"],
     ["fa" + "g", "halfago", "ofage", "ofagr"],
     /\bcum\b/, ["semen", "sement", "horsemen", "housemen", "defensemen"],
-    "porn",
+    ["porn", "maporn"],
     "ur gay", "your gay", "youre gay", "you're gay",
 ]);
 exports.strictBannedWords = (function (words) {
@@ -58,7 +58,7 @@ exports.substitutions = Object.fromEntries(Object.entries({
     "f": ["\u1E1F", "\u0493", "\u0192"],
     "g": ["\u0581", "\u0123", "\u01F5", "\u0260", "\u011F", "\u011D", "\u01E5", "\u1E21"],
     "h": ["\u1E23", "\u021F", "\u1E25", "\u1E2B", "\u0570", "\u056B", "\u1E29", "\u0266", "\u1E27", "\u1E23", "\u0266", "\u1E96", "\u0127"],
-    "i": ["\u0456", "\u012F", "\u03B9", "\u1EC9", "\u1F31", "\u1F77", "\u012B", "1"],
+    "i": ["\u0456", "\u012F", "\u03B9", "\u1EC9", "\u1F31", "\u1F77", "\u012B", "1", "\u00A1", "\u0457"],
     "j": ["\u0458", "\u029D", "\u0575", "\u025F", "\u0135", "\u0237", "\u01F0"],
     "k": ["\u049F", "\u1E31", "\u0137", "\u0138", "\u043A", "\u0199", "\u049D"],
     "l": ["\u217C", "\u1E3D", "\u1E3B", "\u013E", "\u0140", "\u013C", "\u1E39", "\u0142", "\u038A", "\u00CC", "\u00CD", "\u00CE", "\u00CF", "\u0128", "\u012A", "\u012C", "\u012E", "\u0130", "\u0196", "\u0208", "\u020A", "\u0399", "\u03AA", "\u0406", "\u0407", "\u04C0", "\u04CF", "\u1E2C", "\u1EC8", "\u1F38", "\u1F39", "\u1FD8", "\u1FD9", "\u1FDA", "\u01D0"],
