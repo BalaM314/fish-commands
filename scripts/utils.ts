@@ -296,13 +296,6 @@ export function repeatAlternate(a:string, b:string, numARepeats:number){
 	return Array.from({length: numARepeats * 2 - 1}, (_, i) => i % 2 ? b : a).join("");
 }
 
-//If there are 3 groups of non alphabetic characters separating alphabetic characters,
-//such as: "a_d_m_i" but not "i am a sussy impostor"
-//remove all the non alphabetic characters
-//this should stop people naming themselves s e r v e r and getting away with it
-const alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-const nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-const antiEvasionRegex = new RegExp(repeatAlternate(`[${alphaChars}]`, `[^${nonAlphaChars}]`, 4), "i");
 export function cleanText(text:string, applyAntiEvasion = false){
 	//Replace substitutions
 	let replacedText =
@@ -313,9 +306,7 @@ export function cleanText(text:string, applyAntiEvasion = false){
 		.toLowerCase()
 		.trim();
 	if(applyAntiEvasion){
-		if(antiEvasionRegex.test(replacedText)){
-			replacedText = replacedText.replace(new RegExp(`[^${nonAlphaChars}]`, "gi"), "");
-		}
+		replacedText = replacedText.replace(new RegExp(`[^a-zA-Z]`, "gi"), "");
 	}
 	return replacedText;
 }

@@ -390,13 +390,6 @@ function repeatAlternate(a, b, numARepeats) {
     return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
 }
 exports.repeatAlternate = repeatAlternate;
-//If there are 3 groups of non alphabetic characters separating alphabetic characters,
-//such as: "a_d_m_i" but not "i am a sussy impostor"
-//remove all the non alphabetic characters
-//this should stop people naming themselves s e r v e r and getting away with it
-var alphaChars = "a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-var nonAlphaChars = "'a-z0-9\u00E0-\u00F6\u00F8-\u017F";
-var antiEvasionRegex = new RegExp(repeatAlternate("[".concat(alphaChars, "]"), "[^".concat(nonAlphaChars, "]"), 4), "i");
 function cleanText(text, applyAntiEvasion) {
     if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
     //Replace substitutions
@@ -408,9 +401,7 @@ function cleanText(text, applyAntiEvasion) {
         .toLowerCase()
         .trim();
     if (applyAntiEvasion) {
-        if (antiEvasionRegex.test(replacedText)) {
-            replacedText = replacedText.replace(new RegExp("[^".concat(nonAlphaChars, "]"), "gi"), "");
-        }
+        replacedText = replacedText.replace(new RegExp("[^a-zA-Z]", "gi"), "");
     }
     return replacedText;
 }
