@@ -464,20 +464,20 @@ Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 			});
 			output(`
 Status:
-	Playing on map &fi${Vars.state.map.plainName()}&fr
-	${Vars.state.rules.waves ? `Wave &b${Vars.state.wave}&fr, &b${Math.ceil(Vars.state.wavetime / 60)}&fr seconds until next wave.\n` : ""}\
-	&b${Groups.unit.size()}&fr units, &b${Vars.state.enemies}&fr enemies, &b${Groups.build.size()}&fr buildings
-	TPS: ${colorNumber(Core.graphics.getFramesPerSecond(), f => f > 58 ? "&g" : f > 30 ? "&y" : f > 10 ? "&r" : "&br&w", "server")}, \
-Memory: &b${Math.round(Core.app.getJavaHeap() / 1048576)}&fr MB
-	Server uptime: ${formatTime(uptime)} (since ${formatTimestamp(Date.now() - uptime)})
+Playing on map &fi${Vars.state.map.plainName()}&fr
+${Vars.state.rules.waves ? `Wave &c${Vars.state.wave}&fr, &c${Math.ceil(Vars.state.wavetime / 60)}&fr seconds until next wave.\n` : ""}\
+&c${Groups.unit.size()}&fr units, &c${Vars.state.enemies}&fr enemies, &c${Groups.build.size()}&fr buildings
+TPS: ${colorNumber(Core.graphics.getFramesPerSecond(), f => f > 58 ? "&g" : f > 30 ? "&y" : f > 10 ? "&r" : "&br&w", "server")}, \
+Memory: &c${Math.round(Core.app.getJavaHeap() / 1048576)}&fr MB
+Server uptime: ${formatTime(uptime)} (since ${formatTimestamp(Date.now() - uptime)})
 ${[
 	fishState.restarting ? "&lrRestart queued&fr" : "",
 	FishPlayer.antiBotMode() ? "&br&wANTIBOT ACTIVE!&fr" + getAntiBotInfo("server") : "",
 ].filter(l => l.length > 0).join("\n")}\
 
-${colorNumber(Groups.player.size(), n => n > 0 ? "&b" : "&lr", "server")} players online, ${colorNumber(numStaff, n => n > 0 ? "&b" : "&lr", "server")} staff members.
+${colorNumber(Groups.player.size(), n => n > 0 ? "&c" : "&lr", "server")} players online, ${colorNumber(numStaff, n => n > 0 ? "&c" : "&lr", "server")} staff members.
 ${FishPlayer.mapPlayers(p =>
-	`\t${p.rank.shortPrefix} &b${p.uuid}&fr &c${p.name}&fr`
+	`\t${p.rank.shortPrefix} &c${p.uuid}&fr &c${p.name}&fr`
 ).join("\n") || "&lrNo players connected.&fr"}
 `
 			);
