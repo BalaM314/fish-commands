@@ -17,14 +17,15 @@ const spawnedUnits:Unit[] = [];
 
 export const commands = commandList({
 	warn: {
-		args: ['player:player', 'reason:string?'],
-		description: 'Warn a player.',
+		args: ['player:player', 'message:string?'],
+		description: 'Sends the player a warning (menu popup).',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess}){
-			const reason = args.reason ?? "You have been warned. I suggest you stop what you're doing";
-			menu('Warning', reason, ['accept'], args.player);
-			logAction('warned', sender, args.player);
-			outputSuccess(`Warned player "${args.player.cleanedName}" for "${reason}"`);
+		handler({args, sender, outputSuccess, lastUsedSuccessfullySender}){
+			if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
+			const message = args.message ?? "You have been warned. I suggest you stop what you're doing";
+			menu('Warning', message, ['accept'], args.player);
+			logAction('warned', sender, args.player, message);
+			outputSuccess(`Warned player "${args.player.cleanedName}" for "${message}"`);
 		}
 	},
 

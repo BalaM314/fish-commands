@@ -50,16 +50,18 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 var spawnedUnits = [];
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
-        args: ['player:player', 'reason:string?'],
-        description: 'Warn a player.',
+        args: ['player:player', 'message:string?'],
+        description: 'Sends the player a warning (menu popup).',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
-            var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
-            (0, menus_1.menu)('Warning', reason, ['accept'], args.player);
-            (0, utils_1.logAction)('warned', sender, args.player);
-            outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+            if (Date.now() - lastUsedSuccessfullySender < 3000)
+                (0, commands_1.fail)("This command was run recently and is on cooldown.");
+            var message = (_b = args.message) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
+            (0, menus_1.menu)('Warning', message, ['accept'], args.player);
+            (0, utils_1.logAction)('warned', sender, args.player, message);
+            outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(message, "\""));
         }
     }, mute: {
         args: ['player:player'],
