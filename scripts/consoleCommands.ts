@@ -464,7 +464,7 @@ Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 			});
 			output(`
 Status:
-Playing on map &fi${Vars.state.map.plainName()}&fr
+Playing on map &fi${Vars.state.map.plainName()}&fr for ${formatTime(1000 * Vars.state.tick / 60)}
 ${Vars.state.rules.waves ? `Wave &c${Vars.state.wave}&fr, &c${Math.ceil(Vars.state.wavetime / 60)}&fr seconds until next wave.\n` : ""}\
 &c${Groups.unit.size()}&fr units, &c${Vars.state.enemies}&fr enemies, &c${Groups.build.size()}&fr buildings
 TPS: ${colorNumber(Core.graphics.getFramesPerSecond(), f => f > 58 ? "&g" : f > 30 ? "&y" : f > 10 ? "&r" : "&br&w", "server")}, \
