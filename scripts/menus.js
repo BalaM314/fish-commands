@@ -93,12 +93,6 @@ columns) {
         else {
             target.activeMenu.cancelOptionId = -1;
         }
-        var outputFail_1 = function (message) {
-            target.sendMessage("[scarlet]\u26A0 [yellow]".concat(message));
-        };
-        var outputSuccess_1 = function (message) {
-            target.sendMessage("[#48e076]\u2714 ".concat(message));
-        };
         //The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
         target.activeMenu.callback = function (fishSender, option) {
             //Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
@@ -112,14 +106,14 @@ columns) {
                 callback({
                     option: options[option],
                     sender: target,
-                    outputFail: outputFail_1,
-                    outputSuccess: outputSuccess_1,
+                    outputFail: function (message) { return (0, utils_1.outputFail)(message, target); },
+                    outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, target); },
                 });
             }
             catch (err) {
                 if (err instanceof commands_1.CommandError) {
                     //If the error is a command error, then just outputFail
-                    outputFail_1(err.message);
+                    (0, utils_1.outputFail)(err.data, target);
                 }
                 else {
                     target.sendMessage("[scarlet]\u274C An error occurred while executing the command!");

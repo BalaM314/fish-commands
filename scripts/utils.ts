@@ -3,7 +3,7 @@ import { Mode, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime
 import { fishState, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
-import { Boolf, TagFunction } from './types';
+import { Boolf, PartialFormatString, TagFunction } from './types';
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -594,4 +594,17 @@ ${color}Kicking new players: ${FishPlayer.shouldKickNewPlayers() ? True : False}
 ${color}Recent connect packets(last 1 minute period): ${FishPlayer.playersJoinedRecent}
 ${color}Override: ${FishPlayer.antiBotModeOverride ? True : False}`
 	);
+}
+
+const failPrefix = "[scarlet]\u26A0 [yellow]";
+const successPrefix = "[#48e076]\u2714 ";
+
+export function outputFail(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
+	sender.sendMessage(failPrefix + (typeof message == "function" ? message("[yellow]") : message));
+}
+export function outputSuccess(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
+	sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
+}
+export function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
+	sender.sendMessage(typeof message == "function" ? message("") : message);
 }

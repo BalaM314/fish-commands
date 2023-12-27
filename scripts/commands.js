@@ -306,17 +306,6 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     }
     return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
-var failPrefix = "[scarlet]\u26A0 [yellow]";
-var successPrefix = "[#48e076]\u2714 ";
-function outputFail(message, sender) {
-    sender.sendMessage(failPrefix + (typeof message == "function" ? message("[yellow]") : message));
-}
-function outputSuccess(message, sender) {
-    sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
-}
-function outputMessage(message, sender) {
-    sender.sendMessage(typeof message == "function" ? message("") : message);
-}
 var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
     if (chunk instanceof players_1.FishPlayer) {
         return "&c".concat(chunk.cleanedName, "&fr");
@@ -356,7 +345,8 @@ var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
     }
 });
 var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i, data, stringChunks) {
-    var color = data;
+    var _a, _b;
+    var color = (_b = data !== null && data !== void 0 ? data : (_a = stringChunks[0].match(/^\[.+?\]/)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : "";
     if (chunk instanceof players_1.FishPlayer) {
         return "[cyan]\"".concat(chunk.player.coloredName(), "[cyan]\"") + color;
     }
@@ -426,9 +416,9 @@ function handleTapEvent(event) {
         (_a = command.tapped) === null || _a === void 0 ? void 0 : _a.call(command, {
             args: sender.tapInfo.lastArgs,
             data: command.data,
-            outputFail: function (message) { outputFail(message, sender); failed_1 = true; },
-            outputSuccess: function (message) { return outputSuccess(message, sender); },
-            output: function (message) { return outputMessage(message, sender); },
+            outputFail: function (message) { (0, utils_1.outputFail)(message, sender); failed_1 = true; },
+            outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, sender); },
+            output: function (message) { return (0, utils_1.outputMessage)(message, sender); },
             admins: Vars.netServer.admins,
             commandLastUsed: usageData.lastUsed,
             commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
@@ -445,7 +435,7 @@ function handleTapEvent(event) {
     catch (err) {
         if (err instanceof exports.CommandError) {
             //If the error is a command error, then just outputFail
-            outputFail(err.data, sender);
+            (0, utils_1.outputFail)(err.data, sender);
         }
         else {
             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
@@ -481,7 +471,7 @@ function register(commands, clientHandler, serverHandler) {
                 //Verify authorization
                 //as a bonus, this crashes if data.perm is undefined
                 if (!data.perm.check(fishSender)) {
-                    outputFail((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.perm.unauthorizedMessage, sender);
+                    (0, utils_1.outputFail)((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.perm.unauthorizedMessage, sender);
                     return;
                 }
                 //closure over processedCmdArgs, should be fine
@@ -490,7 +480,7 @@ function register(commands, clientHandler, serverHandler) {
                 var output = processArgs(rawArgs, processedCmdArgs);
                 if ("error" in output) {
                     //if args are invalid
-                    outputFail(output.error, sender);
+                    (0, utils_1.outputFail)(output.error, sender);
                     return;
                 }
                 //Recursively resolve unresolved args (such as players that need to be determined through a menu)
@@ -505,9 +495,9 @@ function register(commands, clientHandler, serverHandler) {
                             args: output.processedArgs,
                             sender: fishSender,
                             data: data.data,
-                            outputFail: function (message) { outputFail(message, sender); failed = true; },
-                            outputSuccess: function (message) { return outputSuccess(message, sender); },
-                            output: function (message) { return outputMessage(message, sender); },
+                            outputFail: function (message) { (0, utils_1.outputFail)(message, sender); failed = true; },
+                            outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, sender); },
+                            output: function (message) { return (0, utils_1.outputMessage)(message, sender); },
                             f: outputFormatter_client,
                             execServer: function (command) { return serverHandler.handleMessage(command); },
                             admins: Vars.netServer.admins,
@@ -537,7 +527,7 @@ function register(commands, clientHandler, serverHandler) {
                     catch (err) {
                         if (err instanceof exports.CommandError) {
                             //If the error is a command error, then just outputFail
-                            outputFail(err.data, sender);
+                            (0, utils_1.outputFail)(err.data, sender);
                         }
                         else {
                             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");

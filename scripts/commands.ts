@@ -8,9 +8,8 @@ import type {
 	Formattable, PartialFormatString, SelectClasslikeEnumKeys, ServerCommandHandler, TagFunction
 } from "./types";
 import {
-	crash, escapeStringColorsServer, getBlock, getTeam, getUnitType, parseError, parseTimeString,
-	tagProcessor,
-	tagProcessorPartial
+	crash, escapeStringColorsServer, getBlock, getTeam, getUnitType, outputFail, outputMessage,
+	outputSuccess, parseError, parseTimeString, tagProcessor, tagProcessorPartial
 } from "./utils";
 
 //Behold, the power of typescript!
@@ -236,18 +235,6 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 	return {processedArgs: outputArgs, unresolvedArgs};
 }
 
-const failPrefix = "[scarlet]\u26A0 [yellow]";
-const successPrefix = "[#48e076]\u2714 ";
-function outputFail(message:string | PartialFormatString, sender:mindustryPlayer){
-	sender.sendMessage(failPrefix + (typeof message == "function" ? message("[yellow]") : message));
-}
-function outputSuccess(message:string | PartialFormatString, sender:mindustryPlayer){
-	sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
-}
-function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer){
-	sender.sendMessage(typeof message == "function" ? message("") : message);
-}
-
 
 const outputFormatter_server = tagProcessor<Formattable>((chunk) => {
 	if(chunk instanceof FishPlayer){
@@ -277,8 +264,8 @@ const outputFormatter_server = tagProcessor<Formattable>((chunk) => {
 		return chunk as string;
 	}
 });
-const outputFormatter_client = tagProcessorPartial<Formattable, string>((chunk, i, data, stringChunks) => {
-	const color = data;
+const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((chunk, i, data, stringChunks) => {
+	const color = data ?? stringChunks[0].match(/^\[.+?\]/)?.[0] ?? "";
 	if(chunk instanceof FishPlayer){
 		return `[cyan]"${chunk.player.coloredName()}[cyan]"` + color;
 	} else if(chunk instanceof Rank){
@@ -313,7 +300,7 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string>((chunk, 
 //Shenanigans were once necessary due to odd behavior of Typescript's compiled error subclass
 //however it morphed into something ungodly
 declare class CommandError_ { //oh god no why
-	data: string | ((data:string) => string);
+	data: string | PartialFormatString;
 }
 export const CommandError = (function(){}) as unknown as typeof CommandError_;
 Object.setPrototypeOf(CommandError.prototype, Error.prototype);
