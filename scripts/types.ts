@@ -63,7 +63,7 @@ export type ObjectTypeFor<ArgString> =
 export type TapHandleMode = "off" | "once" | "on";
 
 export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number;
-
+export type PartialFormatString = (data:string) => string;
 export interface FishCommandRunner<ArgType extends string, StoredData> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
@@ -72,13 +72,10 @@ export interface FishCommandRunner<ArgType extends string, StoredData> {
 		args:ArgsFromArgStringUnion<ArgType>;
 		/**The player who ran the command. */
 		sender:FishPlayer;
-		outputSuccess:(message:string) => void;
-		outputFail:(message:string) => void;
-		output:(message:string) => void;
-		outputf:TagFunction<Formattable, void> & {
-			f: TagFunction<Formattable, void>;
-			s: TagFunction<Formattable, void>;
-		};
+		outputSuccess:(message:string | PartialFormatString) => void;
+		outputFail:(message:string | PartialFormatString) => void;
+		output:(message:string | PartialFormatString) => void;
+		f:TagFunction<Formattable, PartialFormatString>;
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
 		/**Call this function to set tap handling mode. */

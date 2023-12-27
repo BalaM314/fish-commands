@@ -494,6 +494,19 @@ export function tagProcessor<T>(transformer:(chunk:T, index:number, allStringChu
 	}
 }
 
+//third order function ._. warning: causes major confusion
+/** Generates a tag template partial processor from a function that processes one value at a time. */
+export function tagProcessorPartial<Tin, Tdata>(
+	transformer:(chunk:Tin, index:number, data:Tdata, allStringChunks:readonly string[], allVarChunks:readonly Tin[]) => string
+):TagFunction<Tin, (data:Tdata) => string> {
+	return (stringChunks:readonly string[], ...varChunks:readonly Tin[]) =>
+		(data:Tdata) => 
+			stringChunks.map((chunk, i) => {
+				if(stringChunks.length <= i) return chunk;
+				return varChunks[i - 1] ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
+			}).join('');
+}
+
 export function logErrors<T extends (...args:any[]) => unknown>(message:string, func:T):T {
 	return function(...args:any[]){
 		try {

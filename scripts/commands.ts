@@ -5,11 +5,12 @@ import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type {
 	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
-	Formattable, SelectClasslikeEnumKeys, ServerCommandHandler, TagFunction
+	Formattable, PartialFormatString, SelectClasslikeEnumKeys, ServerCommandHandler, TagFunction
 } from "./types";
 import {
 	crash, escapeStringColorsServer, getBlock, getTeam, getUnitType, parseError, parseTimeString,
-	tagProcessor
+	tagProcessor,
+	tagProcessorPartial
 } from "./utils";
 
 //Behold, the power of typescript!
@@ -237,14 +238,14 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 
 const failPrefix = "[scarlet]\u26A0 [yellow]";
 const successPrefix = "[#48e076]\u2714 ";
-function outputFail(message:string, sender:mindustryPlayer){
-	sender.sendMessage(failPrefix + message);
+function outputFail(message:string | PartialFormatString, sender:mindustryPlayer){
+	sender.sendMessage(failPrefix + (typeof message == "function" ? message("[yellow]") : message));
 }
-function outputSuccess(message:string, sender:mindustryPlayer){
-	sender.sendMessage(successPrefix + message);
+function outputSuccess(message:string | PartialFormatString, sender:mindustryPlayer){
+	sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
 }
-function outputMessage(message:string, sender:mindustryPlayer){
-	sender.sendMessage(message);
+function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer){
+	sender.sendMessage(typeof message == "function" ? message("") : message);
 }
 
 
@@ -276,8 +277,8 @@ const outputFormatter_server = tagProcessor<Formattable>((chunk) => {
 		return chunk as string;
 	}
 });
-const outputFormatter_client = tagProcessor<Formattable>((chunk, i, stringChunks) => {
-	const color = stringChunks[0].match(/^\[.+?\]/)?.[0] ?? "";
+const outputFormatter_client = tagProcessorPartial<Formattable, string>((chunk, i, data, stringChunks) => {
+	const color = data;
 	if(chunk instanceof FishPlayer){
 		return `[cyan]"${chunk.player.coloredName()}[cyan]"` + color;
 	} else if(chunk instanceof Rank){
@@ -306,23 +307,7 @@ const outputFormatter_client = tagProcessor<Formattable>((chunk, i, stringChunks
 		return chunk as string; //allow it to get stringified by the engine
 	}
 });
-const outputf_client = (sender:mindustryPlayer):TagFunction<Formattable, void> & {
-	f: TagFunction<Formattable, void>;
-	s: TagFunction<Formattable, void>;
-} => {
-	const func:TagFunction<Formattable, void> = (...args) => outputMessage(outputFormatter_client(...args), sender);
-	return Object.assign(func, {
-		s: (stringChunks:readonly string[], ...varChunks:readonly Formattable[]) =>
-			//Prepend to the first string chunk
-			outputMessage(outputFormatter_client(stringChunks.map((c, i) =>
-				i == 0 ? successPrefix + c : c
-			), ...varChunks), sender),
-		f: (stringChunks:readonly string[], ...varChunks:readonly Formattable[]) =>
-			outputMessage(outputFormatter_client(stringChunks.map((c, i) =>
-				i == 0 ? failPrefix + c : c
-			), ...varChunks), sender),
-	});
-};
+
 
 
 export const CommandError = (function(){}) as typeof Error;
@@ -439,7 +424,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 							outputFail: message => {outputFail(message, sender); failed = true;},
 							outputSuccess: message => outputSuccess(message, sender),
 							output: message => outputMessage(message, sender),
-							outputf: outputf_client(sender),
+							f: outputFormatter_client,
 							execServer: command => serverHandler.handleMessage(command),
 							admins: Vars.netServer.admins,
 							lastUsedSender: usageData.lastUsed,

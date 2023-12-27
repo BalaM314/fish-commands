@@ -37,15 +37,6 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.CommandError = exports.formatArg = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
 var config_1 = require("./config");
@@ -318,13 +309,13 @@ function processArgs(args, processedCmdArgs, allowMenus) {
 var failPrefix = "[scarlet]\u26A0 [yellow]";
 var successPrefix = "[#48e076]\u2714 ";
 function outputFail(message, sender) {
-    sender.sendMessage(failPrefix + message);
+    sender.sendMessage(failPrefix + (typeof message == "function" ? message("[yellow]") : message));
 }
 function outputSuccess(message, sender) {
-    sender.sendMessage(successPrefix + message);
+    sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
 }
 function outputMessage(message, sender) {
-    sender.sendMessage(message);
+    sender.sendMessage(typeof message == "function" ? message("") : message);
 }
 var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
     if (chunk instanceof players_1.FishPlayer) {
@@ -364,9 +355,8 @@ var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
         return chunk;
     }
 });
-var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk, i, stringChunks) {
-    var _a, _b;
-    var color = (_b = (_a = stringChunks[0].match(/^\[.+?\]/)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : "";
+var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i, data, stringChunks) {
+    var color = data;
     if (chunk instanceof players_1.FishPlayer) {
         return "[cyan]\"".concat(chunk.player.coloredName(), "[cyan]\"") + color;
     }
@@ -405,36 +395,6 @@ var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk, i, strin
         return chunk; //allow it to get stringified by the engine
     }
 });
-var outputf_client = function (sender) {
-    var func = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        return outputMessage(outputFormatter_client.apply(void 0, __spreadArray([], __read(args), false)), sender);
-    };
-    return Object.assign(func, {
-        s: function (stringChunks) {
-            var varChunks = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                varChunks[_i - 1] = arguments[_i];
-            }
-            //Prepend to the first string chunk
-            return outputMessage(outputFormatter_client.apply(void 0, __spreadArray([stringChunks.map(function (c, i) {
-                    return i == 0 ? successPrefix + c : c;
-                })], __read(varChunks), false)), sender);
-        },
-        f: function (stringChunks) {
-            var varChunks = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                varChunks[_i - 1] = arguments[_i];
-            }
-            return outputMessage(outputFormatter_client.apply(void 0, __spreadArray([stringChunks.map(function (c, i) {
-                    return i == 0 ? failPrefix + c : c;
-                })], __read(varChunks), false)), sender);
-        },
-    });
-};
 exports.CommandError = (function () { });
 Object.setPrototypeOf(exports.CommandError.prototype, Error.prototype);
 //Shenanigans necessary due to odd behavior of Typescript's compiled error subclass
@@ -547,7 +507,7 @@ function register(commands, clientHandler, serverHandler) {
                             outputFail: function (message) { outputFail(message, sender); failed = true; },
                             outputSuccess: function (message) { return outputSuccess(message, sender); },
                             output: function (message) { return outputMessage(message, sender); },
-                            outputf: outputf_client(sender),
+                            f: outputFormatter_client,
                             execServer: function (command) { return serverHandler.handleMessage(command); },
                             admins: Vars.netServer.admins,
                             lastUsedSender: usageData.lastUsed,

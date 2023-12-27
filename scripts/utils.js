@@ -36,7 +36,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -619,6 +619,24 @@ function tagProcessor(transformer) {
     };
 }
 exports.tagProcessor = tagProcessor;
+//third order function ._. warning: causes major confusion
+/** Generates a tag template partial processor from a function that processes one value at a time. */
+function tagProcessorPartial(transformer) {
+    return function (stringChunks) {
+        var varChunks = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            varChunks[_i - 1] = arguments[_i];
+        }
+        return function (data) {
+            return stringChunks.map(function (chunk, i) {
+                if (stringChunks.length <= i)
+                    return chunk;
+                return varChunks[i - 1] ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
+            }).join('');
+        };
+    };
+}
+exports.tagProcessorPartial = tagProcessorPartial;
 function logErrors(message, func) {
     return function () {
         var args = [];
