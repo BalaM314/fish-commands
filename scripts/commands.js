@@ -397,9 +397,10 @@ var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i
 });
 exports.CommandError = (function () { });
 Object.setPrototypeOf(exports.CommandError.prototype, Error.prototype);
-//Shenanigans necessary due to odd behavior of Typescript's compiled error subclass
 function fail(message) {
-    var err = new Error(message);
+    var err = new Error(typeof message == "string" ? message : "");
+    //oh god it's even worse now because i have to smuggle a function through here
+    err.data = message;
     Object.setPrototypeOf(err, exports.CommandError.prototype);
     throw err;
 }
@@ -444,7 +445,7 @@ function handleTapEvent(event) {
     catch (err) {
         if (err instanceof exports.CommandError) {
             //If the error is a command error, then just outputFail
-            outputFail(err.message, sender);
+            outputFail(err.data, sender);
         }
         else {
             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
@@ -536,7 +537,7 @@ function register(commands, clientHandler, serverHandler) {
                     catch (err) {
                         if (err instanceof exports.CommandError) {
                             //If the error is a command error, then just outputFail
-                            outputFail(err.message, sender);
+                            outputFail(err.data, sender);
                         }
                         else {
                             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
@@ -599,7 +600,7 @@ function registerConsole(commands, serverHandler) {
                 catch (err) {
                     usageData.lastUsed = Date.now();
                     if (err instanceof exports.CommandError) {
-                        Log.warn("".concat(err.message));
+                        Log.warn(typeof err.data == "function" ? err.data("&fr") : err.data);
                     }
                     else {
                         Log.err("&lrAn error occured while executing the command!&fr");

@@ -310,11 +310,17 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string>((chunk, 
 
 
 
-export const CommandError = (function(){}) as typeof Error;
+//Shenanigans were once necessary due to odd behavior of Typescript's compiled error subclass
+//however it morphed into something ungodly
+declare class CommandError_ { //oh god no why
+	data: string | ((data:string) => string);
+}
+export const CommandError = (function(){}) as unknown as typeof CommandError_;
 Object.setPrototypeOf(CommandError.prototype, Error.prototype);
-//Shenanigans necessary due to odd behavior of Typescript's compiled error subclass
-export function fail(message:string):never {
-	let err = new Error(message);
+export function fail(message:string | PartialFormatString):never {
+	let err = new Error(typeof message == "string" ? message : "");
+	//oh god it's even worse now because i have to smuggle a function through here
+	(err as any).data = message;
 	Object.setPrototypeOf(err, CommandError.prototype);
 	throw err;
 }
@@ -358,7 +364,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 	} catch(err){
 		if(err instanceof CommandError){
 			//If the error is a command error, then just outputFail
-			outputFail(err.message, sender);
+			outputFail(err.data, sender);
 		} else {
 			sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 			if(sender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
@@ -450,7 +456,7 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 					} catch(err){
 						if(err instanceof CommandError){
 							//If the error is a command error, then just outputFail
-							outputFail(err.message, sender);
+							outputFail(err.data, sender);
 						} else {
 							sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 							if(fishSender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
@@ -511,7 +517,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 				} catch(err){
 					usageData.lastUsed = Date.now();
 					if(err instanceof CommandError){
-						Log.warn(`${err.message}`);
+						Log.warn(typeof err.data == "function" ? err.data("&fr") : err.data);
 					} else {
 						Log.err("&lrAn error occured while executing the command!&fr");
 						Log.err(parseError(err));
