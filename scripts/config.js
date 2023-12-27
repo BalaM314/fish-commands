@@ -25,7 +25,7 @@ exports.bannedWords = (function (words) {
     "uwu",
     "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger",
     "re" + "tard",
-    'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys", "chonkys", "funky", "oaky", "wacky"],
+    'kill yourself', 'kill urself', ['kys', "skys", "pokys", "sneakys", "chonkys", "funky", "oaky", "wacky", "stuff"],
     /\bkill blacks\b/,
     "co" + "ck",
     "iamasussyimposter",
@@ -33,7 +33,7 @@ exports.bannedWords = (function (words) {
     ["penis", "peniston"],
     ["rape", "grape", "therap", "drape", "scrape", "trapez"],
     ["fa" + "g", "halfago", "ofage", "ofagr"],
-    /\bcum\b/, ["semen", "sement", "horsemen", "housemen", "defensemen"],
+    /\bcum\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
     ["porn", "maporn"],
     "ur gay", "your gay", "youre gay", "you're gay",
 ]);
