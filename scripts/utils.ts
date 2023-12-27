@@ -3,7 +3,7 @@ import { Mode, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime
 import { fishState, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Rank } from './ranks';
-import { Boolf } from './types';
+import { Boolf, TagFunction } from './types';
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -488,8 +488,8 @@ export function parseError(thing:unknown){
 }
 
 /** Generates a tag template processor from a function that processes one value at a time. */
-export function tagProcessor(transformer:(chunk:unknown, index:number, allStringChunks:string[], allVarChunks:string[]) => string){
-	return function(stringChunks:string[], ...varChunks:string[]){
+export function tagProcessor<T>(transformer:(chunk:T, index:number, allStringChunks:readonly string[], allVarChunks:readonly T[]) => string):TagFunction<T, string> {
+	return function(stringChunks:readonly string[], ...varChunks:readonly T[]){
 		return String.raw({raw: stringChunks}, ...varChunks.map((chunk, i) => transformer(chunk, i, stringChunks, varChunks)));
 	}
 }

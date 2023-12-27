@@ -1,5 +1,6 @@
 import type { CommandArgType, Perm } from "./commands";
 import type { FishPlayer } from "./players";
+import type { Rank, RoleFlag } from "./ranks";
 
 export type SelectClasslikeEnumKeys<C extends Function,
 	Key extends keyof C = keyof C
@@ -61,6 +62,8 @@ export type ObjectTypeFor<ArgString> =
 
 export type TapHandleMode = "off" | "once" | "on";
 
+export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number;
+
 export interface FishCommandRunner<ArgType extends string, StoredData> {
 	(_:{
 		/**Raw arguments that were passed to the command. */
@@ -72,6 +75,10 @@ export interface FishCommandRunner<ArgType extends string, StoredData> {
 		outputSuccess:(message:string) => void;
 		outputFail:(message:string) => void;
 		output:(message:string) => void;
+		outputf:TagFunction<Formattable, void> & {
+			f: TagFunction<Formattable, void>;
+			s: TagFunction<Formattable, void>;
+		};
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
 		/**Call this function to set tap handling mode. */
@@ -239,3 +246,7 @@ export interface FlaggedIPData {
 };
 
 export type Boolf<T> = (input:T) => boolean;
+
+export interface TagFunction<Tin = string, Tout = string> {
+	(stringChunks: readonly string[], ...varChunks: readonly Tin[]):Tout;
+}
