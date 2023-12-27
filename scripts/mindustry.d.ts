@@ -1,6 +1,5 @@
 //this is fine
 
-declare const java: any;
 declare const Call: any;
 declare const Log: {
 	debug(message:string);
@@ -18,6 +17,8 @@ declare const Vars: {
 		clientCommands: CommandHandler;
 		kickAll(kickReason:any):void;
 		addPacketHandler(name:string, handler:(player:mindustryPlayer, content:string) => unknown):void;
+		currentlyKicking: VoteSession | null;
+		votesRequired():number;
 	}
 	mods: {
 		getScripts(): Scripts;
@@ -28,10 +29,17 @@ declare const Vars: {
 			mode():Gamemode;
 			defaultTeam:Team;
 			waveTeam:Team;
+			waves:boolean;
 		}
 		set(state:GameState);
 		gameOver:boolean;
 		wave:number;
+		map: MMap;
+		isMenu():boolean;
+		wavetime:number;
+		enemies:number;
+		/** Time in ticks, 60/s */
+		tick:number;
 	}
 	saveExtension: string;
 	saveDirectory: Fi;
@@ -148,6 +156,7 @@ declare const Groups: {
 	player: EntityGroup<mindustryPlayer>;
 	unit: EntityGroup<Unit>;
 	fire: EntityGroup<Fire>;
+	build: EntityGroup<Building>;
 }
 type Fire = any;
 declare class Vec2 {
@@ -179,6 +188,9 @@ declare const Core: {
 		exit():void;
 		getJavaHeap():number;
 		listeners: any[];
+	}
+	graphics: {
+		getFramesPerSecond():number;
 	}
 }
 declare const Mathf: {
@@ -249,6 +261,7 @@ declare class ObjectIntMap<K> {
 	get(key:K):number;
 	increment(key:K):void;
 	clear():void;
+	size:number;
 }
 declare class EntityGroup<T> {
 	copy(seq:Seq<T>):Seq<T>;
@@ -400,4 +413,15 @@ declare class Sort {
 declare class ServerControl {
 	static instance: ServerControl;
 	handler: CommandHandler;
+}
+
+declare class VoteSession {
+	private target: mindustryPlayer;
+	private task: TimerTask;
+	private voted: ObjectIntMap<string>;
+	private votes: number;
+}
+declare const Reflect: {
+	get(thing:any, key:string):any;
+	set(thing:any, key:string, value:any):void;
 }

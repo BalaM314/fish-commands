@@ -325,19 +325,21 @@ export class FishPlayer {
 	}
 	static validateVotekickSession(){
 		if(Vars.netServer.currentlyKicking){
-			const target = this.get(Vars.netServer.currentlyKicking.target);
+			const player = Reflect.get(Vars.netServer.currentlyKicking, "target")
+			Log.info(`Player is ${player}`);
+			const target = this.get(player);
 			if(target.hasPerm("bypassVotekick")){
 				Call.sendMessage(
 `[scarlet]Server[lightgray] has voted on kicking[orange] ${target.player.name}[lightgray].[accent] (-\u221E/${Vars.netServer.votesRequired()})
 [scarlet]Vote cancelled.`
 				);
-				Vars.netServer.currentlyKicking.task.cancel();
+				Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
 				Vars.netServer.currentlyKicking = null;
 			} else if(target.ranksAtLeast("trusted") && Groups.player.size() > 4){
-				//decrease votes by two
-				Vars.netServer.currentlyKicking.votes -= 2;
+				//decrease votes by two, goes from 1 to negative 1
+				Reflect.set(Vars.netServer.currentlyKicking, "votes", -1);
 				Call.sendMessage(
-`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.player.name}[lightgray].[accent] (${Vars.netServer.currentlyKicking.votes}/${Vars.netServer.votesRequired()})
+`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.player.name}[lightgray].[accent] (-1/${Vars.netServer.votesRequired()})
 [lightgray]Type[orange] /vote <y/n>[] to agree.`
 				);
 			}

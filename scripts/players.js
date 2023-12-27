@@ -366,16 +366,18 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.validateVotekickSession = function () {
         if (Vars.netServer.currentlyKicking) {
-            var target = this.get(Vars.netServer.currentlyKicking.target);
+            var player = Reflect.get(Vars.netServer.currentlyKicking, "target");
+            Log.info("Player is ".concat(player));
+            var target = this.get(player);
             if (target.hasPerm("bypassVotekick")) {
                 Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.player.name, "[lightgray].[accent] (-\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote cancelled."));
-                Vars.netServer.currentlyKicking.task.cancel();
+                Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
                 Vars.netServer.currentlyKicking = null;
             }
             else if (target.ranksAtLeast("trusted") && Groups.player.size() > 4) {
-                //decrease votes by two
-                Vars.netServer.currentlyKicking.votes -= 2;
-                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.player.name, "[lightgray].[accent] (").concat(Vars.netServer.currentlyKicking.votes, "/").concat(Vars.netServer.votesRequired(), ")\n[lightgray]Type[orange] /vote <y/n>[] to agree."));
+                //decrease votes by two, goes from 1 to negative 1
+                Reflect.set(Vars.netServer.currentlyKicking, "votes", -1);
+                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.player.name, "[lightgray].[accent] (-1/").concat(Vars.netServer.votesRequired(), ")\n[lightgray]Type[orange] /vote <y/n>[] to agree."));
             }
         }
     };
