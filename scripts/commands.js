@@ -353,22 +353,24 @@ var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
         return chunk;
     }
 });
-var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk) {
+var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk, i, stringChunks) {
+    var _a, _b;
+    var color = (_b = (_a = stringChunks[0].match(/^\[.+?\]/)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : "";
     if (chunk instanceof players_1.FishPlayer) {
-        return "[cyan]".concat(chunk.cleanedName, "[]");
+        return "[cyan]\"".concat(chunk.player.coloredName(), "[cyan]\"") + color;
     }
     else if (chunk instanceof ranks_1.Rank) {
-        return chunk.coloredName();
+        return "[cyan]\"".concat(chunk.coloredName(), "[cyan]\"") + color;
     }
     else if (chunk instanceof ranks_1.RoleFlag) {
-        return chunk.coloredName();
+        return "[cyan]\"".concat(chunk.coloredName(), "[cyan]\"") + color;
     }
     else if (chunk instanceof Error) {
-        return "[red]".concat(chunk.toString(), "[]");
+        return "[red]".concat(chunk.toString()) + color;
     }
     else if (chunk instanceof Player) {
         var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
-        return "[cyan]Player#".concat(player.id, " (").concat(Strings.stripColors(player.name), ")&fr");
+        return "[cyan]\"".concat(player.coloredName(), "[cyan]\"") + color;
     }
     else if (typeof chunk == "string") {
         if (globals_1.uuidPattern.test(chunk)) {
@@ -378,6 +380,7 @@ var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk) {
             return "[blue]".concat(chunk, "[]");
         }
         else {
+            //TODO reset color?
             return chunk;
         }
     }
@@ -388,7 +391,7 @@ var outputFormatter_client = (0, utils_1.tagProcessor)(function (chunk) {
         return "[blue]".concat(chunk.toString(), "[]");
     }
     else {
-        return chunk;
+        return chunk; //allow it to get stringified by the engine
     }
 });
 exports.CommandError = (function () { });

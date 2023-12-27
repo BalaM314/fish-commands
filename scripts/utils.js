@@ -615,7 +615,7 @@ function tagProcessor(transformer) {
         for (var _i = 1; _i < arguments.length; _i++) {
             varChunks[_i - 1] = arguments[_i];
         }
-        return String.raw.apply(String, __spreadArray([{ raw: stringChunks }], __read(varChunks.map(transformer)), false));
+        return String.raw.apply(String, __spreadArray([{ raw: stringChunks }], __read(varChunks.map(function (chunk, i) { return transformer(chunk, i, stringChunks, varChunks); })), false));
     };
 }
 exports.tagProcessor = tagProcessor;

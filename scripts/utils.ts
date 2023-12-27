@@ -488,9 +488,9 @@ export function parseError(thing:unknown){
 }
 
 /** Generates a tag template processor from a function that processes one value at a time. */
-export function tagProcessor(transformer:(chunk:unknown, index:number) => string){
+export function tagProcessor(transformer:(chunk:unknown, index:number, allStringChunks:string[], allVarChunks:string[]) => string){
 	return function(stringChunks:string[], ...varChunks:string[]){
-		return String.raw({raw: stringChunks}, ...varChunks.map(transformer));
+		return String.raw({raw: stringChunks}, ...varChunks.map((chunk, i) => transformer(chunk, i, stringChunks, varChunks)));
 	}
 }
 

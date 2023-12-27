@@ -247,7 +247,7 @@ function outputMessage(message:string, sender:mindustryPlayer){
 	sender.sendMessage(message);
 }
 
-const outputFormatter_server = tagProcessor(chunk => {
+const outputFormatter_server = tagProcessor((chunk) => {
 	if(chunk instanceof FishPlayer){
 		return `&c${chunk.cleanedName}&fr`;
 	} else if(chunk instanceof Rank){
@@ -275,24 +275,26 @@ const outputFormatter_server = tagProcessor(chunk => {
 		return chunk as string;
 	}
 });
-const outputFormatter_client = tagProcessor(chunk => {
+const outputFormatter_client = tagProcessor((chunk, i, stringChunks) => {
+	const color = stringChunks[0].match(/^\[.+?\]/)?.[0] ?? "";
 	if(chunk instanceof FishPlayer){
-		return `[cyan]${chunk.cleanedName}[]`;
+		return `[cyan]"${chunk.player.coloredName()}[cyan]"` + color;
 	} else if(chunk instanceof Rank){
-		return chunk.coloredName();
+		return `[cyan]"${chunk.coloredName()}[cyan]"` + color;
 	} else if(chunk instanceof RoleFlag){
-		return chunk.coloredName();
+		return `[cyan]"${chunk.coloredName()}[cyan]"` + color;
 	} else if(chunk instanceof Error){
-		return `[red]${chunk.toString()}[]`;
+		return `[red]${chunk.toString()}` + color;
 	} else if(chunk instanceof Player){
 		const player = chunk as mindustryPlayer; //not sure why this is necessary, typescript randomly converts any to unknown
-		return `[cyan]Player#${player.id} (${Strings.stripColors(player.name)})&fr`
+		return `[cyan]"${player.coloredName()}[cyan]"` + color;
 	} else if(typeof chunk == "string"){
 		if(uuidPattern.test(chunk)){
 			return `[blue]${chunk}[]`;
 		} else if(ipPattern.test(chunk)){
 			return `[blue]${chunk}[]`;
 		} else {
+			//TODO reset color?
 			return chunk;
 		}
 	} else if(typeof chunk == "boolean"){
@@ -300,7 +302,7 @@ const outputFormatter_client = tagProcessor(chunk => {
 	} else if(typeof chunk == "number"){
 		return `[blue]${chunk.toString()}[]`;
 	} else {
-		return chunk as string;
+		return chunk as string; //allow it to get stringified by the engine
 	}
 });
 
