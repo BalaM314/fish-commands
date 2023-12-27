@@ -77,5 +77,8 @@ function initializeTimers() {
             });
         }
     }, 0, 1);
+    Timer.schedule(function () {
+        players_1.FishPlayer.validateVotekickSession();
+    }, 0, 0.5);
 }
 exports.initializeTimers = initializeTimers;

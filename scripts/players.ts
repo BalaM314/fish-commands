@@ -323,6 +323,26 @@ export class FishPlayer {
 		fishPlayer.activeMenu.callback = undefined;
 		fishPlayer.tapInfo.commandName = null;
 	}
+	static validateVotekickSession(){
+		if(Vars.netServer.currentlyKicking){
+			const target = this.get(Vars.netServer.currentlyKicking.target);
+			if(target.hasPerm("bypassVotekick")){
+				Call.sendMessage(
+`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.player.name}[lightgray].[accent] (-\u221E/${Vars.netServer.votesRequired()})
+[scarlet]Vote cancelled.`
+				);
+				Vars.netServer.currentlyKicking.task.cancel();
+				Vars.netServer.currentlyKicking = null;
+			} else if(target.ranksAtLeast("trusted") && Groups.player.size() > 4){
+				//decrease votes by two
+				Vars.netServer.currentlyKicking.votes -= 2;
+				Call.sendMessage(
+`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.player.name}[lightgray].[accent] (${Vars.netServer.currentlyKicking.votes}/${Vars.netServer.votesRequired()})
+[lightgray]Type[orange] /vote <y/n>[] to agree.`
+				);
+			}
+		}
+	}
 	//used for heuristics
 	static onPlayerChat(player:mindustryPlayer, message:string){
 		const fishP = this.get(player);

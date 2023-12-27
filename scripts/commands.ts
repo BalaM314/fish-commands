@@ -59,6 +59,7 @@ export class Perm {
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
 	static bulkLabelPacket = new Perm("bulkLabelPacket", "mod");
 	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
+	static bypassVotekick = new Perm("bypassVotekick", "mod");
 	static changeTeam = new Perm("changeTeam", fishP => 
 		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
 			: Mode.attack() ? fishP.ranksAtLeast("admin")

@@ -98,6 +98,7 @@ var Perm = /** @class */ (function () {
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
     Perm.bulkLabelPacket = new Perm("bulkLabelPacket", "mod");
     Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
+    Perm.bypassVotekick = new Perm("bypassVotekick", "mod");
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
         return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted")
             : config_1.Mode.attack() ? fishP.ranksAtLeast("admin")

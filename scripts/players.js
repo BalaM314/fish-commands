@@ -364,6 +364,21 @@ var FishPlayer = /** @class */ (function () {
         fishPlayer.activeMenu.callback = undefined;
         fishPlayer.tapInfo.commandName = null;
     };
+    FishPlayer.validateVotekickSession = function () {
+        if (Vars.netServer.currentlyKicking) {
+            var target = this.get(Vars.netServer.currentlyKicking.target);
+            if (target.hasPerm("bypassVotekick")) {
+                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.player.name, "[lightgray].[accent] (-\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote cancelled."));
+                Vars.netServer.currentlyKicking.task.cancel();
+                Vars.netServer.currentlyKicking = null;
+            }
+            else if (target.ranksAtLeast("trusted") && Groups.player.size() > 4) {
+                //decrease votes by two
+                Vars.netServer.currentlyKicking.votes -= 2;
+                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.player.name, "[lightgray].[accent] (").concat(Vars.netServer.currentlyKicking.votes, "/").concat(Vars.netServer.votesRequired(), ")\n[lightgray]Type[orange] /vote <y/n>[] to agree."));
+            }
+        }
+    };
     //used for heuristics
     FishPlayer.onPlayerChat = function (player, message) {
         var fishP = this.get(player);
