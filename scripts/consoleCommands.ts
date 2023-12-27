@@ -343,7 +343,7 @@ export const commands = consoleCommandList({
 				} else {
 					Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart queued. The server will restart after the current match is over.[]\n[accent]---[[[coral]+++[]]---`);
 					Log.info(`PVP detected, restart will occur at the end of the current match. Run "restart -1" to override, but &rthat would interrupt the current pvp match, and players would lose their teams.&fr`);
-					fishState.restarting = true;
+					fishState.restartQueued = true;
 				}
 			} else {
 				Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back with 15 seconds of downtime, and all progress will be saved.[]\n[accent]---[[[coral]+++[]]---`);
@@ -471,7 +471,7 @@ TPS: ${colorNumber(Core.graphics.getFramesPerSecond(), f => f > 58 ? "&g" : f > 
 Memory: &c${Math.round(Core.app.getJavaHeap() / 1048576)}&fr MB
 Server uptime: ${formatTime(uptime)} (since ${formatTimestamp(Date.now() - uptime)})
 ${[
-	fishState.restarting ? "&lrRestart queued&fr" : "",
+	fishState.restartQueued ? "&lrRestart queued&fr" : "",
 	FishPlayer.antiBotMode() ? "&br&wANTIBOT ACTIVE!&fr" + getAntiBotInfo("server") : "",
 ].filter(l => l.length > 0).join("\n")}\
 

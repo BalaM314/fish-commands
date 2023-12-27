@@ -3,7 +3,8 @@
 export const tileHistory:Record<string, string> = {};
 export const recentWhispers:Record<string, string> = {};
 export const fishState = {
-	restarting: false,
+	restartQueued: false,
+	restartLoopTask: null,
 	corruption_t1: null,
 	corruption_t2: null,
 	lastPranked: Date.now(),

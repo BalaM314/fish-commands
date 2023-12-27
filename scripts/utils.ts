@@ -429,7 +429,7 @@ export function escapeStringColorsServer(str:string):string {
 export function serverRestartLoop(sec:number){
 	if(sec > 0){
 		if(sec < 15 || sec % 5 == 0) Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);
-		Timer.schedule(() => serverRestartLoop(sec - 1), 1);
+		fishState.restartLoopTask = Timer.schedule(() => serverRestartLoop(sec - 1), 1);
 	} else {
 		Log.info(`Restarting...`);
 		Core.settings.manualSave();

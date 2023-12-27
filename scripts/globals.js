@@ -4,7 +4,8 @@ exports.ipJoins = exports.ipPattern = exports.uuidPattern = exports.fishState = 
 exports.tileHistory = {};
 exports.recentWhispers = {};
 exports.fishState = {
-    restarting: false,
+    restartQueued: false,
+    restartLoopTask: null,
     corruption_t1: null,
     corruption_t2: null,
     lastPranked: Date.now(),

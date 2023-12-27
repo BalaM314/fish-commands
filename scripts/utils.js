@@ -542,7 +542,7 @@ function serverRestartLoop(sec) {
     if (sec > 0) {
         if (sec < 15 || sec % 5 == 0)
             Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
-        Timer.schedule(function () { return serverRestartLoop(sec - 1); }, 1);
+        globals_1.fishState.restartLoopTask = Timer.schedule(function () { return serverRestartLoop(sec - 1); }, 1);
     }
     else {
         Log.info("Restarting...");
