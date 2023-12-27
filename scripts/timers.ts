@@ -40,7 +40,7 @@ export function initializeTimers(){
 		const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
 		const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`
 		Call.sendMessage(message);
-	}, 20, 15 * 60);
+	}, 60, 15 * 60);
 	//State check
 	Timer.schedule(() => {
 		if(Groups.unit.size() > 10000){

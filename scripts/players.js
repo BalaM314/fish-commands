@@ -1010,7 +1010,7 @@ var FishPlayer = /** @class */ (function () {
         return (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);
     };
     FishPlayer.prototype.setRank = function (rank) {
-        if (rank == ranks_1.Rank.pi)
+        if (rank == ranks_1.Rank.pi && !config.localDebug)
             throw new TypeError("Cannot find function setRank in object [object Object].");
         this.rank = rank;
         this.updateName();

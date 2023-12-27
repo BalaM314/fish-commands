@@ -42,7 +42,7 @@ function initializeTimers() {
         var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
         var message = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
         Call.sendMessage(message);
-    }, 20, 15 * 60);
+    }, 60, 15 * 60);
     //State check
     Timer.schedule(function () {
         if (Groups.unit.size() > 10000) {

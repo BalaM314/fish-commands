@@ -897,7 +897,7 @@ We apologize for the inconvenience.`
 	}
 
 	setRank(rank:Rank){
-		if(rank == Rank.pi) throw new TypeError(`Cannot find function setRank in object [object Object].`);
+		if(rank == Rank.pi && !config.localDebug) throw new TypeError(`Cannot find function setRank in object [object Object].`);
 		this.rank = rank;
 		this.updateName();
 		this.updateAdminStatus();
