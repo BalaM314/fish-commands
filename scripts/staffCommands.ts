@@ -1,7 +1,7 @@
 import * as api from "./api";
 import * as fjsContext from "./fjsContext";
 import { Perm, command, commandList, fail } from "./commands";
-import { getGamemode, maxTime, stopAntiEvadeTime } from "./config";
+import { getGamemode, localDebug, maxTime, stopAntiEvadeTime } from "./config";
 import { uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
@@ -136,8 +136,8 @@ export const commands = commandList({
 				fail(`You do not have permission to promote players to rank "${rank.name}", because your current rank is "${sender.rank.name}"`);
 			if(!sender.canModerate(args.player))
 				fail(`You do not have permission to modify the rank of player "${args.player.name}"`);
-			if(rank == Rank.pi) fail(`Rank ${rank.name} is immutable.`);
-			if(args.player.immutable()) fail(`Player ${args.player} is immutable.`);
+			if(rank == Rank.pi && !localDebug) fail(`Rank ${rank.name} is immutable.`);
+			if(args.player.immutable() && !localDebug) fail(`Player ${args.player} is immutable.`);
 
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, sender, args.player);

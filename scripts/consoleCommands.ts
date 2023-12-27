@@ -18,8 +18,8 @@ export const commands = consoleCommandList({
 			if(ranks.length == 0) fail(`Unknown rank ${args.rank}`);
 			if(ranks.length > 1) fail(`Ambiguous rank ${args.rank}`);
 			const rank = ranks[0];
-			if(rank == Rank.pi) fail(`Rank ${rank.name} is immutable.`);
-			if(args.player.immutable()) fail(`Player ${args.player} is immutable.`);
+			if(rank == Rank.pi && !config.localDebug) fail(`Rank ${rank.name} is immutable.`);
+			if(args.player.immutable() && !config.localDebug) fail(`Player ${args.player} is immutable.`);
 
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, "console", args.player);
