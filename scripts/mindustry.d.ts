@@ -123,6 +123,7 @@ declare class Block {
 	name: string;
 	buildType: Building;
 	id: number;
+	localizedName: string;
 }
 type Building = any;
 declare const Items: Record<string, Item>;
@@ -370,6 +371,7 @@ declare class UnitType {
 	hidden: boolean;
 	internal: boolean;
 	name: string;
+	localizedName: string;
 }
 declare class MissileUnitType extends UnitType {}
 declare class LogicAI {
