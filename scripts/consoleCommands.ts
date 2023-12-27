@@ -6,7 +6,7 @@ import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
-import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, logAction, serverRestartLoop, setToArray } from "./utils";
+import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
 
 
 export const commands = consoleCommandList({
@@ -191,13 +191,7 @@ export const commands = consoleCommandList({
 				}
 			}
 
-			Groups.player.each(player => {
-				if(admins.isIDBanned(player.uuid())){
-					api.addStopped(player.uuid(), config.maxTime);
-					player.con.kick(Packets.KickReason.banned);
-					Call.sendMessage(`[scarlet] Player [yellow]${player.name} [scarlet] has been whacked.`);
-				}
-			});
+			updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked.`);
 		}
 
 	},

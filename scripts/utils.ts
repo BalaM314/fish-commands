@@ -608,3 +608,13 @@ export function outputSuccess(message:string | PartialFormatString, sender:mindu
 export function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
 	sender.sendMessage(typeof message == "function" ? message("") : message);
 }
+
+export function updateBans(message?:(player:mindustryPlayer) => string){
+	Groups.player.each(player => {
+		if(Vars.netServer.admins.isIDBanned(player.uuid())){
+			player.con.kick(Packets.KickReason.banned);
+			if(message)
+				Call.sendMessage(message(player));
+		}
+	});
+}

@@ -262,13 +262,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     output("&lrIP &c\"".concat(ip, "\"&lr was banned. UUID &c\"").concat(uuid, "\"&lr was banned. Ban was synced to other servers."));
                 }
             }
-            Groups.player.each(function (player) {
-                if (admins.isIDBanned(player.uuid())) {
-                    api.addStopped(player.uuid(), config.maxTime);
-                    player.con.kick(Packets.KickReason.banned);
-                    Call.sendMessage("[scarlet] Player [yellow]".concat(player.name, " [scarlet] has been whacked."));
-                }
-            });
+            (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked."); });
         }
     },
     unwhack: {

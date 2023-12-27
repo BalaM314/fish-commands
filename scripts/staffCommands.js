@@ -1,4 +1,8 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -55,41 +59,41 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
             if (Date.now() - lastUsedSuccessfullySender < 3000)
                 (0, commands_1.fail)("This command was run recently and is on cooldown.");
             var message = (_b = args.message) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
             (0, menus_1.menu)('Warning', message, ['accept'], args.player);
             (0, utils_1.logAction)('warned', sender, args.player, message);
-            outputSuccess("Warned player \"".concat(args.player.cleanedName, "\" for \"").concat(message, "\""));
+            outputSuccess(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Warned player ", " for \"", "\""], ["Warned player ", " for \"", "\""])), args.player, message));
         }
     }, mute: {
         args: ['player:player'],
         description: 'Stops a player from chatting.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (args.player.muted)
-                (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is already muted."));
+                (0, commands_1.fail)(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["Player ", " is already muted."], ["Player ", " is already muted."])), args.player));
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to mute this player.");
             args.player.mute(sender);
             (0, utils_1.logAction)('muted', sender, args.player);
-            outputSuccess("Muted player \"".concat(args.player.cleanedName, "\"."));
+            outputSuccess(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Muted player ", "."], ["Muted player ", "."])), args.player));
         }
     }, unmute: {
         args: ['player:player'],
         description: 'Unmutes a player',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!args.player.muted && args.player.autoflagged)
-                (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is not muted, but they are autoflagged. You probably want to free them with /free."));
+                (0, commands_1.fail)(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Player ", " is not muted, but they are autoflagged. You probably want to free them with /free."], ["Player ", " is not muted, but they are autoflagged. You probably want to free them with /free."])), args.player));
             if (!args.player.muted)
-                (0, commands_1.fail)("Player \"".concat(args.player.cleanedName, "\" is not muted."));
+                (0, commands_1.fail)(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Player ", " is not muted."], ["Player ", " is not muted."])), args.player));
             args.player.unmute(sender);
             (0, utils_1.logAction)('unmuted', sender, args.player);
-            outputSuccess("Unmuted player \"".concat(args.player.cleanedName, "\"."));
+            outputSuccess(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Unmuted player ", "."], ["Unmuted player ", "."])), args.player));
         }
     }, kick: {
         args: ['player:player', 'reason:string?'],
@@ -97,14 +101,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
-            var args = _a.args, outputSuccess = _a.outputSuccess, sender = _a.sender;
+            var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f, sender = _a.sender;
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to kick this player.");
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
             args.player.player.kick(reason);
             (0, utils_1.logAction)('kicked', sender, args.player);
             players_1.FishPlayer.punishedIPs.push([args.player.ip(), args.player.uuid, Date.now() + config_1.stopAntiEvadeTime]);
-            outputSuccess("Kicked player \"".concat(args.player.cleanedName, "\" for \"").concat(reason, "\""));
+            outputSuccess(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Kicked player ", " for \"", "\""], ["Kicked player ", " for \"", "\""])), args.player, reason));
         }
     }, stop: {
         args: ['player:player', "time:time?", "message:string?"],
@@ -112,14 +116,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b, _c, _d, _e;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (args.player.marked()) {
                 //overload: overwrite stoptime
                 if (!args.time)
-                    (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
+                    (0, commands_1.fail)(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["Player ", " is already marked."], ["Player ", " is already marked."])), args.player));
                 var previousTime = (0, utils_1.formatTimeRelative)(args.player.unmarkTime, true);
                 args.player.updateStopTime(args.time);
-                outputSuccess("Player \"".concat(args.player.cleanedName, "\"'s stop time has been updated to ").concat((0, utils_1.formatTime)(args.time), " (was ").concat(previousTime, ")."));
+                outputSuccess(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Player ", "'s stop time has been updated to ", " (was ", ")."], ["Player ", "'s stop time has been updated to ", " (was ", ")."])), args.player, (0, utils_1.formatTime)(args.time), previousTime));
                 (0, utils_1.logAction)("updated stop time of", sender, args.player, (_b = args.message) !== null && _b !== void 0 ? _b : undefined, args.time);
                 return;
             }
@@ -130,6 +134,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                 (0, commands_1.fail)("Error: time too high.");
             args.player.stop(sender, time, (_d = args.message) !== null && _d !== void 0 ? _d : undefined);
             (0, utils_1.logAction)('stopped', sender, args.player, (_e = args.message) !== null && _e !== void 0 ? _e : undefined, time);
+            //TODO outputGlobal()
             Call.sendMessage("[orange]Player \"".concat(args.player.name, "[orange]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
         }
     }, free: {
@@ -137,22 +142,22 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: 'Frees a player.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (args.player.marked()) {
                 args.player.free(sender);
                 (0, utils_1.logAction)('freed', sender, args.player);
-                outputSuccess("Player \"".concat(args.player.name, "\" has been unmarked."));
+                //TODO remove from punished ips list
+                outputSuccess(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["Player ", " has been unmarked."], ["Player ", " has been unmarked."])), args.player));
             }
             else if (args.player.autoflagged) {
                 args.player.autoflagged = false;
                 args.player.sendMessage("[yellow]You have been freed! Enjoy!");
                 args.player.updateName();
                 args.player.forceRespawn();
-                outputSuccess("Player \"".concat(args.player.name, "\" has been unflagged."));
+                outputSuccess(f(templateObject_11 || (templateObject_11 = __makeTemplateObject(["Player ", " has been unflagged."], ["Player ", " has been unflagged."])), args.player));
             }
             else {
-                outputFail("Player \"".concat(args.player.name, "\" is not marked or autoflagged."));
-                ;
+                outputFail(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Player ", " is not marked or autoflagged."], ["Player ", " is not marked or autoflagged."])), args.player));
             }
         }
     } }, Object.fromEntries(["admin", "mod"].map(function (n) { return [n, {
@@ -168,46 +173,44 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: "Set a player's rank.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess, sender = _a.sender;
-            var ranks = ranks_1.Rank.getByInput(args.rank);
+            var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f, sender = _a.sender;
+            var ranks = ranks_1.Rank.getByInput(args.rank); //TODO make this an arg type
             if (ranks.length == 0)
-                (0, commands_1.fail)("Unknown rank ".concat(args.rank));
+                (0, commands_1.fail)("Unknown rank \"".concat(args.rank, "\""));
             if (ranks.length > 1)
-                (0, commands_1.fail)("Ambiguous rank ".concat(args.rank));
+                (0, commands_1.fail)("Ambiguous rank \"".concat(args.rank, "\""));
             var rank = ranks[0];
             if (rank.level >= sender.rank.level)
-                (0, commands_1.fail)("You do not have permission to promote players to rank \"".concat(rank.name, "\", because your current rank is \"").concat(sender.rank.name, "\""));
+                (0, commands_1.fail)(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["You do not have permission to promote players to rank ", ", because your current rank is ", ""], ["You do not have permission to promote players to rank ", ", because your current rank is ", ""])), rank, sender.rank));
             if (!sender.canModerate(args.player))
-                (0, commands_1.fail)("You do not have permission to modify the rank of player \"".concat(args.player.name, "\""));
+                (0, commands_1.fail)("You do not have permission to modify the rank of player ".concat(args.player));
             if (rank == ranks_1.Rank.pi && !config_1.localDebug)
-                (0, commands_1.fail)("Rank ".concat(rank.name, " is immutable."));
+                (0, commands_1.fail)(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Rank ", " is immutable."], ["Rank ", " is immutable."])), rank));
             if (args.player.immutable() && !config_1.localDebug)
-                (0, commands_1.fail)("Player ".concat(args.player, " is immutable."));
+                (0, commands_1.fail)(f(templateObject_15 || (templateObject_15 = __makeTemplateObject(["Player ", " is immutable."], ["Player ", " is immutable."])), args.player));
             args.player.setRank(rank);
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), sender, args.player);
-            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));
+            outputSuccess(f(templateObject_16 || (templateObject_16 = __makeTemplateObject(["Set rank of player ", " to ", ""], ["Set rank of player ", " to ", ""])), args.player, rank));
         }
     }, setflag: {
         args: ["player:player", "roleflag:string", "value:boolean"],
         description: "Set a player's role flags.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             var flags = ranks_1.RoleFlag.getByInput(args.roleflag);
             if (flags.length == 0)
-                (0, commands_1.fail)("Unknown roleflag ".concat(args.roleflag));
+                (0, commands_1.fail)("Unknown roleflag \"".concat(args.roleflag, "\""));
             if (flags.length > 1)
-                (0, commands_1.fail)("Ambiguous roleflag ".concat(args.roleflag));
+                (0, commands_1.fail)("Ambiguous roleflag \"".concat(args.roleflag, "\""));
             var flag = flags[0];
-            if (flag == null)
-                (0, commands_1.fail)("Unknown role flag ".concat(args.roleflag));
             if (!sender.canModerate(args.player))
-                (0, commands_1.fail)("You do not have permission to modify the role flags of player \"".concat(args.player.name, "\""));
+                (0, commands_1.fail)(f(templateObject_17 || (templateObject_17 = __makeTemplateObject(["You do not have permission to modify the role flags of player ", ""], ["You do not have permission to modify the role flags of player ", ""])), args.player));
             if (!sender.hasPerm("admin") && !flag.assignableByModerators)
-                (0, commands_1.fail)("You do not have permission to change the value of role flag ".concat(flag.coloredName()));
+                (0, commands_1.fail)(f(templateObject_18 || (templateObject_18 = __makeTemplateObject(["You do not have permission to change the value of role flag ", ""], ["You do not have permission to change the value of role flag ", ""])), flag));
             args.player.setFlag(flag, args.value);
             (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), sender, args.player);
-            outputSuccess("Set role flag ".concat(flag.color).concat(flag.name, "[] of player \"").concat(args.player.name, "\" to ").concat(args.value));
+            outputSuccess(f(templateObject_19 || (templateObject_19 = __makeTemplateObject(["Set role flag ", " of player ", " to ", ""], ["Set role flag ", " of player ", " to ", ""])), flag, args.player, args.value));
         }
     }, murder: {
         args: [],
@@ -215,11 +218,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         customUnauthorizedMessage: "[yellow]You're a [scarlet]monster[].",
         handler: function (_a) {
-            var output = _a.output, allCommands = _a.allCommands;
+            var output = _a.output, f = _a.f, allCommands = _a.allCommands;
             var Ohnos = allCommands["ohno"].data; //this is not ideal... TODO commit omega shenanigans
             var numOhnos = Ohnos.amount();
             Ohnos.killAll();
-            output("[orange]You massacred [cyan]".concat(numOhnos, "[] helpless ohno crawlers."));
+            output(f(templateObject_20 || (templateObject_20 = __makeTemplateObject(["[orange]You massacred ", " helpless ohno crawlers."], ["[orange]You massacred ", " helpless ohno crawlers."])), numOhnos));
         }
     }, stop_offline: {
         args: ["time:time?", "name:string"],
@@ -227,14 +230,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, admins = _a.admins;
+            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
             var maxPlayers = 60;
             function stop(option, time) {
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (sender.canModerate(fishP, true)) {
                     fishP.stop(sender, time);
                     (0, utils_1.logAction)('stopped', sender, option, undefined, time);
-                    outputSuccess("Player \"".concat(option.lastName, "\" was marked for ").concat((0, utils_1.formatTime)(time), "."));
+                    outputSuccess(f(templateObject_21 || (templateObject_21 = __makeTemplateObject(["Player ", " was marked for ", "."], ["Player ", " was marked for ", "."])), option, (0, utils_1.formatTime)(time)));
                 }
                 else {
                     outputFail("You do not have permission to stop this player.");
@@ -246,7 +249,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : (0, utils_1.untilForever)());
                 }
                 else {
-                    outputFail("Unknown UUID ".concat(args.name));
+                    outputFail(f(templateObject_22 || (templateObject_22 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
                 }
                 return;
             }
@@ -299,7 +302,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: "Shows moderation history for a player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, output = _a.output;
+            var args = _a.args, output = _a.output, f = _a.f;
             if (args.player.history && args.player.history.length > 0) {
                 output("[yellow]_______________Player history_______________\n\n" +
                     args.player.history.map(function (e) {
@@ -307,7 +310,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     }).join("\n"));
             }
             else {
-                output("[yellow]No history was found for player ".concat(args.player.name, "."));
+                output(f(templateObject_23 || (templateObject_23 = __makeTemplateObject(["[yellow]No history was found for player ", "."], ["[yellow]No history was found for player ", "."])), args.player));
             }
         }
     }, save: {
@@ -317,19 +320,19 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
             players_1.FishPlayer.saveAll();
-            var file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+            var file = Vars.saveDirectory.child("1.".concat(Vars.saveExtension));
             SaveIO.save(file);
-            outputSuccess('Game saved.');
+            outputSuccess("Game saved.");
         }
     }, wave: {
         args: ["wave:number"],
         description: "Sets the wave number.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var args = _a.args, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (args.wave > 0 && Number.isInteger(args.wave)) {
                 Vars.state.wave = args.wave;
-                outputSuccess("Set wave to ".concat(Vars.state.wave));
+                outputSuccess(f(templateObject_24 || (templateObject_24 = __makeTemplateObject(["Set wave to ", ""], ["Set wave to ", ""])), Vars.state.wave));
             }
             else {
                 outputFail("Wave must be a positive integer.");
@@ -340,7 +343,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: "Places a label at your position for a specified amount of time.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (args.time <= 0 || args.time > 3600)
                 (0, commands_1.fail)("Time must be a positive number less than 3600.");
             var timeRemaining = args.time;
@@ -354,29 +357,31 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     timeRemaining--;
                 }
             }, 0, 1, args.time);
-            outputSuccess("Placed label \"".concat(args.message, "\" for ").concat(args.time, " seconds."));
+            outputSuccess(f(templateObject_25 || (templateObject_25 = __makeTemplateObject(["Placed label \"", "\" for ", " seconds."], ["Placed label \"", "\" for ", " seconds."])), args.message, args.time));
         }
     }, member: {
         args: ["value:boolean", "player:player"],
         description: "Sets a player's member status.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess;
+            var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
             args.player.setFlag("member", args.value);
-            outputSuccess("Set membership status of player \"".concat(args.player.name, "\" to ").concat(args.value, "."));
+            outputSuccess(f(templateObject_26 || (templateObject_26 = __makeTemplateObject(["Set membership status of player ", " to ", "."], ["Set membership status of player ", " to ", "."])), args.player, args.value));
         }
     }, ban: {
         args: ["uuid:uuid?"],
         description: "Bans a player by UUID and IP.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, admins = _a.admins;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
             if (args.uuid) {
+                //Overload 1: ban by uuid
                 var data_1;
                 if ((data_1 = admins.getInfoOptional(args.uuid)) != null && data_1.admin) {
                     (0, commands_1.fail)("Cannot ban an admin.");
                 }
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(data_1 ? "".concat((0, utils_1.escapeStringColorsClient)(data_1.plainLastName()), " (").concat(args.uuid, "/").concat(data_1.lastIP, ")") : args.uuid, "?"), ["Yes", "Cancel"], sender, function (_a) {
+                var name = data_1 ? "".concat((0, utils_1.escapeStringColorsClient)(data_1.lastName), " (").concat(args.uuid, "/").concat(data_1.lastIP, ")") : args.uuid;
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["Yes", "Cancel"], sender, function (_a) {
                     var confirm = _a.option;
                     if (confirm != "Yes")
                         (0, commands_1.fail)("Cancelled.");
@@ -388,23 +393,20 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                         api.ban({ ip: ip, uuid: uuid });
                         Log.info("".concat(uuid, "/").concat(ip, " was banned."));
                         (0, utils_1.logAction)("banned", sender, data_1);
-                        outputSuccess("Banned player ".concat((0, utils_1.escapeStringColorsClient)(data_1.plainLastName()), " (").concat(uuid, "/").concat(ip, ")"));
+                        outputSuccess(f(templateObject_27 || (templateObject_27 = __makeTemplateObject(["Banned player ", " (", "/", ")"], ["Banned player ", " (", "/", ")"])), (0, utils_1.escapeStringColorsClient)(data_1.lastName), uuid, ip));
+                        //TODO add way to specify whether to activate or escape color tags
                     }
                     else {
                         api.ban({ uuid: uuid });
                         Log.info("".concat(uuid, " was banned."));
                         (0, utils_1.logAction)("banned", sender, uuid);
-                        outputSuccess("Banned player ".concat(uuid, ". Unable to determine IP."));
+                        outputSuccess(f(templateObject_28 || (templateObject_28 = __makeTemplateObject(["Banned player ", ". [yellow]Unable to determine IP.[]"], ["Banned player ", ". [yellow]Unable to determine IP.[]"])), uuid));
                     }
-                    Groups.player.each(function (player) {
-                        if (admins.isIDBanned(player.uuid())) {
-                            player.con.kick(Packets.KickReason.banned);
-                            Call.sendMessage("[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.player.name, "."));
-                        }
-                    });
+                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.player.name, "."); });
                 }, false);
                 return;
             }
+            //Overload 1: ban by menu
             (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, utils_1.setToArray)(Groups.player), sender, function (_a) {
                 var option = _a.option;
                 if (option.admin)
@@ -417,14 +419,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     api.ban({ ip: option.ip(), uuid: option.uuid() });
                     Log.info("".concat(option.ip(), "/").concat(option.uuid(), " was banned."));
                     (0, utils_1.logAction)("banned", sender, option.getInfo());
-                    outputSuccess("Banned player ".concat(option.name, "."));
-                    Groups.player.each(function (player) {
-                        if (admins.isIDBanned(player.uuid())) {
-                            api.addStopped(player.uuid(), config_1.maxTime);
-                            player.con.kick(Packets.KickReason.banned);
-                            Call.sendMessage("[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.player.name, "."));
-                        }
-                    });
+                    outputSuccess(f(templateObject_29 || (templateObject_29 = __makeTemplateObject(["Banned player ", "."], ["Banned player ", "."])), option));
+                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.player.name, "."); });
                 }, false);
             }, true, function (opt) { return opt.name; });
         }
@@ -439,18 +435,17 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         args: ["player:player"],
         description: "Kills a player's unit.",
         perm: commands_1.Perm.mod,
-        customUnauthorizedMessage: "You do not have the required permission (admin) to execute this command. You may be looking for /die.",
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to kill the unit of this player.");
             var unit = args.player.unit();
             if (unit) {
                 unit.kill();
-                outputSuccess("Killed the unit of player \"".concat(args.player.cleanedName, "\"."));
+                outputSuccess(f(templateObject_30 || (templateObject_30 = __makeTemplateObject(["Killed the unit of player ", "."], ["Killed the unit of player ", "."])), args.player));
             }
             else {
-                outputFail("Player \"".concat(args.player.cleanedName, "\" does not have a unit."));
+                outputFail(f(templateObject_31 || (templateObject_31 = __makeTemplateObject(["Player ", " does not have a unit."], ["Player ", " does not have a unit."])), args.player));
             }
         }
     }, respawn: {
@@ -458,11 +453,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: "Forces a player to respawn.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to respawn this player.");
             args.player.forceRespawn();
-            outputSuccess("Respawned player \"".concat(args.player.cleanedName, "\"."));
+            outputSuccess(f(templateObject_32 || (templateObject_32 = __makeTemplateObject(["Respawned player ", "."], ["Respawned player ", "."])), args.player));
         }
     }, m: {
         args: ["message:string"],
@@ -480,22 +475,22 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var sender = _a.sender, args = _a.args, output = _a.output;
             var info = args.target.player.info;
             output(("[accent]Info for player \"".concat(args.target.player.name, "[accent]\" [gray](").concat((0, utils_1.escapeStringColorsClient)(args.target.name), ") (").concat(args.target.player.id, ")\n\t[accent]Rank: ").concat(args.target.rank.coloredName(), "\n\t[accent]Role flags: ").concat(Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), "\n\t[accent]Stopped: ").concat((0, utils_1.colorBadBoolean)(!args.target.hasPerm("play")), "\n\t[accent]marked: ").concat(args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", "\n\t[accent]muted: ").concat((0, utils_1.colorBadBoolean)(args.target.muted), "\n\t[accent]autoflagged: ").concat((0, utils_1.colorBadBoolean)(args.target.autoflagged), "\n\t[accent]times joined / kicked: ").concat(info.timesJoined, "/").concat(info.timesKicked, "\n\t[accent]Names used: [[").concat(info.names.map(utils_1.escapeStringColorsClient).items.join(", "), "]\n") + (sender.hasPerm("viewUUIDs") ?
-                "\t[#C30202]UUID: ".concat(args.target.uuid, "\n\t[#C30202]IP: ").concat(args.target.player.ip(), "\n\t") : "")).replace(/\t/g, "    "));
+                "\t[#C30202]UUID: ".concat(args.target.uuid, "\n\t[#C30202]IP: ").concat(args.target.player.ip(), "\n\t") : "")).replace(/\t/g, "    ") //TODO do that automatically
+            );
         }
     }, spawn: {
         args: ["type:unittype", "x:number?", "y:number?"],
         description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess;
+            var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
             args;
-            //^?
             var x = args.x ? (args.x * 8) : sender.player.x;
             var y = args.y ? (args.y * 8) : sender.player.y;
             var unit = args.type.spawn(sender.team(), x, y);
             spawnedUnits.push(unit);
             (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
-            outputSuccess("Spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)));
+            outputSuccess(f(templateObject_33 || (templateObject_33 = __makeTemplateObject(["Spawned unit ", " at (", ", ", ")"], ["Spawned unit ", " at (", ", ", ")"])), args.type, Math.round(x / 8), Math.round(y / 8)));
         }
     }, setblock: {
         args: ["x:number", "y:number", "block:block", "team:team?", "rotation:number?"],
@@ -503,22 +498,22 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var _b, _c;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var tile = Vars.world.tile(args.x, args.y);
             if (args.rotation != null && (args.rotation < 0 || args.rotation > 3))
-                (0, commands_1.fail)("Invalid rotation ".concat(args.rotation));
+                (0, commands_1.fail)(f(templateObject_34 || (templateObject_34 = __makeTemplateObject(["Invalid rotation ", ""], ["Invalid rotation ", ""])), args.rotation));
             if (tile == null)
-                (0, commands_1.fail)("Position ".concat(args.x, ", ").concat(args.y, " is out of bounds."));
+                (0, commands_1.fail)(f(templateObject_35 || (templateObject_35 = __makeTemplateObject(["Position (", ", ", ") is out of bounds."], ["Position (", ", ", ") is out of bounds."])), args.x, args.y));
             tile.setNet(args.block, team, (_c = args.rotation) !== null && _c !== void 0 ? _c : 0);
-            outputSuccess("Set block at ".concat(args.x, ", ").concat(args.y, " to ").concat(args.block.name));
+            outputSuccess(f(templateObject_36 || (templateObject_36 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), args.x, args.y, args.block));
         }
     }, exterminate: {
         args: [],
         description: "Removes all spawned units.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             var numKilled = 0;
             spawnedUnits.forEach(function (u) {
                 if (u.isAdded() && !u.dead) {
@@ -526,8 +521,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                     numKilled++;
                 }
             });
-            (0, utils_1.logAction)("Exterminated ".concat(numKilled, " units"), sender);
-            outputSuccess("Exterminated ".concat(numKilled, " units."));
+            (0, utils_1.logAction)("exterminated ".concat(numKilled, " units"), sender);
+            outputSuccess(f(templateObject_37 || (templateObject_37 = __makeTemplateObject(["Exterminated ", " units."], ["Exterminated ", " units."])), numKilled));
         }
     }, js: {
         args: ["javascript:string"],
@@ -589,7 +584,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             var args = _a.args, outputSuccess = _a.outputSuccess, output = _a.output;
             if (args.state !== null) {
                 players_1.FishPlayer.antiBotModeOverride = args.state;
-                outputSuccess("Set antibot mode override to ".concat(args.state, "."));
+                outputSuccess("Set antibot mode override to ".concat((0, utils_1.colorBadBoolean)(args.state), "."));
                 if (args.state)
                     output("[scarlet]MAKE SURE TO TURN IT OFF!!!");
             }
@@ -602,14 +597,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
         description: "Sets chat strictness for a player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var _b = _a.args, player = _b.player, value = _b.value, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var _b = _a.args, player = _b.player, value = _b.value, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!sender.canModerate(player, true))
                 (0, commands_1.fail)("You do not have permission to set the chat strictness level of this player.");
             if (!(value == "chat" || value == "strict"))
                 (0, commands_1.fail)("Invalid chat strictness level: valid levels are \"chat\", \"strict\"");
             player.chatStrictness = value;
-            //TODO way to reset color for outputSuccess, probably finish outputf
-            outputSuccess("Set chat strictness for player ".concat(player.cleanedName, " to ").concat(value, "."));
+            outputSuccess("Set chat strictness for player ".concat(player, " to \"").concat(value, "\"."));
         }
     }, emanate: (0, commands_1.command)({
         args: [],
@@ -626,7 +620,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
                         if (!fishP || !fishP.connected() || (unit.getPlayer() != fishP.player)) {
                             delete data[uuid];
                             unit === null || unit === void 0 ? void 0 : unit.kill();
-                            continue;
                         }
                     }
                 }
@@ -651,3 +644,4 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             outputSuccess("Spawned an emanate.");
         }
     }) }));
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37;

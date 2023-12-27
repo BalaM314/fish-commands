@@ -10,7 +10,7 @@ import type { FishCommandData } from "./types";
 import {
 	colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative,
 	getAntiBotInfo,
-	logAction, parseError, serverRestartLoop, setToArray, untilForever
+	logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans
 } from "./utils";
 
 const spawnedUnits:Unit[] = [];
@@ -20,12 +20,12 @@ export const commands = commandList({
 		args: ['player:player', 'message:string?'],
 		description: 'Sends the player a warning (menu popup).',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, lastUsedSuccessfullySender}){
+		handler({args, sender, outputSuccess, f, lastUsedSuccessfullySender}){
 			if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
 			const message = args.message ?? "You have been warned. I suggest you stop what you're doing";
 			menu('Warning', message, ['accept'], args.player);
 			logAction('warned', sender, args.player, message);
-			outputSuccess(`Warned player "${args.player.cleanedName}" for "${message}"`);
+			outputSuccess(f`Warned player ${args.player} for "${message}"`);
 		}
 	},
 
@@ -33,12 +33,12 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Stops a player from chatting.',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess}){
-			if(args.player.muted) fail(`Player "${args.player.cleanedName}" is already muted.`);
+		handler({args, sender, outputSuccess, f}){
+			if(args.player.muted) fail(f`Player ${args.player} is already muted.`);
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to mute this player.`);
 			args.player.mute(sender);
 			logAction('muted', sender, args.player);
-			outputSuccess(`Muted player "${args.player.cleanedName}".`);
+			outputSuccess(f`Muted player ${args.player}.`);
 		}
 	},
 
@@ -46,12 +46,12 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Unmutes a player',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess}){
-			if(!args.player.muted && args.player.autoflagged) fail(`Player "${args.player.cleanedName}" is not muted, but they are autoflagged. You probably want to free them with /free.`);
-			if(!args.player.muted) fail(`Player "${args.player.cleanedName}" is not muted.`);
+		handler({args, sender, outputSuccess, f}){
+			if(!args.player.muted && args.player.autoflagged) fail(f`Player ${args.player} is not muted, but they are autoflagged. You probably want to free them with /free.`);
+			if(!args.player.muted) fail(f`Player ${args.player} is not muted.`);
 			args.player.unmute(sender);
 			logAction('unmuted', sender, args.player);
-			outputSuccess(`Unmuted player "${args.player.cleanedName}".`);
+			outputSuccess(f`Unmuted player ${args.player}.`);
 		}
 	},
 
@@ -59,13 +59,13 @@ export const commands = commandList({
 		args: ['player:player', 'reason:string?'],
 		description: 'Kick a player with optional reason.',
 		perm: Perm.mod,
-		handler({args, outputSuccess, sender}){
+		handler({args, outputSuccess, f, sender}){
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
 			const reason = args.reason ?? 'A staff member did not like your actions.';
 			args.player.player.kick(reason);
 			logAction('kicked', sender, args.player);
 			FishPlayer.punishedIPs.push([args.player.ip(), args.player.uuid, Date.now() + stopAntiEvadeTime]);
-			outputSuccess(`Kicked player "${args.player.cleanedName}" for "${reason}"`);
+			outputSuccess(f`Kicked player ${args.player} for "${reason}"`);
 		}
 	},
 
@@ -73,13 +73,13 @@ export const commands = commandList({
 		args: ['player:player', "time:time?", "message:string?"],
 		description: 'Stops a player.',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess}){
+		handler({args, sender, outputSuccess, f}){
 			if(args.player.marked()){
 				//overload: overwrite stoptime
-				if(!args.time) fail(`Player "${args.player.name}" is already marked.`);
+				if(!args.time) fail(f`Player ${args.player} is already marked.`);
 				const previousTime = formatTimeRelative(args.player.unmarkTime, true);
 				args.player.updateStopTime(args.time);
-				outputSuccess(`Player "${args.player.cleanedName}"'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
+				outputSuccess(f`Player ${args.player}'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
 				logAction("updated stop time of", sender, args.player, args.message ?? undefined, args.time);
 				return;
 			}
@@ -89,6 +89,7 @@ export const commands = commandList({
 			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
 			args.player.stop(sender, time, args.message ?? undefined);
 			logAction('stopped', sender, args.player, args.message ?? undefined, time);
+			//TODO outputGlobal()
 			Call.sendMessage(`[orange]Player "${args.player.name}[orange]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
 		}
 	},
@@ -97,23 +98,24 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Frees a player.',
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, outputFail}){
+		handler({args, sender, outputSuccess, outputFail, f}){
 			if(args.player.marked()){
 				args.player.free(sender);
 				logAction('freed', sender, args.player);
-				outputSuccess(`Player "${args.player.name}" has been unmarked.`);
+				//TODO remove from punished ips list
+				outputSuccess(f`Player ${args.player} has been unmarked.`);
 			} else if(args.player.autoflagged){
 				args.player.autoflagged = false;
 				args.player.sendMessage("[yellow]You have been freed! Enjoy!");
 				args.player.updateName();
 				args.player.forceRespawn();
-				outputSuccess(`Player "${args.player.name}" has been unflagged.`);
+				outputSuccess(f`Player ${args.player} has been unflagged.`);
 			} else {
-				outputFail(`Player "${args.player.name}" is not marked or autoflagged.`);;
+				outputFail(f`Player ${args.player} is not marked or autoflagged.`);
 			}
 		}
 	},
-
+	//TODO remove
 	...Object.fromEntries(["admin", "mod"].map<[string, FishCommandData<never, unknown>]>(n => [n, {
 		args: [],
 		description: "This command was moved to /setrank.",
@@ -127,21 +129,21 @@ export const commands = commandList({
 		args: ["player:player", "rank:string"],
 		description: "Set a player's rank.",
 		perm: Perm.mod,
-		handler({args, outputSuccess, sender}){
-			const ranks = Rank.getByInput(args.rank);
-			if(ranks.length == 0) fail(`Unknown rank ${args.rank}`);
-			if(ranks.length > 1) fail(`Ambiguous rank ${args.rank}`);
+		handler({args, outputSuccess, f, sender}){
+			const ranks = Rank.getByInput(args.rank); //TODO make this an arg type
+			if(ranks.length == 0) fail(`Unknown rank "${args.rank}"`);
+			if(ranks.length > 1) fail(`Ambiguous rank "${args.rank}"`);
 			const rank = ranks[0];
 			if(rank.level >= sender.rank.level)
-				fail(`You do not have permission to promote players to rank "${rank.name}", because your current rank is "${sender.rank.name}"`);
+				fail(f`You do not have permission to promote players to rank ${rank}, because your current rank is ${sender.rank}`);
 			if(!sender.canModerate(args.player))
-				fail(`You do not have permission to modify the rank of player "${args.player.name}"`);
-			if(rank == Rank.pi && !localDebug) fail(`Rank ${rank.name} is immutable.`);
-			if(args.player.immutable() && !localDebug) fail(`Player ${args.player} is immutable.`);
+				fail(`You do not have permission to modify the rank of player ${args.player}`);
+			if(rank == Rank.pi && !localDebug) fail(f`Rank ${rank} is immutable.`);
+			if(args.player.immutable() && !localDebug) fail(f`Player ${args.player} is immutable.`);
 
 			args.player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, sender, args.player);
-			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.color}${rank.name}[]`);
+			outputSuccess(f`Set rank of player ${args.player} to ${rank}`);
 		}
 	},
 
@@ -149,20 +151,19 @@ export const commands = commandList({
 		args: ["player:player", "roleflag:string", "value:boolean"],
 		description: "Set a player's role flags.",
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess}){
+		handler({args, sender, outputSuccess, f}){
 			const flags = RoleFlag.getByInput(args.roleflag);
-			if(flags.length == 0) fail(`Unknown roleflag ${args.roleflag}`);
-			if(flags.length > 1) fail(`Ambiguous roleflag ${args.roleflag}`);
+			if(flags.length == 0) fail(`Unknown roleflag "${args.roleflag}"`);
+			if(flags.length > 1) fail(`Ambiguous roleflag "${args.roleflag}"`);
 			const flag = flags[0];
-			if(flag == null) fail(`Unknown role flag ${args.roleflag}`);
 			if(!sender.canModerate(args.player))
-				fail(`You do not have permission to modify the role flags of player "${args.player.name}"`);
+				fail(f`You do not have permission to modify the role flags of player ${args.player}`);
 			if(!sender.hasPerm("admin") && !flag.assignableByModerators)
-				fail(`You do not have permission to change the value of role flag ${flag.coloredName()}`);
+				fail(f`You do not have permission to change the value of role flag ${flag}`);
 
 			args.player.setFlag(flag, args.value);
 			logAction(`set roleflag ${flag.name} to ${args.value} for`, sender, args.player);
-			outputSuccess(`Set role flag ${flag.color}${flag.name}[] of player "${args.player.name}" to ${args.value}`);
+			outputSuccess(f`Set role flag ${flag} of player ${args.player} to ${args.value}`);
 		}
 	},
 
@@ -171,11 +172,11 @@ export const commands = commandList({
 		description: 'Kills all ohno units',
 		perm: Perm.mod,
 		customUnauthorizedMessage: `[yellow]You're a [scarlet]monster[].`,
-		handler({output, allCommands}){
+		handler({output, f, allCommands}){
 			const Ohnos = allCommands["ohno"].data! as any; //this is not ideal... TODO commit omega shenanigans
 			const numOhnos = Ohnos.amount();
 			Ohnos.killAll();
-			output(`[orange]You massacred [cyan]${numOhnos}[] helpless ohno crawlers.`);
+			output(f`[orange]You massacred ${numOhnos} helpless ohno crawlers.`);
 		}
 	},
 
@@ -183,7 +184,7 @@ export const commands = commandList({
 		args: ["time:time?", "name:string"],
 		description: "Stops an offline player.",
 		perm: Perm.mod,
-		handler({args, sender, outputFail, outputSuccess, admins}){
+		handler({args, sender, outputFail, outputSuccess, f, admins}){
 			const maxPlayers = 60;
 			
 			function stop(option:mindustryPlayerData, time:number){
@@ -191,7 +192,7 @@ export const commands = commandList({
 				if(sender.canModerate(fishP, true)){
 					fishP.stop(sender, time);
 					logAction('stopped', sender, option, undefined, time);
-					outputSuccess(`Player "${option.lastName}" was marked for ${formatTime(time)}.`);
+					outputSuccess(f`Player ${option} was marked for ${formatTime(time)}.`);
 				} else {
 					outputFail(`You do not have permission to stop this player.`);
 				}
@@ -202,7 +203,7 @@ export const commands = commandList({
 				if(info != null) {
 					stop(info, args.time ?? untilForever());
 				} else {
-					outputFail(`Unknown UUID ${args.name}`);
+					outputFail(f`Unknown UUID ${args.name}`);
 				}
 				return;
 			}
@@ -256,7 +257,7 @@ export const commands = commandList({
 		args: ["player:player"],
 		description: "Shows moderation history for a player.",
 		perm: Perm.mod,
-		handler({args, output}){
+		handler({args, output, f}){
 			if(args.player.history && args.player.history.length > 0){
 				output(
 					`[yellow]_______________Player history_______________\n\n` +
@@ -265,7 +266,7 @@ export const commands = commandList({
 					).join("\n")
 				);
 			} else {
-				output(`[yellow]No history was found for player ${args.player.name}.`);
+				output(f`[yellow]No history was found for player ${args.player}.`);
 			}
 		}
 	},
@@ -276,9 +277,9 @@ export const commands = commandList({
 		perm: Perm.mod,
 		handler({outputSuccess}){
 			FishPlayer.saveAll();
-			const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
+			const file = Vars.saveDirectory.child(`1.${Vars.saveExtension}`);
 			SaveIO.save(file);
-			outputSuccess('Game saved.');
+			outputSuccess("Game saved.");
 		}
 	},
 
@@ -286,10 +287,10 @@ export const commands = commandList({
 		args: ["wave:number"],
 		description: "Sets the wave number.",
 		perm: Perm.admin,
-		handler({args, outputSuccess, outputFail}){
+		handler({args, outputSuccess, outputFail, f}){
 			if(args.wave > 0 && Number.isInteger(args.wave)){
 				Vars.state.wave = args.wave;
-				outputSuccess(`Set wave to ${Vars.state.wave}`);
+				outputSuccess(f`Set wave to ${Vars.state.wave}`);
 			} else {
 				outputFail(`Wave must be a positive integer.`);
 			}
@@ -300,7 +301,7 @@ export const commands = commandList({
 		args: ["time:number", "message:string"],
 		description: "Places a label at your position for a specified amount of time.",
 		perm: Perm.admin,
-		handler({args, sender, outputSuccess}){
+		handler({args, sender, outputSuccess, f}){
 			if(args.time <= 0 || args.time > 3600) fail(`Time must be a positive number less than 3600.`);
 			let timeRemaining = args.time;
 			const labelx = sender.unit().x;
@@ -316,7 +317,7 @@ export const commands = commandList({
 					timeRemaining --;
 				}
 			}, 0, 1, args.time);
-			outputSuccess(`Placed label "${args.message}" for ${args.time} seconds.`);
+			outputSuccess(f`Placed label "${args.message}" for ${args.time} seconds.`);
 		}
 	},
 
@@ -324,9 +325,9 @@ export const commands = commandList({
 		args: ["value:boolean", "player:player"],
 		description: "Sets a player's member status.",
 		perm: Perm.admin,
-		handler({args, outputSuccess}){
+		handler({args, outputSuccess, f}){
 			args.player.setFlag("member", args.value);
-			outputSuccess(`Set membership status of player "${args.player.name}" to ${args.value}.`);
+			outputSuccess(f`Set membership status of player ${args.player} to ${args.value}.`);
 		}
 	},
 
@@ -334,13 +335,15 @@ export const commands = commandList({
 		args: ["uuid:uuid?"],
 		description: "Bans a player by UUID and IP.",
 		perm: Perm.admin,
-		handler({args, sender, outputSuccess, admins}){
+		handler({args, sender, outputSuccess, f, admins}){
 			if(args.uuid){
+				//Overload 1: ban by uuid
 				let data:mindustryPlayerData | null;
 				if((data = admins.getInfoOptional(args.uuid)) != null && data.admin){
 					fail(`Cannot ban an admin.`);
 				}
-				menu("Confirm", `Are you sure you want to ban ${data ? `${escapeStringColorsClient(data.plainLastName())} (${args.uuid}/${data.lastIP})` : args.uuid}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
+				const name = data ? `${escapeStringColorsClient(data.lastName)} (${args.uuid}/${data.lastIP})` : args.uuid;
+				menu("Confirm", `Are you sure you want to ban ${name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
 					if(confirm != "Yes") fail("Cancelled.");
 					const uuid = args.uuid!;
 					admins.banPlayerID(uuid);
@@ -350,22 +353,19 @@ export const commands = commandList({
 						api.ban({ip, uuid});
 						Log.info(`${uuid}/${ip} was banned.`);
 						logAction("banned", sender, data);
-						outputSuccess(`Banned player ${escapeStringColorsClient(data.plainLastName())} (${uuid}/${ip})`);
+						outputSuccess(f`Banned player ${escapeStringColorsClient(data.lastName)} (${uuid}/${ip})`);
+						//TODO add way to specify whether to activate or escape color tags
 					} else {
 						api.ban({uuid});
 						Log.info(`${uuid} was banned.`);
 						logAction("banned", sender, uuid);
-						outputSuccess(`Banned player ${uuid}. Unable to determine IP.`);
+						outputSuccess(f`Banned player ${uuid}. [yellow]Unable to determine IP.[]`);
 					}
-					Groups.player.each(player => {
-						if(admins.isIDBanned(player.uuid())){
-							player.con.kick(Packets.KickReason.banned);
-							Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
-						}
-					});
+					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
 				}, false);
 				return;
 			}
+			//Overload 1: ban by menu
 			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
 				if(option.admin) fail(`Cannot ban an admin.`);
 				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
@@ -374,14 +374,8 @@ export const commands = commandList({
 					api.ban({ip: option.ip(), uuid: option.uuid()});
 					Log.info(`${option.ip()}/${option.uuid()} was banned.`);
 					logAction("banned", sender, option.getInfo());
-					outputSuccess(`Banned player ${option.name}.`);
-					Groups.player.each(player => {
-						if(admins.isIDBanned(player.uuid())){
-							api.addStopped(player.uuid(), maxTime);
-							player.con.kick(Packets.KickReason.banned);
-							Call.sendMessage(`[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
-						}
-					});
+					outputSuccess(f`Banned player ${option}.`);
+					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
 				}, false);
 			}, true, opt => opt.name);
 		}
@@ -400,17 +394,16 @@ export const commands = commandList({
 		args: ["player:player"],
 		description: "Kills a player's unit.",
 		perm: Perm.mod,
-		customUnauthorizedMessage: "You do not have the required permission (admin) to execute this command. You may be looking for /die.",
-		handler({args, sender, outputFail, outputSuccess}){
+		handler({args, sender, outputFail, outputSuccess, f}){
 			if(!sender.canModerate(args.player, false))
 				fail(`You do not have permission to kill the unit of this player.`);
 
 			const unit = args.player.unit();
 			if(unit){
 				unit.kill();
-				outputSuccess(`Killed the unit of player "${args.player.cleanedName}".`);
+				outputSuccess(f`Killed the unit of player ${args.player}.`);
 			} else {
-				outputFail(`Player "${args.player.cleanedName}" does not have a unit.`)
+				outputFail(f`Player ${args.player} does not have a unit.`)
 			}
 		}
 	},
@@ -419,12 +412,12 @@ export const commands = commandList({
 		args: ["player:player"],
 		description: "Forces a player to respawn.",
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess}){
+		handler({args, sender, outputSuccess, f}){
 			if(!sender.canModerate(args.player, false))
 				fail(`You do not have permission to respawn this player.`);
 			
 			args.player.forceRespawn();
-			outputSuccess(`Respawned player "${args.player.cleanedName}".`);
+			outputSuccess(f`Respawned player ${args.player}.`);
 		}
 	},
 
@@ -457,7 +450,7 @@ export const commands = commandList({
 `	[#C30202]UUID: ${args.target.uuid}
 	[#C30202]IP: ${args.target.player.ip()}
 	` : "")
-).replace(/\t/g, "    ")
+).replace(/\t/g, "    ") //TODO do that automatically
 			);
 		}
 	},
@@ -466,36 +459,35 @@ export const commands = commandList({
 		args: ["type:unittype", "x:number?", "y:number?"],
 		description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
 		perm: Perm.admin,
-		handler({sender, args, outputSuccess}){
+		handler({sender, args, outputSuccess, f}){
 			args;
-			//^?
 			const x = args.x ? (args.x * 8) : sender.player.x;
 			const y = args.y ? (args.y * 8) : sender.player.y;
 			const unit = args.type.spawn(sender.team(), x, y);
 			spawnedUnits.push(unit);
 			logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
-			outputSuccess(`Spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`);
+			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);
 		}
 	},
 	setblock: {
 		args: ["x:number", "y:number", "block:block", "team:team?", "rotation:number?"],
 		description: "Sets the block at a location.",
 		perm: Perm.admin,
-		handler({args, sender, outputSuccess}){
+		handler({args, sender, outputSuccess, f}){
 			const team = args.team ?? sender.team();
 			const tile = Vars.world.tile(args.x, args.y);
-			if(args.rotation != null && (args.rotation < 0 || args.rotation > 3)) fail(`Invalid rotation ${args.rotation}`)
+			if(args.rotation != null && (args.rotation < 0 || args.rotation > 3)) fail(f`Invalid rotation ${args.rotation}`)
 			if(tile == null)
-				fail(`Position ${args.x}, ${args.y} is out of bounds.`);
+				fail(f`Position (${args.x}, ${args.y}) is out of bounds.`);
 			tile.setNet(args.block, team, args.rotation ?? 0);
-			outputSuccess(`Set block at ${args.x}, ${args.y} to ${args.block.name}`);
+			outputSuccess(f`Set block at ${args.x}, ${args.y} to ${args.block}`);
 		}
 	},
 	exterminate: {
 		args: [],
 		description: "Removes all spawned units.",
 		perm: Perm.admin,
-		handler({sender, outputSuccess}){
+		handler({sender, outputSuccess, f}){
 			let numKilled = 0;
 			spawnedUnits.forEach(u => {
 				if(u.isAdded() && !u.dead){
@@ -503,8 +495,8 @@ export const commands = commandList({
 					numKilled ++;
 				}
 			});
-			logAction(`Exterminated ${numKilled} units`, sender);
-			outputSuccess(`Exterminated ${numKilled} units.`);
+			logAction(`exterminated ${numKilled} units`, sender);
+			outputSuccess(f`Exterminated ${numKilled} units.`);
 		}
 	},
 	js: {
@@ -572,7 +564,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 		handler({args, outputSuccess, output}){
 			if(args.state !== null){
 				FishPlayer.antiBotModeOverride = args.state;
-				outputSuccess(`Set antibot mode override to ${args.state}.`);
+				outputSuccess(`Set antibot mode override to ${colorBadBoolean(args.state)}.`);
 				if(args.state) output(`[scarlet]MAKE SURE TO TURN IT OFF!!!`);
 			} else {
 				output(
@@ -587,12 +579,11 @@ ${getAntiBotInfo("client")}`
 		args: ["player:player", "value:string"],
 		description: "Sets chat strictness for a player.",
 		perm: Perm.mod,
-		handler({args:{player, value}, sender, outputSuccess}){
+		handler({args:{player, value}, sender, outputSuccess, f}){
 			if(!sender.canModerate(player, true)) fail(`You do not have permission to set the chat strictness level of this player.`);
 			if(!(value == "chat" || value == "strict")) fail(`Invalid chat strictness level: valid levels are "chat", "strict"`);
 			player.chatStrictness = value;
-			//TODO way to reset color for outputSuccess, probably finish outputf
-			outputSuccess(`Set chat strictness for player ${player.cleanedName} to ${value}.`);
+			outputSuccess(`Set chat strictness for player ${player} to "${value}".`);
 		}
 	},
 	emanate: command({
@@ -607,7 +598,6 @@ ${getAntiBotInfo("client")}`
 					if(!fishP || !fishP.connected() || (unit.getPlayer() != fishP.player)){
 						delete data[uuid];
 						unit?.kill();
-						continue;
 					}
 				}
 			}, 1, 0.5);
