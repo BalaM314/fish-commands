@@ -290,6 +290,8 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((
 		return `[blue]${chunk.toString()}[]`;
 	} else if(typeof chunk == "number"){
 		return `[blue]${chunk.toString()}[]`;
+	} else if(chunk instanceof Administration.PlayerInfo){
+		return chunk.lastName + color;
 	} else {
 		return chunk as string; //allow it to get stringified by the engine
 	}

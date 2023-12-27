@@ -381,6 +381,9 @@ var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i
     else if (typeof chunk == "number") {
         return "[blue]".concat(chunk.toString(), "[]");
     }
+    else if (chunk instanceof Administration.PlayerInfo) {
+        return chunk.lastName + color;
+    }
     else {
         return chunk; //allow it to get stringified by the engine
     }
