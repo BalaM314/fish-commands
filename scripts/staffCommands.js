@@ -146,7 +146,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ warn: {
             if (args.player.marked()) {
                 args.player.free(sender);
                 (0, utils_1.logAction)('freed', sender, args.player);
-                //TODO remove from punished ips list
                 outputSuccess(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["Player ", " has been unmarked."], ["Player ", " has been unmarked."])), args.player));
             }
             else if (args.player.autoflagged) {

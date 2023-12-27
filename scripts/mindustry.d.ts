@@ -68,12 +68,12 @@ class Gamemode {
 }
 declare type Throwable = any;
 declare class Administration {
-	findByName(info:string):ObjectSet<mindustryPlayerData>;
-	searchNames(name:string):ObjectSet<mindustryPlayerData>;
-	getInfo(uuid:string):mindustryPlayerData;
-	getInfoOptional(uuid:string):mindustryPlayerData | null;
+	findByName(info:string):ObjectSet<PlayerInfo>;
+	searchNames(name:string):ObjectSet<PlayerInfo>;
+	getInfo(uuid:string):PlayerInfo;
+	getInfoOptional(uuid:string):PlayerInfo | null;
 	dosBlacklist: ObjectSet<string>;
-	findByIP(ip:string):mindustryPlayerData | null;
+	findByIP(ip:string):PlayerInfo | null;
 	isIPBanned(ip:string):boolean;
 	isIDBanned(uuid:string):boolean;
 	banPlayerIP(ip:string):boolean;
@@ -89,7 +89,7 @@ declare class Administration {
 	addChatFilter(filter:(player:mindustryPlayer, message:string) => string | null):void;
 	addActionFilter(filter:(action:PlayerAction) => boolean):void;
 	static ActionType: ActionType;
-	static PlayerInfo: typeof mindustryPlayerData;
+	static PlayerInfo: typeof PlayerInfo;
 }
 declare const Events: {
 	on(event:EventType, handler:(e:any) => void);
@@ -349,7 +349,7 @@ declare const Prop: any;
 declare function print(message:string):void;
 
 //TODO rename to PlayerInfo
-declare class mindustryPlayerData {
+declare class PlayerInfo {
 	/**uuid */
 	id: string;
 	lastName: string;

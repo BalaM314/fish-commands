@@ -133,14 +133,14 @@ export class FishPlayer {
 	static createFromPlayer(player:mindustryPlayer){
 		return new this({}, player);
 	}
-	static createFromInfo(playerInfo:mindustryPlayerData){
+	static createFromInfo(playerInfo:PlayerInfo){
 		return new this({
 			uuid: playerInfo.id,
 			name: playerInfo.lastName,
 			usid: playerInfo.adminUsid ?? null
 		}, null);
 	}
-	static getFromInfo(playerInfo:mindustryPlayerData){
+	static getFromInfo(playerInfo:PlayerInfo){
 		return this.cachedPlayers[playerInfo.id] ??= this.createFromInfo(playerInfo);
 	}
 	static get(player:mindustryPlayer){
@@ -492,7 +492,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 	}
 	checkVPNAndJoins(){
 		const ip = this.player.ip();
-		const info:mindustryPlayerData = this.info()!;
+		const info:PlayerInfo = this.info()!;
 		api.isVpn(ip, isVpn => {
 			if(isVpn){
 				Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${FishPlayer.stats.numIpsFlagged}/${FishPlayer.stats.numIpsChecked} (${100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked}%)`);
@@ -889,7 +889,7 @@ We apologize for the inconvenience.`
 		if(this.connected()) return this.player.con.address;
 		else return this.info().lastIP;
 	}
-	info():mindustryPlayerData {
+	info():PlayerInfo {
 		return Vars.netServer.admins.getInfo(this.uuid);
 	}
 	sendMessage(message:string){
@@ -1013,6 +1013,8 @@ We apologize for the inconvenience.`
 		this.autoflagged = false; //Might as well set autoflagged to false
 		this.unmarkTime = -1;
 		api.free(this.uuid);
+		FishPlayer.removePunishedIP(this.ip());
+		FishPlayer.removePunishedUUID(this.uuid);
 		FishPlayer.saveAll();
 		if(this.connected()){
 			this.addHistoryEntry({
@@ -1024,6 +1026,20 @@ We apologize for the inconvenience.`
 			this.updateName();
 			this.forceRespawn();
 		}
+	}
+	static removePunishedIP(target:string){
+		let ipIndex:number;
+		if((ipIndex = FishPlayer.punishedIPs.findIndex(([ip]) => ip == target)) != -1){
+			FishPlayer.punishedIPs.splice(ipIndex, 1);
+			return true;
+		} else return false;
+	}
+	static removePunishedUUID(target:string){
+		let uuidIndex:number;
+		if((uuidIndex = FishPlayer.punishedIPs.findIndex(([, uuid]) => uuid == target)) != -1){
+			FishPlayer.punishedIPs.splice(uuidIndex, 1);
+			return true;
+		} else return false;
 	}
 	trollName(name:string){
 		this.shouldUpdateName = false;

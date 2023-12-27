@@ -272,12 +272,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var args = _a.args, output = _a.output, admins = _a.admins;
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
-                var ipIndex = void 0;
-                if ((ipIndex = players_1.FishPlayer.punishedIPs.findIndex(function (_a) {
-                    var _b = __read(_a, 1), ip = _b[0];
-                    return ip == args.target;
-                })) != -1) {
-                    players_1.FishPlayer.punishedIPs.splice(ipIndex, 1);
+                if (players_1.FishPlayer.removePunishedIP(args.target)) {
                     output("Removed IP &c\"".concat(args.target, "\"&fr from the anti-evasion list."));
                 }
                 output("Checking ban status...");
@@ -300,12 +295,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 });
             }
             else if (globals_1.uuidPattern.test(args.target)) {
-                var uuidIndex = void 0;
-                if ((uuidIndex = players_1.FishPlayer.punishedIPs.findIndex(function (_a) {
-                    var _b = __read(_a, 2), uuid = _b[1];
-                    return uuid == args.target;
-                })) != -1) {
-                    players_1.FishPlayer.punishedIPs.splice(uuidIndex, 1);
+                if (players_1.FishPlayer.removePunishedUUID(args.target)) {
                     output("Removed UUID &c\"".concat(args.target, "\"&fr from the anti-evasion list."));
                 }
                 output("Checking ban status...");

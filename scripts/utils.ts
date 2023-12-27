@@ -346,8 +346,8 @@ export function isImpersonator(name:string, isStaff:boolean):false | string {
 
 export function logAction(action:string):void;
 export function logAction(action:string, by:FishPlayer):void;
-export function logAction(action:string, by:FishPlayer | string, to:FishPlayer | mindustryPlayerData | string, reason?:string, duration?:number):void;
-export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer | mindustryPlayerData | string, reason?:string, duration?:number) {
+export function logAction(action:string, by:FishPlayer | string, to:FishPlayer | PlayerInfo | string, reason?:string, duration?:number):void;
+export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer | PlayerInfo | string, reason?:string, duration?:number) {
 	if(by === undefined){ //overload 1
 		api.sendModerationMessage(
 `${action}
@@ -488,7 +488,9 @@ export function parseError(thing:unknown){
 }
 
 /** Generates a tag template processor from a function that processes one value at a time. */
-export function tagProcessor<T>(transformer:(chunk:T, index:number, allStringChunks:readonly string[], allVarChunks:readonly T[]) => string):TagFunction<T, string> {
+export function tagProcessor<T>(
+	transformer:(chunk:T, index:number, allStringChunks:readonly string[], allVarChunks:readonly T[]) => string
+):TagFunction<T, string> {
 	return function(stringChunks:readonly string[], ...varChunks:readonly T[]){
 		return String.raw({raw: stringChunks}, ...varChunks.map((chunk, i) => transformer(chunk, i, stringChunks, varChunks)));
 	}

@@ -58,7 +58,7 @@ export const commands = consoleCommandList({
 		args: ["player:string"],
 		description: "Find player info(s). Displays all names and ips of a player.",
 		handler({args, output, admins}){
-			const infoList = setToArray(admins.findByName(args.player) as ObjectSet<mindustryPlayerData>);
+			const infoList = setToArray(admins.findByName(args.player) as ObjectSet<PlayerInfo>);
 			if(infoList.length == 0) fail(`No players found.`);
 			let outputString:string[] = [""];
 			for(const playerInfo of infoList){
@@ -201,9 +201,7 @@ export const commands = consoleCommandList({
 		handler({args, output, admins}){
 			if(ipPattern.test(args.target)){
 				//target is an ip
-				let ipIndex:number;
-				if((ipIndex = FishPlayer.punishedIPs.findIndex(([ip]) => ip == args.target)) != -1){
-					FishPlayer.punishedIPs.splice(ipIndex, 1);
+				if(FishPlayer.removePunishedIP(args.target)){
 					output(`Removed IP &c"${args.target}"&fr from the anti-evasion list.`);
 				}
 				output("Checking ban status...");
@@ -223,9 +221,7 @@ export const commands = consoleCommandList({
 					}
 				});
 			} else if(uuidPattern.test(args.target)){
-				let uuidIndex:number;
-				if((uuidIndex = FishPlayer.punishedIPs.findIndex(([, uuid]) => uuid == args.target)) != -1){
-					FishPlayer.punishedIPs.splice(uuidIndex, 1);
+				if(FishPlayer.removePunishedUUID(args.target)){
 					output(`Removed UUID &c"${args.target}"&fr from the anti-evasion list.`);
 				}
 				output("Checking ban status...");
@@ -408,7 +404,7 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 		description: "Stops a player by uuid.",
 		handler({args:{uuid, time}, outputSuccess, admins}){
 			const stopTime = time ?? (maxTime - Date.now() - 10000);
-			const info = admins.getInfoOptional(uuid) as mindustryPlayerData;
+			const info = admins.getInfoOptional(uuid) as PlayerInfo;
 			if(info == null) fail(`Unknown player ${uuid}`);
 			const fishP = FishPlayer.getFromInfo(info);
 			fishP.stop("console", stopTime);

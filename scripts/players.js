@@ -1132,6 +1132,8 @@ var FishPlayer = /** @class */ (function () {
         this.autoflagged = false; //Might as well set autoflagged to false
         this.unmarkTime = -1;
         api.free(this.uuid);
+        FishPlayer.removePunishedIP(this.ip());
+        FishPlayer.removePunishedUUID(this.uuid);
         FishPlayer.saveAll();
         if (this.connected()) {
             this.addHistoryEntry({
@@ -1143,6 +1145,30 @@ var FishPlayer = /** @class */ (function () {
             this.updateName();
             this.forceRespawn();
         }
+    };
+    FishPlayer.removePunishedIP = function (target) {
+        var ipIndex;
+        if ((ipIndex = FishPlayer.punishedIPs.findIndex(function (_a) {
+            var _b = __read(_a, 1), ip = _b[0];
+            return ip == target;
+        })) != -1) {
+            FishPlayer.punishedIPs.splice(ipIndex, 1);
+            return true;
+        }
+        else
+            return false;
+    };
+    FishPlayer.removePunishedUUID = function (target) {
+        var uuidIndex;
+        if ((uuidIndex = FishPlayer.punishedIPs.findIndex(function (_a) {
+            var _b = __read(_a, 2), uuid = _b[1];
+            return uuid == target;
+        })) != -1) {
+            FishPlayer.punishedIPs.splice(uuidIndex, 1);
+            return true;
+        }
+        else
+            return false;
     };
     FishPlayer.prototype.trollName = function (name) {
         this.shouldUpdateName = false;

@@ -102,7 +102,6 @@ export const commands = commandList({
 			if(args.player.marked()){
 				args.player.free(sender);
 				logAction('freed', sender, args.player);
-				//TODO remove from punished ips list
 				outputSuccess(f`Player ${args.player} has been unmarked.`);
 			} else if(args.player.autoflagged){
 				args.player.autoflagged = false;
@@ -187,7 +186,7 @@ export const commands = commandList({
 		handler({args, sender, outputFail, outputSuccess, f, admins}){
 			const maxPlayers = 60;
 			
-			function stop(option:mindustryPlayerData, time:number){
+			function stop(option:PlayerInfo, time:number){
 				const fishP = FishPlayer.getFromInfo(option);
 				if(sender.canModerate(fishP, true)){
 					fishP.stop(sender, time);
@@ -199,7 +198,7 @@ export const commands = commandList({
 			}
 			
 			if(uuidPattern.test(args.name)){
-				const info:mindustryPlayerData | null = admins.getInfoOptional(args.name);
+				const info:PlayerInfo | null = admins.getInfoOptional(args.name);
 				if(info != null) {
 					stop(info, args.time ?? untilForever());
 				} else {
@@ -208,9 +207,9 @@ export const commands = commandList({
 				return;
 			}
 
-			let possiblePlayers:mindustryPlayerData[] = setToArray(admins.searchNames(args.name));
+			let possiblePlayers:PlayerInfo[] = setToArray(admins.searchNames(args.name));
 			if(possiblePlayers.length > maxPlayers){
-				let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<mindustryPlayerData>);
+				let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<PlayerInfo>);
 				if(exactPlayers.length > 0){
 					possiblePlayers = exactPlayers;
 				} else {
@@ -219,7 +218,7 @@ export const commands = commandList({
 			} else if(possiblePlayers.length == 0){
 				fail("No players with that name were found.");
 			}
-			function score(data:mindustryPlayerData){
+			function score(data:PlayerInfo){
 				const fishP = FishPlayer.getById(data.id);
 				if(fishP) return fishP.lastJoined;
 				return - data.timesJoined;
@@ -338,7 +337,7 @@ export const commands = commandList({
 		handler({args, sender, outputSuccess, f, admins}){
 			if(args.uuid){
 				//Overload 1: ban by uuid
-				let data:mindustryPlayerData | null;
+				let data:PlayerInfo | null;
 				if((data = admins.getInfoOptional(args.uuid)) != null && data.admin){
 					fail(`Cannot ban an admin.`);
 				}
@@ -435,7 +434,7 @@ export const commands = commandList({
 		description: "Displays information about an online player. See also /infos",
 		perm: Perm.none,
 		handler({sender, args, output}){
-			const info = args.target.player.info as mindustryPlayerData;
+			const info = args.target.player.info as PlayerInfo;
 			output(
 (`[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColorsClient(args.target.name)}) (${args.target.player.id})
 	[accent]Rank: ${args.target.rank.coloredName()}
