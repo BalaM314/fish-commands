@@ -734,7 +734,7 @@ function outputSuccess(message, sender) {
 }
 exports.outputSuccess = outputSuccess;
 function outputMessage(message, sender) {
-    sender.sendMessage(typeof message == "function" ? message("") : message);
+    sender.sendMessage((typeof message == "function" ? message("") : message).replace(/\t/g, "    "));
 }
 exports.outputMessage = outputMessage;
 function updateBans(message) {

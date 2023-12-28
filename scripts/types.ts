@@ -10,7 +10,7 @@ export type SelectClasslikeEnumKeys<C extends Function,
 	: never
 ) : never;
 
-export type FishCommandArgType = string | number | FishPlayer | Team | boolean | null | UnitType | Block | MMap;
+export type FishCommandArgType = TypeOfArgType<CommandArgType> | null;
 export type MenuListener = (player:mindustryPlayer, option:number) => void;
 
 /** Returns the type for an arg type string. Example: returns `number` for "time". */
@@ -27,6 +27,8 @@ export type TypeOfArgType<T> =
 	T extends "block" ? Block :
 	T extends "uuid" ? string :
 	T extends "map" ? MMap :
+	T extends "rank" ? Rank :
+	T extends "roleflag" ? RoleFlag :
 	never;
 
 //TLDR: Yeet U through a wormhole, then back through the same wormhole, and it comes out the other side as an intersection type
@@ -72,8 +74,11 @@ export interface FishCommandRunner<ArgType extends string, StoredData> {
 		args:ArgsFromArgStringUnion<ArgType>;
 		/**The player who ran the command. */
 		sender:FishPlayer;
+		/** Outputs text to the sender, with a check mark symbol and green color. */
 		outputSuccess:(message:string | PartialFormatString) => void;
+		/** Outputs text to the sender, with a fail symbol and yellow color. */
 		outputFail:(message:string | PartialFormatString) => void;
+		/** Outputs text to the sender. Tab characters are replaced with 4 spaces. */
 		output:(message:string | PartialFormatString) => void;
 		f:TagFunction<Formattable, PartialFormatString>;
 		/**Executes a server console command. Be careful! */

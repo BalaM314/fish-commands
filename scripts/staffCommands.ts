@@ -114,55 +114,38 @@ export const commands = commandList({
 			}
 		}
 	},
-	//TODO remove
-	...Object.fromEntries(["admin", "mod"].map<[string, FishCommandData<never, unknown>]>(n => [n, {
-		args: [],
-		description: "This command was moved to /setrank.",
-		perm: Perm.mod,
-		handler({outputFail}){
-			outputFail(`This command was moved to /setrank.`);
-		}
-	}])),
 
 	setrank: {
-		args: ["player:player", "rank:string"],
+		args: ["player:player", "rank:rank"],
 		description: "Set a player's rank.",
 		perm: Perm.mod,
-		handler({args, outputSuccess, f, sender}){
-			const ranks = Rank.getByInput(args.rank); //TODO make this an arg type
-			if(ranks.length == 0) fail(`Unknown rank "${args.rank}"`);
-			if(ranks.length > 1) fail(`Ambiguous rank "${args.rank}"`);
-			const rank = ranks[0];
+		handler({args:{rank, player}, outputSuccess, f, sender}){
 			if(rank.level >= sender.rank.level)
 				fail(f`You do not have permission to promote players to rank ${rank}, because your current rank is ${sender.rank}`);
-			if(!sender.canModerate(args.player))
-				fail(`You do not have permission to modify the rank of player ${args.player}`);
+			if(!sender.canModerate(player))
+				fail(`You do not have permission to modify the rank of player ${player}`);
 			if(rank == Rank.pi && !localDebug) fail(f`Rank ${rank} is immutable.`);
-			if(args.player.immutable() && !localDebug) fail(f`Player ${args.player} is immutable.`);
+			if(player.immutable() && !localDebug) fail(f`Player ${player} is immutable.`);
 
-			args.player.setRank(rank);
-			logAction(`set rank to ${rank.name} for`, sender, args.player);
-			outputSuccess(f`Set rank of player ${args.player} to ${rank}`);
+			player.setRank(rank);
+			logAction(`set rank to ${rank.name} for`, sender, player);
+			outputSuccess(f`Set rank of player ${player} to ${rank}`);
 		}
 	},
 
 	setflag: {
-		args: ["player:player", "roleflag:string", "value:boolean"],
+		args: ["player:player", "flag:roleflag", "value:boolean"],
 		description: "Set a player's role flags.",
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, f}){
-			const flags = RoleFlag.getByInput(args.roleflag);
-			if(flags.length == 0) fail(`Unknown roleflag "${args.roleflag}"`);
-			if(flags.length > 1) fail(`Ambiguous roleflag "${args.roleflag}"`);
-			const flag = flags[0];
-			if(!sender.canModerate(args.player))
-				fail(f`You do not have permission to modify the role flags of player ${args.player}`);
+		handler({args:{flag, player, value}, sender, outputSuccess, f}){
+			if(!sender.canModerate(player))
+				fail(f`You do not have permission to modify the role flags of player ${player}`);
 			if(!sender.hasPerm("admin") && !flag.assignableByModerators)
 				fail(f`You do not have permission to change the value of role flag ${flag}`);
 
-			args.player.setFlag(flag, args.value);
-			logAction(`set roleflag ${flag.name} to ${args.value} for`, sender, args.player);
-			outputSuccess(f`Set role flag ${flag} of player ${args.player} to ${args.value}`);
+			player.setFlag(flag, value);
+			logAction(`set roleflag ${flag.name} to ${value} for`, sender, player);
+			outputSuccess(f`Set role flag ${flag} of player ${player} to ${value}`);
 		}
 	},
 
@@ -299,7 +282,7 @@ export const commands = commandList({
 	label: {
 		args: ["time:number", "message:string"],
 		description: "Places a label at your position for a specified amount of time.",
-		perm: Perm.admin,
+		perm: Perm.mod,
 		handler({args, sender, outputSuccess, f}){
 			if(args.time <= 0 || args.time > 3600) fail(`Time must be a positive number less than 3600.`);
 			let timeRemaining = args.time;
@@ -433,24 +416,24 @@ export const commands = commandList({
 		args: ["target:player"],
 		description: "Displays information about an online player. See also /infos",
 		perm: Perm.none,
-		handler({sender, args, output}){
+		handler({sender, args, output, f}){
 			const info = args.target.player.info as PlayerInfo;
-			output(
-(`[accent]Info for player "${args.target.player.name}[accent]" [gray](${escapeStringColorsClient(args.target.name)}) (${args.target.player.id})
-	[accent]Rank: ${args.target.rank.coloredName()}
+			output(f`\
+[accent]Info for player ${args.target} [gray](${escapeStringColorsClient(args.target.name)}) (#${args.target.player.id.toString()})
+	[accent]Rank: ${args.target.rank}
 	[accent]Role flags: ${Array.from(args.target.flags).map(f => f.coloredName()).join(" ")}
 	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
 	[accent]marked: ${args.target.marked() ? `until ${formatTimeRelative(args.target.unmarkTime)}` : "[green]false"}
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
 	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
 	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
-	[accent]Names used: [[${info.names.map(escapeStringColorsClient).items.join(", ")}]
-` + (sender.hasPerm("viewUUIDs") ? 
-`	[#C30202]UUID: ${args.target.uuid}
-	[#C30202]IP: ${args.target.player.ip()}
-	` : "")
-).replace(/\t/g, "    ") //TODO do that automatically
+	[accent]Names used: [[${info.names.map(escapeStringColorsClient).items.join(", ")}]`
 			);
+			if(sender.hasPerm("viewUUIDs"))
+				output(f`\
+	[#FFAAAA]UUID: ${args.target.uuid}
+	[#FFAAAA]IP: ${args.target.player.ip()}`
+				);
 		}
 	},
 

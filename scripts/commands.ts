@@ -22,20 +22,20 @@ const globalUsageData:Record<string, {
 	lastUsedSuccessfully: number;
 }> = {};
 const commandArgTypes = [
-	"string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block",
-	"uuid", "offlinePlayer", "map"
+	"string", "number", "boolean", "player", /*"menuPlayer",*/ "team", "time", "unittype", "block",
+	"uuid", "offlinePlayer", "map", "rank", "roleflag",
 ] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 /** Use this to get the correct type for command lists. */
-export const commandList = <const A extends Record<string, string>>(list:{
+export const commandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishCommandData<A[K], any>;
-}) => list;
+}):Record<keyof A, FishCommandData<any, any>> => list;
 /** Use this to get the correct type for command lists. */
 export const consoleCommandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishConsoleCommandData<A[K], any>;
-}) => list;
+}):Record<keyof A, FishConsoleCommandData<any, any>> => list;
 export function command<TParam extends string, TData>(cmd:FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;
 export function command<TParam extends string, TData>(cmd:FishConsoleCommandData<TParam, TData>):FishConsoleCommandData<TParam, TData>;
 /** Use this wrapper function to get the correct type definitions for commands using "data" or init(). */
@@ -230,6 +230,19 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				const map = Vars.maps.byName(args[i]);
 				if(map == null) return {error: `Unknown map "${args[i]}". Run [cyan]/maps[] to get a list of all maps.`};
 				break;
+			case "rank":
+				const ranks = Rank.getByInput(args[i]);
+				if(ranks.length == 0) fail(`Unknown rank "${args[i]}"`);
+				if(ranks.length > 1) fail(`Ambiguous rank "${args[i]}"`);
+				outputArgs[cmdArg.name] = ranks[0];
+				break;
+			case "roleflag":
+				const roleflags = RoleFlag.getByInput(args[i]);
+				if(roleflags.length == 0) fail(`Unknown role flag "${args[i]}"`);
+				if(roleflags.length > 1) fail(`Ambiguous role flag "${args[i]}"`);
+				outputArgs[cmdArg.name] = roleflags[0];
+				break;
+			default: cmdArg.type satisfies never; crash("impossible");
 		}
 	}
 	return {processedArgs: outputArgs, unresolvedArgs};

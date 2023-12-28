@@ -348,7 +348,6 @@ declare const Prop: any;
 
 declare function print(message:string):void;
 
-//TODO rename to PlayerInfo
 declare class PlayerInfo {
 	/**uuid */
 	id: string;

@@ -31,7 +31,7 @@ export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
 )([
 	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]"
 ]);
-export const adminNames = ["fish", "balamei4", "xyralith", "firefridge", "clashgone", "hawo", "eternal hawo", "aricia", "yin", "yang", "rawsewage", "raw sewage"];
+export const adminNames = ["fish", "balamei4", "xyralith", "clashgone", "hawo", "eternal hawo", "aricia", "rawsewage", "raw sewage", "skeledragon"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 export const substitutions:Record<string, string> = Object.fromEntries<string>(Object.entries<string>({
 	"a": "\u0430\u1E9A\u1EA1\u1E01\u00E4\u03B1@\u0101\u0103\u0105",

@@ -51,8 +51,8 @@ exports.allCommands = {};
 exports.allConsoleCommands = {};
 var globalUsageData = {};
 var commandArgTypes = [
-    "string", "number", "boolean", "player", "menuPlayer", "team", "time", "unittype", "block",
-    "uuid", "offlinePlayer", "map"
+    "string", "number", "boolean", "player", /*"menuPlayer",*/ "team", "time", "unittype", "block",
+    "uuid", "offlinePlayer", "map", "rank", "roleflag",
 ];
 /** Use this to get the correct type for command lists. */
 var commandList = function (list) { return list; };
@@ -294,6 +294,25 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     if (map == null)
                         return { error: "Unknown map \"".concat(args[i], "\". Run [cyan]/maps[] to get a list of all maps.") };
                     break;
+                case "rank":
+                    var ranks = ranks_1.Rank.getByInput(args[i]);
+                    if (ranks.length == 0)
+                        fail("Unknown rank \"".concat(args[i], "\""));
+                    if (ranks.length > 1)
+                        fail("Ambiguous rank \"".concat(args[i], "\""));
+                    outputArgs[cmdArg.name] = ranks[0];
+                    break;
+                case "roleflag":
+                    var roleflags = ranks_1.RoleFlag.getByInput(args[i]);
+                    if (roleflags.length == 0)
+                        fail("Unknown role flag \"".concat(args[i], "\""));
+                    if (roleflags.length > 1)
+                        fail("Ambiguous role flag \"".concat(args[i], "\""));
+                    outputArgs[cmdArg.name] = roleflags[0];
+                    break;
+                default:
+                    cmdArg.type;
+                    (0, utils_1.crash)("impossible");
             }
         }
     }
