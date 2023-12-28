@@ -278,18 +278,18 @@ const outputFormatter_server = tagProcessor<Formattable>((chunk) => {
 	}
 });
 const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((chunk, i, data, stringChunks) => {
-	const color = data ?? stringChunks[0].match(/^\[.+?\]/)?.[0] ?? "";
+	const reset = data ?? stringChunks[0].match(/^\[.+?\]/)?.[0] ?? "";
 	if(chunk instanceof FishPlayer){
-		return `[cyan]"${chunk.player.coloredName()}[cyan]"` + color;
+		return `[cyan](${chunk.name}[cyan])` + reset;
 	} else if(chunk instanceof Rank){
-		return `[cyan]"${chunk.coloredName()}[cyan]"` + color;
+		return `${chunk.color}"${chunk.name}"[]` + reset;
 	} else if(chunk instanceof RoleFlag){
-		return `[cyan]"${chunk.coloredName()}[cyan]"` + color;
+		return `${chunk.color}"${chunk.name}"[]` + reset;
 	} else if(chunk instanceof Error){
-		return `[red]${chunk.toString()}` + color;
+		return `[red]${chunk.toString()}` + reset;
 	} else if(chunk instanceof Player){
-		const player = chunk as mindustryPlayer; //not sure why this is necessary, typescript randomly converts any to unknown
-		return `[cyan]"${player.coloredName()}[cyan]"` + color;
+		const fishP = FishPlayer.get(chunk);
+		return `[cyan](${fishP.name}[cyan])` + reset;
 	} else if(typeof chunk == "string"){
 		if(uuidPattern.test(chunk)){
 			return `[blue]${chunk}[]`;
@@ -304,7 +304,7 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((
 	} else if(typeof chunk == "number"){
 		return `[blue]${chunk.toString()}[]`;
 	} else if(chunk instanceof Administration.PlayerInfo){
-		return chunk.lastName + color;
+		return chunk.lastName + reset;
 	} else if(chunk instanceof UnitType){
 		return `[cyan]${chunk.localizedName}[]`;
 	} else if(chunk instanceof Block){

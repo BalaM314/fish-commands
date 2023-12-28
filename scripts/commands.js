@@ -365,22 +365,22 @@ var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
 });
 var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i, data, stringChunks) {
     var _a, _b;
-    var color = (_b = data !== null && data !== void 0 ? data : (_a = stringChunks[0].match(/^\[.+?\]/)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : "";
+    var reset = (_b = data !== null && data !== void 0 ? data : (_a = stringChunks[0].match(/^\[.+?\]/)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : "";
     if (chunk instanceof players_1.FishPlayer) {
-        return "[cyan]\"".concat(chunk.player.coloredName(), "[cyan]\"") + color;
+        return "[cyan](".concat(chunk.name, "[cyan])") + reset;
     }
     else if (chunk instanceof ranks_1.Rank) {
-        return "[cyan]\"".concat(chunk.coloredName(), "[cyan]\"") + color;
+        return "".concat(chunk.color, "\"").concat(chunk.name, "\"[]") + reset;
     }
     else if (chunk instanceof ranks_1.RoleFlag) {
-        return "[cyan]\"".concat(chunk.coloredName(), "[cyan]\"") + color;
+        return "".concat(chunk.color, "\"").concat(chunk.name, "\"[]") + reset;
     }
     else if (chunk instanceof Error) {
-        return "[red]".concat(chunk.toString()) + color;
+        return "[red]".concat(chunk.toString()) + reset;
     }
     else if (chunk instanceof Player) {
-        var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
-        return "[cyan]\"".concat(player.coloredName(), "[cyan]\"") + color;
+        var fishP = players_1.FishPlayer.get(chunk);
+        return "[cyan](".concat(fishP.name, "[cyan])") + reset;
     }
     else if (typeof chunk == "string") {
         if (globals_1.uuidPattern.test(chunk)) {
@@ -401,7 +401,7 @@ var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i
         return "[blue]".concat(chunk.toString(), "[]");
     }
     else if (chunk instanceof Administration.PlayerInfo) {
-        return chunk.lastName + color;
+        return chunk.lastName + reset;
     }
     else if (chunk instanceof UnitType) {
         return "[cyan]".concat(chunk.localizedName, "[]");
