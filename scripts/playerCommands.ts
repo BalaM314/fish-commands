@@ -129,8 +129,8 @@ export const commands = commandList({
 			handleTaps("once");
 			output(`Click a tile to see its id...`);
 		},
-		tapped({output, tile}){
-			output(`ID is [cyan]${tile.block().id}`);
+		tapped({output, f, tile}){
+			output(f`ID is ${tile.block().id}`);
 		}
 	},
 
@@ -184,16 +184,16 @@ export const commands = commandList({
 		description: `Watch/unwatch a player.`,
 		perm: Perm.none,
 		handler({ args, sender, outputSuccess, outputFail }) {
-			if (sender.watch) {
+			if(sender.watch){
 				outputSuccess(`No longer watching a player.`);
 				sender.watch = false;
-			} else if (args.player) {
+			} else if(args.player){
 				sender.watch = true;
 				const stayX = sender.unit().x;
 				const stayY = sender.unit().y;
 				const target = args.player.player;
 				const watch = () => {
-					if (sender.watch) {
+					if(sender.watch){
 						// Self.X+(172.5-Self.X)/10
 						Call.setCameraPosition(sender.con, target.unit().x, target.unit().y);
 						sender.unit().set(stayX, stayY);
@@ -274,10 +274,10 @@ export const commands = commandList({
 		args: ['player:player', 'message:string'],
 		description: 'Send a message to only one player.',
 		perm: Perm.chat,
-		handler({ args, sender, output }) {
+		handler({ args, sender, output, f }) {
 			recentWhispers[args.player.uuid] = sender.uuid;
-			args.player.sendMessage(`${sender.player.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
-			output(`[#0ffffff0]Message sent to ${args.player.player.name}[#0ffffff0].`);
+			args.player.sendMessage(`${sender.player.name}[lightgray] whispered:[#BBBBBB] ${args.message}`);
+			output(f`[#BBBBBB]Message sent to ${args.player}.`);
 		},
 	},
 
@@ -290,8 +290,8 @@ export const commands = commandList({
 				const recipient = FishPlayer.getById(recentWhispers[sender.uuid]);
 				if (recipient?.connected()) {
 					recentWhispers[recentWhispers[sender.uuid]] = sender.uuid;
-					recipient.sendMessage(`${sender.name}[lightgray] whispered:[#0ffffff0] ${args.message}`);
-					output(`[#0ffffff0]Message sent to ${recipient.name}[#0ffffff0].`);
+					recipient.sendMessage(`${sender.name}[lightgray] whispered:[#BBBBBB] ${args.message}`);
+					output(`[#BBBBBB]Message sent to ${recipient.name}[#BBBBBB].`);
 				} else {
 					outputFail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
 				}
@@ -307,22 +307,22 @@ export const commands = commandList({
 		perm: Perm.none,
 		handler({ args, sender, output, outputFail, outputSuccess }) {
 			//overload 1: type not specified
-			if (!args.type) {
-				if (sender.trail != null) {
+			if(!args.type){
+				if(sender.trail != null){
 					sender.trail = null;
 					outputSuccess(`Trail turned off.`);
 				} else {
-					const options = [
-						'1 - fluxVapor (flowing smoke, long lasting)',
-						'2 - overclocked (diamonds)',
-						'3 - overdriven (squares)',
-						'4 - shieldBreak (smol)',
-						'5 - upgradeCoreBloom (square, long lasting, only orange)',
-						'6 - electrified (tiny spiratic diamonds, but only green)',
-						'7 - unitDust (same as above but round, and can change colors)',
-						'[white]Usage: [orange]/trail [lightgrey]<type> [color/#hex/r,g,b]',
-					];
-					output(`Available types:[yellow]\n` + options.join('\n'));
+					output(`\
+Available types:[yellow]
+1 - fluxVapor (flowing smoke, long lasting)
+2 - overclocked (diamonds)
+3 - overdriven (squares)
+4 - shieldBreak (smol)
+5 - upgradeCoreBloom (square, long lasting, only orange)
+6 - electrified (tiny spiratic diamonds, but only green)
+7 - unitDust (same as above but round, and can change colors)
+[white]Usage: [orange]/trail [lightgrey]<type> [color/#hex/r,g,b]`
+					);
 				}
 				return;
 			}
@@ -339,10 +339,9 @@ export const commands = commandList({
 			};
 
 			const selectedType = trailTypes[args.type as keyof typeof trailTypes] as string | undefined;
-			if (!selectedType) {
-				if (Object.values(trailTypes).includes(args.type)) outputFail(`Please use the numeric id to refer to a trail type.`);
-				else outputFail(`"${args.type}" is not an available type.`);
-				return;
+			if(!selectedType){
+				if(Object.values(trailTypes).includes(args.type)) fail(`Please use the numeric id to refer to a trail type.`);
+				else fail(`"${args.type}" is not an available type.`);
 			}
 
 			const color = args.color ? getColor(args.color) : Color.white;
@@ -418,16 +417,16 @@ export const commands = commandList({
 		args: [],
 		description: 'Displays information about all ranks.',
 		perm: Perm.none,
-		handler({ output }) {
+		handler({ output }){
 			output(
 				`List of ranks:\n` +
 					Object.values(Rank.ranks)
 						.map((rank) => `${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]\n`)
-						.join('') +
-					`List of flags:\n` +
-					Object.values(RoleFlag.flags)
-						.map((flag) => `${flag.prefix} ${flag.color}${capitalizeText(flag.name)}[]: ${flag.color}${flag.description}[]\n`)
-						.join('')
+						.join("") +
+				`List of flags:\n` +
+				Object.values(RoleFlag.flags)
+					.map((flag) => `${flag.prefix} ${flag.color}${capitalizeText(flag.name)}[]: ${flag.color}${flag.description}[]\n`)
+					.join("")
 			);
 		},
 	},
@@ -436,11 +435,11 @@ export const commands = commandList({
 		args: ['team:team', 'player:player'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({ args, sender, outputSuccess }) {
+		handler({ args, sender, outputSuccess, f }) {
 			if (!sender.canModerate(args.player, true)) fail(`You do not have permission to change the team of this player.`);
 
 			args.player.player.team(args.team);
-			outputSuccess(`Changed team of player ${args.player.name} to ${args.team.name}.`);
+			outputSuccess(f`Changed team of player ${args.player} to ${args.team}.`);
 		},
 	},
 
@@ -448,8 +447,8 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Displays the rank of a player.',
 		perm: Perm.none,
-		handler({args, output}) {
-			output(`Player ${args.player.cleanedName}'s rank is ${args.player.rank.color}${args.player.rank.name}[].`);
+		handler({args, output, f}) {
+			output(f`Player ${args.player}'s rank is ${args.player.rank}.`);
 		},
 	},
 
@@ -459,7 +458,7 @@ export const commands = commandList({
 		perm: Perm.admin,
 		handler({args, sender, allCommands}){
 			if(args.force === false){
-				Call.sendMessage(`RTV: [red] votes cleared by admin [yellow]${sender.name}[green].`);
+				Call.sendMessage(`RTV: [red] votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.rtv.data.votes.clear();
 			} else {
 				Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);

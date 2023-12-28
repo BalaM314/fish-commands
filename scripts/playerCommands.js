@@ -1,4 +1,8 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -158,8 +162,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             output("Click a tile to see its id...");
         },
         tapped: function (_a) {
-            var output = _a.output, tile = _a.tile;
-            output("ID is [cyan]".concat(tile.block().id));
+            var output = _a.output, f = _a.f, tile = _a.tile;
+            output(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["ID is ", ""], ["ID is ", ""])), tile.block().id));
         }
     } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
     var _b = __read(_a, 2), name = _b[0], data = _b[1];
@@ -302,10 +306,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Send a message to only one player.',
         perm: commands_1.Perm.chat,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, output = _a.output;
+            var args = _a.args, sender = _a.sender, output = _a.output, f = _a.f;
             globals_1.recentWhispers[args.player.uuid] = sender.uuid;
-            args.player.sendMessage("".concat(sender.player.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
-            output("[#0ffffff0]Message sent to ".concat(args.player.player.name, "[#0ffffff0]."));
+            args.player.sendMessage("".concat(sender.player.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
+            output(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "."], ["[#BBBBBB]Message sent to ", "."])), args.player));
         },
     }, r: {
         args: ['message:string'],
@@ -317,8 +321,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 var recipient = players_1.FishPlayer.getById(globals_1.recentWhispers[sender.uuid]);
                 if (recipient === null || recipient === void 0 ? void 0 : recipient.connected()) {
                     globals_1.recentWhispers[globals_1.recentWhispers[sender.uuid]] = sender.uuid;
-                    recipient.sendMessage("".concat(sender.name, "[lightgray] whispered:[#0ffffff0] ").concat(args.message));
-                    output("[#0ffffff0]Message sent to ".concat(recipient.name, "[#0ffffff0]."));
+                    recipient.sendMessage("".concat(sender.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
+                    output("[#BBBBBB]Message sent to ".concat(recipient.name, "[#BBBBBB]."));
                 }
                 else {
                     outputFail("The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]\"/msg <player> <message>\"");
@@ -341,17 +345,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     outputSuccess("Trail turned off.");
                 }
                 else {
-                    var options = [
-                        '1 - fluxVapor (flowing smoke, long lasting)',
-                        '2 - overclocked (diamonds)',
-                        '3 - overdriven (squares)',
-                        '4 - shieldBreak (smol)',
-                        '5 - upgradeCoreBloom (square, long lasting, only orange)',
-                        '6 - electrified (tiny spiratic diamonds, but only green)',
-                        '7 - unitDust (same as above but round, and can change colors)',
-                        '[white]Usage: [orange]/trail [lightgrey]<type> [color/#hex/r,g,b]',
-                    ];
-                    output("Available types:[yellow]\n" + options.join('\n'));
+                    output("Available types:[yellow]\n1 - fluxVapor (flowing smoke, long lasting)\n2 - overclocked (diamonds)\n3 - overdriven (squares)\n4 - shieldBreak (smol)\n5 - upgradeCoreBloom (square, long lasting, only orange)\n6 - electrified (tiny spiratic diamonds, but only green)\n7 - unitDust (same as above but round, and can change colors)\n[white]Usage: [orange]/trail [lightgrey]<type> [color/#hex/r,g,b]");
                 }
                 return;
             }
@@ -368,10 +362,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var selectedType = trailTypes[args.type];
             if (!selectedType) {
                 if (Object.values(trailTypes).includes(args.type))
-                    outputFail("Please use the numeric id to refer to a trail type.");
+                    (0, commands_1.fail)("Please use the numeric id to refer to a trail type.");
                 else
-                    outputFail("\"".concat(args.type, "\" is not an available type."));
-                return;
+                    (0, commands_1.fail)("\"".concat(args.type, "\" is not an available type."));
             }
             var color = args.color ? (0, utils_1.getColor)(args.color) : Color.white;
             if (color instanceof Color) {
@@ -450,30 +443,30 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             output("List of ranks:\n" +
                 Object.values(ranks_1.Rank.ranks)
                     .map(function (rank) { return "".concat(rank.prefix, " ").concat(rank.color).concat((0, utils_1.capitalizeText)(rank.name), "[]: ").concat(rank.color).concat(rank.description, "[]\n"); })
-                    .join('') +
+                    .join("") +
                 "List of flags:\n" +
                 Object.values(ranks_1.RoleFlag.flags)
                     .map(function (flag) { return "".concat(flag.prefix, " ").concat(flag.color).concat((0, utils_1.capitalizeText)(flag.name), "[]: ").concat(flag.color).concat(flag.description, "[]\n"); })
-                    .join(''));
+                    .join(""));
         },
     }, team: {
         args: ['team:team', 'player:player'],
         description: 'Changes the team of a player.',
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!sender.canModerate(args.player, true))
                 (0, commands_1.fail)("You do not have permission to change the team of this player.");
             args.player.player.team(args.team);
-            outputSuccess("Changed team of player ".concat(args.player.name, " to ").concat(args.team.name, "."));
+            outputSuccess(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.player, args.team));
         },
     }, rank: {
         args: ['player:player'],
         description: 'Displays the rank of a player.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var args = _a.args, output = _a.output;
-            output("Player ".concat(args.player.cleanedName, "'s rank is ").concat(args.player.rank.color).concat(args.player.rank.name, "[]."));
+            var args = _a.args, output = _a.output, f = _a.f;
+            output(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
     }, forcertv: {
         args: ["force:boolean?"],
@@ -482,7 +475,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
             if (args.force === false) {
-                Call.sendMessage("RTV: [red] votes cleared by admin [yellow]".concat(sender.name, "[green]."));
+                Call.sendMessage("RTV: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
                 allCommands.rtv.data.votes.clear();
             }
             else {
@@ -535,3 +528,4 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
         }
     }) }));
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4;
