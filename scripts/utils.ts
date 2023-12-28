@@ -610,6 +610,9 @@ export function outputSuccess(message:string | PartialFormatString, sender:mindu
 export function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
 	sender.sendMessage((typeof message == "function" ? message("") : message).replace(/\t/g, "    "));
 }
+export function outputConsole(message:string | PartialFormatString, channel:(typeof Log)[keyof typeof Log] = Log.info){
+	channel(typeof message == "function" ? message("") : message);
+}
 
 export function updateBans(message?:(player:mindustryPlayer) => string){
 	Groups.player.each(player => {

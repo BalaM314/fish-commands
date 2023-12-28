@@ -64,7 +64,7 @@ export type ObjectTypeFor<ArgString> =
 
 export type TapHandleMode = "off" | "once" | "on";
 
-export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number | PlayerInfo | UnitType | Block;
+export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number | PlayerInfo | UnitType | Block | Team;
 export type PartialFormatString = (data:string | null) => string;
 export interface FishCommandRunner<ArgType extends string, StoredData> {
 	(_:{
@@ -80,6 +80,7 @@ export interface FishCommandRunner<ArgType extends string, StoredData> {
 		outputFail:(message:string | PartialFormatString) => void;
 		/** Outputs text to the sender. Tab characters are replaced with 4 spaces. */
 		output:(message:string | PartialFormatString) => void;
+		/** Use to tag template literals, formatting players, numbers, ranks, and more */
 		f:TagFunction<Formattable, PartialFormatString>;
 		/**Executes a server console command. Be careful! */
 		execServer:(message:string) => void;
@@ -112,9 +113,14 @@ export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 		 **/
 		args:ArgsFromArgStringUnion<ArgType>;
 		data:StoredData;
-		outputSuccess:(message:string) => void;
-		outputFail:(message:string) => void;
-		output:(message:string) => void;
+		/** Outputs text to the console. */
+		outputSuccess:(message:string | PartialFormatString) => void;
+		/** Outputs text to the console, using warn(). */
+		outputFail:(message:string | PartialFormatString) => void;
+		/** Outputs text to the console. Tab characters are replaced with 4 spaces. */
+		output:(message:string | PartialFormatString) => void;
+		/** Use to tag template literals, formatting players, numbers, ranks, and more */
+		f:TagFunction<Formattable, PartialFormatString>;
 		/**Executes a server console command. Be careful to not commit recursion as that will cause a crash.*/
 		execServer:(message:string) => void;
 		/** Vars.netServer.admins */
@@ -135,9 +141,11 @@ export interface TapHandler<ArgType extends string, StoredData> {
 		y:number;
 		tile:Tile;
 		data:StoredData;
-		output:(message:string) => void;
-		outputFail:(message:string) => void;
-		outputSuccess:(message:string) => void;
+		output:(message:string | PartialFormatString) => void;
+		outputFail:(message:string | PartialFormatString) => void;
+		outputSuccess:(message:string | PartialFormatString) => void;
+		/** Use to tag template literals, formatting players, numbers, ranks, and more */
+		f:TagFunction<Formattable, PartialFormatString>;
 		/**Timestamp of the last time this command was run. */
 		commandLastUsed:number;
 		/**Timestamp of the last time this command was run succesfully. */

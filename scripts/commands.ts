@@ -8,7 +8,7 @@ import type {
 	Formattable, PartialFormatString, SelectClasslikeEnumKeys, ServerCommandHandler, TagFunction
 } from "./types";
 import {
-	crash, escapeStringColorsServer, getBlock, getTeam, getUnitType, outputFail, outputMessage,
+	crash, escapeStringColorsServer, getBlock, getTeam, getUnitType, outputConsole, outputFail, outputMessage,
 	outputSuccess, parseError, parseTimeString, tagProcessor, tagProcessorPartial
 } from "./utils";
 
@@ -249,7 +249,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 }
 
 
-const outputFormatter_server = tagProcessor<Formattable>((chunk) => {
+const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((chunk) => {
 	if(chunk instanceof FishPlayer){
 		return `&c${chunk.cleanedName}&fr`;
 	} else if(chunk instanceof Rank){
@@ -309,6 +309,8 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((
 		return `[cyan]${chunk.localizedName}[]`;
 	} else if(chunk instanceof Block){
 		return `[cyan]${chunk.localizedName}[]`;
+	} else if(chunk instanceof Team){
+		return `[white]${chunk.coloredName()}[][]`;
 	} else {
 		return chunk as string; //allow it to get stringified by the engine
 	}
@@ -354,6 +356,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 			outputFail: message => {outputFail(message, sender); failed = true;},
 			outputSuccess: message => outputSuccess(message, sender),
 			output: message => outputMessage(message, sender),
+			f: outputFormatter_client,
 			admins: Vars.netServer.admins,
 			commandLastUsed: usageData.lastUsed,
 			commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
@@ -511,9 +514,10 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<a
 						rawArgs,
 						args: output.processedArgs,
 						data: data.data,
-						outputFail: message => {Log.err(`${message}`); failed = true;},
-						outputSuccess: message => Log.info(`${message}`),
-						output: message => Log.info(message),
+						outputFail: message => {outputConsole(message, Log.err); failed = true;},
+						outputSuccess: outputConsole,
+						output: outputConsole,
+						f: outputFormatter_server,
 						execServer: command => serverHandler.handleMessage(command),
 						admins: Vars.netServer.admins,
 						...usageData

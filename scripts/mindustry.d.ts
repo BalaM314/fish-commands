@@ -141,6 +141,7 @@ declare class Team {
 	static baseTeams:Team[];
 	name:string;
 	data():TeamData;
+	coloredName():string;
 }
 type TeamData = any;
 declare const StatusEffects: {

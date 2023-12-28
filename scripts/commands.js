@@ -325,7 +325,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     }
     return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
-var outputFormatter_server = (0, utils_1.tagProcessor)(function (chunk) {
+var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
     if (chunk instanceof players_1.FishPlayer) {
         return "&c".concat(chunk.cleanedName, "&fr");
     }
@@ -409,6 +409,9 @@ var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i
     else if (chunk instanceof Block) {
         return "[cyan]".concat(chunk.localizedName, "[]");
     }
+    else if (chunk instanceof Team) {
+        return "[white]".concat(chunk.coloredName(), "[][]");
+    }
     else {
         return chunk; //allow it to get stringified by the engine
     }
@@ -447,6 +450,7 @@ function handleTapEvent(event) {
             outputFail: function (message) { (0, utils_1.outputFail)(message, sender); failed_1 = true; },
             outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, sender); },
             output: function (message) { return (0, utils_1.outputMessage)(message, sender); },
+            f: outputFormatter_client,
             admins: Vars.netServer.admins,
             commandLastUsed: usageData.lastUsed,
             commandLastUsedSuccessfully: usageData.lastUsedSuccessfully,
@@ -610,7 +614,7 @@ function registerConsole(commands, serverHandler) {
                 var usageData = ((_a = globalUsageData[_b = "_console_" + name]) !== null && _a !== void 0 ? _a : (globalUsageData[_b] = { lastUsed: -1, lastUsedSuccessfully: -1 }));
                 try {
                     var failed_2 = false;
-                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, data: data.data, outputFail: function (message) { Log.err("".concat(message)); failed_2 = true; }, outputSuccess: function (message) { return Log.info("".concat(message)); }, output: function (message) { return Log.info(message); }, execServer: function (command) { return serverHandler.handleMessage(command); }, admins: Vars.netServer.admins }, usageData));
+                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, data: data.data, outputFail: function (message) { (0, utils_1.outputConsole)(message, Log.err); failed_2 = true; }, outputSuccess: utils_1.outputConsole, output: utils_1.outputConsole, f: outputFormatter_server, execServer: function (command) { return serverHandler.handleMessage(command); }, admins: Vars.netServer.admins }, usageData));
                     usageData.lastUsed = Date.now();
                     if (!failed_2)
                         usageData.lastUsedSuccessfully = Date.now();
