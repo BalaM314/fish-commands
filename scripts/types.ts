@@ -31,6 +31,7 @@ export type TypeOfArgType<T> =
 	T extends "roleflag" ? RoleFlag :
 	never;
 
+//source: stackoverflow (just this one type)
 //TLDR: Yeet U through a wormhole, then back through the same wormhole, and it comes out the other side as an intersection type
 export type UnionToIntersection<U> = (
 	(
