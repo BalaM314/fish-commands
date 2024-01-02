@@ -349,7 +349,7 @@ function matchFilter(input, strict) {
     if (strict === void 0) { strict = "chat"; }
     try {
         //Replace substitutions
-        for (var _c = __values(config_1.bannedWords.concat(strict == "strict" ? config_1.strictBannedWords : []).concat(strict == "name" ? config_1.bannedInNamesWords : [])), _d = _c.next(); !_d.done; _d = _c.next()) {
+        for (var _c = __values(config_1.bannedWords.concat(strict == "strict" || strict == "name" ? config_1.strictBannedWords : []).concat(strict == "name" ? config_1.bannedInNamesWords : [])), _d = _c.next(); !_d.done; _d = _c.next()) {
             var _e = __read(_d.value, 2), banned = _e[0], whitelist = _e[1];
             var _loop_1 = function (text) {
                 if (banned instanceof RegExp ? banned.test(text) : text.includes(banned)) {
