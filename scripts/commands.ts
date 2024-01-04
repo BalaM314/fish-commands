@@ -232,14 +232,14 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				break;
 			case "rank":
 				const ranks = Rank.getByInput(args[i]);
-				if(ranks.length == 0) fail(`Unknown rank "${args[i]}"`);
-				if(ranks.length > 1) fail(`Ambiguous rank "${args[i]}"`);
+				if(ranks.length == 0) return {error:`Unknown rank "${args[i]}"`};
+				if(ranks.length > 1) return {error:`Ambiguous rank "${args[i]}"`};
 				outputArgs[cmdArg.name] = ranks[0];
 				break;
 			case "roleflag":
 				const roleflags = RoleFlag.getByInput(args[i]);
-				if(roleflags.length == 0) fail(`Unknown role flag "${args[i]}"`);
-				if(roleflags.length > 1) fail(`Ambiguous role flag "${args[i]}"`);
+				if(roleflags.length == 0) return {error:`Unknown role flag "${args[i]}"`};
+				if(roleflags.length > 1) return {error:`Ambiguous role flag "${args[i]}"`};
 				outputArgs[cmdArg.name] = roleflags[0];
 				break;
 			default: cmdArg.type satisfies never; crash("impossible");
@@ -251,7 +251,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 
 const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((chunk) => {
 	if(chunk instanceof FishPlayer){
-		return `&c${chunk.cleanedName}&fr`;
+		return `&c(${chunk.cleanedName})&fr`;
 	} else if(chunk instanceof Rank){
 		return `&p${chunk.name}&fr`;
 	} else if(chunk instanceof RoleFlag){

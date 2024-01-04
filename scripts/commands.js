@@ -297,17 +297,17 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                 case "rank":
                     var ranks = ranks_1.Rank.getByInput(args[i]);
                     if (ranks.length == 0)
-                        fail("Unknown rank \"".concat(args[i], "\""));
+                        return { error: "Unknown rank \"".concat(args[i], "\"") };
                     if (ranks.length > 1)
-                        fail("Ambiguous rank \"".concat(args[i], "\""));
+                        return { error: "Ambiguous rank \"".concat(args[i], "\"") };
                     outputArgs[cmdArg.name] = ranks[0];
                     break;
                 case "roleflag":
                     var roleflags = ranks_1.RoleFlag.getByInput(args[i]);
                     if (roleflags.length == 0)
-                        fail("Unknown role flag \"".concat(args[i], "\""));
+                        return { error: "Unknown role flag \"".concat(args[i], "\"") };
                     if (roleflags.length > 1)
-                        fail("Ambiguous role flag \"".concat(args[i], "\""));
+                        return { error: "Ambiguous role flag \"".concat(args[i], "\"") };
                     outputArgs[cmdArg.name] = roleflags[0];
                     break;
                 default:
@@ -327,7 +327,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
 }
 var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
     if (chunk instanceof players_1.FishPlayer) {
-        return "&c".concat(chunk.cleanedName, "&fr");
+        return "&c(".concat(chunk.cleanedName, ")&fr");
     }
     else if (chunk instanceof ranks_1.Rank) {
         return "&p".concat(chunk.name, "&fr");
