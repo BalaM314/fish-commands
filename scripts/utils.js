@@ -360,7 +360,7 @@ function matchFilter(input, strict) {
                 }
             };
             try {
-                for (var _f = (e_2 = void 0, __values([input, cleanText(input, false), cleanText(input, true)])), _g = _f.next(); !_g.done; _g = _f.next()) {
+                for (var _f = (e_2 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _g = _f.next(); !_g.done; _g = _f.next()) {
                     var text = _g.value;
                     var state_1 = _loop_1(text);
                     if (typeof state_1 === "object")

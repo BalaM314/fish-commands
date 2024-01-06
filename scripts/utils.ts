@@ -280,7 +280,7 @@ export function escapeTextDiscord(text:string):string {
 export function matchFilter(input:string, strict = "chat" as "chat" | "strict" | "name"):false | string {
 	//Replace substitutions
 	for(const [banned, whitelist] of bannedWords.concat(strict == "strict" || strict == "name" ? strictBannedWords : []).concat(strict == "name" ? bannedInNamesWords : [])){
-		for(const text of [input, cleanText(input, false), cleanText(input, true)]){
+		for(const text of [input, cleanText(input, false)/*, cleanText(input, true)*/]){
 			if(banned instanceof RegExp ? banned.test(text) : text.includes(banned)){
 				let modifiedText = text;
 				whitelist.forEach(w => modifiedText = modifiedText.replace(new RegExp(w, "g"), "")); //Replace whitelisted words with nothing
