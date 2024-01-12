@@ -585,17 +585,19 @@ var FishPlayer = /** @class */ (function () {
                     if (FishPlayer.shouldWhackFlaggedPlayers()) {
                         FishPlayer.onBotWhack(); //calls whack all flagged players
                     }
-                    (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);
-                    api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
-                    FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
-                    Log.warn("Player ".concat(_this.name, " (").concat(_this.uuid, ") was autoflagged."));
-                    (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "Discord"], _this, function (_a) {
-                        var option = _a.option, sender = _a.sender;
-                        if (option == "Discord") {
-                            Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
-                        }
-                    }, false);
-                    _this.sendMessage("[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");
+                    else {
+                        (0, utils_1.logAction)("autoflagged", "AntiVPN", _this);
+                        api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
+                        FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
+                        Log.warn("Player ".concat(_this.name, " (").concat(_this.uuid, ") was autoflagged."));
+                        (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "Discord"], _this, function (_a) {
+                            var option = _a.option, sender = _a.sender;
+                            if (option == "Discord") {
+                                Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+                            }
+                        }, false);
+                        _this.sendMessage("[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");
+                    }
                 }
                 else if (info.timesJoined < 5) {
                     FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn."));
