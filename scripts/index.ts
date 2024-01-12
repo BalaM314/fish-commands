@@ -63,6 +63,18 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		Log.info(`&yAntibot killed connection ${e.connection.address} due to omni discord link`);
 		return;
 	}
+	if(e.packet.name.includes("счастливого 2024 года!")){
+		Vars.netServer.admins.blacklistDos(e.connection.address);
+		e.connection.kicked = true;
+		FishPlayer.onBotWhack();
+		Log.info(`&yAntibot killed connection ${e.connection.address} due to known bad name`);
+		return;
+	}
+	if(Vars.netServer.admins.isDosBlacklisted(e.connection.address)){
+		//threading moment, i think
+		e.connection.kicked = true;
+		return;
+	}
 	api.getBanned({
 		ip: e.connection.address,
 		uuid: e.packet.uuid
