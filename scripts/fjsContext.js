@@ -38,7 +38,15 @@ const $ = Object.assign(
 				}
 			}
 			return null;
-		}
+		},
+		create: function(input){
+			if(typeof input == "string"){
+				if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
+					return FishPlayer.getFromInfo(Vars.netServer.admins.getInfo(input));
+				}
+			}
+			return null;
+		},
 	}
 );
 
