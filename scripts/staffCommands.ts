@@ -594,5 +594,24 @@ ${getAntiBotInfo("client")}`
 			outputSuccess("Spawned an emanate.");
 		}
 	}),
+	clearfire: {
+		args: [],
+		description: "Clears all the fires.",
+		perm: Perm.admin,
+		handler({output, outputSuccess}){
+			output(`Removing fires...`);
+			let totalRemoved = 0;
+			Call.sendMessage("[scarlet][[Fire Department]:[yellow] Fires were reported. Trucks are en-route. Removing all fires shortly.");
+			Timer.schedule(() => {
+				totalRemoved += Groups.fire.size();
+				Groups.fire.each(f => f.remove());
+				Groups.fire.clear();
+			}, 2, 0.1, 40);
+			Timer.schedule(() => {
+				outputSuccess(`Removed ${totalRemoved} fires.`);
+				Call.sendMessage(`[scarlet][[Fire Department]:[yellow] We've extinguished ${totalRemoved} fires.`);
+			}, 6.1);
+		}
+	},
 
 });

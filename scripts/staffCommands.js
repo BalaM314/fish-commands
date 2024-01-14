@@ -642,5 +642,25 @@ exports.commands = (0, commands_1.commandList)({
             outputSuccess("Spawned an emanate.");
         }
     }),
+    clearfire: {
+        args: [],
+        description: "Clears all the fires.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var output = _a.output, outputSuccess = _a.outputSuccess;
+            output("Removing fires...");
+            var totalRemoved = 0;
+            Call.sendMessage("[scarlet][[Fire Department]:[yellow] Fires were reported. Trucks are en-route. Removing all fires shortly.");
+            Timer.schedule(function () {
+                totalRemoved += Groups.fire.size();
+                Groups.fire.each(function (f) { return f.remove(); });
+                Groups.fire.clear();
+            }, 2, 0.1, 40);
+            Timer.schedule(function () {
+                outputSuccess("Removed ".concat(totalRemoved, " fires."));
+                Call.sendMessage("[scarlet][[Fire Department]:[yellow] We've extinguished ".concat(totalRemoved, " fires."));
+            }, 6.1);
+        }
+    },
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37, templateObject_38, templateObject_39;

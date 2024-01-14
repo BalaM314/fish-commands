@@ -1,4 +1,8 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -48,23 +52,17 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 exports.commands = (0, commands_1.consoleCommandList)({
     setrank: {
-        args: ["player:player", "rank:string"],
+        args: ["player:player", "rank:rank"],
         description: "Set a player's rank.",
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess;
-            var ranks = ranks_1.Rank.getByInput(args.rank);
-            if (ranks.length == 0)
-                (0, commands_1.fail)("Unknown rank ".concat(args.rank));
-            if (ranks.length > 1)
-                (0, commands_1.fail)("Ambiguous rank ".concat(args.rank));
-            var rank = ranks[0];
-            if (rank == ranks_1.Rank.pi && !config.localDebug)
-                (0, commands_1.fail)("Rank ".concat(rank.name, " is immutable."));
+            var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
+            if (args.rank == ranks_1.Rank.pi && !config.localDebug)
+                (0, commands_1.fail)(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Rank ", " is immutable."], ["Rank ", " is immutable."])), args.rank));
             if (args.player.immutable() && !config.localDebug)
-                (0, commands_1.fail)("Player ".concat(args.player, " is immutable."));
-            args.player.setRank(rank);
-            (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), "console", args.player);
-            outputSuccess("Set rank of player \"".concat(args.player.name, "\" to ").concat(rank.color).concat(rank.name, "[]"));
+                (0, commands_1.fail)(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["Player ", " is immutable."], ["Player ", " is immutable."])), args.player));
+            args.player.setRank(args.rank);
+            (0, utils_1.logAction)("set rank to ".concat(args.rank.name, " for"), "console", args.player);
+            outputSuccess(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Set rank of player ", " to ", ""], ["Set rank of player ", " to ", ""])), args.player, args.rank));
         }
     },
     admin: {
@@ -75,19 +73,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
         }
     },
     setflag: {
-        args: ["player:player", "role:string", "value:boolean"],
+        args: ["player:player", "flag:roleflag", "value:boolean"],
         description: "Set a player's role flags.",
         handler: function (_a) {
-            var args = _a.args, outputSuccess = _a.outputSuccess;
-            var flags = ranks_1.RoleFlag.getByInput(args.role);
-            if (flags.length == 0)
-                (0, commands_1.fail)("Unknown role flag ".concat(args.role));
-            if (flags.length > 1)
-                (0, commands_1.fail)("Ambiguous role flag ".concat(args.role));
-            var flag = flags[0];
-            args.player.setFlag(flag, args.value);
-            (0, utils_1.logAction)("set roleflag ".concat(flag.name, " to ").concat(args.value, " for"), "console", args.player);
-            outputSuccess("Set role flag ".concat(flag.color).concat(flag.name, "[] of player \"").concat(args.player.name, "\" to ").concat(args.value));
+            var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
+            args.player.setFlag(args.flag, args.value);
+            (0, utils_1.logAction)("set roleflag ".concat(args.flag.name, " to ").concat(args.value, " for"), "console", args.player);
+            outputSuccess(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Set role flag ", " of player ", " to ", ""], ["Set role flag ", " of player ", " to ", ""])), args.flag, args.player, args.value));
         }
     },
     savePlayers: {
@@ -533,10 +525,18 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Clears all the fires.",
         handler: function (_a) {
             var output = _a.output, outputSuccess = _a.outputSuccess;
-            output("Removing ".concat(Groups.fire.size(), " fires..."));
-            Groups.fire.each(function (f) { return f.remove(); });
-            Groups.fire.clear();
-            outputSuccess("Fires removed.");
+            output("Removing fires...");
+            var totalRemoved = 0;
+            Call.sendMessage("[scarlet][[Fire Department]:[yellow] Fires were reported. Trucks are en-route. Removing all fires shortly.");
+            Timer.schedule(function () {
+                totalRemoved += Groups.fire.size();
+                Groups.fire.each(function (f) { return f.remove(); });
+                Groups.fire.clear();
+            }, 2, 0.1, 40);
+            Timer.schedule(function () {
+                outputSuccess("Removed ".concat(totalRemoved, " fires."));
+                Call.sendMessage("[scarlet][[Fire Department]:[yellow] We've extinguished ".concat(totalRemoved, " fires."));
+            }, 6.1);
         }
     },
     status: {
@@ -561,3 +561,4 @@ exports.commands = (0, commands_1.consoleCommandList)({
         }
     }
 });
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4;

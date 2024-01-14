@@ -11,19 +11,15 @@ import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBo
 
 export const commands = consoleCommandList({
 	setrank: {
-		args: ["player:player", "rank:string"],
+		args: ["player:player", "rank:rank"],
 		description: "Set a player's rank.",
-		handler({args, outputSuccess}){
-			const ranks = Rank.getByInput(args.rank);
-			if(ranks.length == 0) fail(`Unknown rank ${args.rank}`);
-			if(ranks.length > 1) fail(`Ambiguous rank ${args.rank}`);
-			const rank = ranks[0];
-			if(rank == Rank.pi && !config.localDebug) fail(`Rank ${rank.name} is immutable.`);
-			if(args.player.immutable() && !config.localDebug) fail(`Player ${args.player} is immutable.`);
+		handler({args, outputSuccess, f}){
+			if(args.rank == Rank.pi && !config.localDebug) fail(f`Rank ${args.rank} is immutable.`);
+			if(args.player.immutable() && !config.localDebug) fail(f`Player ${args.player} is immutable.`);
 
-			args.player.setRank(rank);
-			logAction(`set rank to ${rank.name} for`, "console", args.player);
-			outputSuccess(`Set rank of player "${args.player.name}" to ${rank.color}${rank.name}[]`);
+			args.player.setRank(args.rank);
+			logAction(`set rank to ${args.rank.name} for`, "console", args.player);
+			outputSuccess(f`Set rank of player ${args.player} to ${args.rank}`);
 		}
 	},
 	admin: {
@@ -34,17 +30,13 @@ export const commands = consoleCommandList({
 		}
 	},
 	setflag: {
-		args: ["player:player", "role:string", "value:boolean"],
+		args: ["player:player", "flag:roleflag", "value:boolean"],
 		description: "Set a player's role flags.",
-		handler({args, outputSuccess}){
-			const flags = RoleFlag.getByInput(args.role);
-			if(flags.length == 0) fail(`Unknown role flag ${args.role}`);
-			if(flags.length > 1) fail(`Ambiguous role flag ${args.role}`);
-			const flag = flags[0];
+		handler({args, outputSuccess, f}){
 
-			args.player.setFlag(flag, args.value);
-			logAction(`set roleflag ${flag.name} to ${args.value} for`, "console", args.player);
-			outputSuccess(`Set role flag ${flag.color}${flag.name}[] of player "${args.player.name}" to ${args.value}`);
+			args.player.setFlag(args.flag, args.value);
+			logAction(`set roleflag ${args.flag.name} to ${args.value} for`, "console", args.player);
+			outputSuccess(f`Set role flag ${args.flag} of player ${args.player} to ${args.value}`);
 		}
 	},
 	savePlayers: {
@@ -436,10 +428,18 @@ Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 		args: [],
 		description: "Clears all the fires.",
 		handler({output, outputSuccess}){
-			output(`Removing ${Groups.fire.size()} fires...`);
-			Groups.fire.each(f => f.remove());
-			Groups.fire.clear();
-			outputSuccess(`Fires removed.`);
+			output(`Removing fires...`);
+			let totalRemoved = 0;
+			Call.sendMessage("[scarlet][[Fire Department]:[yellow] Fires were reported. Trucks are en-route. Removing all fires shortly.");
+			Timer.schedule(() => {
+				totalRemoved += Groups.fire.size();
+				Groups.fire.each(f => f.remove());
+				Groups.fire.clear();
+			}, 2, 0.1, 40);
+			Timer.schedule(() => {
+				outputSuccess(`Removed ${totalRemoved} fires.`);
+				Call.sendMessage(`[scarlet][[Fire Department]:[yellow] We've extinguished ${totalRemoved} fires.`);
+			}, 6.1);
 		}
 	},
 	status: {
