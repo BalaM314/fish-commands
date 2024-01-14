@@ -450,15 +450,20 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     .join(""));
         },
     }, team: {
-        args: ['team:team', 'player:player'],
+        args: ['team:team', 'target:player?'],
         description: 'Changes the team of a player.',
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
+            var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (!sender.canModerate(args.player, true))
-                (0, commands_1.fail)("You do not have permission to change the team of this player.");
-            args.player.player.team(args.team);
-            outputSuccess(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.player, args.team));
+            (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
+            if (!sender.canModerate(args.target, true))
+                (0, commands_1.fail)(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+            args.target.player.team(args.team);
+            if (args.target === sender)
+                outputSuccess(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
+            else
+                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
         },
     }, rank: {
         args: ['player:player'],
@@ -466,7 +471,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, f = _a.f;
-            output(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
+            output(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
     }, forcertv: {
         args: ["force:boolean?"],
@@ -528,4 +533,4 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
         }
     }) }));
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6;

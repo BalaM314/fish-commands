@@ -432,14 +432,16 @@ Available types:[yellow]
 	},
 
 	team: {
-		args: ['team:team', 'player:player'],
+		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({ args, sender, outputSuccess, f }) {
-			if (!sender.canModerate(args.player, true)) fail(`You do not have permission to change the team of this player.`);
+		handler({args, sender, outputSuccess, f}){
+			args.target ??= sender;
+			if(!sender.canModerate(args.target, true)) fail(f`You do not have permission to change the team of ${args.target}`);
 
-			args.player.player.team(args.team);
-			outputSuccess(f`Changed team of player ${args.player} to ${args.team}.`);
+			args.target.player.team(args.team);
+			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
+			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
 		},
 	},
 
