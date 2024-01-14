@@ -470,15 +470,16 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     spawn: {
-        args: ["type:unittype", "x:number?", "y:number?"],
+        args: ["type:unittype", "x:number?", "y:number?", "team:team?"],
         description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
+            var _b;
             var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
-            args;
             var x = args.x ? (args.x * 8) : sender.player.x;
             var y = args.y ? (args.y * 8) : sender.player.y;
-            var unit = args.type.spawn(sender.team(), x, y);
+            var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
+            var unit = args.type.spawn(team, x, y);
             spawnedUnits.push(unit);
             (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
             outputSuccess(f(templateObject_35 || (templateObject_35 = __makeTemplateObject(["Spawned unit ", " at (", ", ", ")"], ["Spawned unit ", " at (", ", ", ")"])), args.type, Math.round(x / 8), Math.round(y / 8)));

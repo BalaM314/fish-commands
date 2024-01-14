@@ -438,14 +438,14 @@ export const commands = commandList({
 	},
 
 	spawn: {
-		args: ["type:unittype", "x:number?", "y:number?"],
+		args: ["type:unittype", "x:number?", "y:number?", "team:team?"],
 		description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
 		perm: Perm.admin,
 		handler({sender, args, outputSuccess, f}){
-			args;
 			const x = args.x ? (args.x * 8) : sender.player.x;
 			const y = args.y ? (args.y * 8) : sender.player.y;
-			const unit = args.type.spawn(sender.team(), x, y);
+			const team = args.team ?? sender.team();
+			const unit = args.type.spawn(team, x, y);
 			spawnedUnits.push(unit);
 			logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
 			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);
