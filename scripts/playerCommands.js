@@ -30,6 +30,15 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var api = require("./api");
@@ -262,7 +271,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (args.name && isNaN(parseInt(args.name)) && !['mod', 'admin', 'member'].includes(args.name)) {
                 //name is not a number or a category, therefore it is probably a command name
                 if (args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))) {
-                    output("Help for command ".concat(args.name, ":\n\t").concat(allCommands[args.name].description, "\n\tUsage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(' '), "\n\tPermission required: ").concat(allCommands[args.name].perm.name).replace("\t", "    "));
+                    output("Help for command ".concat(args.name, ":\n\t").concat(allCommands[args.name].description, "\n\tUsage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(' '), "\n\tPermission required: ").concat(allCommands[args.name].perm.name));
                 }
                 else {
                     outputFail("Command \"".concat(args.name, "\" does not exist."));
@@ -530,6 +539,110 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (currentVotes >= requiredVotes) {
                 Call.sendMessage('RTV: [green] vote passed, changing map.');
                 (0, utils_1.neutralGameover)();
+            }
+        }
+    }), 
+    // votekick: {
+    //	 args: ["target:player"],
+    //	 description: "Starts a vote to kick a player.",
+    //	 perm: Perm.play,
+    //	 handler({args, sender}){
+    // 		if(votekickmanager.currentSession) fail(`There is already a votekick in progress.`);
+    // 		votekickmanager.start({
+    // 			initiator: sender,
+    // 			target: args.player
+    // 		});
+    //	 }
+    // },
+    // vote: {
+    //	 args: ["vote:boolean"],
+    //	 description: "Use /votekick instead.",
+    //	 perm: Perm.play,
+    //	 handler({sender, args}){
+    // 		votekickmanager.handleVote(sender, args ? 1 : -1);
+    //	 }
+    // },
+    maps: {
+        args: [],
+        description: 'Lists the available maps.',
+        perm: commands_1.Perm.none,
+        handler: function (_a) {
+            var output = _a.output;
+            output("[yellow]Use [white]/nextmap [lightgray]<map number> [yellow]to vote on a map.\n\n[blue]Available maps:\n_________________________\n".concat(Vars.maps.customMaps().toArray().map(function (map, i) {
+                return "[white]".concat(i, " - [yellow]").concat(map.name());
+            }).join("\n")));
+        }
+    }, nextmap: (0, commands_1.command)({
+        args: ['map:map'],
+        description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
+        perm: commands_1.Perm.play,
+        init: function () {
+            var votes = new Map();
+            var voteEndTime = -1;
+            var voteDuration = 1.5 * 60000; // 1.5 mins
+            function resetVotes() {
+                votes.clear();
+                voteEndTime = -1;
+            }
+            ;
+            function getMapData() {
+                return __spreadArray([], __read(votes.values()), false).reduce(function (acc, map) { var _a; return acc.set(map, ((_a = acc.get(map)) !== null && _a !== void 0 ? _a : 0) + 1); }, new Map());
+            }
+            function showVotes() {
+                Call.sendMessage("[green]Current votes:\n------------------------------\n".concat(Array.from(getMapData().entries(), function (_a) {
+                    var _b = __read(_a, 2), map = _b[0], votes = _b[1];
+                    return "[cyan]".concat(map.name(), "[yellow]: ").concat(votes);
+                }).join("\n")));
+            }
+            function startVote() {
+                voteEndTime = Date.now() + voteDuration;
+                Timer.schedule(endVote, voteDuration / 1000);
+            }
+            function endVote() {
+                if (voteEndTime == -1)
+                    return; //aborted somehow
+                if (votes.size == 0)
+                    return; //no votes?
+                var mapData = getMapData();
+                var highestVotedMaps = __spreadArray([], __read(mapData.entries()), false).sort(function (a, b) { return a[1] - b[1]; }).filter(function (v, i, a) { return v[1] == a[0][1]; });
+                var winner;
+                if (highestVotedMaps.length > 1) {
+                    winner = highestVotedMaps[Math.floor(Math.random() * highestVotedMaps.length)][0];
+                    Call.sendMessage("[green]There was a tie between the following maps: \n\t\t\t".concat(highestVotedMaps.map(function (_a) {
+                        var _b = __read(_a, 2), map = _b[0], votes = _b[1];
+                        return "[cyan]".concat(map.name(), "[yellow]: ").concat(votes);
+                    }).join("\n"), "\n\t\t\t[green]Picking random winner: [yellow]").concat(winner.name()));
+                }
+                else {
+                    winner = highestVotedMaps[0][0];
+                    Call.sendMessage("[green]Map voting complete! The next map will be [yellow]".concat(winner.name(), " [green]with [yellow]").concat(highestVotedMaps[0][1], "[green] votes."));
+                }
+                Vars.maps.setNextMapOverride(winner);
+                resetVotes();
+            }
+            Events.on(EventType.GameOverEvent, resetVotes);
+            Events.on(EventType.ServerLoadEvent, resetVotes);
+            return {
+                showVotes: showVotes,
+                startVote: startVote,
+                voteEndTime: voteEndTime,
+                votes: votes
+            };
+        },
+        handler: function (_a) {
+            var map = _a.args.map, sender = _a.sender, _b = _a.data, showVotes = _b.showVotes, startVote = _b.startVote, voteEndTime = _b.voteEndTime, votes = _b.votes, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+            if (votes.get(sender))
+                (0, commands_1.fail)("You have already voted.");
+            if (Date.now() - lastUsedSuccessfullySender < 10000)
+                (0, commands_1.fail)("This command was run recently and is on cooldown.");
+            votes.set(sender, map);
+            if (voteEndTime == -1) {
+                startVote();
+                Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(map.name(), "[cyan]. Use /nextmap ").concat(map.plainName(), " to add your vote!"));
+            }
+            else {
+                Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(map.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(voteEndTime, true)));
+                showVotes();
             }
         }
     }) }));

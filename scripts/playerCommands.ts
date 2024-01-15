@@ -229,7 +229,7 @@ export const commands = commandList({
 `Help for command ${args.name}:
 	${allCommands[args.name].description}
 	Usage: [sky]/${args.name} [white]${allCommands[args.name].args.map(formatArg).join(' ')}
-	Permission required: ${allCommands[args.name].perm.name}`.replace("\t", "    ")
+	Permission required: ${allCommands[args.name].perm.name}`
 					);
 				} else {
 					outputFail(`Command "${args.name}" does not exist.`);
@@ -539,5 +539,104 @@ Available types:[yellow]
 	//	 handler({sender, args}){
 	// 		votekickmanager.handleVote(sender, args ? 1 : -1);
 	//	 }
-	// }
+	// },
+
+	maps: {
+		args: [],
+		description: 'Lists the available maps.',
+		perm: Perm.none,
+		handler({output}){
+			output(`\
+[yellow]Use [white]/nextmap [lightgray]<map number> [yellow]to vote on a map.
+
+[blue]Available maps:
+_________________________
+${Vars.maps.customMaps().toArray().map((map, i) =>
+`[white]${i} - [yellow]${map.name()}`
+).join("\n")}`
+			);
+		}
+	},
+
+	nextmap: command({
+		args: ['map:map'],
+		description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
+		perm: Perm.play,
+		init(){ //TODO this isn't the best abstraction... switch to niife
+			const votes = new Map<FishPlayer, MMap>();
+			let voteEndTime = -1;
+			const voteDuration = 1.5 * 60000; // 1.5 mins
+
+			function resetVotes(){
+				votes.clear();
+				voteEndTime = -1;
+			};
+
+			function getMapData(){
+				return [...votes.values()].reduce((acc, map) =>
+					acc.set(map, (acc.get(map) ?? 0) + 1)
+				, new Map<MMap, number>());
+			}
+
+			function showVotes(){
+				Call.sendMessage(`\
+[green]Current votes:
+------------------------------
+${Array.from(getMapData().entries(), ([map, votes]) =>
+	`[cyan]${map.name()}[yellow]: ${votes}`
+).join("\n")}`
+				);
+			}
+
+			function startVote(){
+				voteEndTime = Date.now() + voteDuration;
+				Timer.schedule(endVote, voteDuration / 1000);
+			}
+
+			function endVote(){
+				if(voteEndTime == -1) return; //aborted somehow
+				if(votes.size == 0) return; //no votes?
+
+				const mapData = getMapData();
+				const highestVotedMaps = [...mapData.entries()].sort((a, b) => a[1] - b[1]).filter((v, i, a) => v[1] == a[0][1]);
+				let winner;
+
+				if(highestVotedMaps.length > 1){
+					winner = highestVotedMaps[Math.floor(Math.random() * highestVotedMaps.length)][0];
+					Call.sendMessage(
+			`[green]There was a tie between the following maps: 
+			${highestVotedMaps.map(([map, votes]) => 
+			`[cyan]${map.name()}[yellow]: ${votes}`
+			).join("\n")}
+			[green]Picking random winner: [yellow]${winner.name()}`
+					);
+				} else {
+					winner = highestVotedMaps[0][0];
+					Call.sendMessage(`[green]Map voting complete! The next map will be [yellow]${winner.name()} [green]with [yellow]${highestVotedMaps[0][1]}[green] votes.`);
+				}
+				Vars.maps.setNextMapOverride(winner);
+				resetVotes();
+			}
+
+			Events.on(EventType.GameOverEvent, resetVotes);
+			Events.on(EventType.ServerLoadEvent, resetVotes);
+
+			return {
+				showVotes, startVote, voteEndTime, votes
+			};
+		},
+		handler({args:{map}, sender, data:{showVotes, startVote, voteEndTime, votes}, lastUsedSuccessfullySender}){
+			if(votes.get(sender)) fail(`You have already voted.`);
+			if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
+
+			votes.set(sender, map);
+			if(voteEndTime == -1){
+				startVote();
+				Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${map.name()}[cyan]. Use /nextmap ${map.plainName()} to add your vote!`);
+			} else {
+				Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${map.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime, true)}`);
+				showVotes();
+			}
+		}
+	}),
 });
