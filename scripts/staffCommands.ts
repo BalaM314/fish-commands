@@ -6,11 +6,10 @@ import { uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
-import type { FishCommandData } from "./types";
+
 import {
 	colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative,
-	getAntiBotInfo,
-	logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans
+	getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans
 } from "./utils";
 
 const spawnedUnits:Unit[] = [];

@@ -228,7 +228,7 @@ declare const Http: {
 }
 type Administration = any;
 declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
-	items: T[];
+	items: (T | null)[];
 	size: number;
 	constructor();
 	constructor(capacity:number);
@@ -246,6 +246,7 @@ declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
 	isEmpty():boolean;
 	map<R>(mapFunc:(item:T) => R):Seq<R>;
 	toString(separator:string, stringifier:(item:T) => string);
+	toArray():T[];
 }
 
 declare class ObjectSet<T> {
@@ -428,4 +429,8 @@ declare class VoteSession {
 declare const Reflect: {
 	get(thing:any, key:string):any;
 	set(thing:any, key:string, value:any):void;
+}
+
+interface Array<T> {
+  filter(predicate: BooleanConstructor, thisArg?: any): (T extends (false | 0 | "" | null | undefined) ? never : T)[];
 }
