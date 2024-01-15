@@ -23,7 +23,7 @@ export const strictBannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
-	"fu"+"ck", "bi"+"tch", ["sh"+"it", "harshit"], /\ba(s)s\b/, "as"+"shole",
+	"fu"+"ck", "bi"+"tch", ["sh"+"it", "harshit"], /\ba(s)s\b/, "as"+"shole", ["dick", "medick", "dickens"],
 ]);
 export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
