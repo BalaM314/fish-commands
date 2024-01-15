@@ -608,7 +608,7 @@ export function outputSuccess(message:string | PartialFormatString, sender:mindu
 	sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
 }
 export function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
-	sender.sendMessage((typeof message == "function" ? message("") : message).replace(/\t/g, "    "));
+	sender.sendMessage(((typeof message == "function" ? message("") : message) + "").replace(/\t/g, "    "));
 }
 export function outputConsole(message:string | PartialFormatString, channel:(typeof Log)[keyof typeof Log] = Log.info){
 	channel(typeof message == "function" ? message("") : message);
