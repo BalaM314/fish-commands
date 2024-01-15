@@ -227,8 +227,9 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				outputArgs[cmdArg.name] = args[i];
 				break;
 			case "map":
-				const map = Vars.maps.byName(args[i]);
+				const map = Vars.maps.all().find(m => m.custom && m.plainName().toLowerCase().includes(args[i].toLowerCase()));
 				if(map == null) return {error: `Unknown map "${args[i]}". Run [cyan]/maps[] to get a list of all maps.`};
+				outputArgs[cmdArg.name] = map;	
 				break;
 			case "rank":
 				const ranks = Rank.getByInput(args[i]);
@@ -469,8 +470,9 @@ export function register(commands:Record<string, FishCommandData<any, any>>, cli
 						} else {
 							sender.sendMessage(`[scarlet]\u274C An error occurred while executing the command!`);
 							if(fishSender.hasPerm("seeErrorMessages")) sender.sendMessage(parseError(err));
-							Log.err(`Unhandled error in command execution: ${fishSender.cleanedName} ran /${fishSender.tapInfo.commandName}`);
+							Log.err(`Unhandled error in command execution: ${fishSender.cleanedName} ran /${name}`);
 							Log.err(err as Error);
+							Log.err((err as Error).stack!);
 						}
 					} finally {
 						usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();
