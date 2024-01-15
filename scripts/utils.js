@@ -406,7 +406,7 @@ function cleanText(text, applyAntiEvasion) {
     return replacedText;
 }
 exports.cleanText = cleanText;
-function isImpersonator(name, isStaff) {
+function isImpersonator(name, isAdmin) {
     var e_3, _a;
     var replacedText = cleanText(name);
     var antiEvasionText = cleanText(name, true);
@@ -430,7 +430,7 @@ function isImpersonator(name, isStaff) {
         [">|||>", "Name contains >|||> which is reserved for the server owner"],
         "\uE817", "\uE82C", "\uE88E",
         [/^<.{1,3}>/, "Name contains a prefix such as <a> which is used for role prefixes"],
-        [function (replacedText) { return !isStaff && config_1.adminNames.includes(replacedText); }, "One of our admins uses this name"]
+        [function (replacedText) { return !isAdmin && config_1.adminNames.includes(replacedText.replace(/ /g, "")); }, "One of our admins uses this name"]
     ]);
     try {
         for (var filters_1 = __values(filters), filters_1_1 = filters_1.next(); !filters_1_1.done; filters_1_1 = filters_1.next()) {

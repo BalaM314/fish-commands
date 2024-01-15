@@ -311,7 +311,7 @@ export function cleanText(text:string, applyAntiEvasion = false){
 	return replacedText;
 }
 
-export function isImpersonator(name:string, isStaff:boolean):false | string {
+export function isImpersonator(name:string, isAdmin:boolean):false | string {
 	const replacedText = cleanText(name);
 	const antiEvasionText = cleanText(name, true);
 	//very clean code i know
@@ -335,7 +335,7 @@ export function isImpersonator(name:string, isStaff:boolean):false | string {
 		[">|||>", "Name contains >|||> which is reserved for the server owner"],
 		"\uE817", "\uE82C", "\uE88E",
 		[/^<.{1,3}>/, "Name contains a prefix such as <a> which is used for role prefixes"],
-		[(replacedText) => !isStaff && adminNames.includes(replacedText), "One of our admins uses this name"]
+		[(replacedText) => !isAdmin && adminNames.includes(replacedText.replace(/ /g, "")), "One of our admins uses this name"]
 	]);
 	for(const [check, message] of filters){
 		if(check(replacedText)) return message;
