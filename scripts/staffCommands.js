@@ -52,6 +52,8 @@ exports.commands = (0, commands_1.commandList)({
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
             if (Date.now() - lastUsedSuccessfullySender < 3000)
                 (0, commands_1.fail)("This command was run recently and is on cooldown.");
+            if (args.player.hasPerm("blockTrolling"))
+                (0, commands_1.fail)("Player ".concat(args.player, " is insufficiently trollable."));
             var message = (_b = args.message) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
             (0, menus_1.menu)('Warning', message, ['accept'], args.player);
             (0, utils_1.logAction)('warned', sender, args.player, message);

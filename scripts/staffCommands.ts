@@ -22,6 +22,8 @@ export const commands = commandList({
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess, f, lastUsedSuccessfullySender}){
 			if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
+			if(args.player.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
+
 			const message = args.message ?? "You have been warned. I suggest you stop what you're doing";
 			menu('Warning', message, ['accept'], args.player);
 			logAction('warned', sender, args.player, message);
