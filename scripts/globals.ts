@@ -11,4 +11,5 @@ export const fishState = {
 };
 export const uuidPattern = /^[a-zA-Z0-9+/]{22}==$/;
 export const ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+export const ipPortPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$/;
 export const ipJoins = new ObjectIntMap<string>(); //todo somehow tell java that K is String and not Object

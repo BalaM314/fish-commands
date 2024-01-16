@@ -1,7 +1,7 @@
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm } from './commands';
 import { FishServers, getGamemode, Mode } from './config';
-import { recentWhispers, tileHistory, uuidPattern } from './globals';
+import { ipPattern, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import {
@@ -135,19 +135,39 @@ export const commands = commandList({
 	},
 
 	...Object.fromEntries(
-		Object.entries(FishServers).map(([name, data]) => [
-			name,
+		FishServers.all.map(server => [
+			server.name,
 			{
 				args: [],
-				description: `Switches to the ${name} server.`,
+				description: `Switches to the ${server.name} server.`,
 				perm: Perm.none,
 				handler({ sender }) {
-					Call.sendMessage(`${sender.name}[magenta] has gone to the ${name} server. Use [cyan]/${name} [magenta]to join them!`);
-					Call.connect(sender.con, data.ip, data.port);
+					Call.sendMessage(`${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
+					Call.connect(sender.con, server.ip, server.port);
 				},
 			},
 		])
 	),
+
+	switch: {
+		args: ["server:string", "target:player?"],
+		description: "Switches to another server.",
+		perm: Perm.none,
+		handler({args, sender}){
+			if(args.target != sender && !sender.hasPerm("admin")) fail(`You do not have permission to switch other players.`);
+			const target = args.target ?? sender;
+			if(ipPortPattern.test(args.server) && sender.hasPerm("admin")){
+				//direct connect
+				Call.connect(target.con, ...args.server.split(":"));
+			} else {
+				const server = FishServers.byName(args.server)
+					?? fail(`Unknown server ${args.server}. Valid options: ${FishServers.all.map(s => s.name).join(", ")}`);
+				if(target == sender)
+					Call.sendMessage(`${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
+				Call.connect(sender.con, server.ip, server.port);
+			}
+		}
+	},
 
 	s: {
 		args: ['message:string'],

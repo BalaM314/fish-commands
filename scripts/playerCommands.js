@@ -174,22 +174,40 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var output = _a.output, f = _a.f, tile = _a.tile;
             output(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["ID is ", ""], ["ID is ", ""])), tile.block().id));
         }
-    } }, Object.fromEntries(Object.entries(config_1.FishServers).map(function (_a) {
-    var _b = __read(_a, 2), name = _b[0], data = _b[1];
-    return [
-        name,
-        {
-            args: [],
-            description: "Switches to the ".concat(name, " server."),
-            perm: commands_1.Perm.none,
-            handler: function (_a) {
-                var sender = _a.sender;
-                Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(name, " server. Use [cyan]/").concat(name, " [magenta]to join them!"));
-                Call.connect(sender.con, data.ip, data.port);
-            },
+    } }, Object.fromEntries(config_1.FishServers.all.map(function (server) { return [
+    server.name,
+    {
+        args: [],
+        description: "Switches to the ".concat(server.name, " server."),
+        perm: commands_1.Perm.none,
+        handler: function (_a) {
+            var sender = _a.sender;
+            Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
+            Call.connect(sender.con, server.ip, server.port);
         },
-    ];
-}))), { s: {
+    },
+]; }))), { switch: {
+        args: ["server:string", "target:player?"],
+        description: "Switches to another server.",
+        perm: commands_1.Perm.none,
+        handler: function (_a) {
+            var _b, _c;
+            var args = _a.args, sender = _a.sender;
+            if (args.target != sender && !sender.hasPerm("admin"))
+                (0, commands_1.fail)("You do not have permission to switch other players.");
+            var target = (_b = args.target) !== null && _b !== void 0 ? _b : sender;
+            if (globals_1.ipPortPattern.test(args.server) && sender.hasPerm("admin")) {
+                //direct connect
+                Call.connect.apply(Call, __spreadArray([target.con], __read(args.server.split(":")), false));
+            }
+            else {
+                var server = (_c = config_1.FishServers.byName(args.server)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServers.all.map(function (s) { return s.name; }).join(", ")));
+                if (target == sender)
+                    Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
+                Call.connect(sender.con, server.ip, server.port);
+            }
+        }
+    }, s: {
         args: ['message:string'],
         description: "Sends a message to staff only.",
         perm: commands_1.Perm.chat,
