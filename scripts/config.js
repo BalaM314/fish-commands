@@ -112,11 +112,18 @@ exports.multiCharSubstitutions = [
 // export const ip = 'localhost';
 exports.ip = '45.79.202.111';
 exports.FishServers = {
-    attack: { ip: "162.248.100.98", port: "6567" },
-    survival: { ip: "162.248.101.95", port: "6567" },
-    pvp: { ip: "162.248.100.133", port: "6567" },
+    attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
+    survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
+    pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
     // sandbox: { ip: "162.248.102.204", port: "6567" },
+    byName: function (input) {
+        var _a;
+        input = input.toLowerCase();
+        return (_a = exports.FishServers.all.find(function (s) { return s.aliases.includes(input); })) !== null && _a !== void 0 ? _a : null;
+    },
+    all: []
 };
+exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp];
 var getGamemode = function () { return Vars.state.rules.mode().name(); };
 exports.getGamemode = getGamemode;
 exports.Mode = {

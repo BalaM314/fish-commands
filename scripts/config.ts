@@ -92,12 +92,24 @@ export const multiCharSubstitutions:[RegExp, string][] = [
 ];
 // export const ip = 'localhost';
 export const ip = '45.79.202.111';
-export const FishServers = {
-	attack: { ip: "162.248.100.98", port: "6567" },
-	survival: { ip: "162.248.101.95", port: "6567" },
-	pvp: { ip: "162.248.100.133", port: "6567" },
-	// sandbox: { ip: "162.248.102.204", port: "6567" },
+type FishServer = {
+	ip:string;
+	port:string;
+	aliases:string[];
+	name:string;
 };
+export const FishServers = {
+	attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
+	survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
+	pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
+	// sandbox: { ip: "162.248.102.204", port: "6567" },
+	byName(input:string):FishServer | null {
+		input = input.toLowerCase();
+		return FishServers.all.find(s => s.aliases.includes(input)) ?? null;
+	},
+	all: [] as FishServer[]
+};
+FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp];
 export const getGamemode = () => Vars.state.rules.mode().name();
 export const Mode = {
 	attack: () => getGamemode() == "attack",
