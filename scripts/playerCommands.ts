@@ -469,54 +469,48 @@ Available types:[yellow]
 		}
 	},
 
-	rtv: command({
-		args: [],
-		description: 'Rock the vote to change map',
-		perm: Perm.play,
-		init(){
-			const votes = new Set<string>();
-			const ratio = 0.5;
-			Events.on(EventType.PlayerLeave, (e) => {
-				const player = e.player;
-				const pid = player.uuid();
-			
-				if(votes.has(pid)){
-					votes.delete(pid);
-					const currentVotes = votes.size;
-					const requiredVotes = Math.ceil(ratio * Groups.player.size());
-					Call.sendMessage(
-						`RTV: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
-					);
-					if(currentVotes >= requiredVotes){
-						Call.sendMessage('RTV: [green] vote passed, changing map.');
-						neutralGameover();
-					}
-				}
-			});
-			
-			Events.on(EventType.GameOverEvent, (e) => {
-				votes.clear();
-			});
-			return {
-				votes, ratio
-			};
-		},
-		handler({sender, data:{votes, ratio}, lastUsedSuccessfullySender}){
-			if(Vars.state.gameOver) fail(`This map is already finished, cannot RTV. Wait until the next map loads.`);
-			if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
+	rtv: command(() => {
+		const votes = new Set<string>();
+		const ratio = 0.5;
 
-			votes.add(sender.uuid);
-		
-			let currentVotes = votes.size;
-			let requiredVotes = Math.ceil(ratio * Groups.player.size());
-			Call.sendMessage(
-				`RTV: [accent]${sender.cleanedName}[] wants to change the map, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
-			);
-			if(currentVotes >= requiredVotes){
-				Call.sendMessage('RTV: [green] vote passed, changing map.');
-				neutralGameover();
+		Events.on(EventType.PlayerLeave, ({player}) => {
+			if(votes.has(player.uuid())){
+				votes.delete(player.uuid());
+				const currentVotes = votes.size;
+				const requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`RTV: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				if(currentVotes >= requiredVotes){
+					Call.sendMessage('RTV: [green] vote passed, changing map.');
+					neutralGameover();
+				}
 			}
-		}
+		});		
+		Events.on(EventType.GameOverEvent, () => votes.clear());
+
+		return {
+			args: [],
+			description: 'Rock the vote to change map',
+			perm: Perm.play,
+			data: {votes},
+			handler({sender, lastUsedSuccessfullySender}){
+				if(Vars.state.gameOver) fail(`This map is already finished, cannot RTV. Wait until the next map loads.`);
+				if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
+
+				votes.add(sender.uuid);
+			
+				let currentVotes = votes.size;
+				let requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`RTV: [accent]${sender.cleanedName}[] wants to change the map, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				if(currentVotes >= requiredVotes){
+					Call.sendMessage('RTV: [green] vote passed, changing map.');
+					neutralGameover();
+				}
+			}
+		}	
 	}),
 
 	// votekick: {
@@ -621,6 +615,7 @@ ${Array.from(getMapData().entries(), ([map, votes]) =>
 			args: ['map:map'],
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
+			data: {votes, voteEndTime, resetVotes, endVote},
 			handler({args:{map}, sender, lastUsedSuccessfullySender}){
 				if(votes.get(sender)) fail(`You have already voted.`);
 				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);

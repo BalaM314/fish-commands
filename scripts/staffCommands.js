@@ -606,44 +606,44 @@ exports.commands = (0, commands_1.commandList)({
             outputSuccess("Set chat strictness for player ".concat(player, " to \"").concat(value, "\"."));
         }
     },
-    emanate: (0, commands_1.command)({
-        args: [],
-        description: "Puts you in an emanate.",
-        perm: commands_1.Perm.admin,
-        init: function () {
-            var data = {};
-            Timer.schedule(function () {
-                var e_1, _a;
+    emanate: (0, commands_1.command)(function () {
+        var unitMapping = {};
+        Timer.schedule(function () {
+            var e_1, _a;
+            try {
+                for (var _b = __values(Object.entries(unitMapping)), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var _d = __read(_c.value, 2), uuid = _d[0], unit = _d[1];
+                    var fishP = players_1.FishPlayer.getById(uuid);
+                    if (!fishP || !fishP.connected() || (unit.getPlayer() != fishP.player)) {
+                        delete unitMapping[uuid];
+                        unit === null || unit === void 0 ? void 0 : unit.kill();
+                    }
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
                 try {
-                    for (var _b = __values(Object.entries(data)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                        var _d = __read(_c.value, 2), uuid = _d[0], unit = _d[1];
-                        var fishP = players_1.FishPlayer.getById(uuid);
-                        if (!fishP || !fishP.connected() || (unit.getPlayer() != fishP.player)) {
-                            delete data[uuid];
-                            unit === null || unit === void 0 ? void 0 : unit.kill();
-                        }
-                    }
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
                 }
-                catch (e_1_1) { e_1 = { error: e_1_1 }; }
-                finally {
-                    try {
-                        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                    }
-                    finally { if (e_1) throw e_1.error; }
-                }
-            }, 1, 0.5);
-            return data;
-        },
-        handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess, data = _a.data;
-            if (!sender.connected() || !sender.unit().added || sender.unit().dead)
-                (0, commands_1.fail)("You cannot spawn an emanate because you are dead.");
-            var emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
-            sender.player.unit(emanate);
-            data[sender.uuid] = emanate;
-            (0, utils_1.logAction)("spawned an emanate", sender);
-            outputSuccess("Spawned an emanate.");
-        }
+                finally { if (e_1) throw e_1.error; }
+            }
+        }, 1, 0.5);
+        return {
+            args: [],
+            description: "Puts you in an emanate.",
+            perm: commands_1.Perm.admin,
+            data: { unitMapping: unitMapping },
+            handler: function (_a) {
+                var sender = _a.sender, outputSuccess = _a.outputSuccess;
+                if (!sender.connected() || !sender.unit().added || sender.unit().dead)
+                    (0, commands_1.fail)("You cannot spawn an emanate because you are dead.");
+                var emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
+                sender.player.unit(emanate);
+                unitMapping[sender.uuid] = emanate;
+                (0, utils_1.logAction)("spawned an emanate", sender);
+                outputSuccess("Spawned an emanate.");
+            }
+        };
     }),
     clearfire: {
         args: [],

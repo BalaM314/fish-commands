@@ -569,31 +569,31 @@ ${getAntiBotInfo("client")}`
 			outputSuccess(`Set chat strictness for player ${player} to "${value}".`);
 		}
 	},
-	emanate: command({
-		args: [],
-		description: "Puts you in an emanate.",
-		perm: Perm.admin,
-		init(){
-			const data:Record<string, Unit> = {};
-			Timer.schedule(() => {
-				for(const [uuid, unit] of Object.entries(data)){
-					const fishP = FishPlayer.getById(uuid);
-					if(!fishP || !fishP.connected() || (unit.getPlayer() != fishP.player)){
-						delete data[uuid];
-						unit?.kill();
-					}
+	emanate: command(() => {
+		const unitMapping:Record<string, Unit> = {};
+		Timer.schedule(() => {
+			for(const [uuid, unit] of Object.entries(unitMapping)){
+				const fishP = FishPlayer.getById(uuid);
+				if(!fishP || !fishP.connected() || (unit.getPlayer() != fishP.player)){
+					delete unitMapping[uuid];
+					unit?.kill();
 				}
-			}, 1, 0.5);
-			return data;
-		},
-		handler({sender, outputSuccess, data}){
-			if(!sender.connected() || !sender.unit().added || sender.unit().dead) fail("You cannot spawn an emanate because you are dead.");
-			const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
-			sender.player.unit(emanate);
-			data[sender.uuid] = emanate;
-			logAction("spawned an emanate", sender);
-			outputSuccess("Spawned an emanate.");
-		}
+			}
+		}, 1, 0.5);
+		return {
+			args: [],
+			description: "Puts you in an emanate.",
+			perm: Perm.admin,
+			data: {unitMapping},
+			handler({sender, outputSuccess}){
+				if(!sender.connected() || !sender.unit().added || sender.unit().dead) fail("You cannot spawn an emanate because you are dead.");
+				const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
+				sender.player.unit(emanate);
+				unitMapping[sender.uuid] = emanate;
+				logAction("spawned an emanate", sender);
+				outputSuccess("Spawned an emanate.");
+			}
+		};
 	}),
 	clearfire: {
 		args: [],
