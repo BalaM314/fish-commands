@@ -30,13 +30,14 @@ export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer 
 export const commandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishCommandData<A[K], any>;
-}):Record<keyof A, FishCommandData<any, any>> => list;
+}):Record<keyof A, FishCommandData<any, any> | (() => FishCommandData<any, any>)> => list;
 /** Use this to get the correct type for command lists. */
 export const consoleCommandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishConsoleCommandData<A[K], any>;
 }):Record<keyof A, FishConsoleCommandData<any, any>> => list;
 export function command<TParam extends string, TData>(cmd:FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;
+export function command<TParam extends string, TData>(cmd:() => FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;//not type safe, can't be bothered to find a solution that works with commandList
 export function command<TParam extends string, TData>(cmd:FishConsoleCommandData<TParam, TData>):FishConsoleCommandData<TParam, TData>;
 /** Use this wrapper function to get the correct type definitions for commands using "data" or init(). */
 export function command(input:unknown){
@@ -392,9 +393,11 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 /**
  * Registers all commands in a list to a client command handler.
  **/
-export function register(commands:Record<string, FishCommandData<any, any>>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
+export function register(commands:Record<string, FishCommandData<any, any> | (() => FishCommandData<any, any>)>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
 
-	for(const [name, data] of Object.entries(commands)){
+	for(let [name, _data] of Object.entries(commands)){
+
+		let data = typeof _data == "function" ? _data() : _data;
 
 		//Process the args
 		const processedCmdArgs = data.args.map(processArgString);
@@ -562,6 +565,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 
 }
 
+/** @deprecated */
 export function initialize(){
 	if(initialized){
 		crash("Already initialized commands.");

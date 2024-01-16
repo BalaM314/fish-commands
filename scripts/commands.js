@@ -496,7 +496,8 @@ exports.handleTapEvent = handleTapEvent;
  **/
 function register(commands, clientHandler, serverHandler) {
     var e_3, _a;
-    var _loop_2 = function (name, data) {
+    var _loop_2 = function (name, _data) {
+        var data = typeof _data == "function" ? _data() : _data;
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
@@ -585,8 +586,8 @@ function register(commands, clientHandler, serverHandler) {
     };
     try {
         for (var _b = __values(Object.entries(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
-            var _d = __read(_c.value, 2), name = _d[0], data = _d[1];
-            _loop_2(name, data);
+            var _d = __read(_c.value, 2), name = _d[0], _data = _d[1];
+            _loop_2(name, _data);
         }
     }
     catch (e_3_1) { e_3 = { error: e_3_1 }; }
@@ -676,6 +677,7 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
         }, true, function (player) { return player.name; });
     }
 }
+/** @deprecated */
 function initialize() {
     var e_5, _a, e_6, _b;
     var _c, _d;
