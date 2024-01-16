@@ -60,11 +60,12 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
     players_1.FishPlayer.playersJoinedRecent++;
     globals_1.ipJoins.increment(e.connection.address);
     var info = Vars.netServer.admins.getInfoOptional(e.packet.uuid);
-    var sus = (players_1.FishPlayer.antiBotMode() && (!info || info.timesJoined < 10));
+    var underAttack = players_1.FishPlayer.antiBotMode();
+    var newPlayer = !info || info.timesJoined < 10;
     var longModName = e.packet.mods.contains(function (str) { return str.length > 50; });
     var veryLongModName = e.packet.mods.contains(function (str) { return str.length > 100; });
-    if ((sus && e.packet.mods.size > 2) ||
-        (sus && longModName) ||
+    if ((underAttack && e.packet.mods.size > 2) ||
+        (underAttack && longModName) ||
         (veryLongModName)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
@@ -72,7 +73,7 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " because ").concat(veryLongModName ? "very long mod name" : longModName ? "long mod name" : "it had mods while under attack"));
         return;
     }
-    if (globals_1.ipJoins.get(e.connection.address) >= (sus ? 3 : 15)) {
+    if (globals_1.ipJoins.get(e.connection.address) >= (underAttack ? 3 : newPlayer ? 6 : 15)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
         players_1.FishPlayer.onBotWhack();
