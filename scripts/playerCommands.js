@@ -594,6 +594,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     return "[cyan]".concat(map.name(), "[yellow]: ").concat(votes);
                 }).join("\n")));
             }
+            function _voteEndTime() {
+                return voteEndTime;
+            }
             function startVote() {
                 voteEndTime = Date.now() + voteDuration;
                 Timer.schedule(endVote, voteDuration / 1000);
@@ -625,7 +628,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             return {
                 showVotes: showVotes,
                 startVote: startVote,
-                voteEndTime: voteEndTime,
+                voteEndTime: _voteEndTime,
                 votes: votes
             };
         },
@@ -636,12 +639,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (Date.now() - lastUsedSuccessfullySender < 10000)
                 (0, commands_1.fail)("This command was run recently and is on cooldown.");
             votes.set(sender, map);
-            if (voteEndTime == -1) {
+            if (voteEndTime() == -1) {
                 startVote();
                 Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(map.name(), "[cyan]. Use /nextmap ").concat(map.plainName(), " to add your vote!"));
             }
             else {
-                Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(map.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(voteEndTime, true)));
+                Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(map.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(voteEndTime(), true)));
                 showVotes();
             }
         }

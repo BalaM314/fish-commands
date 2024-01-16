@@ -562,7 +562,7 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 		args: ['map:map'],
 		description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 		perm: Perm.play,
-		init(){ //TODO this isn't the best abstraction... switch to niife
+		init(){ //TODO this isn't the best abstraction... switch to niife //really need to fix that
 			const votes = new Map<FishPlayer, MMap>();
 			let voteEndTime = -1;
 			const voteDuration = 1.5 * 60000; // 1.5 mins
@@ -586,6 +586,10 @@ ${Array.from(getMapData().entries(), ([map, votes]) =>
 	`[cyan]${map.name()}[yellow]: ${votes}`
 ).join("\n")}`
 				);
+			}
+
+			function _voteEndTime(){
+				return voteEndTime;
 			}
 
 			function startVote(){
@@ -622,7 +626,7 @@ ${Array.from(getMapData().entries(), ([map, votes]) =>
 			Events.on(EventType.ServerLoadEvent, resetVotes);
 
 			return {
-				showVotes, startVote, voteEndTime, votes
+				showVotes, startVote, voteEndTime:_voteEndTime, votes
 			};
 		},
 		handler({args:{map}, sender, data:{showVotes, startVote, voteEndTime, votes}, lastUsedSuccessfullySender}){
@@ -630,11 +634,11 @@ ${Array.from(getMapData().entries(), ([map, votes]) =>
 			if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
 
 			votes.set(sender, map);
-			if(voteEndTime == -1){
+			if(voteEndTime() == -1){
 				startVote();
 				Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${map.name()}[cyan]. Use /nextmap ${map.plainName()} to add your vote!`);
 			} else {
-				Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${map.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime, true)}`);
+				Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${map.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime(), true)}`);
 				showVotes();
 			}
 		}
