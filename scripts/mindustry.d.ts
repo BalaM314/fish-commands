@@ -1,4 +1,7 @@
 //this is fine
+//TODO move to `declare global`
+
+declare function floatf<T>(input:T):T;
 
 declare const Call: any;
 declare const Log: {
@@ -248,14 +251,19 @@ declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
 	each(func:(item:T) => unknown);
 	isEmpty():boolean;
 	map<R>(mapFunc:(item:T) => R):Seq<R>;
-	toString(separator:string, stringifier:(item:T) => string);
+	toString(separator:string, stringifier?:(item:T) => string);
 	toArray():T[];
+	copy():Seq<T>;
+	sort(comparator?:(item:T) => number):Seq<T>;
+	max(comparator?:(item:T) => number):T;
+	random():T | null;
+	get(index:number):T | null;
 }
 
 declare class ObjectSet<T> {
 	size:number;
 	select(predicate:(item:T) => boolean):ObjectSet<T>;
-	each(func:(item:T) => unknown);
+	each(func:(item:T) => unknown):void;
 	add(item:T):boolean;
 	remove(item:T):boolean;
 	isEmpty():boolean;
@@ -269,6 +277,14 @@ declare class ObjectIntMap<K> {
 	increment(key:K):void;
 	clear():void;
 	size:number;
+	entries(): {
+		forEach(func:(item:T) => unknown):void;
+		toArray():Seq<ObjectIntMapEntry<K>>;
+	};
+}
+declare class ObjectIntMapEntry<K> {
+	key:K;
+	value:number;
 }
 declare class EntityGroup<T> {
 	copy(seq:Seq<T>):Seq<T>;

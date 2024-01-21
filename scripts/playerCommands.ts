@@ -582,19 +582,19 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 			voteEndTime = -1;
 		};
 
-		function getMapData(){
-			return [...votes.values()].reduce((acc, map) =>
-				acc.set(map, (acc.get(map) ?? 0) + 1)
-			, new Map<MMap, number>());
+		function getMapData():Seq<ObjectIntMapEntry<MMap>> {
+			return [...votes.values()].reduce(
+				(acc, map) => (acc.increment(map), acc), new ObjectIntMap<MMap>()
+			).entries().toArray();
 		}
 
 		function showVotes(){
 			Call.sendMessage(`\
 [green]Current votes:
 ------------------------------
-${Array.from(getMapData().entries(), ([map, votes]) =>
+${getMapData().map(({key:map, value:votes}) =>
 `[cyan]${map.name()}[yellow]: ${votes}`
-).join("\n")}`
+).toString("\n")}`
 			);
 		}
 
@@ -608,21 +608,22 @@ ${Array.from(getMapData().entries(), ([map, votes]) =>
 			if(votes.size == 0) return; //no votes?
 
 			const mapData = getMapData();
-			const highestVotedMaps = [...mapData.entries()].sort((a, b) => a[1] - b[1]).filter((v, i, a) => v[1] == a[0][1]);
-			let winner;
+			const highestVoteCount = mapData.max(floatf(e => e.value)).value;
+			const highestVotedMaps = mapData.select(e => e.value == highestVoteCount);
+			let winner:MMap;
 
-			if(highestVotedMaps.length > 1){
-				winner = highestVotedMaps[Math.floor(Math.random() * highestVotedMaps.length)][0];
+			if(highestVotedMaps.size > 1){
+				winner = highestVotedMaps.random()!.key;
 				Call.sendMessage(
 		`[green]There was a tie between the following maps: 
-		${highestVotedMaps.map(([map, votes]) => 
+		${highestVotedMaps.map(({key:map, value:votes}) => 
 		`[cyan]${map.name()}[yellow]: ${votes}`
-		).join("\n")}
+		).toString("\n")}
 		[green]Picking random winner: [yellow]${winner.name()}`
 				);
 			} else {
-				winner = highestVotedMaps[0][0];
-				Call.sendMessage(`[green]Map voting complete! The next map will be [yellow]${winner.name()} [green]with [yellow]${highestVotedMaps[0][1]}[green] votes.`);
+				winner = highestVotedMaps.get(0)!.key;
+				Call.sendMessage(`[green]Map voting complete! The next map will be [yellow]${winner.name()} [green]with [yellow]${highestVoteCount}[green] votes.`);
 			}
 			Vars.maps.setNextMapOverride(winner);
 			resetVotes();

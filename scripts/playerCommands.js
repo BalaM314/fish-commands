@@ -594,13 +594,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }
         ;
         function getMapData() {
-            return __spreadArray([], __read(votes.values()), false).reduce(function (acc, map) { var _a; return acc.set(map, ((_a = acc.get(map)) !== null && _a !== void 0 ? _a : 0) + 1); }, new Map());
+            return __spreadArray([], __read(votes.values()), false).reduce(function (acc, map) { return (acc.increment(map), acc); }, new ObjectIntMap()).entries().toArray();
         }
         function showVotes() {
-            Call.sendMessage("[green]Current votes:\n------------------------------\n".concat(Array.from(getMapData().entries(), function (_a) {
-                var _b = __read(_a, 2), map = _b[0], votes = _b[1];
+            Call.sendMessage("[green]Current votes:\n------------------------------\n".concat(getMapData().map(function (_a) {
+                var map = _a.key, votes = _a.value;
                 return "[cyan]".concat(map.name(), "[yellow]: ").concat(votes);
-            }).join("\n")));
+            }).toString("\n")));
         }
         function startVote() {
             voteEndTime = Date.now() + voteDuration;
@@ -612,18 +612,19 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (votes.size == 0)
                 return; //no votes?
             var mapData = getMapData();
-            var highestVotedMaps = __spreadArray([], __read(mapData.entries()), false).sort(function (a, b) { return a[1] - b[1]; }).filter(function (v, i, a) { return v[1] == a[0][1]; });
+            var highestVoteCount = mapData.max(floatf(function (e) { return e.value; })).value;
+            var highestVotedMaps = mapData.select(function (e) { return e.value == highestVoteCount; });
             var winner;
-            if (highestVotedMaps.length > 1) {
-                winner = highestVotedMaps[Math.floor(Math.random() * highestVotedMaps.length)][0];
+            if (highestVotedMaps.size > 1) {
+                winner = highestVotedMaps.random().key;
                 Call.sendMessage("[green]There was a tie between the following maps: \n\t\t".concat(highestVotedMaps.map(function (_a) {
-                    var _b = __read(_a, 2), map = _b[0], votes = _b[1];
+                    var map = _a.key, votes = _a.value;
                     return "[cyan]".concat(map.name(), "[yellow]: ").concat(votes);
-                }).join("\n"), "\n\t\t[green]Picking random winner: [yellow]").concat(winner.name()));
+                }).toString("\n"), "\n\t\t[green]Picking random winner: [yellow]").concat(winner.name()));
             }
             else {
-                winner = highestVotedMaps[0][0];
-                Call.sendMessage("[green]Map voting complete! The next map will be [yellow]".concat(winner.name(), " [green]with [yellow]").concat(highestVotedMaps[0][1], "[green] votes."));
+                winner = highestVotedMaps.get(0).key;
+                Call.sendMessage("[green]Map voting complete! The next map will be [yellow]".concat(winner.name(), " [green]with [yellow]").concat(highestVoteCount, "[green] votes."));
             }
             Vars.maps.setNextMapOverride(winner);
             resetVotes();
