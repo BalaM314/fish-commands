@@ -2,3 +2,5 @@ asd
 node_modules
 package-lock.json
 ts-debugtrace
+scripts/client.js
+scripts/client.ts

@@ -204,7 +204,10 @@ declare const SaveIO: {
 	save(file:Fi):void;
 }
 declare const Timer: {
-	schedule(func:() => unknown, delaySeconds:number, intervalSeconds?:number, repeatCount?:number);
+	schedule(func:() => unknown, delaySeconds:number, intervalSeconds?:number, repeatCount?:number):TimerTask;
+}
+declare class TimerTask {
+	cancel():void;
 }
 declare const Time: {
 	millis(): number;
