@@ -15,7 +15,7 @@ import {
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 5;
+	static readonly saveVersion = 6;
 	static readonly chunkSize = 60000;
 
 	//Static transients
@@ -68,7 +68,6 @@ export class FishPlayer {
 		lastArgs: {} as Record<string, FishCommandArgType>,
 		mode: "once" as "once" | "on",
 	};
-	lastJoined:number = -1;
 	lastShownAd:number = config.maxTime;
 	showAdNext:boolean = false;
 	tstats = {
@@ -80,11 +79,8 @@ export class FishPlayer {
 	lastMousePosition = [0, 0] as [x:number, y:number];
 	lastUnitPosition = [0, 0] as [x:number, y:number];
 	lastActive:number = Date.now();
-
+	
 	//Stored data
-	// stats = {
-
-	// };
 	uuid: string;
 	name: string;
 	muted: boolean;
@@ -99,10 +95,20 @@ export class FishPlayer {
 	history: PlayerHistoryEntry[];
 	usid: string | null;
 	chatStrictness: "chat" | "strict" = "chat";
+	/** -1 represents unknown */
+	lastJoined:number;
+	stats: {
+		blocksBroken: number;
+		blocksPlaced: number;
+		timeInGame: number;
+		chatMessagesSent: number;
+		gamesFinished: number;
+		gamesWon: number;
+	};
 
 	constructor({
 		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
-		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid, chatStrictness = "chat",
+		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid, chatStrictness = "chat", lastJoined, stats,
 		//deprecated
 		member, stopped,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
@@ -111,6 +117,7 @@ export class FishPlayer {
 		this.muted = muted;
 		this.unmarkTime = unmarked;
 		if(stopped) this.unmarkTime = Date.now() + 2592000; //30 days
+		this.lastJoined = lastJoined ?? -1;
 		this.autoflagged = autoflagged;
 		this.highlight = highlight;
 		this.history = history;
@@ -126,6 +133,14 @@ export class FishPlayer {
 		}
 		this.usid = usid ?? player?.usid() ?? null;
 		this.chatStrictness = chatStrictness;
+		this.stats = stats ?? {
+			blocksBroken: 0,
+			blocksPlaced: 0,
+			timeInGame: 0,
+			chatMessagesSent: 0,
+			gamesFinished: 0,
+			gamesWon: 0,
+		};
 	}
 
 	//#region getplayer
@@ -345,7 +360,6 @@ export class FishPlayer {
 			}
 		}
 	}
-	//used for heuristics
 	static onPlayerChat(player:mindustryPlayer, message:string){
 		const fishP = this.get(player);
 		if(fishP.firstJoin()){
@@ -444,7 +458,7 @@ export class FishPlayer {
 		if(cleanText(this.name, true).includes("hacker")){
 			//"Don't be a script kiddie"
 			//-LiveOverflow, 2015
-			if(/h.*a.*c.*k.*[3e].*r/i.test(this.name)){
+			if(/h.*a.*c.*k.*[3e].*r/i.test(this.name)){ //try to only replace the part that contains "hacker" if it can be found with a simple regex
 				replacedName = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "[brown]script kiddie[]");
 			} else {
 				replacedName = "[brown]script kiddie";
@@ -735,6 +749,34 @@ We apologize for the inconvenience.`
 					usid: fishPlayerData.readString(2),
 					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
 				}, player);
+			case 6:
+			return new this({
+				uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
+				name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+				muted: fishPlayerData.readBool(),
+				autoflagged: fishPlayerData.readBool(),
+				unmarkTime: fishPlayerData.readNumber(13),
+				highlight: fishPlayerData.readString(2),
+				history: fishPlayerData.readArray(str => ({
+					action: str.readString(2) ?? "null",
+					by: str.readString(2) ?? "null",
+					time: str.readNumber(15)
+				})),
+				rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+				rank: fishPlayerData.readString(2) ?? "",
+				flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+				usid: fishPlayerData.readString(2),
+				chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+				lastJoined: fishPlayerData.readNumber(15),
+				stats: {
+					blocksBroken: fishPlayerData.readNumber(10),
+					blocksPlaced: fishPlayerData.readNumber(10),
+					timeInGame: fishPlayerData.readNumber(15),
+					chatMessagesSent: fishPlayerData.readNumber(7),
+					gamesFinished: fishPlayerData.readNumber(5),
+					gamesWon: fishPlayerData.readNumber(5),
+				}
+			}, player);
 			default: crash(`Unknown save version ${version}`);
 		}
 	}
@@ -756,6 +798,13 @@ We apologize for the inconvenience.`
 		out.writeArray(Array.from(this.flags).filter(f => f.peristent), (f, str) => str.writeString(f.name, 2), 2);
 		out.writeString(this.usid, 2);
 		out.writeEnumString(this.chatStrictness, ["chat", "strict"]);
+		out.writeNumber(this.lastJoined, 15);
+		out.writeNumber(this.stats.blocksBroken, 10, true);
+		out.writeNumber(this.stats.blocksPlaced, 10, true);
+		out.writeNumber(this.stats.timeInGame, 15, true);
+		out.writeNumber(this.stats.chatMessagesSent, 7, true);
+		out.writeNumber(this.stats.gamesFinished, 5, true);
+		out.writeNumber(this.stats.gamesWon, 5, true);
 	}
 	/**Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){

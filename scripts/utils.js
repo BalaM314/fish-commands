@@ -275,12 +275,21 @@ var StringIO = /** @class */ (function () {
             crash("Attempted to read invalid number: ".concat(data));
         return Number(data);
     };
-    StringIO.prototype.writeNumber = function (num, size) {
+    StringIO.prototype.writeNumber = function (num, size, clamp) {
         if (size === void 0) { size = 4; }
+        if (clamp === void 0) { clamp = false; }
         if (typeof num != "number")
             crash("".concat(num, " was not a number!"));
-        if (num.toString().length > size)
-            crash("Cannot write number ".concat(num, " with length ").concat(size, ": too long"));
+        if (num.toString().length > size) {
+            if (clamp) {
+                if (num > (Math.pow(10, size)) - 1)
+                    this.string += (Math.pow(10, size)) - 1;
+                else
+                    this.string += num.toString().slice(0, size);
+            }
+            else
+                crash("Cannot write number ".concat(num, " with length ").concat(size, ": too long"));
+        }
         this.string += num.toString().padStart(size, "0");
     };
     StringIO.prototype.readBool = function () {

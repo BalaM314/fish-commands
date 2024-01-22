@@ -215,6 +215,15 @@ export interface FishPlayerData {
 	history: PlayerHistoryEntry[];
 	usid: string | null;
 	chatStrictness: "chat" | "strict";
+	lastJoined: number;
+	stats: {
+		blocksBroken: number;
+		blocksPlaced: number;
+		timeInGame: number;
+		chatMessagesSent: number;
+		gamesFinished: number;
+		gamesWon: number;
+	};
 }
 
 export interface PlayerHistoryEntry {

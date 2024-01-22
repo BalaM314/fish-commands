@@ -215,9 +215,14 @@ export class StringIO {
 		if(isNaN(Number(data))) crash(`Attempted to read invalid number: ${data}`);
 		return Number(data);
 	}
-	writeNumber(num:number, size:number = 4){
+	writeNumber(num:number, size:number = 4, clamp = false){
 		if(typeof num != "number") crash(`${num} was not a number!`);
-		if(num.toString().length > size) crash(`Cannot write number ${num} with length ${size}: too long`);
+		if(num.toString().length > size){
+			if(clamp){
+				if(num > (10 ** size) - 1) this.string += (10 ** size) - 1;
+				else this.string += num.toString().slice(0, size);
+			} else crash(`Cannot write number ${num} with length ${size}: too long`);
+		}
 		this.string += num.toString().padStart(size, "0");
 	}
 	readBool(){
