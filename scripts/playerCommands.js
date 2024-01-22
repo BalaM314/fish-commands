@@ -653,5 +653,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 }
             }
         };
-    }) }));
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6;
+    }), stats: {
+        args: ["target:player"],
+        perm: commands_1.Perm.none,
+        description: "Views a player's stats.",
+        handler: function (_a) {
+            var target = _a.args.target, output = _a.output, f = _a.f;
+            output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["[coral]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n--------------\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[coral]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n--------------\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesWon));
+        }
+    } }));
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7;
