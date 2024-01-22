@@ -153,8 +153,9 @@ export const commands = commandList({
 		args: ["server:string", "target:player?"],
 		description: "Switches to another server.",
 		perm: Perm.none,
-		handler({args, sender}){
-			if(args.target != sender && !sender.hasPerm("admin")) fail(`You do not have permission to switch other players.`);
+		handler({args, sender, f}){
+			if(args.target != null && args.target != sender && (!sender.hasPerm("admin") || !sender.canModerate(args.target)))
+				fail(f`You do not have permission to switch player ${args.target}.`);
 			const target = args.target ?? sender;
 			if(ipPortPattern.test(args.server) && sender.hasPerm("admin")){
 				//direct connect
@@ -164,7 +165,7 @@ export const commands = commandList({
 					?? fail(`Unknown server ${args.server}. Valid options: ${FishServers.all.map(s => s.name).join(", ")}`);
 				if(target == sender)
 					Call.sendMessage(`${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
-				Call.connect(sender.con, server.ip, server.port);
+				Call.connect(target.con, server.ip, server.port);
 			}
 		}
 	},
@@ -561,7 +562,7 @@ Available types:[yellow]
 		perm: Perm.none,
 		handler({output}){
 			output(`\
-[yellow]Use [white]/nextmap [lightgray]<map number> [yellow]to vote on a map.
+[yellow]Use [white]/nextmap [lightgray]<map name> [yellow]to vote on a map.
 
 [blue]Available maps:
 _________________________

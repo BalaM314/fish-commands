@@ -192,9 +192,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var _b, _c;
-            var args = _a.args, sender = _a.sender;
-            if (args.target != sender && !sender.hasPerm("admin"))
-                (0, commands_1.fail)("You do not have permission to switch other players.");
+            var args = _a.args, sender = _a.sender, f = _a.f;
+            if (args.target != null && args.target != sender && (!sender.hasPerm("admin") || !sender.canModerate(args.target)))
+                (0, commands_1.fail)(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["You do not have permission to switch player ", "."], ["You do not have permission to switch player ", "."])), args.target));
             var target = (_b = args.target) !== null && _b !== void 0 ? _b : sender;
             if (globals_1.ipPortPattern.test(args.server) && sender.hasPerm("admin")) {
                 //direct connect
@@ -204,7 +204,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 var server = (_c = config_1.FishServers.byName(args.server)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServers.all.map(function (s) { return s.name; }).join(", ")));
                 if (target == sender)
                     Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
-                Call.connect(sender.con, server.ip, server.port);
+                Call.connect(target.con, server.ip, server.port);
             }
         }
     }, s: {
@@ -336,7 +336,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, sender = _a.sender, output = _a.output, f = _a.f;
             globals_1.recentWhispers[args.player.uuid] = sender.uuid;
             args.player.sendMessage("".concat(sender.player.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
-            output(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "."], ["[#BBBBBB]Message sent to ", "."])), args.player));
+            output(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "."], ["[#BBBBBB]Message sent to ", "."])), args.player));
         },
     }, r: {
         args: ['message:string'],
@@ -485,12 +485,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true))
-                (0, commands_1.fail)(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+                (0, commands_1.fail)(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
             args.target.player.team(args.team);
             if (args.target === sender)
-                outputSuccess(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
+                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
             else
-                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
+                outputSuccess(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
         },
     }, rank: {
         args: ['player:player'],
@@ -498,7 +498,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, f = _a.f;
-            output(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
+            output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
     }, forcertv: {
         args: ["force:boolean?"],
@@ -580,7 +580,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var output = _a.output;
-            output("[yellow]Use [white]/nextmap [lightgray]<map number> [yellow]to vote on a map.\n\n[blue]Available maps:\n_________________________\n".concat(Vars.maps.customMaps().toArray().map(function (map, i) {
+            output("[yellow]Use [white]/nextmap [lightgray]<map name> [yellow]to vote on a map.\n\n[blue]Available maps:\n_________________________\n".concat(Vars.maps.customMaps().toArray().map(function (map, i) {
                 return "[white]".concat(i, " - [yellow]").concat(map.name());
             }).join("\n")));
         }
@@ -659,7 +659,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: "Views a player's stats.",
         handler: function (_a) {
             var target = _a.args.target, output = _a.output, f = _a.f;
-            output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
+            output(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
         }
     } }));
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8;
