@@ -371,6 +371,8 @@ var FishPlayer = /** @class */ (function () {
         //Clear temporary states such as menu and taphandler
         fishPlayer.activeMenu.callback = undefined;
         fishPlayer.tapInfo.commandName = null;
+        fishPlayer.stats.timeInGame += (Date.now() - fishPlayer.lastJoined); //Time between joining and leaving
+        fishPlayer.lastJoined = Date.now();
     };
     FishPlayer.validateVotekickSession = function () {
         if (Vars.netServer.currentlyKicking) {
@@ -402,13 +404,14 @@ var FishPlayer = /** @class */ (function () {
             }
         }
         fishP.lastActive = Date.now();
+        fishP.stats.chatMessagesSent++;
     };
     FishPlayer.onPlayerCommand = function (player, command, unjoinedRawArgs) {
         if (command == "msg" && unjoinedRawArgs[1] == "Please do not use that logic, as it is attem83 logic and is bad to use. For more information please read www.mindustry.dev/attem")
             return; //Attemwarfare message, not sent by the player
         player.lastActive = Date.now();
     };
-    FishPlayer.onGameOver = function () {
+    FishPlayer.onGameOver = function (winningTeam) {
         var e_5, _a;
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
@@ -416,6 +419,10 @@ var FishPlayer = /** @class */ (function () {
                 //Clear temporary states such as menu and taphandler
                 fishPlayer.activeMenu.callback = undefined;
                 fishPlayer.tapInfo.commandName = null;
+                //Update stats
+                if (fishPlayer.team() == winningTeam)
+                    fishPlayer.stats.gamesWon++;
+                fishPlayer.stats.gamesFinished++;
             }
         }
         catch (e_5_1) { e_5 = { error: e_5_1 }; }

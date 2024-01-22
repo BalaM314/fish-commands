@@ -337,6 +337,8 @@ export class FishPlayer {
 		//Clear temporary states such as menu and taphandler
 		fishPlayer.activeMenu.callback = undefined;
 		fishPlayer.tapInfo.commandName = null;
+		fishPlayer.stats.timeInGame += (Date.now() - fishPlayer.lastJoined); //Time between joining and leaving
+		fishPlayer.lastJoined = Date.now();
 	}
 	static validateVotekickSession(){
 		if(Vars.netServer.currentlyKicking){
@@ -373,17 +375,21 @@ export class FishPlayer {
 			}
 		}
 		fishP.lastActive = Date.now();
+		fishP.stats.chatMessagesSent ++;
 	}
 	static onPlayerCommand(player:FishPlayer, command:string, unjoinedRawArgs:string[]){
 		if(command == "msg" && unjoinedRawArgs[1] == "Please do not use that logic, as it is attem83 logic and is bad to use. For more information please read www.mindustry.dev/attem")
 			return; //Attemwarfare message, not sent by the player
 		player.lastActive = Date.now();
 	}
-	static onGameOver() {
+	static onGameOver(winningTeam:Team) {
 		for(const [uuid, fishPlayer] of Object.entries(this.cachedPlayers)){
 			//Clear temporary states such as menu and taphandler
 			fishPlayer.activeMenu.callback = undefined;
 			fishPlayer.tapInfo.commandName = null;
+			//Update stats
+			if(fishPlayer.team() == winningTeam) fishPlayer.stats.gamesWon ++;
+			fishPlayer.stats.gamesFinished ++;
 		}
 	}
 	/**Must be run on UnitChangeEvent. */

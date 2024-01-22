@@ -178,7 +178,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
 var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entry", function (e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         tile = e.tile;
@@ -187,23 +187,31 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
             action = "broke";
             type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
             if ((_g = (_f = e.unit) === null || _f === void 0 ? void 0 : _f.player) === null || _g === void 0 ? void 0 : _g.uuid()) {
-                players_1.FishPlayer.get(e.unit.player).tstats.blocksBroken++;
+                var fishP = players_1.FishPlayer.get(e.unit.player);
+                //TODO move this code
+                fishP.tstats.blocksBroken++;
+                fishP.stats.blocksBroken++;
             }
         }
         else {
             action = "built";
             type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
+            if ((_j = (_h = e.unit) === null || _h === void 0 ? void 0 : _h.player) === null || _j === void 0 ? void 0 : _j.uuid()) {
+                var fishP = players_1.FishPlayer.get(e.unit.player);
+                //TODO move this code
+                fishP.stats.blocksPlaced++;
+            }
         }
     }
     else if (e instanceof EventType.ConfigEvent) {
         tile = e.tile.tile;
-        uuid = (_j = (_h = e.player) === null || _h === void 0 ? void 0 : _h.uuid()) !== null && _j !== void 0 ? _j : "unknown";
+        uuid = (_l = (_k = e.player) === null || _k === void 0 ? void 0 : _k.uuid()) !== null && _l !== void 0 ? _l : "unknown";
         action = "configured";
         type = e.tile.block.name;
     }
     else if (e instanceof EventType.BuildRotateEvent) {
         tile = e.build.tile;
-        uuid = (_p = (_m = (_l = (_k = e.unit) === null || _k === void 0 ? void 0 : _k.player) === null || _l === void 0 ? void 0 : _l.uuid()) !== null && _m !== void 0 ? _m : (_o = e.unit) === null || _o === void 0 ? void 0 : _o.type.name) !== null && _p !== void 0 ? _p : "unknown";
+        uuid = (_r = (_p = (_o = (_m = e.unit) === null || _m === void 0 ? void 0 : _m.player) === null || _o === void 0 ? void 0 : _o.uuid()) !== null && _p !== void 0 ? _p : (_q = e.unit) === null || _q === void 0 ? void 0 : _q.type.name) !== null && _r !== void 0 ? _r : "unknown";
         action = "rotated";
         type = e.build.block.name;
     }
@@ -211,22 +219,22 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
         tile = e.unit.tileOn();
         if (!tile)
             return;
-        uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_q = e.unit.lastCommanded) !== null && _q !== void 0 ? _q : "unknown";
+        uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_s = e.unit.lastCommanded) !== null && _s !== void 0 ? _s : "unknown";
         action = "killed";
         type = e.unit.type.name;
     }
     else if (e instanceof EventType.BlockDestroyEvent) {
-        if (config_1.Mode.attack() && ((_r = e.tile.build) === null || _r === void 0 ? void 0 : _r.team) != Vars.state.rules.defaultTeam)
+        if (config_1.Mode.attack() && ((_t = e.tile.build) === null || _t === void 0 ? void 0 : _t.team) != Vars.state.rules.defaultTeam)
             return; //Don't log destruction of enemy blocks
         tile = e.tile;
         uuid = "[[something]";
         action = "killed";
-        type = (_t = (_s = e.tile.block()) === null || _s === void 0 ? void 0 : _s.name) !== null && _t !== void 0 ? _t : "air";
+        type = (_v = (_u = e.tile.block()) === null || _u === void 0 ? void 0 : _u.name) !== null && _v !== void 0 ? _v : "air";
     }
     else if (e instanceof EventType.PayloadDropEvent) {
         action = "pay-dropped";
         var controller = e.carrier.controller();
-        uuid = (_w = (_v = (_u = e.carrier.player) === null || _u === void 0 ? void 0 : _u.uuid()) !== null && _v !== void 0 ? _v : (controller instanceof LogicAI ? "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _w !== void 0 ? _w : e.carrier.type.name;
+        uuid = (_y = (_x = (_w = e.carrier.player) === null || _w === void 0 ? void 0 : _w.uuid()) !== null && _x !== void 0 ? _x : (controller instanceof LogicAI ? "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _y !== void 0 ? _y : e.carrier.type.name;
         if (e.build) {
             tile = e.build.tile;
             type = e.build.block.name;
@@ -264,7 +272,7 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
         var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
-        tile = (_x = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _x !== void 0 ? _x : (0, utils_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
+        tile = (_z = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _z !== void 0 ? _z : (0, utils_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
     }
     else
         return;
@@ -327,7 +335,7 @@ Events.on(EventType.GameOverEvent, function (e) {
         Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---");
         (0, utils_1.serverRestartLoop)(20);
     }
-    players_1.FishPlayer.onGameOver();
+    players_1.FishPlayer.onGameOver(e.winner);
 });
 Events.on(EventType.PlayerChatEvent, function (e) {
     players_1.FishPlayer.onPlayerChat(e.player, e.message);

@@ -177,11 +177,19 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 			action = "broke";
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
 			if(e.unit?.player?.uuid()){
-				FishPlayer.get(e.unit.player).tstats.blocksBroken ++;
+				const fishP = FishPlayer.get(e.unit.player);
+				//TODO move this code
+				fishP.tstats.blocksBroken ++;
+				fishP.stats.blocksBroken ++;
 			}
 		} else {
 			action = "built";
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
+			if(e.unit?.player?.uuid()){
+				const fishP = FishPlayer.get(e.unit.player);
+				//TODO move this code
+				fishP.stats.blocksPlaced ++;
+			}
 		}
 	} else if(e instanceof EventType.ConfigEvent){
 		tile = e.tile.tile;
@@ -287,7 +295,7 @@ Events.on(EventType.GameOverEvent, (e) => {
 		Call.sendMessage(`[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back after 15 seconds.[]\n[accent]---[[[coral]+++[]]---`);
 		serverRestartLoop(20);
 	}
-	FishPlayer.onGameOver();
+	FishPlayer.onGameOver(e.winner as Team);
 });
 Events.on(EventType.PlayerChatEvent, e => {
 	FishPlayer.onPlayerChat(e.player, e.message);
