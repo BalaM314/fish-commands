@@ -102,6 +102,7 @@ export class FishPlayer {
 		blocksPlaced: number;
 		timeInGame: number;
 		chatMessagesSent: number;
+		/** Does not include RTVs */
 		gamesFinished: number;
 		gamesWon: number;
 	};
@@ -382,15 +383,23 @@ export class FishPlayer {
 			return; //Attemwarfare message, not sent by the player
 		player.lastActive = Date.now();
 	}
-	static onGameOver(winningTeam:Team) {
+	private static ignoreGameOver = false;
+	static onGameOver(winningTeam:Team){
 		for(const [uuid, fishPlayer] of Object.entries(this.cachedPlayers)){
 			//Clear temporary states such as menu and taphandler
 			fishPlayer.activeMenu.callback = undefined;
 			fishPlayer.tapInfo.commandName = null;
 			//Update stats
-			if(fishPlayer.team() == winningTeam) fishPlayer.stats.gamesWon ++;
-			fishPlayer.stats.gamesFinished ++;
+			if(!this.ignoreGameOver){
+				if(fishPlayer.team() == winningTeam) fishPlayer.stats.gamesWon ++;
+				fishPlayer.stats.gamesFinished ++;
+			}
 		}
+	}
+	static ignoreGameover(callback:() => unknown){
+		this.ignoreGameOver = true;
+		callback();
+		this.ignoreGameOver = false;
 	}
 	/**Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){

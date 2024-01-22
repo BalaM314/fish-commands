@@ -510,7 +510,7 @@ export function tagProcessorPartial<Tin, Tdata>(
 		(data:Tdata) => 
 			stringChunks.map((chunk, i) => {
 				if(stringChunks.length <= i) return chunk;
-				return varChunks[i - 1] ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
+				return (i - 1) in varChunks ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
 			}).join('');
 }
 
@@ -544,7 +544,9 @@ export function getEnemyTeam():Team {
 }
 
 export function neutralGameover(){
-	Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+	FishPlayer.ignoreGameover(() => {
+		Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+	});
 }
 
 /** Chooses a random number between 0 and max. */
@@ -613,7 +615,7 @@ export function outputSuccess(message:string | PartialFormatString, sender:mindu
 	sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
 }
 export function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
-	sender.sendMessage(((typeof message == "function" ? message("") : message) + "").replace(/\t/g, "    "));
+	sender.sendMessage(((typeof message == "function" ? message(null) : message) + "").replace(/\t/g, "    "));
 }
 export function outputConsole(message:string | PartialFormatString, channel:(typeof Log)[keyof typeof Log] = Log.info){
 	channel(typeof message == "function" ? message("") : message);

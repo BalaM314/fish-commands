@@ -657,15 +657,15 @@ ${getMapData().map(({key:map, value:votes}) =>
 		perm: Perm.none,
 		description: "Views a player's stats.",
 		handler({args:{target}, output, f}){
-			output(f`[coral]\
+			output(f`[accent]\
 Statistics for player ${target}:
 (note: we started recording statistics on 22 Jan 2024)
---------------
+[white]--------------[]
 Blocks broken: ${target.stats.blocksBroken}
 Blocks placed: ${target.stats.blocksPlaced}
 Chat messages sent: ${target.stats.chatMessagesSent}
 Games finished: ${target.stats.gamesFinished}
-Win rate: ${target.stats.gamesWon / target.stats.gamesWon}`
+Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			);
 		}
 	}

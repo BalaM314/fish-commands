@@ -420,9 +420,11 @@ var FishPlayer = /** @class */ (function () {
                 fishPlayer.activeMenu.callback = undefined;
                 fishPlayer.tapInfo.commandName = null;
                 //Update stats
-                if (fishPlayer.team() == winningTeam)
-                    fishPlayer.stats.gamesWon++;
-                fishPlayer.stats.gamesFinished++;
+                if (!this.ignoreGameOver) {
+                    if (fishPlayer.team() == winningTeam)
+                        fishPlayer.stats.gamesWon++;
+                    fishPlayer.stats.gamesFinished++;
+                }
             }
         }
         catch (e_5_1) { e_5 = { error: e_5_1 }; }
@@ -432,6 +434,11 @@ var FishPlayer = /** @class */ (function () {
             }
             finally { if (e_5) throw e_5.error; }
         }
+    };
+    FishPlayer.ignoreGameover = function (callback) {
+        this.ignoreGameOver = true;
+        callback();
+        this.ignoreGameOver = false;
     };
     /**Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
@@ -1366,6 +1373,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.antiBotModePersist = false;
     FishPlayer.antiBotModeOverride = false;
     FishPlayer.lastBotWhacked = 0;
+    FishPlayer.ignoreGameOver = false;
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;

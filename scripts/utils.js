@@ -640,7 +640,7 @@ function tagProcessorPartial(transformer) {
             return stringChunks.map(function (chunk, i) {
                 if (stringChunks.length <= i)
                     return chunk;
-                return varChunks[i - 1] ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
+                return (i - 1) in varChunks ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
             }).join('');
         };
     };
@@ -683,7 +683,9 @@ function getEnemyTeam() {
 }
 exports.getEnemyTeam = getEnemyTeam;
 function neutralGameover() {
-    Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+    players_1.FishPlayer.ignoreGameover(function () {
+        Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+    });
 }
 exports.neutralGameover = neutralGameover;
 function random(arg0, arg1) {
@@ -743,7 +745,7 @@ function outputSuccess(message, sender) {
 }
 exports.outputSuccess = outputSuccess;
 function outputMessage(message, sender) {
-    sender.sendMessage(((typeof message == "function" ? message("") : message) + "").replace(/\t/g, "    "));
+    sender.sendMessage(((typeof message == "function" ? message(null) : message) + "").replace(/\t/g, "    "));
 }
 exports.outputMessage = outputMessage;
 function outputConsole(message, channel) {
