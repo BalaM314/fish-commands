@@ -840,7 +840,8 @@ We apologize for the inconvenience.`
 		Core.settings.manualSave();
 	}
 	shouldSave(){
-		return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
+		//return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
+		return true;
 	}
 	static getFishPlayersString(){
 		if(Core.settings.has("fish-subkeys")){

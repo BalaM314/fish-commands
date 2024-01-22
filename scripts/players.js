@@ -925,7 +925,8 @@ var FishPlayer = /** @class */ (function () {
         Core.settings.manualSave();
     };
     FishPlayer.prototype.shouldSave = function () {
-        return config_2.Mode.sandbox() || (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
+        //return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
+        return true;
     };
     FishPlayer.getFishPlayersString = function () {
         if (Core.settings.has("fish-subkeys")) {
