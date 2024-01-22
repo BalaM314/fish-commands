@@ -505,13 +505,18 @@ export function tagProcessor<T>(
 /** Generates a tag template partial processor from a function that processes one value at a time. */
 export function tagProcessorPartial<Tin, Tdata>(
 	transformer:(chunk:Tin, index:number, data:Tdata, allStringChunks:readonly string[], allVarChunks:readonly Tin[]) => string
-):TagFunction<Tin, (data:Tdata) => string> {
+):TagFunction<Tin, PartialFormatString<Tdata>> {
 	return (stringChunks:readonly string[], ...varChunks:readonly Tin[]) =>
-		(data:Tdata) => 
-			stringChunks.map((chunk, i) => {
-				if(stringChunks.length <= i) return chunk;
-				return (i - 1) in varChunks ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
-			}).join('');
+		Object.assign(
+			(data:Tdata) => 
+				stringChunks.map((chunk, i) => {
+					if(stringChunks.length <= i) return chunk;
+					return (i - 1) in varChunks ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
+				}).join(''),
+			{
+				__partialFormatString: true as const
+			}
+		)
 }
 
 export function logErrors<T extends (...args:any[]) => unknown>(message:string, func:T):T {
@@ -609,16 +614,16 @@ const failPrefix = "[scarlet]\u26A0 [yellow]";
 const successPrefix = "[#48e076]\u2714 ";
 
 export function outputFail(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
-	sender.sendMessage(failPrefix + (typeof message == "function" ? message("[yellow]") : message));
+	sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message));
 }
 export function outputSuccess(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
-	sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
+	sender.sendMessage(successPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[#48e076]") : message));
 }
 export function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
-	sender.sendMessage(((typeof message == "function" ? message(null) : message) + "").replace(/\t/g, "    "));
+	sender.sendMessage(((typeof message == "function" && "__partialFormatString" in message ? message(null) : message) + "").replace(/\t/g, "    "));
 }
 export function outputConsole(message:string | PartialFormatString, channel:(typeof Log)[keyof typeof Log] = Log.info){
-	channel(typeof message == "function" ? message("") : message);
+	channel(typeof message == "function" && "__partialFormatString" in message ? message("") : message);
 }
 
 export function updateBans(message?:(player:mindustryPlayer) => string){

@@ -66,7 +66,7 @@ export type ObjectTypeFor<ArgString> =
 export type TapHandleMode = "off" | "once" | "on";
 
 export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number | PlayerInfo | UnitType | Block | Team;
-export type PartialFormatString = (data:string | null) => string;
+export type PartialFormatString<TData = string | null> = ((data:TData) => string) & {__partialFormatString:true};
 export interface FishCommandRunner<ArgType extends string, StoredData> {
 	(_:{
 		/**Raw arguments that were passed to the command. */

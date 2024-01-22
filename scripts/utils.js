@@ -636,13 +636,15 @@ function tagProcessorPartial(transformer) {
         for (var _i = 1; _i < arguments.length; _i++) {
             varChunks[_i - 1] = arguments[_i];
         }
-        return function (data) {
+        return Object.assign(function (data) {
             return stringChunks.map(function (chunk, i) {
                 if (stringChunks.length <= i)
                     return chunk;
                 return (i - 1) in varChunks ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
             }).join('');
-        };
+        }, {
+            __partialFormatString: true
+        });
     };
 }
 exports.tagProcessorPartial = tagProcessorPartial;
@@ -737,20 +739,20 @@ exports.getAntiBotInfo = getAntiBotInfo;
 var failPrefix = "[scarlet]\u26A0 [yellow]";
 var successPrefix = "[#48e076]\u2714 ";
 function outputFail(message, sender) {
-    sender.sendMessage(failPrefix + (typeof message == "function" ? message("[yellow]") : message));
+    sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message));
 }
 exports.outputFail = outputFail;
 function outputSuccess(message, sender) {
-    sender.sendMessage(successPrefix + (typeof message == "function" ? message("[#48e076]") : message));
+    sender.sendMessage(successPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[#48e076]") : message));
 }
 exports.outputSuccess = outputSuccess;
 function outputMessage(message, sender) {
-    sender.sendMessage(((typeof message == "function" ? message(null) : message) + "").replace(/\t/g, "    "));
+    sender.sendMessage(((typeof message == "function" && "__partialFormatString" in message ? message(null) : message) + "").replace(/\t/g, "    "));
 }
 exports.outputMessage = outputMessage;
 function outputConsole(message, channel) {
     if (channel === void 0) { channel = Log.info; }
-    channel(typeof message == "function" ? message("") : message);
+    channel(typeof message == "function" && "__partialFormatString" in message ? message("") : message);
 }
 exports.outputConsole = outputConsole;
 function updateBans(message) {
