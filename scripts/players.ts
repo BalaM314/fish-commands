@@ -386,13 +386,15 @@ export class FishPlayer {
 	private static ignoreGameOver = false;
 	static onGameOver(winningTeam:Team){
 		for(const [uuid, fishPlayer] of Object.entries(this.cachedPlayers)){
-			//Clear temporary states such as menu and taphandler
-			fishPlayer.activeMenu.callback = undefined;
-			fishPlayer.tapInfo.commandName = null;
-			//Update stats
-			if(!this.ignoreGameOver){
-				if(fishPlayer.team() == winningTeam) fishPlayer.stats.gamesWon ++;
-				fishPlayer.stats.gamesFinished ++;
+			if(fishPlayer.connected()){
+				//Clear temporary states such as menu and taphandler
+				fishPlayer.activeMenu.callback = undefined;
+				fishPlayer.tapInfo.commandName = null;
+				//Update stats
+				if(!this.ignoreGameOver){
+					if(fishPlayer.team() == winningTeam) fishPlayer.stats.gamesWon ++;
+					fishPlayer.stats.gamesFinished ++;
+				}
 			}
 		}
 	}

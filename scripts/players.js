@@ -416,14 +416,16 @@ var FishPlayer = /** @class */ (function () {
         try {
             for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), uuid = _d[0], fishPlayer = _d[1];
-                //Clear temporary states such as menu and taphandler
-                fishPlayer.activeMenu.callback = undefined;
-                fishPlayer.tapInfo.commandName = null;
-                //Update stats
-                if (!this.ignoreGameOver) {
-                    if (fishPlayer.team() == winningTeam)
-                        fishPlayer.stats.gamesWon++;
-                    fishPlayer.stats.gamesFinished++;
+                if (fishPlayer.connected()) {
+                    //Clear temporary states such as menu and taphandler
+                    fishPlayer.activeMenu.callback = undefined;
+                    fishPlayer.tapInfo.commandName = null;
+                    //Update stats
+                    if (!this.ignoreGameOver) {
+                        if (fishPlayer.team() == winningTeam)
+                            fishPlayer.stats.gamesWon++;
+                        fishPlayer.stats.gamesFinished++;
+                    }
                 }
             }
         }
