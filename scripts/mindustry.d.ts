@@ -145,6 +145,7 @@ declare class Team {
 	name:string;
 	data():TeamData;
 	coloredName():string;
+	id:number;
 }
 type TeamData = any;
 declare const StatusEffects: {
@@ -179,6 +180,8 @@ declare class Color {
 	constructor(r:number, g:number, b:number, a:number);
 	constructor(color:Color);
 	static valueOf(string:string):Color;
+	static HSVtoRGB(hue:number, saturation:number, value:number):Color;
+	rand():Color;
 }
 declare const Core: {
 	settings: {
@@ -200,8 +203,13 @@ declare const Core: {
 	}
 }
 declare const Mathf: {
+	halfPi: number;
+	PI2: number;
+
 	ceil(val:number):number;
 	round(val:number, step?:number):number;
+	len(x:number, y:number):number;
+	atan2(x:number, y:number):number;
 }
 declare const SaveIO: {
 	save(file:Fi):void;
