@@ -16,7 +16,7 @@ export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
 	static readonly saveVersion = 6;
-	static readonly chunkSize = 60000;
+	static readonly chunkSize = 50000;
 
 	//Static transients
 	static stats = {

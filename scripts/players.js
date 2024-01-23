@@ -1354,7 +1354,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
     FishPlayer.saveVersion = 6;
-    FishPlayer.chunkSize = 60000;
+    FishPlayer.chunkSize = 50000;
     //Static transients
     FishPlayer.stats = {
         numIpsChecked: 0,
