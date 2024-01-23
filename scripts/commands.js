@@ -105,6 +105,7 @@ var Perm = /** @class */ (function () {
                 : config_1.Mode.pvp() ? fishP.ranksAtLeast("trusted")
                     : fishP.ranksAtLeast("admin");
     });
+    Perm.changeTeamExternal = new Perm("changeTeamExternal", "admin");
     Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Mode.pvp(); }, "", "Ohnos are disabled in PVP.");
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");

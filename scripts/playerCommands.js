@@ -481,11 +481,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Changes the team of a player.',
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
-            var _b;
+            var _b, _c;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true))
                 (0, commands_1.fail)(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+            if (!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore)))
+                sender.forceRespawn();
             args.target.player.team(args.team);
             if (args.target === sender)
                 outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));

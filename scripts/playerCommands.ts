@@ -459,6 +459,8 @@ Available types:[yellow]
 		handler({args, sender, outputSuccess, f}){
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true)) fail(f`You do not have permission to change the team of ${args.target}`);
+			if(!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !sender.unit()?.spawnedByCore))
+				sender.forceRespawn();
 
 			args.target.player.team(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
