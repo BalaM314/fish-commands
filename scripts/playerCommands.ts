@@ -459,6 +459,7 @@ Available types:[yellow]
 		handler({args, sender, outputSuccess, f}){
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true)) fail(f`You do not have permission to change the team of ${args.target}`);
+			if(!sender.hasPerm("changeTeamExternal") && args.team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
 			if(!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !sender.unit()?.spawnedByCore))
 				sender.forceRespawn();
 
