@@ -36,7 +36,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.outputConsole = exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.updateBans = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -580,6 +581,50 @@ function getUnitType(type) {
     return "\"".concat(type, "\" is not a valid unit type.");
 }
 exports.getUnitType = getUnitType;
+//TODO refactor this, lots of duped code across multiple select functions
+function getMap(name) {
+    var e_5, _a;
+    if (name == "")
+        return "none";
+    var maps = Vars.maps.all();
+    var filters = [
+        //m => m.name() === name, //exact match
+        function (m) { return m.name().replace(/ /g, "_") === name; },
+        function (//exact match with spaces replaced
+        m) { return m.name().replace(/ /g, "_").toLowerCase() === name.toLowerCase(); },
+        function (//exact match with spaces replaced ignoring case
+        m) { return m.plainName().replace(/ /g, "_").toLowerCase() === name.toLowerCase(); },
+        function (//exact match with spaces replaced ignoring case and colors
+        m) { return m.plainName().toLowerCase().includes(name.toLowerCase()); },
+        function (//partial match ignoring case and colors
+        m) { return m.plainName().replace(/ /g, "_").toLowerCase().includes(name.toLowerCase()); },
+        function (//partial match with spaces replaced ignoring case and colors
+        m) { return m.plainName().replace(/ /g, "").toLowerCase().includes(name.toLowerCase()); },
+        function (//partial match with spaces removed ignoring case and colors
+        m) { return m.plainName().replace(/[^a-zA-Z]/gi, "").toLowerCase().includes(name.toLowerCase()); },
+    ];
+    try {
+        for (var filters_2 = __values(filters), filters_2_1 = filters_2.next(); !filters_2_1.done; filters_2_1 = filters_2.next()) {
+            var filter = filters_2_1.value;
+            var matchingMaps = maps.select(filter);
+            if (matchingMaps.size == 1)
+                return matchingMaps.get(0);
+            else if (matchingMaps.size > 1)
+                return "multiple";
+            //if empty, go to next filter
+        }
+    }
+    catch (e_5_1) { e_5 = { error: e_5_1 }; }
+    finally {
+        try {
+            if (filters_2_1 && !filters_2_1.done && (_a = filters_2.return)) _a.call(filters_2);
+        }
+        finally { if (e_5) throw e_5.error; }
+    }
+    //no filters returned a result
+    return "none";
+}
+exports.getMap = getMap;
 var buildableBlocks = null;
 var validUnits = null;
 function getBlock(block) {

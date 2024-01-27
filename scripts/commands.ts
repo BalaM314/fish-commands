@@ -8,7 +8,7 @@ import type {
 	Formattable, PartialFormatString, SelectClasslikeEnumKeys, ServerCommandHandler, TagFunction
 } from "./types";
 import {
-	crash, escapeStringColorsServer, getBlock, getTeam, getUnitType, outputConsole, outputFail, outputMessage,
+	crash, escapeStringColorsServer, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage,
 	outputSuccess, parseError, parseTimeString, tagProcessor, tagProcessorPartial
 } from "./utils";
 
@@ -177,7 +177,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				} else {
 					const output = FishPlayer.getOneOfflineByName(args[i]);
 					if(output == "none") return {error: `Player "${args[i]}" not found.`};
-					else if(output == "multiple") return {error: `Name "${args[i]}" could refer to more than one player. Try specifying by UUID.`};
+					else if(output == "multiple") return {error: `Name "${args[i]}" could refer to more than one player. Try specifying by ID.`};
 					outputArgs[cmdArg.name] = output;
 				}
 				break;
@@ -229,9 +229,10 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				outputArgs[cmdArg.name] = args[i];
 				break;
 			case "map":
-				const map = Vars.maps.all().find(m => m.custom && m.plainName().toLowerCase().includes(args[i].toLowerCase()));
-				if(map == null) return {error: `Unknown map "${args[i]}". Run [cyan]/maps[] to get a list of all maps.`};
-				outputArgs[cmdArg.name] = map;	
+				const map = getMap(args[i]);
+				if(map == "none") return {error: `Map "${args[i]}" not found.`};
+				else if(map == "multiple") return {error: `Name "${args[i]}" could refer to more than one map. Be more specific.`};
+				outputArgs[cmdArg.name] = map;
 				break;
 			case "rank":
 				const ranks = Rank.getByInput(args[i]);

@@ -176,151 +176,148 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     if (allowMenus === void 0) { allowMenus = true; }
     var outputArgs = {};
     var unresolvedArgs = [];
-    var _loop_1 = function (i, cmdArg) {
-        if (!(i in args) || args[i] === "") {
-            //if the arg was not provided or it was empty
-            if (cmdArg.isOptional) {
-                outputArgs[cmdArg.name] = null;
-            }
-            else if (cmdArg.type == "player" && allowMenus) {
-                outputArgs[cmdArg.name] = null;
-                unresolvedArgs.push(cmdArg);
-            }
-            else
-                return { value: { error: "No value specified for arg ".concat(cmdArg.name, ". Did you type two spaces instead of one?") } };
-            return "continue";
-        }
-        //Deserialize the arg
-        switch (cmdArg.type) {
-            case "player":
-                var output = players_1.FishPlayer.getOneByString(args[i]);
-                if (output == "none")
-                    return { value: { error: "Player \"".concat(args[i], "\" not found.") } };
-                else if (output == "multiple")
-                    return { value: { error: "Name \"".concat(args[i], "\" could refer to more than one player.") } };
-                outputArgs[cmdArg.name] = output;
-                break;
-            case "offlinePlayer":
-                if (globals_1.uuidPattern.test(args[i])) {
-                    var player = players_1.FishPlayer.getById(args[i]);
-                    if (player == null)
-                        return { value: { error: "Player with uuid \"".concat(args[i], "\" not found. Specify \"create:").concat(args[i], "\" to create the player.") } };
-                    outputArgs[cmdArg.name] = player;
-                }
-                else if (globals_1.uuidPattern.test(args[i].split("create:")[1])) {
-                    outputArgs[cmdArg.name] = players_1.FishPlayer.getFromInfo(Vars.netServer.admins.getInfo(args[i].split("create:")[1]));
-                }
-                else {
-                    var output_1 = players_1.FishPlayer.getOneOfflineByName(args[i]);
-                    if (output_1 == "none")
-                        return { value: { error: "Player \"".concat(args[i], "\" not found.") } };
-                    else if (output_1 == "multiple")
-                        return { value: { error: "Name \"".concat(args[i], "\" could refer to more than one player. Try specifying by UUID.") } };
-                    outputArgs[cmdArg.name] = output_1;
-                }
-                break;
-            case "team":
-                var team = (0, utils_1.getTeam)(args[i]);
-                if (typeof team == "string")
-                    return { value: { error: team } };
-                outputArgs[cmdArg.name] = team;
-                break;
-            case "number":
-                var number = Number(args[i]);
-                if (isNaN(number)) {
-                    if (/\(\d+,/.test(args[i]))
-                        number = Number(args[i].slice(1, -1));
-                    else if (/\d+\)/.test(args[i]))
-                        number = Number(args[i].slice(0, -1));
-                    if (isNaN(number))
-                        return { value: { error: "Invalid number \"".concat(args[i], "\"") } };
-                }
-                outputArgs[cmdArg.name] = number;
-                break;
-            case "time":
-                var milliseconds = (0, utils_1.parseTimeString)(args[i]);
-                if (milliseconds == null)
-                    return { value: { error: "Invalid time string \"".concat(args[i], "\"") } };
-                outputArgs[cmdArg.name] = milliseconds;
-                break;
-            case "string":
-                outputArgs[cmdArg.name] = args[i];
-                break;
-            case "boolean":
-                switch (args[i].toLowerCase()) {
-                    case "true":
-                    case "yes":
-                    case "yeah":
-                    case "ya":
-                    case "ye":
-                    case "t":
-                    case "y":
-                    case "1":
-                        outputArgs[cmdArg.name] = true;
-                        break;
-                    case "false":
-                    case "no":
-                    case "nah":
-                    case "nay":
-                    case "nope":
-                    case "f":
-                    case "n":
-                    case "0":
-                        outputArgs[cmdArg.name] = false;
-                        break;
-                    default: return { value: { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") } };
-                }
-                break;
-            case "block":
-                var block = (0, utils_1.getBlock)(args[i]);
-                if (typeof block == "string")
-                    return { value: { error: block } };
-                outputArgs[cmdArg.name] = block;
-                break;
-            case "unittype":
-                var unit = (0, utils_1.getUnitType)(args[i]);
-                if (typeof unit == "string")
-                    return { value: { error: unit } };
-                outputArgs[cmdArg.name] = unit;
-                break;
-            case "uuid":
-                if (!globals_1.uuidPattern.test(args[i]))
-                    return { value: { error: "Invalid uuid string \"".concat(args[i], "\"") } };
-                outputArgs[cmdArg.name] = args[i];
-                break;
-            case "map":
-                var map = Vars.maps.all().find(function (m) { return m.custom && m.plainName().toLowerCase().includes(args[i].toLowerCase()); });
-                if (map == null)
-                    return { value: { error: "Unknown map \"".concat(args[i], "\". Run [cyan]/maps[] to get a list of all maps.") } };
-                outputArgs[cmdArg.name] = map;
-                break;
-            case "rank":
-                var ranks = ranks_1.Rank.getByInput(args[i]);
-                if (ranks.length == 0)
-                    return { value: { error: "Unknown rank \"".concat(args[i], "\"") } };
-                if (ranks.length > 1)
-                    return { value: { error: "Ambiguous rank \"".concat(args[i], "\"") } };
-                outputArgs[cmdArg.name] = ranks[0];
-                break;
-            case "roleflag":
-                var roleflags = ranks_1.RoleFlag.getByInput(args[i]);
-                if (roleflags.length == 0)
-                    return { value: { error: "Unknown role flag \"".concat(args[i], "\"") } };
-                if (roleflags.length > 1)
-                    return { value: { error: "Ambiguous role flag \"".concat(args[i], "\"") } };
-                outputArgs[cmdArg.name] = roleflags[0];
-                break;
-            default:
-                cmdArg.type;
-                (0, utils_1.crash)("impossible");
-        }
-    };
     try {
         for (var _b = __values(processedCmdArgs.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), i = _d[0], cmdArg = _d[1];
-            var state_1 = _loop_1(i, cmdArg);
-            if (typeof state_1 === "object")
-                return state_1.value;
+            if (!(i in args) || args[i] === "") {
+                //if the arg was not provided or it was empty
+                if (cmdArg.isOptional) {
+                    outputArgs[cmdArg.name] = null;
+                }
+                else if (cmdArg.type == "player" && allowMenus) {
+                    outputArgs[cmdArg.name] = null;
+                    unresolvedArgs.push(cmdArg);
+                }
+                else
+                    return { error: "No value specified for arg ".concat(cmdArg.name, ". Did you type two spaces instead of one?") };
+                continue;
+            }
+            //Deserialize the arg
+            switch (cmdArg.type) {
+                case "player":
+                    var output = players_1.FishPlayer.getOneByString(args[i]);
+                    if (output == "none")
+                        return { error: "Player \"".concat(args[i], "\" not found.") };
+                    else if (output == "multiple")
+                        return { error: "Name \"".concat(args[i], "\" could refer to more than one player.") };
+                    outputArgs[cmdArg.name] = output;
+                    break;
+                case "offlinePlayer":
+                    if (globals_1.uuidPattern.test(args[i])) {
+                        var player = players_1.FishPlayer.getById(args[i]);
+                        if (player == null)
+                            return { error: "Player with uuid \"".concat(args[i], "\" not found. Specify \"create:").concat(args[i], "\" to create the player.") };
+                        outputArgs[cmdArg.name] = player;
+                    }
+                    else if (globals_1.uuidPattern.test(args[i].split("create:")[1])) {
+                        outputArgs[cmdArg.name] = players_1.FishPlayer.getFromInfo(Vars.netServer.admins.getInfo(args[i].split("create:")[1]));
+                    }
+                    else {
+                        var output_1 = players_1.FishPlayer.getOneOfflineByName(args[i]);
+                        if (output_1 == "none")
+                            return { error: "Player \"".concat(args[i], "\" not found.") };
+                        else if (output_1 == "multiple")
+                            return { error: "Name \"".concat(args[i], "\" could refer to more than one player. Try specifying by ID.") };
+                        outputArgs[cmdArg.name] = output_1;
+                    }
+                    break;
+                case "team":
+                    var team = (0, utils_1.getTeam)(args[i]);
+                    if (typeof team == "string")
+                        return { error: team };
+                    outputArgs[cmdArg.name] = team;
+                    break;
+                case "number":
+                    var number = Number(args[i]);
+                    if (isNaN(number)) {
+                        if (/\(\d+,/.test(args[i]))
+                            number = Number(args[i].slice(1, -1));
+                        else if (/\d+\)/.test(args[i]))
+                            number = Number(args[i].slice(0, -1));
+                        if (isNaN(number))
+                            return { error: "Invalid number \"".concat(args[i], "\"") };
+                    }
+                    outputArgs[cmdArg.name] = number;
+                    break;
+                case "time":
+                    var milliseconds = (0, utils_1.parseTimeString)(args[i]);
+                    if (milliseconds == null)
+                        return { error: "Invalid time string \"".concat(args[i], "\"") };
+                    outputArgs[cmdArg.name] = milliseconds;
+                    break;
+                case "string":
+                    outputArgs[cmdArg.name] = args[i];
+                    break;
+                case "boolean":
+                    switch (args[i].toLowerCase()) {
+                        case "true":
+                        case "yes":
+                        case "yeah":
+                        case "ya":
+                        case "ye":
+                        case "t":
+                        case "y":
+                        case "1":
+                            outputArgs[cmdArg.name] = true;
+                            break;
+                        case "false":
+                        case "no":
+                        case "nah":
+                        case "nay":
+                        case "nope":
+                        case "f":
+                        case "n":
+                        case "0":
+                            outputArgs[cmdArg.name] = false;
+                            break;
+                        default: return { error: "Argument ".concat(args[i], " is not a boolean. Try \"true\" or \"false\".") };
+                    }
+                    break;
+                case "block":
+                    var block = (0, utils_1.getBlock)(args[i]);
+                    if (typeof block == "string")
+                        return { error: block };
+                    outputArgs[cmdArg.name] = block;
+                    break;
+                case "unittype":
+                    var unit = (0, utils_1.getUnitType)(args[i]);
+                    if (typeof unit == "string")
+                        return { error: unit };
+                    outputArgs[cmdArg.name] = unit;
+                    break;
+                case "uuid":
+                    if (!globals_1.uuidPattern.test(args[i]))
+                        return { error: "Invalid uuid string \"".concat(args[i], "\"") };
+                    outputArgs[cmdArg.name] = args[i];
+                    break;
+                case "map":
+                    var map = (0, utils_1.getMap)(args[i]);
+                    if (map == "none")
+                        return { error: "Map \"".concat(args[i], "\" not found.") };
+                    else if (map == "multiple")
+                        return { error: "Name \"".concat(args[i], "\" could refer to more than one map. Be more specific.") };
+                    outputArgs[cmdArg.name] = map;
+                    break;
+                case "rank":
+                    var ranks = ranks_1.Rank.getByInput(args[i]);
+                    if (ranks.length == 0)
+                        return { error: "Unknown rank \"".concat(args[i], "\"") };
+                    if (ranks.length > 1)
+                        return { error: "Ambiguous rank \"".concat(args[i], "\"") };
+                    outputArgs[cmdArg.name] = ranks[0];
+                    break;
+                case "roleflag":
+                    var roleflags = ranks_1.RoleFlag.getByInput(args[i]);
+                    if (roleflags.length == 0)
+                        return { error: "Unknown role flag \"".concat(args[i], "\"") };
+                    if (roleflags.length > 1)
+                        return { error: "Ambiguous role flag \"".concat(args[i], "\"") };
+                    outputArgs[cmdArg.name] = roleflags[0];
+                    break;
+                default:
+                    cmdArg.type;
+                    (0, utils_1.crash)("impossible");
+            }
         }
     }
     catch (e_2_1) { e_2 = { error: e_2_1 }; }
@@ -497,7 +494,7 @@ exports.handleTapEvent = handleTapEvent;
  **/
 function register(commands, clientHandler, serverHandler) {
     var e_3, _a;
-    var _loop_2 = function (name, _data) {
+    var _loop_1 = function (name, _data) {
         var data = typeof _data == "function" ? _data() : _data;
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
@@ -588,7 +585,7 @@ function register(commands, clientHandler, serverHandler) {
     try {
         for (var _b = __values(Object.entries(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), name = _d[0], _data = _d[1];
-            _loop_2(name, _data);
+            _loop_1(name, _data);
         }
     }
     catch (e_3_1) { e_3 = { error: e_3_1 }; }
@@ -602,7 +599,7 @@ function register(commands, clientHandler, serverHandler) {
 exports.register = register;
 function registerConsole(commands, serverHandler) {
     var e_4, _a;
-    var _loop_3 = function (name, data) {
+    var _loop_2 = function (name, data) {
         //Cursed for of loop due to lack of object.entries
         //Process the args
         var processedCmdArgs = data.args.map(processArgString);
@@ -644,7 +641,7 @@ function registerConsole(commands, serverHandler) {
     try {
         for (var _b = __values(Object.entries(commands)), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), name = _d[0], data = _d[1];
-            _loop_3(name, data);
+            _loop_2(name, data);
         }
     }
     catch (e_4_1) { e_4 = { error: e_4_1 }; }

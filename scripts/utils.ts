@@ -460,6 +460,32 @@ export function getUnitType(type:string):Unit | string {
 	return `"${type}" is not a valid unit type.`;
 }
 
+//TODO refactor this, lots of duped code across multiple select functions
+export function getMap(name:string):MMap | "none" | "multiple" {
+	if(name == "") return "none";
+	const maps = Vars.maps.all();
+	
+	const filters:((m:MMap) => boolean)[] = [
+		//m => m.name() === name, //exact match
+		m => m.name().replace(/ /g, "_") === name, //exact match with spaces replaced
+		m => m.name().replace(/ /g, "_").toLowerCase() === name.toLowerCase(), //exact match with spaces replaced ignoring case
+		m => m.plainName().replace(/ /g, "_").toLowerCase() === name.toLowerCase(), //exact match with spaces replaced ignoring case and colors
+		m => m.plainName().toLowerCase().includes(name.toLowerCase()), //partial match ignoring case and colors
+		m => m.plainName().replace(/ /g, "_").toLowerCase().includes(name.toLowerCase()), //partial match with spaces replaced ignoring case and colors
+		m => m.plainName().replace(/ /g, "").toLowerCase().includes(name.toLowerCase()), //partial match with spaces removed ignoring case and colors
+		m => m.plainName().replace(/[^a-zA-Z]/gi, "").toLowerCase().includes(name.toLowerCase()), //partial match with non-alphabetic characters removed ignoring case and colors
+	];
+	
+	for(const filter of filters){
+		const matchingMaps = maps.select(filter);
+		if(matchingMaps.size == 1) return matchingMaps.get(0)!;
+		else if(matchingMaps.size > 1) return "multiple";
+		//if empty, go to next filter
+	}
+	//no filters returned a result
+	return "none";
+}
+
 let buildableBlocks:Seq<Block> | null = null;
 let validUnits:Seq<UnitType> | null = null;
 
