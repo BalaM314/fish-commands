@@ -398,7 +398,7 @@ var FishPlayer = /** @class */ (function () {
                 if (message.trim() == "/vote y") {
                     //Sends /vote y within 5 seconds of joining
                     (0, utils_1.logHTrip)(fishP, "votekick bot");
-                    FishPlayer.punishedIPs.push([player.ip(), "_", 1000]); //If there are any further joins within 1 second, its definitely a bot, just ban
+                    fishP.setPunishedIP(1000); //If there are any further joins within 1 second, its definitely a bot, just ban
                     fishP.player.kick(Packets.KickReason.kick, 30000);
                 }
             }
@@ -1178,7 +1178,7 @@ var FishPlayer = /** @class */ (function () {
             by: by instanceof FishPlayer ? by.name : by,
             time: Date.now(),
         });
-        FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
+        this.setPunishedIP(config.stopAntiEvadeTime);
         this.updateName();
         if (this.connected() && notify) {
             this.stopUnit();
@@ -1209,6 +1209,9 @@ var FishPlayer = /** @class */ (function () {
             this.updateName();
             this.forceRespawn();
         }
+    };
+    FishPlayer.prototype.setPunishedIP = function (duration) {
+        FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + duration]);
     };
     FishPlayer.removePunishedIP = function (target) {
         var ipIndex;
@@ -1251,6 +1254,7 @@ var FishPlayer = /** @class */ (function () {
         this.muted = true;
         this.updateName();
         this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
+        this.setPunishedIP(config.stopAntiEvadeTime);
         this.addHistoryEntry({
             action: 'muted',
             by: by instanceof FishPlayer ? by.name : by,
@@ -1262,6 +1266,8 @@ var FishPlayer = /** @class */ (function () {
         if (!this.muted)
             return;
         this.muted = false;
+        FishPlayer.removePunishedIP(this.ip());
+        FishPlayer.removePunishedUUID(this.uuid);
         this.updateName();
         this.sendMessage("[green]You have been unmuted.");
         this.addHistoryEntry({

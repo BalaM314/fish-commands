@@ -370,7 +370,7 @@ export class FishPlayer {
 				if(message.trim() == "/vote y"){
 					//Sends /vote y within 5 seconds of joining
 					logHTrip(fishP, "votekick bot");
-					FishPlayer.punishedIPs.push([player.ip(), "_", 1000]);//If there are any further joins within 1 second, its definitely a bot, just ban
+					fishP.setPunishedIP(1000);//If there are any further joins within 1 second, its definitely a bot, just ban
 					fishP.player.kick(Packets.KickReason.kick, 30000);
 				}
 			}
@@ -1061,7 +1061,7 @@ We apologize for the inconvenience.`
 			by: by instanceof FishPlayer ? by.name : by,
 			time: Date.now(),
 		});
-		FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + config.stopAntiEvadeTime]);
+		this.setPunishedIP(config.stopAntiEvadeTime);
 		this.updateName();
 		if(this.connected() && notify){
 			this.stopUnit();
@@ -1095,6 +1095,9 @@ We apologize for the inconvenience.`
 			this.forceRespawn();
 		}
 	}
+	setPunishedIP(duration:number){
+		FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + duration]);
+	}
 	static removePunishedIP(target:string){
 		let ipIndex:number;
 		if((ipIndex = FishPlayer.punishedIPs.findIndex(([ip]) => ip == target)) != -1){
@@ -1125,6 +1128,7 @@ We apologize for the inconvenience.`
 		this.muted = true;
 		this.updateName();
 		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
+		this.setPunishedIP(config.stopAntiEvadeTime);
 		this.addHistoryEntry({
 			action: 'muted',
 			by: by instanceof FishPlayer ? by.name : by,
@@ -1135,6 +1139,8 @@ We apologize for the inconvenience.`
 	unmute(by:FishPlayer){
 		if(!this.muted) return;
 		this.muted = false;
+		FishPlayer.removePunishedIP(this.ip());
+		FishPlayer.removePunishedUUID(this.uuid);
 		this.updateName();
 		this.sendMessage(`[green]You have been unmuted.`);
 		this.addHistoryEntry({

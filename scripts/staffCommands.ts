@@ -65,7 +65,7 @@ export const commands = commandList({
 			const reason = args.reason ?? 'A staff member did not like your actions.';
 			args.player.player.kick(reason);
 			logAction('kicked', sender, args.player);
-			FishPlayer.punishedIPs.push([args.player.ip(), args.player.uuid, Date.now() + stopAntiEvadeTime]);
+			args.player.setPunishedIP(stopAntiEvadeTime);
 			outputSuccess(f`Kicked player ${args.player} for "${reason}"`);
 		}
 	},
