@@ -395,6 +395,7 @@ declare class PlayerInfo {
 
 declare class UnitType {
 	spawn(team:Team, x:number, y:number):Unit;
+	create(team:Team):Unit;
 	health: number;
 	hidden: boolean;
 	internal: boolean;

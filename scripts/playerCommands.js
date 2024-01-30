@@ -414,10 +414,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 ohnos: new Array(),
                 lastSpawned: 0,
                 makeOhno: function (team, x, y) {
-                    var ohno = UnitTypes.atrax.spawn(team, x, y);
+                    var ohno = UnitTypes.atrax.create(team);
+                    ohno.set(x, y);
                     ohno.type = UnitTypes.alpha;
                     ohno.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
                     ohno.resetController(); //does this work?
+                    ohno.add();
                     this.ohnos.push(ohno);
                     this.lastSpawned = Date.now();
                     return ohno;

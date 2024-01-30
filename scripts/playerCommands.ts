@@ -391,10 +391,12 @@ Available types:[yellow]
 				ohnos: new Array<Unit>(),
 				lastSpawned: 0,
 				makeOhno(team:Team, x:number, y:number){
-					const ohno = UnitTypes.atrax.spawn(team, x, y);
+					const ohno = UnitTypes.atrax.create(team);
+					ohno.set(x, y);
 					ohno.type = UnitTypes.alpha;
 					ohno.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
 					ohno.resetController(); //does this work?
+					ohno.add();
 					this.ohnos.push(ohno);
 					this.lastSpawned = Date.now();
 					return ohno;
@@ -672,5 +674,5 @@ Games finished: ${target.stats.gamesFinished}
 Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			);
 		}
-	}
+	},
 });
