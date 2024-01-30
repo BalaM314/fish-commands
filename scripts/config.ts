@@ -1,3 +1,5 @@
+import { ipPattern, ipPortPattern, uuidPattern } from "./globals"; //TODO fix storage of global variables
+
 export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 export const MUTED_PREFIX = '[white](muted)';
 export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
@@ -29,7 +31,8 @@ export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
-	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]"
+	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
+	uuidPattern, ipPattern, ipPortPattern
 ]);
 export const adminNames = ["fish", "balamei4", "xyralith", "clashgone", "hawo", "hallo", "aricia", "rawsewage", "skeledragon", "edh83", "everydayhuman83"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
