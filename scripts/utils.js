@@ -438,7 +438,7 @@ function isImpersonator(name, isAdmin) {
     })([
         "server", "admin", "moderator", "staff",
         [">|||>", "Name contains >|||> which is reserved for the server owner"],
-        "\uE817", "\uE82C", "\uE88E",
+        "\uE817", "\uE82C", "\uE88E", "\uE813",
         [/^<.{1,3}>/, "Name contains a prefix such as <a> which is used for role prefixes"],
         [function (replacedText) { return !isAdmin && config_1.adminNames.includes(replacedText.replace(/ /g, "")); }, "One of our admins uses this name"]
     ]);
@@ -542,6 +542,9 @@ function escapeStringColorsClient(str) {
     return str.replace(/\[/g, "[[");
 }
 exports.escapeStringColorsClient = escapeStringColorsClient;
+// export function highlightStringColorsClient(str:string):string {
+// 	return str.replace(/(?<!\[)\[[a-z0-9#]{2,10}\]/gi, "[gray][$0[]");
+// }
 /**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
 function escapeStringColorsServer(str) {
     return str.replace(/&/g, "&&");

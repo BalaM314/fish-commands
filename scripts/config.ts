@@ -89,6 +89,7 @@ export const substitutions:Record<string, string> = Object.fromEntries<string>(O
 	"X": "\u03A7\u0425\u04B2\u1E8A\u1E8C\u2169",
 	"Y": "\u01B3\u0232\u03A5\u03AB\u03D3\u0423\u04AE\u04B0\u1E8E\u1EF2\u1EF4\u038E",
 	"Z": "\u0179\u017B\u017D\u0224\u0396\u1E90\u1E92\u1E94",
+	"": "\u200B\u200C\u200D",
 }).map(([char, alts]) => alts.split("").map(alt => [alt, char] as const)).flat(1));
 export const multiCharSubstitutions:[RegExp, string][] = [
 	[/\|-\|/g, "H"]

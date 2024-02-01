@@ -338,7 +338,7 @@ export function isImpersonator(name:string, isAdmin:boolean):false | string {
 	)([
 		"server", "admin", "moderator", "staff",
 		[">|||>", "Name contains >|||> which is reserved for the server owner"],
-		"\uE817", "\uE82C", "\uE88E",
+		"\uE817", "\uE82C", "\uE88E", "\uE813",
 		[/^<.{1,3}>/, "Name contains a prefix such as <a> which is used for role prefixes"],
 		[(replacedText) => !isAdmin && adminNames.includes(replacedText.replace(/ /g, "")), "One of our admins uses this name"]
 	]);
@@ -425,13 +425,17 @@ export function escapeStringColorsClient(str:string):string {
 	return str.replace(/\[/g, "[[");
 }
 
+// export function highlightStringColorsClient(str:string):string {
+// 	return str.replace(/(?<!\[)\[[a-z0-9#]{2,10}\]/gi, "[gray][$0[]");
+// }
+
 /**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
 export function escapeStringColorsServer(str:string):string {
 	return str.replace(/&/g, "&&");
 }
 
 /** Triggers the restart countdown. Execution always returns from this function. */
-export function serverRestartLoop(sec:number){
+export function serverRestartLoop(sec:number):void {
 	if(sec > 0){
 		if(sec < 15 || sec % 5 == 0) Call.sendMessage(`[scarlet]Server restarting in: ${sec}`);
 		fishState.restartLoopTask = Timer.schedule(() => serverRestartLoop(sec - 1), 1);
