@@ -18,10 +18,10 @@ export function initializeTimers(){
 	//Memory corruption prank
 	Timer.schedule(() => {
 		if(Math.random() < 0.2){
-			//Timer triggers every 8 hours, and the random chance is 20%, so the average interval between pranks is 40 hours
+			//Timer triggers every 17 hours, and the random chance is 20%, so the average interval between pranks is 85 hours
 			definitelyRealMemoryCorruption();
 		}
-	}, 3600, 28800);
+	}, 3600, 61200);
 	//Trails
 	Timer.schedule(() =>
 		FishPlayer.forEachPlayer(p => p.displayTrail()),
