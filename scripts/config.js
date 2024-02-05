@@ -33,7 +33,7 @@ exports.bannedWords = (function (words) {
     ["cu" + "nt", "scunthorpe"],
     ["penis", "peniston"],
     ["rape", "grape", "therap", "drape", "scrape", "trapez"],
-    /\bf(a)g\b/,
+    /\bf(a)g\b/, "fa" + "gg" + "ot",
     /\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
     ["porn", "maporn"],
     "ur gay", "your gay", "youre gay", "you're gay",
