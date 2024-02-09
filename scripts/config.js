@@ -28,7 +28,7 @@ exports.bannedWords = (function (words) {
     "re" + "tard",
     'kill yourself', 'kill urself', /\bkys\b/,
     /\bkill blacks\b/,
-    "co" + "ck",
+    ["co" + "ck", "cockroach"],
     "iamasussyimposter",
     ["cu" + "nt", "scunthorpe"],
     ["penis", "peniston"],
