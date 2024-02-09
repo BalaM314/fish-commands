@@ -491,7 +491,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (!sender.hasPerm("changeTeamExternal") && args.team.data().cores.size <= 0)
                 (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
             if (!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore)))
-                sender.forceRespawn();
+                args.target.forceRespawn();
             args.target.player.team(args.team);
             if (args.target === sender)
                 outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));

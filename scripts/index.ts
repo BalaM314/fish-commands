@@ -300,7 +300,7 @@ Events.on(EventType.GameOverEvent, (e) => {
 Events.on(EventType.PlayerChatEvent, e => {
 	FishPlayer.onPlayerChat(e.player, e.message);
 });
-Events.on(EventType.DisposeEvent, (e) => {
+Events.on(EventType.DisposeEvent, (e) => { //TODO does not actually work...
 	FishPlayer.saveAll();
 });
 
