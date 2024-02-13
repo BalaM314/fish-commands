@@ -329,16 +329,30 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (args.time <= 0 || args.time > 3600)
-                (0, commands_1.fail)("Time must be a positive number less than 3600.");
+            if (args.time <= 0)
+                (0, commands_1.fail)("Labels cannot go back in time.");
+            if (args.time > 356400)// 99 hours, in seconds
+                (0, commands_1.fail)("this seems a little excessive, even for a mod.");
+
             var timeRemaining = args.time;
             var labelx = sender.unit().x;
             var labely = sender.unit().y;
             Timer.schedule(function () {
                 if (timeRemaining > 0) {
                     var timeseconds = timeRemaining % 60;
-                    var timeminutes = (timeRemaining - timeseconds) / 60;
-                    Call.label("".concat(sender.name, "\n\n[white]").concat(args.message, "\n\n[acid]").concat(timeminutes, ":").concat(timeseconds), 1, labelx, labely);
+					if(timeseconds < 10){
+						timeseconds = "0" + timeseconds
+					}
+					var timeminutes =  (((timeRemaining - timeRemaining % 60) / 60) % 60);
+                    if(timeminutes < 10){
+						timeminutes = "0" + timeminutes
+					}
+                    var timehours = (timeRemaining - timeRemaining % 3600) / 3600;
+                    if(timehours < 10){
+                        timehours = "0" + timehours
+                    }
+
+                    Call.label("".concat(sender.name, "\n\n[white]").concat(args.message, "\n\n[acid]").concat(timehours, ":").concat(timeminutes, ":").concat(timeseconds), 1, labelx, labely);
                     timeRemaining--;
                 }
             }, 0, 1, args.time);
