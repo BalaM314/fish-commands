@@ -285,22 +285,33 @@ export const commands = commandList({
 		description: "Places a label at your position for a specified amount of time.",
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess, f}){
-			if(args.time <= 0 || args.time > 3600) fail(`Time must be a positive number less than 3600.`);
+			if (args.time <= 0)
+                		(0, commands_1.fail)("/label cannot go back in time");
+            		if (args.time > 356400)// 99 hours, in seconds
+                		(0, commands_1.fail)("this seems a little excessive, even for a mod ");
+
 			let timeRemaining = args.time;
 			const labelx = sender.unit().x;
 			const labely = sender.unit().y;
-			Timer.schedule(() => {
-				if(timeRemaining > 0){
-					let timeseconds = timeRemaining % 60;
-					let timeminutes = (timeRemaining - timeseconds) / 60;
-					Call.label(
-						`${sender.name}\n\n[white]${args.message}\n\n[acid]${timeminutes}:${timeseconds}`,
-						1, labelx, labely
-					);
-					timeRemaining --;
-				}
-			}, 0, 1, args.time);
-			outputSuccess(f`Placed label "${args.message}" for ${args.time} seconds.`);
+			Timer.schedule(function () {
+               		 	if (timeRemaining > 0) {
+                    			var timeseconds = timeRemaining % 60;
+					if(timeseconds < 10){
+						timeseconds = "0" + timeseconds
+					}
+					var timeminutes =  (((timeRemaining - timeRemaining % 60) / 60) % 60);
+                    			if(timeminutes < 10){
+						timeminutes = "0" + timeminutes
+					}
+                    			var timehours = (timeRemaining - timeRemaining % 3600) / 3600;
+                    			if(timehours < 10){
+                        			timehours = "0" + timehours
+                   			}
+                    			Call.label("".concat(sender.name, "\n\n[white]").concat(args.message, "\n\n[acid]").concat(timehours, ":").concat(timeminutes, ":").concat(timeseconds), 1, labelx, labely);
+                    			timeRemaining--;
+                		}
+            		}, 0, 1, args.time);
+		outputSuccess(f`Placed label "${args.message}" for ${args.time} seconds.`);
 		}
 	},
 
