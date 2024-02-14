@@ -331,7 +331,7 @@ exports.commands = (0, commands_1.commandList)({
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (args.time > 36000000)
                 (0, commands_1.fail)("Time must be less than 10 hours.");
-            var timeRemaining = args.time;
+            var timeRemaining = args.time / 1000;
             var labelx = sender.unit().x;
             var labely = sender.unit().y;
             globals_1.fishState.labels.push(Timer.schedule(function () {
@@ -342,7 +342,7 @@ exports.commands = (0, commands_1.commandList)({
                     timeRemaining--;
                 }
             }, 0, 1, args.time));
-            outputSuccess(f(templateObject_25 || (templateObject_25 = __makeTemplateObject(["Placed label \"", "\" for ", " seconds."], ["Placed label \"", "\" for ", " seconds."])), args.message, args.time));
+            outputSuccess(f(templateObject_25 || (templateObject_25 = __makeTemplateObject(["Placed label \"", "\" for ", " seconds."], ["Placed label \"", "\" for ", " seconds."])), args.message, timeRemaining));
         }
     },
     clearlabels: {

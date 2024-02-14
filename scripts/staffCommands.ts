@@ -286,7 +286,7 @@ export const commands = commandList({
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess, f}){
 			if(args.time > 36000_000) fail(`Time must be less than 10 hours.`);
-			let timeRemaining = args.time;
+			let timeRemaining = args.time / 1000;
 			const labelx = sender.unit().x;
 			const labely = sender.unit().y;
 			fishState.labels.push(Timer.schedule(() => {
@@ -304,7 +304,7 @@ export const commands = commandList({
 					timeRemaining --;
 				}
 			}, 0, 1, args.time));
-			outputSuccess(f`Placed label "${args.message}" for ${args.time} seconds.`);
+			outputSuccess(f`Placed label "${args.message}" for ${timeRemaining} seconds.`);
 		}
 	},
 
