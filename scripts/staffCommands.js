@@ -665,5 +665,45 @@ exports.commands = (0, commands_1.commandList)({
             }, 6.1);
         }
     },
+    search: {
+        args: ["input:string"],
+        description: "Searches playerinfo by name, IP, or UUID.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var input = _a.args.input, admins = _a.admins, output = _a.output, f = _a.f, sender = _a.sender;
+            if (globals_1.uuidPattern.test(input)) {
+                var fishP = players_1.FishPlayer.getById(input);
+                var info = admins.getInfoOptional(input);
+                if (fishP == null && info == null)
+                    (0, commands_1.fail)(f(templateObject_40 || (templateObject_40 = __makeTemplateObject(["No stored data matched uuid ", "."], ["No stored data matched uuid ", "."])), input));
+                else if (fishP == null && info)
+                    output(f(templateObject_41 || (templateObject_41 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                else if (fishP && info)
+                    output(f(templateObject_42 || (templateObject_42 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                else
+                    (0, commands_1.fail)(f(templateObject_43 || (templateObject_43 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
+            }
+            else if (globals_1.ipPattern.test(input)) {
+                var matches = admins.findByIPs(input);
+                if (matches.isEmpty())
+                    (0, commands_1.fail)(f(templateObject_44 || (templateObject_44 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
+                output(f(templateObject_45 || (templateObject_45 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches.size, matches.size == 1 ? "" : "es", input));
+                matches.each(function (info) { return output(f(templateObject_46 || (templateObject_46 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+            }
+            else {
+                var matches_1 = Vars.netServer.admins.searchNames(input);
+                if (matches_1.isEmpty())
+                    (0, commands_1.fail)(f(templateObject_47 || (templateObject_47 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
+                output(f(templateObject_48 || (templateObject_48 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
+                var displayMatches = function () {
+                    matches_1.each(function (info) { return output(f(templateObject_49 || (templateObject_49 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                };
+                if (matches_1.size > 20)
+                    (0, menus_1.menu)("Confirm", "Are you sure you want to view all ".concat(matches_1.size, " matches?"), ["Yes"], sender, displayMatches);
+                else
+                    displayMatches();
+            }
+        }
+    }
 });
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37, templateObject_38, templateObject_39;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37, templateObject_38, templateObject_39, templateObject_40, templateObject_41, templateObject_42, templateObject_43, templateObject_44, templateObject_45, templateObject_46, templateObject_47, templateObject_48, templateObject_49;

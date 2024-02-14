@@ -77,6 +77,7 @@ declare class Administration {
 	getInfoOptional(uuid:string):PlayerInfo | null;
 	dosBlacklist: ObjectSet<string>;
 	findByIP(ip:string):PlayerInfo | null;
+	findByIPs(ip:string):Seq<PlayerInfo>;
 	isIPBanned(ip:string):boolean;
 	isIDBanned(uuid:string):boolean;
 	banPlayerIP(ip:string):boolean;
