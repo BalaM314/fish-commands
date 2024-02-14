@@ -2,7 +2,7 @@ import * as api from "./api";
 import * as fjsContext from "./fjsContext";
 import { Perm, command, commandList, fail } from "./commands";
 import { getGamemode, localDebug, maxTime, stopAntiEvadeTime } from "./config";
-import { ipPattern, uuidPattern } from "./globals";
+import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank, RoleFlag } from "./ranks";
@@ -281,26 +281,40 @@ export const commands = commandList({
 	},
 
 	label: {
-		args: ["time:number", "message:string"],
+		args: ["time:time", "message:string"],
 		description: "Places a label at your position for a specified amount of time.",
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess, f}){
-			if(args.time <= 0 || args.time > 3600) fail(`Time must be a positive number less than 3600.`);
+			if(args.time > 36000_000) fail(`Time must be less than 10 hours.`);
 			let timeRemaining = args.time;
 			const labelx = sender.unit().x;
 			const labely = sender.unit().y;
-			Timer.schedule(() => {
+			fishState.labels.push(Timer.schedule(() => {
 				if(timeRemaining > 0){
 					let timeseconds = timeRemaining % 60;
 					let timeminutes = (timeRemaining - timeseconds) / 60;
 					Call.label(
-						`${sender.name}\n\n[white]${args.message}\n\n[acid]${timeminutes}:${timeseconds}`,
+`${sender.name}
+
+[white]${args.message}
+
+[acid]${timeminutes.toString().padStart(2, "0")}:${timeseconds.toString().padStart(2, "0")}`,
 						1, labelx, labely
 					);
 					timeRemaining --;
 				}
-			}, 0, 1, args.time);
+			}, 0, 1, args.time));
 			outputSuccess(f`Placed label "${args.message}" for ${args.time} seconds.`);
+		}
+	},
+
+	clearlabels: {
+		args: [],
+		description: "Removes all labels.",
+		perm: Perm.mod,
+		handler({outputSuccess}){
+			fishState.labels.forEach(l => l.cancel());
+			outputSuccess(`Removed all labels.`);
 		}
 	},
 

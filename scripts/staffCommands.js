@@ -324,25 +324,35 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     label: {
-        args: ["time:number", "message:string"],
+        args: ["time:time", "message:string"],
         description: "Places a label at your position for a specified amount of time.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (args.time <= 0 || args.time > 3600)
-                (0, commands_1.fail)("Time must be a positive number less than 3600.");
+            if (args.time > 36000000)
+                (0, commands_1.fail)("Time must be less than 10 hours.");
             var timeRemaining = args.time;
             var labelx = sender.unit().x;
             var labely = sender.unit().y;
-            Timer.schedule(function () {
+            globals_1.fishState.labels.push(Timer.schedule(function () {
                 if (timeRemaining > 0) {
                     var timeseconds = timeRemaining % 60;
                     var timeminutes = (timeRemaining - timeseconds) / 60;
-                    Call.label("".concat(sender.name, "\n\n[white]").concat(args.message, "\n\n[acid]").concat(timeminutes, ":").concat(timeseconds), 1, labelx, labely);
+                    Call.label("".concat(sender.name, "\n\n[white]").concat(args.message, "\n\n[acid]").concat(timeminutes.toString().padStart(2, "0"), ":").concat(timeseconds.toString().padStart(2, "0")), 1, labelx, labely);
                     timeRemaining--;
                 }
-            }, 0, 1, args.time);
+            }, 0, 1, args.time));
             outputSuccess(f(templateObject_25 || (templateObject_25 = __makeTemplateObject(["Placed label \"", "\" for ", " seconds."], ["Placed label \"", "\" for ", " seconds."])), args.message, args.time));
+        }
+    },
+    clearlabels: {
+        args: [],
+        description: "Removes all labels.",
+        perm: commands_1.Perm.mod,
+        handler: function (_a) {
+            var outputSuccess = _a.outputSuccess;
+            globals_1.fishState.labels.forEach(function (l) { return l.cancel(); });
+            outputSuccess("Removed all labels.");
         }
     },
     member: {
