@@ -1,6 +1,6 @@
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm } from './commands';
-import { FishServers, getGamemode, Mode } from './config';
+import { FishServers, getGamemode, Mode, rules } from './config';
 import { ipPattern, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
@@ -451,6 +451,15 @@ Available types:[yellow]
 					.map((flag) => `${flag.prefix} ${flag.color}${capitalizeText(flag.name)}[]: ${flag.color}${flag.description}[]\n`)
 					.join("")
 			);
+		},
+	},
+
+	rules: {
+		args : [],
+		description: 'Tells you the rules for playing on fish, as stated in #rules of the discord',
+		perm: Perm.none,
+		handler({ output }){//I figure this would be the simplest approch to the message
+			output("Rules for [blue] >|||> FISH [white] servers [white]\n\n " + rules.join("\n\n[white]"));
 		},
 	},
 

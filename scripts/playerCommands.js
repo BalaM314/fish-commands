@@ -478,6 +478,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     .map(function (flag) { return "".concat(flag.prefix, " ").concat(flag.color).concat((0, utils_1.capitalizeText)(flag.name), "[]: ").concat(flag.color).concat(flag.description, "[]\n"); })
                     .join(""));
         },
+    }, rules: {
+        args: [],
+        description: 'Tells you the rules for playing on fish, as stated in #rules of the discord',
+        perm: commands_1.Perm.none,
+        handler: function (_a) {
+            var output = _a.output;
+            output("Rules for [blue] >|||> FISH [white] servers [white]\n\n " + config_1.rules.join("\n\n[white]"));
+        },
     }, team: {
         args: ['team:team', 'target:player?'],
         description: 'Changes the team of a player.',
