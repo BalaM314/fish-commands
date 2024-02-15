@@ -678,33 +678,34 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
 /** @deprecated */
 function initialize() {
     var e_5, _a, e_6, _b;
-    var _c, _d;
     if (initialized) {
         (0, utils_1.crash)("Already initialized commands.");
     }
     try {
-        for (var _e = __values(Object.entries(exports.allConsoleCommands)), _f = _e.next(); !_f.done; _f = _e.next()) {
-            var _g = __read(_f.value, 2), key = _g[0], command_1 = _g[1];
-            command_1.data = (_c = command_1.init) === null || _c === void 0 ? void 0 : _c.call(command_1);
+        for (var _c = __values(Object.entries(exports.allConsoleCommands)), _d = _c.next(); !_d.done; _d = _c.next()) {
+            var _e = __read(_d.value, 2), key = _e[0], command_1 = _e[1];
+            if (command_1.init)
+                command_1.data = command_1.init();
         }
     }
     catch (e_5_1) { e_5 = { error: e_5_1 }; }
     finally {
         try {
-            if (_f && !_f.done && (_a = _e.return)) _a.call(_e);
+            if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
         }
         finally { if (e_5) throw e_5.error; }
     }
     try {
-        for (var _h = __values(Object.entries(exports.allCommands)), _j = _h.next(); !_j.done; _j = _h.next()) {
-            var _k = __read(_j.value, 2), key = _k[0], command_2 = _k[1];
-            command_2.data = (_d = command_2.init) === null || _d === void 0 ? void 0 : _d.call(command_2);
+        for (var _f = __values(Object.entries(exports.allCommands)), _g = _f.next(); !_g.done; _g = _f.next()) {
+            var _h = __read(_g.value, 2), key = _h[0], command_2 = _h[1];
+            if (command_2.init)
+                command_2.data = command_2.init();
         }
     }
     catch (e_6_1) { e_6 = { error: e_6_1 }; }
     finally {
         try {
-            if (_j && !_j.done && (_b = _h.return)) _b.call(_h);
+            if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
         }
         finally { if (e_6) throw e_6.error; }
     }
