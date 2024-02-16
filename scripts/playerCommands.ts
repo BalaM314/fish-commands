@@ -462,8 +462,8 @@ Available types:[yellow]
 		perm: Perm.none,
 		handler({args, sender, outputSuccess}){
 			args.player ??= sender;
-			if(!(sender.ranksAtLeast(Rank.mod))||!(args.player === sender)) fail(`You do not have permission to remind other players`);
-			menu("Rules for [blue] >|||> FISH [white] servers [white]", rules.join("\n\n[white]"),["I understand and agree to these terms"],args.player);
+			if((!sender.ranksAtLeast(Rank.mod)) && (args.player !== sender)) fail(`You do not have permission to remind other players`);
+			menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", rules.join("\n\n[white]"),[`I understand and agree to these terms`],args.player);
 			if(!(args.player === sender)) outputSuccess(`reminded ${args.player.name}[#48e076] of the rules`);
 		},
 	},

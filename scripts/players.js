@@ -332,6 +332,9 @@ var FishPlayer = /** @class */ (function () {
                 fishPlayer.sendWelcomeMessage();
                 fishPlayer.updateName();
             });
+            //I think this is a better spot for this
+            if (fishPlayer.firstJoin())
+                (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]"), ["I understand and agree to these terms"], fishPlayer);
         }
     };
     /**Must be run on PlayerJoinEvent. */

@@ -489,9 +489,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             (_b = args.player) !== null && _b !== void 0 ? _b : (args.player = sender);
-            if (!(sender.ranksAtLeast(ranks_1.Rank.mod)) || !(args.player === sender))
+            if ((!sender.ranksAtLeast(ranks_1.Rank.mod)) && (args.player !== sender))
                 (0, commands_1.fail)("You do not have permission to remind other players");
-            (0, menus_1.menu)("Rules for [blue] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]"), ["I understand and agree to these terms"], args.player);
+            (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]"), ["I understand and agree to these terms"], args.player);
             if (!(args.player === sender))
                 outputSuccess("reminded ".concat(args.player.name, "[#48e076] of the rules"));
         },

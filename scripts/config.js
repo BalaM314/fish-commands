@@ -23,8 +23,8 @@ exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([
-    "uwu",
-    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger",
+    "uwu", 
+    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", 
     "re" + "tard",
     'kill yourself', 'kill urself', /\bkys\b/,
     /\bkill blacks\b/,
@@ -152,6 +152,7 @@ exports.tips = {
         "Ohnos cannot be spawned near enemy buildings, because they are peaceful and do not want to be used for attacks.",
         "You can use [white]/tp[] to teleport directly to any other player! (But only when you're in a core unit)",
         "Hate boulders? You can remove them with [white]/clean[].",
+        "You can check the rules at anytime with /rules",
         // `You can kill your unit by running [white]/die[].`,
         "We have a tilelog system to help catch griefers. Run [white]/tilelog[], then click a tile to see what's happened there.",
         "Run [white]/tilelog 1[] to check the tile history of multiple tiles.",
