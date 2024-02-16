@@ -45,6 +45,7 @@ var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
+var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -478,13 +479,21 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     .map(function (flag) { return "".concat(flag.prefix, " ").concat(flag.color).concat((0, utils_1.capitalizeText)(flag.name), "[]: ").concat(flag.color).concat(flag.description, "[]\n"); })
                     .join(""));
         },
-    }, rules: {
-        args: [],
-        description: 'Tells you the rules for playing on fish, as stated in #rules of the discord',
+    }, 
+    // some janky, swampy code. lets anyone remind of the rulesthemselfs, or mods and up remind others
+    rules: {
+        args: ['player:player?'],
+        description: 'remind players of the rules they agreed to',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var output = _a.output;
-            output("Rules for [blue] >|||> FISH [white] servers [white]\n\n " + config_1.rules.join("\n\n[white]"));
+            var _b;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            (_b = args.player) !== null && _b !== void 0 ? _b : (args.player = sender);
+            if (!(sender.ranksAtLeast(ranks_1.Rank.mod)) || !(args.player === sender))
+                (0, commands_1.fail)("You do not have permission to remind other players");
+            (0, menus_1.menu)("Rules for [blue] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]"), ["I understand and agree to these terms"], args.player);
+            if (!(args.player === sender))
+                outputSuccess("reminded ".concat(args.player.name, "[#48e076] of the rules"));
         },
     }, team: {
         args: ['team:team', 'target:player?'],

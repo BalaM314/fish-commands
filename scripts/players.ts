@@ -612,9 +612,9 @@ We apologize for the inconvenience.`
 To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
 We apologize for the inconvenience.`
 		); else {
-			this.sendMessage(
-`[gold]Welcome![]`
-			);
+			this.sendMessage(`[gold]Welcome![]`);
+			//now this is gonna bug some ppl, but ensures that people have agreed to the rules 
+			menu("Rules for [blue] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]"),["I understand and agree to these terms"],this);
 
 			//show tips
 			let showAd = false;

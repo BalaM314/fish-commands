@@ -681,6 +681,8 @@ var FishPlayer = /** @class */ (function () {
             this.sendMessage("[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
         else {
             this.sendMessage("[gold]Welcome![]");
+            //now this is gonna bug some ppl, but ensures that people have agreed to the rules 
+            (0, menus_1.menu)("Rules for [blue] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]"), ["I understand and agree to these terms"], this);
             //show tips
             var showAd = false;
             if (Date.now() - this.lastShownAd > 86400000) {

@@ -2,6 +2,7 @@ import * as api from './api';
 import { command, commandList, fail, formatArg, Perm } from './commands';
 import { FishServers, getGamemode, Mode, rules } from './config';
 import { ipPattern, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import {
@@ -454,12 +455,16 @@ Available types:[yellow]
 		},
 	},
 
-	rules: {
-		args : [],
-		description: 'Tells you the rules for playing on fish, as stated in #rules of the discord',
+// some janky, swampy code. lets anyone remind of the rulesthemselfs, or mods and up remind others
+	rules:{
+		args: ['player:player?'],
+		description: 'remind players of the rules they agreed to',
 		perm: Perm.none,
-		handler({ output }){//I figure this would be the simplest approch to the message
-			output("Rules for [blue] >|||> FISH [white] servers [white]\n\n " + rules.join("\n\n[white]"));
+		handler({args, sender, outputSuccess}){
+			args.player ??= sender;
+			if(!(sender.ranksAtLeast(Rank.mod))||!(args.player === sender)) fail(`You do not have permission to remind other players`);
+			menu("Rules for [blue] >|||> FISH [white] servers [white]", rules.join("\n\n[white]"),["I understand and agree to these terms"],args.player);
+			if(!(args.player === sender)) outputSuccess(`reminded ${args.player.name}[#48e076] of the rules`);
 		},
 	},
 
