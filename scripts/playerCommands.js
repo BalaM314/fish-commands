@@ -491,6 +491,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             (_b = args.player) !== null && _b !== void 0 ? _b : (args.player = sender);
             if ((!sender.ranksAtLeast(ranks_1.Rank.admin)) && (args.player !== sender))
                 (0, commands_1.fail)("You do not have permission to remind other players");
+            if ((args.player !== sender) && (args.player.hasPerm("blockTrolling")))
+                (0, commands_1.fail)("Player ".concat(args.player, " is insufficiently trollable."));
             (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]"), ["I understand and agree to these terms"], args.player);
             if (!(args.player === sender))
                 outputSuccess("reminded ".concat(args.player.name, "[#48e076] of the rules"));

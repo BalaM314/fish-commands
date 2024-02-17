@@ -463,6 +463,7 @@ Available types:[yellow]
 		handler({args, sender, outputSuccess}){
 			args.player ??= sender;
 			if((!sender.ranksAtLeast(Rank.admin)) && (args.player !== sender)) fail(`You do not have permission to remind other players`);
+			if((args.player !== sender) && (args.player.hasPerm("blockTrolling"))) fail(`Player ${args.player} is insufficiently trollable.`);
 			menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", rules.join("\n\n[white]"),[`I understand and agree to these terms`],args.player);
 			if(!(args.player === sender)) outputSuccess(`reminded ${args.player.name}[#48e076] of the rules`);
 		},
