@@ -480,7 +480,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     .join(""));
         },
     }, 
-    // some janky, swampy code. lets anyone remind of the rulesthemselfs, or mods and up remind others
+    // some janky, swampy code. lets anyone remind of the rules themselfs, or admins remind others
     rules: {
         args: ['player:player?'],
         description: 'remind players of the rules they agreed to',
@@ -489,7 +489,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             (_b = args.player) !== null && _b !== void 0 ? _b : (args.player = sender);
-            if ((!sender.ranksAtLeast(ranks_1.Rank.mod)) && (args.player !== sender))
+            if ((!sender.ranksAtLeast(ranks_1.Rank.admin)) && (args.player !== sender))
                 (0, commands_1.fail)("You do not have permission to remind other players");
             (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]"), ["I understand and agree to these terms"], args.player);
             if (!(args.player === sender))
