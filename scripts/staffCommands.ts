@@ -1,7 +1,7 @@
 import * as api from "./api";
 import * as fjsContext from "./fjsContext";
 import { Perm, command, commandList, fail } from "./commands";
-import { getGamemode, localDebug, maxTime, stopAntiEvadeTime } from "./config";
+import { getGamemode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
 import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
@@ -326,6 +326,17 @@ export const commands = commandList({
 			args.player.setFlag("member", args.value);
 			outputSuccess(f`Set membership status of player ${args.player} to ${args.value}.`);
 		}
+	},
+	remind:{
+		args: ['rule:string'],
+		description: 'remind players of the rules they agreed to',
+		perm: Perm.admin,//another mod or admin, depending on feedback
+		handler({args}){
+			let arg_int = parseInt(args.rule);
+			if(isNaN(arg_int)) fail(`invalid argument given`); // conversion to int failed
+			if(arg_int <= 0 || arg_int > rules.length) fail(`the rule you requested does not exist`);//out of bounds check
+			Call.sendMessage(`[gray]a staff would like to remind you :\n[white]` + rules[arg_int-1]);
+		},
 	},
 
 	ban: {

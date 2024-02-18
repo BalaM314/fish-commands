@@ -365,6 +365,20 @@ exports.commands = (0, commands_1.commandList)({
             outputSuccess(f(templateObject_26 || (templateObject_26 = __makeTemplateObject(["Set membership status of player ", " to ", "."], ["Set membership status of player ", " to ", "."])), args.player, args.value));
         }
     },
+    remind: {
+        args: ['rule:string'],
+        description: 'remind players of the rules they agreed to',
+        perm: commands_1.Perm.admin, //another mod or admin, depending on feedback
+        handler: function (_a) {
+            var args = _a.args;
+            var arg_int = parseInt(args.rule);
+            if (isNaN(arg_int))
+                (0, commands_1.fail)("invalid argument given"); // conversion to int failed
+            if (arg_int <= 0 || arg_int > config_1.rules.length)
+                (0, commands_1.fail)("the rule you requested does not exist"); //out of bounds check
+            Call.sendMessage("[gray]a staff would like to remind you :\n[white]" + config_1.rules[arg_int - 1]);
+        },
+    },
     ban: {
         args: ["uuid:uuid?"],
         description: "Bans a player by UUID and IP.",
