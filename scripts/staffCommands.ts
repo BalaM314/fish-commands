@@ -329,7 +329,7 @@ export const commands = commandList({
 	},
 	remind:{
 		args: ['rule:string'],
-		description: 'remind players of the rules they agreed to',
+		description: 'remind players in chat of the rules they agreed to',
 		perm: Perm.admin,//another mod or admin, depending on feedback
 		handler({args}){
 			let arg_int = parseInt(args.rule);

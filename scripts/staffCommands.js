@@ -367,7 +367,7 @@ exports.commands = (0, commands_1.commandList)({
     },
     remind: {
         args: ['rule:string'],
-        description: 'remind players of the rules they agreed to',
+        description: 'remind players in chat of the rules they agreed to',
         perm: commands_1.Perm.admin, //another mod or admin, depending on feedback
         handler: function (_a) {
             var args = _a.args;
