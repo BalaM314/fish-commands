@@ -46,7 +46,7 @@ exports.commands = (0, commands_1.commandList)({
     warn: {
         args: ['player:player', 'message:string?'],
         description: 'Sends the player a warning (menu popup).',
-        perm: commands_1.Perm.mod,
+        perm: commands_1.Perm.warn,
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
@@ -368,7 +368,7 @@ exports.commands = (0, commands_1.commandList)({
     remind: {
         args: ['rule:string'],
         description: 'remind players in chat of the rules they agreed to',
-        perm: commands_1.Perm.admin, //another mod or admin, depending on feedback
+        perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args;
             var arg_int = parseInt(args.rule);

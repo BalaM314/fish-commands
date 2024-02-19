@@ -99,6 +99,7 @@ var Perm = /** @class */ (function () {
     Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast(ranks_1.Rank.mod) || fishP.hasFlag("developer") || fishP.hasFlag("member"); });
     Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
     Perm.bypassVotekick = new Perm("bypassVotekick", "mod");
+    Perm.warn = new Perm("warn", "mod");
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
         return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted")
             : config_1.Mode.attack() ? fishP.ranksAtLeast("admin")

@@ -60,6 +60,7 @@ export class Perm {
 	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => fishP.ranksAtLeast(Rank.mod) || fishP.hasFlag("developer") || fishP.hasFlag("member"));
 	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
 	static bypassVotekick = new Perm("bypassVotekick", "mod");
+	static warn = new Perm("warn", "mod");
 	static changeTeam = new Perm("changeTeam", fishP => 
 		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
 			: Mode.attack() ? fishP.ranksAtLeast("admin")
