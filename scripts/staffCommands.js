@@ -366,17 +366,17 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     remind: {
-        args: ['rule:string'],
-        description: 'remind players in chat of the rules they agreed to',
-        perm: commands_1.Perm.admin,
+        args: ["rule:number", "target:player?"],
+        description: "Remind players in chat of a specific rule.",
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
+            var _b;
             var args = _a.args;
-            var arg_int = parseInt(args.rule);
-            if (isNaN(arg_int))
-                (0, commands_1.fail)("invalid argument given"); // conversion to int failed
-            if (arg_int <= 0 || arg_int > config_1.rules.length)
-                (0, commands_1.fail)("the rule you requested does not exist"); //out of bounds check
-            Call.sendMessage("[gray]a staff would like to remind you :\n[white]" + config_1.rules[arg_int - 1]);
+            var rule = (_b = config_1.rules[args.rule]) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("The rule you requested does not exist.");
+            if (args.target)
+                args.target.sendMessage("A staff member wants to remind you of the following rule:\n" + rule);
+            else
+                Call.sendMessage("A staff member wants to remind everyone of the following rule:\n" + rule);
         },
     },
     ban: {

@@ -23,8 +23,8 @@ exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([
-    "uwu", 
-    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", 
+    "uwu",
+    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger",
     "re" + "tard",
     'kill yourself', 'kill urself', /\bkys\b/,
     /\bkill blacks\b/,
@@ -152,7 +152,7 @@ exports.tips = {
         "Ohnos cannot be spawned near enemy buildings, because they are peaceful and do not want to be used for attacks.",
         "You can use [white]/tp[] to teleport directly to any other player! (But only when you're in a core unit)",
         "Hate boulders? You can remove them with [white]/clean[].",
-        "You can check the rules at anytime with /rules",
+        "You can check our rules at any time by running [white]/rules[].",
         // `You can kill your unit by running [white]/die[].`,
         "We have a tilelog system to help catch griefers. Run [white]/tilelog[], then click a tile to see what's happened there.",
         "Run [white]/tilelog 1[] to check the tile history of multiple tiles.",
@@ -178,18 +178,18 @@ exports.tips = {
     staff: []
 };
 exports.rules = [
-    "# 1: [red]No griefing. This refers to intentionally destroying and sabotaging constructions by other players, suiciding units, trying to destroy the player cores, or intentionally triggering traps. Griefing will result in a \" ".concat(exports.MARKED_PREFIX, "[red], preventing you from doing anything."),
+    "# 1: [red]No griefing. This refers to intentionally destroying and sabotaging constructions by other players, suiciding units, trying to destroy the player cores, or intentionally triggering traps. Griefing will result in a \"".concat(exports.MARKED_PREFIX, "[red]\" prefix, preventing you from doing anything."),
     "# 2: [orange]Do not build or send pornographic images, flashing images, or gore, and do not be horny or a creep in chat; there are minors here.",
     "# 3: [yellow]Do not harass other people, be respectful. We have zero tolerance for racism, sexism, anti-LGBTIA+, or any other forms of bigotry.",
     "# 4: [green]Be reasonable with pinging other people on Discord, and globally messaging staff in-game. Misuse may result in a mute. Spamming of any sort is prohibited.",
-    "# 5: [cyan]Don't impersonate a person or rank. Impersonation of staff can be grounds for being banned.",
+    "# 5: [cyan]Don't impersonate a person or rank. Impersonation of staff may result in a ban.",
     "# 6: [blue]Talking about controversial or sensitive political or historical topics is not allowed, except for civilized, monitored conversations on Discord at moderators' discretion. Building symbols of hate, such as swastikas, may result in a ban.",
     "# 7: [purple]Don't votekick if there's an active staff member online and in the server; just message them in-game and they should take action. If you votekick someone without a good reason, you will be punished.",
     "# 8: [pink]No trolling or intentionally causing chaos. This includes any actions or messages that disrupt the community or create an unpleasant atmosphere.",
     "# 9: [brown]In Discord, Keep all discussions related to the current channel's topic.",
     "#10: [grey]No discussion of self-harm or suicide unless you are asking for help.[red] DO NOT joke about such topics.[grey] If you seek help, our staff team will do our best to help you but will still refer you to the crisis links we have available as we are not professionals. We can and will still try our best to listen, and help you with the small things you are going through in life.",
-    "Failure to follow these rules will result in consequences: mostly a Marked Griefer tag for any game disruption, mute for broken chat rules, and ban if there are repeated offenses or bypasses (all are up to moderator discretion)."
-];
+    "Failure to follow these rules will result in consequences: mostly a Marked Griefer tag for any game disruption, mute for broken chat rules, and bans if there are repeated offenses or bypasses (up to moderator discretion)."
+].map(function (r) { return "[white]".concat(r); });
 exports.heuristics = {
     blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };

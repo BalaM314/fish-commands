@@ -455,17 +455,18 @@ Available types:[yellow]
 		},
 	},
 
-// some janky, swampy code. lets anyone remind of the rules themselfs, or admins remind others
-	rules:{
+	rules: {
 		args: ['player:player?'],
-		description: 'remind players of the rules they agreed to',
+		description: 'Displays the server rules.',
 		perm: Perm.none,
 		handler({args, sender, outputSuccess}){
-			args.player ??= sender;
-			if((!sender.ranksAtLeast(Rank.admin)) && (args.player !== sender)) fail(`You do not have permission to remind other players`);
-			if((args.player !== sender) && (args.player.hasPerm("blockTrolling"))) fail(`Player ${args.player} is insufficiently trollable.`);
-			menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", rules.join("\n\n[white]"),[`I understand and agree to these terms`],args.player);
-			if(!(args.player === sender)) outputSuccess(`reminded ${args.player.name}[#48e076] of the rules`);
+			const target = args.player ?? sender;
+			if(target !== sender){
+				if(!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
+				if(target.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
+			}
+			menu("Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"), ["I agree to abide by these rules"], target);
+			if(target !== sender) outputSuccess(`Reminded ${target} of the rules`);
 		},
 	},
 
