@@ -465,7 +465,13 @@ Available types:[yellow]
 				if(!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
 				if(target.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
 			}
-			menu("Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"), ["I agree to abide by these rules"], target);
+			menu(
+				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
+				["I agree to abide by these rules", "No"], target,
+				({option}) => {
+					if(option == "No") target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+				}, false
+			);
 			if(target !== sender) outputSuccess(`Reminded ${target} of the rules`);
 		},
 	},

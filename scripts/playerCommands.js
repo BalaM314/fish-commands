@@ -493,7 +493,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (target.hasPerm("blockTrolling"))
                     (0, commands_1.fail)("Player ".concat(args.player, " is insufficiently trollable."));
             }
-            (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["I agree to abide by these rules"], target);
+            (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["I agree to abide by these rules", "No"], target, function (_a) {
+                var option = _a.option;
+                if (option == "No")
+                    target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+            }, false);
             if (target !== sender)
                 outputSuccess("Reminded ".concat(target, " of the rules"));
         },
