@@ -66,14 +66,14 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
     var veryLongModName = e.packet.mods.contains(function (str) { return str.length > 100; });
     if ((underAttack && e.packet.mods.size > 2) ||
         (underAttack && longModName) ||
-        (veryLongModName)) {
+        (veryLongModName && (underAttack || newPlayer))) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
         players_1.FishPlayer.onBotWhack();
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " because ").concat(veryLongModName ? "very long mod name" : longModName ? "long mod name" : "it had mods while under attack"));
         return;
     }
-    if (globals_1.ipJoins.get(e.connection.address) >= (underAttack ? 3 : newPlayer ? 6 : 15)) {
+    if (globals_1.ipJoins.get(e.connection.address) >= (underAttack ? 3 : newPlayer ? 7 : 15)) {
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
         players_1.FishPlayer.onBotWhack();
