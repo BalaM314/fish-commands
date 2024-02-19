@@ -573,10 +573,10 @@ export function initialize(){
 		crash("Already initialized commands.");
 	}
 	for(const [key, command] of Object.entries(allConsoleCommands)){
-		command.data = command.init?.();
+		if(command.init) command.data = command.init();
 	}
 	for(const [key, command] of Object.entries(allCommands)){
-		command.data = command.init?.();
+		if(command.init) command.data = command.init();
 	}
 	initialized = true;
 }
