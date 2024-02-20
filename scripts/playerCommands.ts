@@ -459,11 +459,11 @@ Available types:[yellow]
 		args: ['player:player?'],
 		description: 'Displays the server rules.',
 		perm: Perm.none,
-		handler({args, sender, outputSuccess}){
+		handler({args, sender, outputSuccess, f}){
 			const target = args.player ?? sender;
 			if(target !== sender){
 				if(!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
-				if(target.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
+				if(target.hasPerm("blockTrolling")) fail(f`Player ${args.player} is insufficiently trollable.`);
 			}
 			menu(
 				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
@@ -472,7 +472,7 @@ Available types:[yellow]
 					if(option == "No") target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
 				}, false
 			);
-			if(target !== sender) outputSuccess(`Reminded ${target} of the rules`);
+			if(target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
 		},
 	},
 

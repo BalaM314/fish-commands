@@ -485,13 +485,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var _b;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             var target = (_b = args.player) !== null && _b !== void 0 ? _b : sender;
             if (target !== sender) {
                 if (!sender.hasPerm("warn"))
                     (0, commands_1.fail)("You do not have permission to show rules to other players.");
                 if (target.hasPerm("blockTrolling"))
-                    (0, commands_1.fail)("Player ".concat(args.player, " is insufficiently trollable."));
+                    (0, commands_1.fail)(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             }
             (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["I agree to abide by these rules", "No"], target, function (_a) {
                 var option = _a.option;
@@ -499,7 +499,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
             }, false);
             if (target !== sender)
-                outputSuccess("Reminded ".concat(target, " of the rules"));
+                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
         },
     }, team: {
         args: ['team:team', 'target:player?'],
@@ -510,16 +510,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true))
-                (0, commands_1.fail)(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+                (0, commands_1.fail)(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
             if (!sender.hasPerm("changeTeamExternal") && args.team.data().cores.size <= 0)
                 (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
             if (!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore)))
                 args.target.forceRespawn();
             args.target.player.team(args.team);
             if (args.target === sender)
-                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
+                outputSuccess(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
             else
-                outputSuccess(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
+                outputSuccess(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
         },
     }, rank: {
         args: ['player:player'],
@@ -527,7 +527,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, f = _a.f;
-            output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
+            output(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
     }, forcertv: {
         args: ["force:boolean?"],
@@ -688,7 +688,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: "Views a player's stats.",
         handler: function (_a) {
             var target = _a.args.target, output = _a.output, f = _a.f;
-            output(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
+            output(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
         }
     } }));
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10;

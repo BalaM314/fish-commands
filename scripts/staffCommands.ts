@@ -331,10 +331,14 @@ export const commands = commandList({
 		args: ["rule:number", "target:player?"],
 		description: "Remind players in chat of a specific rule.",
 		perm: Perm.mod,
-		handler({args}){
+		handler({args, outputSuccess, f}){
 			const rule = rules[args.rule - 1] ?? fail(`The rule you requested does not exist.`);
-			if(args.target) args.target.sendMessage(`A staff member wants to remind you of the following rule:\n` + rule);
-			else Call.sendMessage(`A staff member wants to remind everyone of the following rule:\n` + rule);
+			if(args.target){
+				args.target.sendMessage(`A staff member wants to remind you of the following rule:\n` + rule);
+				outputSuccess(f`Reminded ${args.target} of rule ${args.rule}`);
+			} else {
+				Call.sendMessage(`A staff member wants to remind everyone of the following rule:\n` + rule);
+			}
 		},
 	},
 
