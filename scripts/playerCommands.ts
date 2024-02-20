@@ -472,7 +472,7 @@ Available types:[yellow]
 					if(option == "No") target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
 				}, false
 			);
-			if(target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
+			if(target !== sender) outputSuccess(f`Reminded ${target.cleanedName} of the rules.`);
 		},
 	},
 
