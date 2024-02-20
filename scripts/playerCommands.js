@@ -499,7 +499,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
             }, false);
             if (target !== sender)
-                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
+                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target.cleanedName));
         },
     }, team: {
         args: ['team:team', 'target:player?'],
