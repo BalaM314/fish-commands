@@ -332,7 +332,7 @@ export const commands = commandList({
 		description: "Remind players in chat of a specific rule.",
 		perm: Perm.mod,
 		handler({args}){
-			const rule = rules[args.rule] ?? fail(`The rule you requested does not exist.`);
+			const rule = rules[args.rule - 1] ?? fail(`The rule you requested does not exist.`);
 			if(args.target) args.target.sendMessage(`A staff member wants to remind you of the following rule:\n` + rule);
 			else Call.sendMessage(`A staff member wants to remind everyone of the following rule:\n` + rule);
 		},

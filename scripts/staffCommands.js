@@ -372,7 +372,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args;
-            var rule = (_b = config_1.rules[args.rule]) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("The rule you requested does not exist.");
+            var rule = (_b = config_1.rules[args.rule - 1]) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("The rule you requested does not exist.");
             if (args.target)
                 args.target.sendMessage("A staff member wants to remind you of the following rule:\n" + rule);
             else
