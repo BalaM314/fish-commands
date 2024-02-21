@@ -334,7 +334,7 @@ var FishPlayer = /** @class */ (function () {
             });
             //I think this is a better spot for this
             if (fishPlayer.firstJoin())
-                (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]"), ["I understand and agree to these terms"], fishPlayer);
+                (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].", ["[green]I understand and agree to these terms"], fishPlayer);
         }
     };
     /**Must be run on PlayerJoinEvent. */
@@ -616,9 +616,9 @@ var FishPlayer = /** @class */ (function () {
                         api.sendStaffMessage("Autoflagged player ".concat(_this.name, " for suspected vpn!"), "AntiVPN");
                         FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
                         Log.warn("Player ".concat(_this.name, " (").concat(_this.uuid, ") was autoflagged."));
-                        (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "Discord"], _this, function (_a) {
+                        (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "[#7289da]Discord"], _this, function (_a) {
                             var option = _a.option, sender = _a.sender;
-                            if (option == "Discord") {
+                            if (option == "[#7289da]Discord") {
                                 Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
                             }
                         }, false);

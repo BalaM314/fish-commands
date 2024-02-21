@@ -24,7 +24,7 @@ export const commands = commandList({
 			if(args.player.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
 
 			const message = args.message ?? "You have been warned. I suggest you stop what you're doing";
-			menu('Warning', message, ['accept'], args.player);
+			menu('Warning', message, ["[green]Accept"], args.player);
 			logAction('warned', sender, args.player, message);
 			outputSuccess(f`Warned player ${args.player} for "${message}"`);
 		}
@@ -354,8 +354,8 @@ export const commands = commandList({
 					fail(`Cannot ban an admin.`);
 				}
 				const name = data ? `${escapeStringColorsClient(data.lastName)} (${args.uuid}/${data.lastIP})` : args.uuid;
-				menu("Confirm", `Are you sure you want to ban ${name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
-					if(confirm != "Yes") fail("Cancelled.");
+				menu("Confirm", `Are you sure you want to ban ${name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
+					if(confirm != "[red]Yes") fail("Cancelled.");
 					const uuid = args.uuid!;
 					admins.banPlayerID(uuid);
 					if(data){
@@ -379,8 +379,8 @@ export const commands = commandList({
 			//Overload 1: ban by menu
 			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
 				if(option.admin) fail(`Cannot ban an admin.`);
-				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["Yes", "Cancel"], sender, ({option:confirm}) => {
-					if(confirm != "Yes") fail("Cancelled.");
+				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
+					if(confirm != "[red]Yes") fail("Cancelled.");
 					admins.banPlayerIP(option.ip()); //this also bans the UUID
 					api.ban({ip: option.ip(), uuid: option.uuid()});
 					Log.info(`${option.ip()}/${option.uuid()} was banned.`);

@@ -55,7 +55,7 @@ exports.commands = (0, commands_1.commandList)({
             if (args.player.hasPerm("blockTrolling"))
                 (0, commands_1.fail)("Player ".concat(args.player, " is insufficiently trollable."));
             var message = (_b = args.message) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
-            (0, menus_1.menu)('Warning', message, ['accept'], args.player);
+            (0, menus_1.menu)('Warning', message, ["[green]Accept"], args.player);
             (0, utils_1.logAction)('warned', sender, args.player, message);
             outputSuccess(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Warned player ", " for \"", "\""], ["Warned player ", " for \"", "\""])), args.player, message));
         }
@@ -395,9 +395,9 @@ exports.commands = (0, commands_1.commandList)({
                     (0, commands_1.fail)("Cannot ban an admin.");
                 }
                 var name = data_1 ? "".concat((0, utils_1.escapeStringColorsClient)(data_1.lastName), " (").concat(args.uuid, "/").concat(data_1.lastIP, ")") : args.uuid;
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["Yes", "Cancel"], sender, function (_a) {
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
                     var confirm = _a.option;
-                    if (confirm != "Yes")
+                    if (confirm != "[red]Yes")
                         (0, commands_1.fail)("Cancelled.");
                     var uuid = args.uuid;
                     admins.banPlayerID(uuid);
@@ -425,9 +425,9 @@ exports.commands = (0, commands_1.commandList)({
                 var option = _a.option;
                 if (option.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(option.name, "?"), ["Yes", "Cancel"], sender, function (_a) {
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(option.name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
                     var confirm = _a.option;
-                    if (confirm != "Yes")
+                    if (confirm != "[red]Yes")
                         (0, commands_1.fail)("Cancelled.");
                     admins.banPlayerIP(option.ip()); //this also bans the UUID
                     api.ban({ ip: option.ip(), uuid: option.uuid() });

@@ -304,7 +304,7 @@ export class FishPlayer {
 				fishPlayer.updateName();
 			});
 			//I think this is a better spot for this
-			if(fishPlayer.firstJoin()) menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]"),["I understand and agree to these terms"],fishPlayer);
+			if(fishPlayer.firstJoin()) menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].",["[green]I understand and agree to these terms"],fishPlayer);
 
 		}
 	}
@@ -542,8 +542,8 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 						api.sendStaffMessage(`Autoflagged player ${this.name} for suspected vpn!`, "AntiVPN");
 						FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);
 						Log.warn(`Player ${this.name} (${this.uuid}) was autoflagged.`);
-						menu("[gold]Welcome to Fish Network!", `[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`, ["Close", "Discord"], this, ({option, sender}) => {
-							if(option == "Discord"){
+						menu("[gold]Welcome to Fish Network!", `[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`, ["Close", "[#7289da]Discord"], this, ({option, sender}) => {
+							if(option == "[#7289da]Discord"){
 								Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
 							}
 						}, false);
