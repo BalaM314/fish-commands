@@ -1,4 +1,5 @@
 import { ipPattern, ipPortPattern, uuidPattern } from "./globals"; //TODO fix storage of global variables
+import { Rank } from "./ranks";
 
 export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 export const MUTED_PREFIX = '[white](muted)';
@@ -160,6 +161,8 @@ export const tips = {
 		`Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[]`,
 		`Want to send the phrase [white]"/command"[] in chat? Type [white]"./command"[] and the [white].[] will be removed.`,
 		`All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.`,
+		`Players with a ${Rank.trusted.prefix} in front of their name aren't staff members, but they do have extra powers.`,
+		`Staff mmbers will have the following prefixes in front of their name: ${Rank.manager}, ${Rank.admin}, ${Rank.mod}`
 	],
 	staff: [
 

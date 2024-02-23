@@ -1,4 +1,4 @@
-import { SelectClasslikeEnumKeys as SelectEnumClassKeys } from "./types";
+import type { SelectClasslikeEnumKeys as SelectEnumClassKeys } from "./types";
 
 export class Rank {
 	static ranks:Record<string, Rank> = {};

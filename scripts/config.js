@@ -18,6 +18,7 @@ var __read = (this && this.__read) || function (o, n) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
+var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
@@ -174,6 +175,8 @@ exports.tips = {
         "Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[]",
         "Want to send the phrase [white]\"/command\"[] in chat? Type [white]\"./command\"[] and the [white].[] will be removed.",
         "All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.",
+        "Players with a ".concat(ranks_1.Rank.trusted.prefix, " in front of their name aren't staff members, but they do have extra powers."),
+        "Staff mmbers will have the following prefixes in front of their name: ".concat(ranks_1.Rank.manager, ", ").concat(ranks_1.Rank.admin, ", ").concat(ranks_1.Rank.mod)
     ],
     staff: []
 };
