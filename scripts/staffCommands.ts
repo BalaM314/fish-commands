@@ -164,7 +164,7 @@ export const commands = commandList({
 	},
 
 	stop_offline: {
-		args: ["time:time?", "name:string"],
+		args: ["time:time?", "name:string?"],
 		description: "Stops an offline player.",
 		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess, f, admins}){
@@ -181,7 +181,7 @@ export const commands = commandList({
 				}
 			}
 			
-			if(uuidPattern.test(args.name)){
+			if(args.name && uuidPattern.test(args.name)){
 				const info:PlayerInfo | null = admins.getInfoOptional(args.name);
 				if(info != null) {
 					stop(info, args.time ?? untilForever());
@@ -191,23 +191,28 @@ export const commands = commandList({
 				return;
 			}
 
-			let possiblePlayers:PlayerInfo[] = setToArray(admins.searchNames(args.name));
-			if(possiblePlayers.length > maxPlayers){
-				let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<PlayerInfo>);
-				if(exactPlayers.length > 0){
-					possiblePlayers = exactPlayers;
-				} else {
-					fail('Too many players with that name.');
+			let possiblePlayers:PlayerInfo[];
+			if(args.name) {
+				possiblePlayers = setToArray(admins.searchNames(args.name));
+				if(possiblePlayers.length > maxPlayers){
+					let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<PlayerInfo>);
+					if(exactPlayers.length > 0){
+						possiblePlayers = exactPlayers;
+					} else {
+						fail("Too many players with that name.");
+					}
+				} else if(possiblePlayers.length == 0){
+					fail("No players with that name were found.");
 				}
-			} else if(possiblePlayers.length == 0){
-				fail("No players with that name were found.");
+				const score = (data:PlayerInfo) => {
+					const fishP = FishPlayer.getById(data.id);
+					if(fishP) return fishP.lastJoined;
+					return - data.timesJoined;
+				}
+				possiblePlayers.sort((a, b) => score(b) - score(a));
+			} else {
+				possiblePlayers = FishPlayer.recentLeaves.map(p => p.info());
 			}
-			function score(data:PlayerInfo){
-				const fishP = FishPlayer.getById(data.id);
-				if(fishP) return fishP.lastJoined;
-				return - data.timesJoined;
-			}
-			possiblePlayers.sort((a, b) => score(b) - score(a));
 
 
 			menu("Stop", "Choose a player to mark", possiblePlayers, sender, ({option: optionPlayer, sender}) => {

@@ -376,6 +376,9 @@ var FishPlayer = /** @class */ (function () {
         fishPlayer.tapInfo.commandName = null;
         fishPlayer.stats.timeInGame += (Date.now() - fishPlayer.lastJoined); //Time between joining and leaving
         fishPlayer.lastJoined = Date.now();
+        this.recentLeaves.unshift(fishPlayer);
+        if (this.recentLeaves.length > 10)
+            this.recentLeaves.pop();
     };
     FishPlayer.validateVotekickSession = function () {
         if (Vars.netServer.currentlyKicking) {
@@ -1385,6 +1388,8 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.antiBotModePersist = false;
     FishPlayer.antiBotModeOverride = false;
     FishPlayer.lastBotWhacked = 0;
+    /** Stores the 10 most recent players that left. */
+    FishPlayer.recentLeaves = [];
     FishPlayer.ignoreGameOver = false;
     return FishPlayer;
 }());

@@ -205,7 +205,7 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     stop_offline: {
-        args: ["time:time?", "name:string"],
+        args: ["time:time?", "name:string?"],
         description: "Stops an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
@@ -223,7 +223,7 @@ exports.commands = (0, commands_1.commandList)({
                     outputFail("You do not have permission to stop this player.");
                 }
             }
-            if (globals_1.uuidPattern.test(args.name)) {
+            if (args.name && globals_1.uuidPattern.test(args.name)) {
                 var info = admins.getInfoOptional(args.name);
                 if (info != null) {
                     stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : (0, utils_1.untilForever)());
@@ -233,26 +233,32 @@ exports.commands = (0, commands_1.commandList)({
                 }
                 return;
             }
-            var possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));
-            if (possiblePlayers.length > maxPlayers) {
-                var exactPlayers = (0, utils_1.setToArray)(admins.findByName(args.name));
-                if (exactPlayers.length > 0) {
-                    possiblePlayers = exactPlayers;
+            var possiblePlayers;
+            if (args.name) {
+                possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));
+                if (possiblePlayers.length > maxPlayers) {
+                    var exactPlayers = (0, utils_1.setToArray)(admins.findByName(args.name));
+                    if (exactPlayers.length > 0) {
+                        possiblePlayers = exactPlayers;
+                    }
+                    else {
+                        (0, commands_1.fail)("Too many players with that name.");
+                    }
                 }
-                else {
-                    (0, commands_1.fail)('Too many players with that name.');
+                else if (possiblePlayers.length == 0) {
+                    (0, commands_1.fail)("No players with that name were found.");
                 }
+                var score_1 = function (data) {
+                    var fishP = players_1.FishPlayer.getById(data.id);
+                    if (fishP)
+                        return fishP.lastJoined;
+                    return -data.timesJoined;
+                };
+                possiblePlayers.sort(function (a, b) { return score_1(b) - score_1(a); });
             }
-            else if (possiblePlayers.length == 0) {
-                (0, commands_1.fail)("No players with that name were found.");
+            else {
+                possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
             }
-            function score(data) {
-                var fishP = players_1.FishPlayer.getById(data.id);
-                if (fishP)
-                    return fishP.lastJoined;
-                return -data.timesJoined;
-            }
-            possiblePlayers.sort(function (a, b) { return score(b) - score(a); });
             (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (_a) {
                 var optionPlayer = _a.option, sender = _a.sender;
                 if (args.time == null) {
