@@ -57,16 +57,17 @@ export const commands = commandList({
 	},
 
 	kick: {
-		args: ['player:player', 'reason:string?'],
+		args: ["player:player", "duration:time?", "reason:string?"],
 		description: 'Kick a player with optional reason.',
 		perm: Perm.mod,
 		handler({args, outputSuccess, f, sender}){
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
-			const reason = args.reason ?? 'A staff member did not like your actions.';
-			args.player.player.kick(reason);
-			logAction('kicked', sender, args.player);
-			args.player.setPunishedIP(stopAntiEvadeTime);
-			outputSuccess(f`Kicked player ${args.player} for "${reason}"`);
+			const reason = args.reason ?? "A staff member did not like your actions.";
+			const duration = args.duration ?? 60_000;
+			args.player.kick(reason, duration);
+			logAction("kicked", sender, args.player, args.reason ?? undefined, duration);
+			if(duration > 1000) args.player.setPunishedIP(stopAntiEvadeTime);
+			outputSuccess(f`Kicked player ${args.player} for ${formatTime(duration)} with reason "${reason}"`);
 		}
 	},
 

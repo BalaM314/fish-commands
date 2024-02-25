@@ -91,19 +91,21 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     kick: {
-        args: ['player:player', 'reason:string?'],
+        args: ["player:player", "duration:time?", "reason:string?"],
         description: 'Kick a player with optional reason.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var _b;
+            var _b, _c, _d;
             var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f, sender = _a.sender;
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to kick this player.");
-            var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : 'A staff member did not like your actions.';
-            args.player.player.kick(reason);
-            (0, utils_1.logAction)('kicked', sender, args.player);
-            args.player.setPunishedIP(config_1.stopAntiEvadeTime);
-            outputSuccess(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Kicked player ", " for \"", "\""], ["Kicked player ", " for \"", "\""])), args.player, reason));
+            var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "A staff member did not like your actions.";
+            var duration = (_c = args.duration) !== null && _c !== void 0 ? _c : 60000;
+            args.player.kick(reason, duration);
+            (0, utils_1.logAction)("kicked", sender, args.player, (_d = args.reason) !== null && _d !== void 0 ? _d : undefined, duration);
+            if (duration > 1000)
+                args.player.setPunishedIP(config_1.stopAntiEvadeTime);
+            outputSuccess(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Kicked player ", " for ", " with reason \"", "\""], ["Kicked player ", " for ", " with reason \"", "\""])), args.player, (0, utils_1.formatTime)(duration), reason));
         }
     },
     stop: {

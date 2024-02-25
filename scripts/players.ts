@@ -1100,6 +1100,9 @@ We apologize for the inconvenience.`
 			this.forceRespawn();
 		}
 	}
+	kick(reason:string | KickReason = Packets.KickReason.kick, duration:number = 30_000){
+		this.player?.kick(reason, duration);
+	}
 	setPunishedIP(duration:number){
 		FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + duration]);
 	}

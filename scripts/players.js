@@ -1216,6 +1216,12 @@ var FishPlayer = /** @class */ (function () {
             this.forceRespawn();
         }
     };
+    FishPlayer.prototype.kick = function (reason, duration) {
+        var _a;
+        if (reason === void 0) { reason = Packets.KickReason.kick; }
+        if (duration === void 0) { duration = 30000; }
+        (_a = this.player) === null || _a === void 0 ? void 0 : _a.kick(reason, duration);
+    };
     FishPlayer.prototype.setPunishedIP = function (duration) {
         FishPlayer.punishedIPs.push([this.ip(), this.uuid, Date.now() + duration]);
     };

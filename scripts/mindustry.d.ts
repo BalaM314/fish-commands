@@ -368,8 +368,11 @@ declare class Process {
 }
 
 declare const Packets: {
-	KickReason: any;
+	KickReason: Record<string, KickReason>;
 };
+declare class KickReason {
+	quiet: boolean;
+}
 
 declare class ConstructBlock {
 	static ConstructBuild: any;
