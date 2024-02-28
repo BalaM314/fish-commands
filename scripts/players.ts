@@ -372,8 +372,8 @@ export class FishPlayer {
 	}
 	static onPlayerChat(player:mindustryPlayer, message:string){
 		const fishP = this.get(player);
-		if(fishP.firstJoin()){
-			if(Date.now() - fishP.lastJoined < 5000){
+		if(fishP.joinsLessThan(5)){
+			if(Date.now() - fishP.lastJoined < 6000){
 				if(message.trim() == "/vote y"){
 					//Sends /vote y within 5 seconds of joining
 					logHTrip(fishP, "votekick bot");

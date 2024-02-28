@@ -399,8 +399,8 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.onPlayerChat = function (player, message) {
         var fishP = this.get(player);
-        if (fishP.firstJoin()) {
-            if (Date.now() - fishP.lastJoined < 5000) {
+        if (fishP.joinsLessThan(5)) {
+            if (Date.now() - fishP.lastJoined < 6000) {
                 if (message.trim() == "/vote y") {
                     //Sends /vote y within 5 seconds of joining
                     (0, utils_1.logHTrip)(fishP, "votekick bot");
