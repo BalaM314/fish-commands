@@ -154,6 +154,8 @@ export const tips = {
 		`[white]/trail[] can be used to give your unit a trail of particle effects.`,
 		`Run [white]/ranks[] to see all the ranks on our server.`,
 		`Is someone impersonating a staff member? Run [white]/rank[] to see their real rank.`,
+		`Don't like the map? Vote to change it with [white]/rtv[].`,
+		`If you want to end the current map, DO NOT BREAK DEFENCES! Vote to change the map with [white]/rtv[].`,
 		//misc
 		`Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!`,
 		`Griefers will often be found with the text ${MARKED_PREFIX} prepended to their name.`,
