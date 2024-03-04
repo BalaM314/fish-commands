@@ -850,6 +850,7 @@ var FishPlayer = /** @class */ (function () {
                     chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
                 }, player);
             case 6:
+            case 7:
                 return new this({
                     uuid: (_u = fishPlayerData.readString(2)) !== null && _u !== void 0 ? _u : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_v = fishPlayerData.readString(2)) !== null && _v !== void 0 ? _v : "Unnamed player [ERROR]",
@@ -922,7 +923,7 @@ var FishPlayer = /** @class */ (function () {
         }), function (_a) {
             var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
             return player.write(out);
-        });
+        }, 6);
         var string = out.string;
         var numKeys = Math.ceil(string.length / this.chunkSize);
         Core.settings.put('fish-subkeys', Packages.java.lang.Integer(numKeys));
@@ -960,7 +961,7 @@ var FishPlayer = /** @class */ (function () {
                 return this.loadAllLegacy(string);
             var out = new utils_1.StringIO(string);
             var version_1 = out.readNumber(2);
-            out.readArray(function (str) { return FishPlayer.read(version_1, str, null); })
+            out.readArray(function (str) { return FishPlayer.read(version_1, str, null); }, version_1 <= 6 ? 4 : 6) //this is really unsafe and is going to cause downtime if i don't fix it
                 .forEach(function (p) { return _this.cachedPlayers[p.uuid] = p; });
             out.expectEOF();
         }
@@ -1371,7 +1372,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    FishPlayer.saveVersion = 6;
+    FishPlayer.saveVersion = 7;
     FishPlayer.chunkSize = 50000;
     //Static transients
     FishPlayer.stats = {

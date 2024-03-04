@@ -15,7 +15,7 @@ import {
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 6;
+	static readonly saveVersion = 7;
 	static readonly chunkSize = 50000;
 
 	//Static transients
@@ -771,7 +771,7 @@ We apologize for the inconvenience.`
 					usid: fishPlayerData.readString(2),
 					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
 				}, player);
-			case 6:
+			case 6: case 7:
 			return new this({
 				uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
 				name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
@@ -835,7 +835,8 @@ We apologize for the inconvenience.`
 		out.writeArray(
 			Object.entries(this.cachedPlayers)
 				.filter(([uuid, fishP]) => fishP.shouldSave()),
-			([uuid, player]) => player.write(out)
+			([uuid, player]) => player.write(out),
+			6
 		);
 		let string = out.string;
 		let numKeys = Math.ceil(string.length / this.chunkSize);
@@ -869,7 +870,7 @@ We apologize for the inconvenience.`
 			if(string.startsWith("{")) return this.loadAllLegacy(string);
 			const out = new StringIO(string);
 			const version = out.readNumber(2);
-			out.readArray(str => FishPlayer.read(version, str, null))
+			out.readArray(str => FishPlayer.read(version, str, null), version <= 6 ? 4 : 6) //this is really unsafe and is going to cause downtime if i don't fix it
 				.forEach(p => this.cachedPlayers[p.uuid] = p);
 			out.expectEOF();
 		} catch(err){
