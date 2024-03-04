@@ -66,7 +66,7 @@ export class Perm {
 			: Mode.attack() ? fishP.ranksAtLeast("admin")
 			: Mode.pvp() ? fishP.ranksAtLeast("trusted")
 			: fishP.ranksAtLeast("admin")
-			);
+	);
 	static changeTeamExternal = new Perm("changeTeamExternal", "admin");
 	static spawnOhnos = new Perm("spawnOhnos", () => !Mode.pvp(), "", "Ohnos are disabled in PVP.");
 	static usidCheck = new Perm("usidCheck", "trusted");
@@ -325,14 +325,14 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((
 
 //Shenanigans were once necessary due to odd behavior of Typescript's compiled error subclass
 //however it morphed into something ungodly
-declare class CommandError_ { //oh god no why
+declare class _FAKE_CommandError { //oh god no why
 	data: string | PartialFormatString;
 }
-export const CommandError = (function(){}) as unknown as typeof CommandError_;
+export const CommandError = (function(){}) as unknown as typeof _FAKE_CommandError;
 Object.setPrototypeOf(CommandError.prototype, Error.prototype);
 export function fail(message:string | PartialFormatString):never {
 	let err = new Error(typeof message == "string" ? message : "");
-	//oh god it's even worse now because i have to smuggle a function through here
+	//oh no it's even worse now because i have to smuggle a function through here
 	(err as any).data = message;
 	Object.setPrototypeOf(err, CommandError.prototype);
 	throw err;

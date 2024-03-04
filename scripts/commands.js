@@ -425,7 +425,7 @@ exports.CommandError = (function () { });
 Object.setPrototypeOf(exports.CommandError.prototype, Error.prototype);
 function fail(message) {
     var err = new Error(typeof message == "string" ? message : "");
-    //oh god it's even worse now because i have to smuggle a function through here
+    //oh no it's even worse now because i have to smuggle a function through here
     err.data = message;
     Object.setPrototypeOf(err, exports.CommandError.prototype);
     throw err;

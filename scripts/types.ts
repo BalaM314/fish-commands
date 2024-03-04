@@ -67,40 +67,38 @@ export type TapHandleMode = "off" | "once" | "on";
 
 export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number | PlayerInfo | UnitType | Block | Team;
 export type PartialFormatString<TData = string | null> = ((data:TData) => string) & {__partialFormatString:true};
-export interface FishCommandRunner<ArgType extends string, StoredData> {
-	(_:{
-		/**Raw arguments that were passed to the command. */
-		rawArgs:(string | undefined)[];
-		/**Formatted and parsed args. Access an argument by name, like python's keyword args. Example: `args.player.setRank(Rank.mod);`. An argument can only be null if it was optional, otherwise the command will error before the handler runs. */
-		args:ArgsFromArgStringUnion<ArgType>;
-		/**The player who ran the command. */
-		sender:FishPlayer;
-		/** Outputs text to the sender, with a check mark symbol and green color. */
-		outputSuccess:(message:string | PartialFormatString) => void;
-		/** Outputs text to the sender, with a fail symbol and yellow color. */
-		outputFail:(message:string | PartialFormatString) => void;
-		/** Outputs text to the sender. Tab characters are replaced with 4 spaces. */
-		output:(message:string | PartialFormatString) => void;
-		/** Use to tag template literals, formatting players, numbers, ranks, and more */
-		f:TagFunction<Formattable, PartialFormatString>;
-		/**Executes a server console command. Be careful! */
-		execServer:(message:string) => void;
-		/**Call this function to set tap handling mode. */
-		handleTaps:(mode:TapHandleMode) => void;
-		data:StoredData;
-		currentTapMode:TapHandleMode;
-		/** Vars.netServer.admins */
-		admins: Administration;
-		/**List of every registered command, including this one. */
-		allCommands:Record<string, FishCommandData<any, any>>;
-		/**Timestamp of the last time this command was run successfully by any player. */
-		lastUsedSuccessfully:number;
-		/**Timestamp of the last time this command was run by the current sender. */
-		lastUsedSender:number;
-		/**Timestamp of the last time this command was run succesfully by the current sender. */
-		lastUsedSuccessfullySender:number;
-	}):unknown;
-}
+export type FishCommandRunner<ArgType extends string, StoredData> = (fish:{
+	/**Raw arguments that were passed to the command. */
+	rawArgs:(string | undefined)[];
+	/**Formatted and parsed args. Access an argument by name, like python's keyword args. Example: `args.player.setRank(Rank.mod);`. An argument can only be null if it was optional, otherwise the command will error before the handler runs. */
+	args:ArgsFromArgStringUnion<ArgType>;
+	/**The player who ran the command. */
+	sender:FishPlayer;
+	/** Outputs text to the sender, with a check mark symbol and green color. */
+	outputSuccess(message:string | PartialFormatString):void;
+	/** Outputs text to the sender, with a fail symbol and yellow color. */
+	outputFail(message:string | PartialFormatString):void;
+	/** Outputs text to the sender. Tab characters are replaced with 4 spaces. */
+	output(message:string | PartialFormatString):void;
+	/** Use to tag template literals, formatting players, numbers, ranks, and more */
+	f:TagFunction<Formattable, PartialFormatString>;
+	/**Executes a server console command. Be careful! */
+	execServer(message:string):void;
+	/**Call this function to set tap handling mode. */
+	handleTaps(mode:TapHandleMode):void;
+	data:StoredData;
+	currentTapMode:TapHandleMode;
+	/** Vars.netServer.admins */
+	admins: Administration;
+	/**List of every registered command, including this one. */
+	allCommands:Record<string, FishCommandData<any, any>>;
+	/**Timestamp of the last time this command was run successfully by any player. */
+	lastUsedSuccessfully:number;
+	/**Timestamp of the last time this command was run by the current sender. */
+	lastUsedSender:number;
+	/**Timestamp of the last time this command was run succesfully by the current sender. */
+	lastUsedSuccessfullySender:number;
+}) => unknown;
 
 export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 	(_:{
@@ -115,15 +113,15 @@ export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 		args:ArgsFromArgStringUnion<ArgType>;
 		data:StoredData;
 		/** Outputs text to the console. */
-		outputSuccess:(message:string | PartialFormatString) => void;
+		outputSuccess(message:string | PartialFormatString):void;
 		/** Outputs text to the console, using warn(). */
-		outputFail:(message:string | PartialFormatString) => void;
+		outputFail(message:string | PartialFormatString):void;
 		/** Outputs text to the console. Tab characters are replaced with 4 spaces. */
-		output:(message:string | PartialFormatString) => void;
+		output(message:string | PartialFormatString):void;
 		/** Use to tag template literals, formatting players, numbers, ranks, and more */
 		f:TagFunction<Formattable, PartialFormatString>;
 		/**Executes a server console command. Be careful to not commit recursion as that will cause a crash.*/
-		execServer:(message:string) => void;
+		execServer(message:string):void;
 		/** Vars.netServer.admins */
 		admins: Administration;
 		/**Timestamp of the last time this command was run. */
@@ -142,9 +140,9 @@ export interface TapHandler<ArgType extends string, StoredData> {
 		y:number;
 		tile:Tile;
 		data:StoredData;
-		output:(message:string | PartialFormatString) => void;
-		outputFail:(message:string | PartialFormatString) => void;
-		outputSuccess:(message:string | PartialFormatString) => void;
+		output(message:string | PartialFormatString):void;
+		outputFail(message:string | PartialFormatString):void;
+		outputSuccess(message:string | PartialFormatString):void;
 		/** Use to tag template literals, formatting players, numbers, ranks, and more */
 		f:TagFunction<Formattable, PartialFormatString>;
 		/**Timestamp of the last time this command was run. */
