@@ -85,8 +85,10 @@ exports.commands = (0, commands_1.consoleCommandList)({
     savePlayers: {
         args: [],
         description: "Runs FishPlayer.save()",
-        handler: function () {
+        handler: function (_a) {
+            var outputSuccess = _a.outputSuccess;
             players_1.FishPlayer.saveAll();
+            outputSuccess("Successfully wrote fish player data.");
         }
     },
     info: {
@@ -558,6 +560,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
             ].filter(function (l) { return l.length > 0; }).join("\n"), "\n").concat((0, utils_1.colorNumber)(Groups.player.size(), function (n) { return n > 0 ? "&c" : "&lr"; }, "server"), " players online, ").concat((0, utils_1.colorNumber)(numStaff, function (n) { return n > 0 ? "&c" : "&lr"; }, "server"), " staff members.\n").concat(players_1.FishPlayer.mapPlayers(function (p) {
                 return "\t".concat(p.rank.shortPrefix, " &c").concat(p.uuid, "&fr &c").concat(p.name, "&fr");
             }).join("\n") || "&lrNo players connected.&fr", "\n"));
+        }
+    },
+    tmux: {
+        args: ["attach:string"],
+        description: "Oopsie",
+        handler: function () {
+            (0, commands_1.fail)("You are already in the Mindustry server console. Please regain situational awareness before running any further commands.");
         }
     }
 });

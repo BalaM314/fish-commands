@@ -42,8 +42,9 @@ export const commands = consoleCommandList({
 	savePlayers: {
 		args: [],
 		description: "Runs FishPlayer.save()",
-		handler(){
+		handler({outputSuccess}){
 			FishPlayer.saveAll();
+			outputSuccess(`Successfully wrote fish player data.`);
 		}
 	},
 	info: {
@@ -471,6 +472,13 @@ ${FishPlayer.mapPlayers(p =>
 ).join("\n") || "&lrNo players connected.&fr"}
 `
 			);
+		}
+	},
+	tmux: {
+		args: ["attach:string"],
+		description: "Oopsie",
+		handler(){
+			fail(`You are already in the Mindustry server console. Please regain situational awareness before running any further commands.`);
 		}
 	}
 });
