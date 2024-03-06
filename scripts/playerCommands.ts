@@ -29,6 +29,7 @@ export const commands = commandList({
 			if(!sender.unit()?.spawnedByCore) fail(`Can only teleport while in a core unit.`);
 			if(Mode.pvp()) fail(`The /tp command is disabled in PVP.`);
 			if(sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
+			if(sender.unit().hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
 			teleportPlayer(sender.player, args.player.player);
 		},
 	},

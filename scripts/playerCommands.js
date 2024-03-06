@@ -62,7 +62,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Teleport to another player.',
         perm: commands_1.Perm.play,
         handler: function (_a) {
-            var _b;
+            var _b, _c, _d;
             var args = _a.args, sender = _a.sender;
             if (!((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore))
                 (0, commands_1.fail)("Can only teleport while in a core unit.");
@@ -70,6 +70,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 (0, commands_1.fail)("The /tp command is disabled in PVP.");
             if (sender.team() !== args.player.team())
                 (0, commands_1.fail)("Cannot teleport to players on another team.");
+            if ((_d = (_c = sender.unit()).hasPayload) === null || _d === void 0 ? void 0 : _d.call(_c))
+                (0, commands_1.fail)("Cannot teleport to players while holding a payload.");
             (0, utils_1.teleportPlayer)(sender.player, args.player.player);
         },
     }, clean: {
