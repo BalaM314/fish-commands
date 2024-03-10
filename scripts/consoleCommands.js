@@ -466,7 +466,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Checks memory usage of various objects.",
         handler: function (_a) {
             var output = _a.output;
-            output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 10))), " KB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, " (persistent: ").concat(Object.values(players_1.FishPlayer.cachedPlayers).filter(function (p) { return p.shouldSave(); }).length, ")\nFish player data string length: ").concat(players_1.FishPlayer.getFishPlayersString.length, " (").concat(Core.settings.getInt("fish-subkeys"), " subkeys)\nLength of tilelog entries: ").concat(Math.round(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0) / (Math.pow(2, 10))), " KB"));
+            output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 10))), " KB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, " (has data: ").concat(Object.values(players_1.FishPlayer.cachedPlayers).filter(function (p) { return p.hasData(); }).length, ")\nFish player data string length: ").concat(players_1.FishPlayer.getFishPlayersString.length, " (").concat(Core.settings.getInt("fish-subkeys"), " subkeys)\nLength of tilelog entries: ").concat(Math.round(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0) / (Math.pow(2, 10))), " KB"));
         }
     },
     stopplayer: {
@@ -568,6 +568,17 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function () {
             (0, commands_1.fail)("You are already in the Mindustry server console. Please regain situational awareness before running any further commands.");
         }
-    }
+    },
+    BEGIN: {
+        args: ["transaction:string"],
+        description: "Oopsie",
+        handler: function (_a) {
+            var args = _a.args;
+            if (args.transaction == "TRANSACTION")
+                (0, commands_1.fail)("Not possible :( please download and run locally, and make a backup");
+            else
+                (0, commands_1.fail)("Command not found. Did you mean \"BEGIN TRANSACTION\"?");
+        }
+    },
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4;
