@@ -187,6 +187,7 @@ declare class Color {
 declare const Core: {
 	settings: {
 		get(key:string, defaultValue?:any):any;
+		getDataDirectory():Fi;
 		getInt(key:string, defaultValue?:number):number;
 		put(key:string, value:any):void;
 		has(key:string):boolean;

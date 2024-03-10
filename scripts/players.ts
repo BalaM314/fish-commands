@@ -833,8 +833,7 @@ We apologize for the inconvenience.`
 		let out = new StringIO();
 		out.writeNumber(this.saveVersion, 2);
 		out.writeArray(
-			Object.entries(this.cachedPlayers)
-				.filter(([uuid, fishP]) => fishP.shouldSave()),
+			Object.entries(this.cachedPlayers),
 			([uuid, player]) => player.write(out),
 			6
 		);
@@ -847,9 +846,9 @@ We apologize for the inconvenience.`
 		}
 		Core.settings.manualSave();
 	}
-	shouldSave(){
-		//return Mode.sandbox() || (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
-		return true;
+	/** Does not include stats */
+	hasData(){
+		return (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
 	}
 	static getFishPlayersString(){
 		if(Core.settings.has("fish-subkeys")){
