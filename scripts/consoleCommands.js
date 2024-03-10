@@ -580,5 +580,49 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 (0, commands_1.fail)("Command not found. Did you mean \"BEGIN TRANSACTION\"?");
         }
     },
+    prune: {
+        args: ["confirm:boolean?"],
+        description: "Prunes fish player data",
+        handler: function (_a) {
+            var args = _a.args, admins = _a.admins, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            var playersToPrune = Object.values(players_1.FishPlayer.cachedPlayers)
+                .filter(function (player) {
+                if (player.hasData())
+                    return false;
+                var data = admins.getInfoOptional(player.uuid);
+                return (!data ||
+                    data.timesJoined == 1 ||
+                    (data.timesJoined < 10 &&
+                        (Date.now() - player.lastJoined) > (30 * 86400 * 1000)));
+            });
+            if (args.confirm) {
+                outputSuccess("Creating backup...");
+                var backupScript = Core.settings.getDataDirectory().child("backup.sh");
+                if (!backupScript.exists())
+                    (0, commands_1.fail)("./backup.sh does not exist! aborting");
+                var backupProcess_1 = new ProcessBuilder(backupScript.absolutePath())
+                    .directory(Core.settings.getDataDirectory().file())
+                    .redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .start();
+                Timer.schedule(function () {
+                    backupProcess_1.waitFor();
+                    if (backupProcess_1.exitValue() == 0) {
+                        outputSuccess("Successfully created a backup.");
+                        Core.app.post(function () {
+                            playersToPrune.forEach(function (u) { delete players_1.FishPlayer.cachedPlayers[u.uuid]; });
+                            outputSuccess("Pruned ".concat(playersToPrune.length, " players."));
+                        });
+                    }
+                    else {
+                        outputFail("Backup failed!");
+                    }
+                }, 0);
+            }
+            else {
+                outputSuccess("Pruning would remove fish data for ".concat(playersToPrune.length, " players with no data and (1 join or inactive with <10 joins). (Mindustry data will remain.)\nRun \"prune y\" to prune data."));
+            }
+        }
+    },
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4;

@@ -489,4 +489,46 @@ ${FishPlayer.mapPlayers(p =>
 			else fail(`Command not found. Did you mean "BEGIN TRANSACTION"?`);
 		}
 	},
+	prune: {
+		args: ["confirm:boolean?"],
+		description: "Prunes fish player data",
+		handler({args, admins, outputSuccess, outputFail}){
+			const playersToPrune = Object.values(FishPlayer.cachedPlayers)
+				.filter(player => {
+					if(player.hasData()) return false;
+					const data = admins.getInfoOptional(player.uuid);
+					return (
+						!data ||
+						data.timesJoined == 1 ||
+						(data.timesJoined < 10 &&
+							(Date.now() - player.lastJoined) > (30 * 86400 * 1000)
+						)
+					);
+				});
+			if(args.confirm){
+				outputSuccess("Creating backup...");
+				const backupScript = Core.settings.getDataDirectory().child("backup.sh");
+				if(!backupScript.exists()) fail(`./backup.sh does not exist! aborting`);
+				const backupProcess = new ProcessBuilder(backupScript.absolutePath())
+					.directory(Core.settings.getDataDirectory().file())
+					.redirectErrorStream(true)
+					.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+					.start();
+				Timer.schedule(() => { //run on other thread
+					backupProcess.waitFor();
+					if(backupProcess.exitValue() == 0){
+						outputSuccess(`Successfully created a backup.`);
+						Core.app.post(() => {
+							playersToPrune.forEach(u => {delete FishPlayer.cachedPlayers[u.uuid]});
+							outputSuccess(`Pruned ${playersToPrune.length} players.`);
+						});
+					} else {
+						outputFail(`Backup failed!`);
+					}
+				}, 0);
+			} else {
+				outputSuccess(`Pruning would remove fish data for ${playersToPrune.length} players with no data and (1 join or inactive with <10 joins). (Mindustry data will remain.)\nRun "prune y" to prune data.`);
+			}
+		}
+	},
 });
