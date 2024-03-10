@@ -624,5 +624,28 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }
         }
     },
+    backup: {
+        args: [],
+        description: "Creates a backup of the settings.bin file.",
+        handler: function (_a) {
+            var output = _a.output, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            output("Creating backup...");
+            var backupScript = Core.settings.getDataDirectory().child("backup.sh");
+            if (!backupScript.exists())
+                (0, commands_1.fail)("./backup.sh does not exist! aborting");
+            var backupProcess = new ProcessBuilder(backupScript.absolutePath())
+                .directory(Core.settings.getDataDirectory().file())
+                .redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                .start();
+            Timer.schedule(function () {
+                backupProcess.waitFor();
+                if (backupProcess.exitValue() == 0)
+                    outputSuccess("Successfully created a backup.");
+                else
+                    outputFail("Backup failed!");
+            }, 0);
+        }
+    }
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4;

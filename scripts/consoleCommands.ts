@@ -531,4 +531,23 @@ ${FishPlayer.mapPlayers(p =>
 			}
 		}
 	},
+	backup: {
+		args: [],
+		description: "Creates a backup of the settings.bin file.",
+		handler({output, outputFail, outputSuccess}){
+			output("Creating backup...");
+			const backupScript = Core.settings.getDataDirectory().child("backup.sh");
+			if(!backupScript.exists()) fail(`./backup.sh does not exist! aborting`);
+			const backupProcess = new ProcessBuilder(backupScript.absolutePath())
+				.directory(Core.settings.getDataDirectory().file())
+				.redirectErrorStream(true)
+				.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+				.start();
+			Timer.schedule(() => { //run on other thread
+				backupProcess.waitFor();
+				if(backupProcess.exitValue() == 0) outputSuccess(`Successfully created a backup.`);
+				else outputFail(`Backup failed!`);
+			}, 0);
+		}
+	}
 });
