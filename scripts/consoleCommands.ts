@@ -514,18 +514,18 @@ ${FishPlayer.mapPlayers(p =>
 					.redirectErrorStream(true)
 					.redirectOutput(ProcessBuilder.Redirect.INHERIT)
 					.start();
-				Timer.schedule(() => { //run on other thread
+				Threads.daemon(() => { //dont block main thread
 					backupProcess.waitFor();
 					if(backupProcess.exitValue() == 0){
 						outputSuccess(`Successfully created a backup.`);
-						Core.app.post(() => {
+						Core.app.post(() => { //back to main thread, modifying fish player
 							playersToPrune.forEach(u => {delete FishPlayer.cachedPlayers[u.uuid]});
 							outputSuccess(`Pruned ${playersToPrune.length} players.`);
 						});
 					} else {
 						outputFail(`Backup failed!`);
 					}
-				}, 0);
+				});
 			} else {
 				outputSuccess(`Pruning would remove fish data for ${playersToPrune.length} players with no data and (1 join or inactive with <10 joins). (Mindustry data will remain.)\nRun "prune y" to prune data.`);
 			}
@@ -543,11 +543,11 @@ ${FishPlayer.mapPlayers(p =>
 				.redirectErrorStream(true)
 				.redirectOutput(ProcessBuilder.Redirect.INHERIT)
 				.start();
-			Timer.schedule(() => { //run on other thread
+			Threads.daemon(() => {
 				backupProcess.waitFor();
 				if(backupProcess.exitValue() == 0) outputSuccess(`Successfully created a backup.`);
 				else outputFail(`Backup failed!`);
-			}, 0);
+			});
 		}
 	}
 });

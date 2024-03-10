@@ -605,7 +605,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     .redirectErrorStream(true)
                     .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                     .start();
-                Timer.schedule(function () {
+                Threads.daemon(function () {
                     backupProcess_1.waitFor();
                     if (backupProcess_1.exitValue() == 0) {
                         outputSuccess("Successfully created a backup.");
@@ -617,7 +617,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     else {
                         outputFail("Backup failed!");
                     }
-                }, 0);
+                });
             }
             else {
                 outputSuccess("Pruning would remove fish data for ".concat(playersToPrune.length, " players with no data and (1 join or inactive with <10 joins). (Mindustry data will remain.)\nRun \"prune y\" to prune data."));
@@ -638,13 +638,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 .redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .start();
-            Timer.schedule(function () {
+            Threads.daemon(function () {
                 backupProcess.waitFor();
                 if (backupProcess.exitValue() == 0)
                     outputSuccess("Successfully created a backup.");
                 else
                     outputFail("Backup failed!");
-            }, 0);
+            });
         }
     }
 });

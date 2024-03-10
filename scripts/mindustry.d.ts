@@ -467,3 +467,6 @@ declare const Reflect: {
 interface Array<T> {
   filter(predicate: BooleanConstructor, thisArg?: any): (T extends (false | 0 | "" | null | undefined) ? never : T)[];
 }
+declare const Threads: {
+	daemon(callback:() => unknown):void;
+}
