@@ -517,6 +517,65 @@ Available types:[yellow]
 			}
 		}
 	},
+	
+	forcevnw: { // will work on all servers for testing / trol purposes
+		args: ["force:boolean?"],
+		description: 'Force skip to the next map.',
+		perm: Perm.admin,
+		handler({args, sender, allCommands}){
+			if(args.force === false){
+				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
+				allCommands.vnw.data.votes.clear();
+			} else {
+				//todo, skip wave
+			}
+		}
+	},
+	nvw: command(() => { // only works on survival
+		const votes = new Set<string>();
+		const ratio = 0.25;
+
+		Events.on(EventType.PlayerLeave, ({player}) => {
+			if(votes.has(player.uuid())){
+				votes.delete(player.uuid());
+				const currentVotes = votes.size;
+				const requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`VNW: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				if(currentVotes >= requiredVotes){
+					Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
+
+					//todo, skip wave shit
+				}
+			}
+		});		
+		Events.on(EventType.GameOverEvent, () => votes.clear());
+
+		return {
+			args: [],
+			description: 'Vote to start next wave',
+			perm: Perm.play,
+			data: {votes},
+			handler({sender, lastUsedSuccessfullySender}){
+				if(!Mode.survival()) fail(`you can only skip waves on survival`);
+				if(Vars.state.gameOver) fail(`This game is already over`);
+				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
+				votes.add(sender.uuid);
+				let currentVotes = votes.size;
+				let requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`RTV: [accent]${sender.cleanedName}[] wants to skip this wave, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				if(currentVotes >= requiredVotes){
+					Call.sendMessage('RTV: [green] vote passed, skipping to next wave.');
+					
+					//idk do some skip wave shit here
+
+				}
+			}
+		}	
+	}),
 
 	rtv: command(() => {
 		const votes = new Set<string>();
