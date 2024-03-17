@@ -477,6 +477,16 @@ Available types:[yellow]
 		},
 	},
 
+	void: {
+		args: [],
+		description: '',
+		perm: Perm.fromRank(Rank.trusted),
+		handler({outputFail,outputSuccess,lastUsedSuccessfullySender}){
+			if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`command on cooldown, please wait`);
+			Call.sendMessage(`[white]Power Voids () are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teamates`);
+		},
+	},
+
 	team: {
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
@@ -527,13 +537,16 @@ Available types:[yellow]
 				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.vnw.data.votes.clear();
 			} else {
-				//todo, skip wave
+				let oldTime = Vars.state.wavetime;
+				Vars.state.wavetime = 1;
+				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
+				Call.sendMessage(`VNW [yellow]${sender.name}[red] Has forced the next wave to start`);
 			}
 		}
 	},
-	nvw: command(() => { // only works on survival
+	vnw: command(() => { // only works on survival
 		const votes = new Set<string>();
-		const ratio = 0.25;
+		const ratio = 0.33;//It takes 1/2 for rtv, and that is always a slog, i figured 1/3 vote shows cooperation, but not 
 
 		Events.on(EventType.PlayerLeave, ({player}) => {
 			if(votes.has(player.uuid())){
@@ -544,9 +557,10 @@ Available types:[yellow]
 					`VNW: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
 				);
 				if(currentVotes >= requiredVotes){
+					let oldTime = Vars.state.wavetime;
+					Vars.state.wavetime = 1;
+					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
 					Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
-
-					//todo, skip wave shit
 				}
 			}
 		});		
@@ -568,10 +582,10 @@ Available types:[yellow]
 					`RTV: [accent]${sender.cleanedName}[] wants to skip this wave, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
 				);
 				if(currentVotes >= requiredVotes){
-					Call.sendMessage('RTV: [green] vote passed, skipping to next wave.');
-					
-					//idk do some skip wave shit here
-
+					let oldTime = Vars.state.wavetime;
+					Vars.state.wavetime = 1;
+					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
+					Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
 				}
 			}
 		}	

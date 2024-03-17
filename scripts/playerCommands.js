@@ -503,6 +503,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (target !== sender)
                 outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
         },
+    }, void: {
+        args: [],
+        description: '',
+        perm: commands_1.Perm.fromRank(ranks_1.Rank.trusted),
+        handler: function (_a) {
+            var outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+            if (Date.now() - lastUsedSuccessfullySender < 10000)
+                (0, commands_1.fail)("command on cooldown, please wait");
+            Call.sendMessage("[white]Power Voids (\uF83F) are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teamates");
+        },
     }, team: {
         args: ['team:team', 'target:player?'],
         description: 'Changes the team of a player.',
@@ -557,12 +567,15 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 allCommands.vnw.data.votes.clear();
             }
             else {
-                //todo, skip wave
+                var oldTime_1 = Vars.state.wavetime;
+                Vars.state.wavetime = 1;
+                Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_1; }); });
+                Call.sendMessage("VNW [yellow]".concat(sender.name, "[red] Has forced the next wave to start"));
             }
         }
-    }, nvw: (0, commands_1.command)(function () {
+    }, vnw: (0, commands_1.command)(function () {
         var votes = new Set();
-        var ratio = 0.25;
+        var ratio = 0.33; //It takes 1/2 for rtv, and that is always a slog, i figured 1/3 vote shows cooperation, but not 
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
             if (votes.has(player.uuid())) {
@@ -571,8 +584,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 var requiredVotes = Math.ceil(ratio * Groups.player.size());
                 Call.sendMessage("VNW: [accent]".concat(player.name, "[] left, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
                 if (currentVotes >= requiredVotes) {
+                    var oldTime_2 = Vars.state.wavetime;
+                    Vars.state.wavetime = 1;
+                    Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); });
                     Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
-                    //todo, skip wave shit
                 }
             }
         });
@@ -595,8 +610,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 var requiredVotes = Math.ceil(ratio * Groups.player.size());
                 Call.sendMessage("RTV: [accent]".concat(sender.cleanedName, "[] wants to skip this wave, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
                 if (currentVotes >= requiredVotes) {
-                    Call.sendMessage('RTV: [green] vote passed, skipping to next wave.');
-                    //idk do some skip wave shit here
+                    var oldTime_3 = Vars.state.wavetime;
+                    Vars.state.wavetime = 1;
+                    Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_3; }); });
+                    Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
                 }
             }
         };
