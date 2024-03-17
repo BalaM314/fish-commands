@@ -479,8 +479,8 @@ Available types:[yellow]
 
 	void: {
 		args: [],
-		description: '',
-		perm: Perm.fromRank(Rank.trusted),
+		description: 'sends a reminder in chat power voids',
+		perm: Perm.fromRank(Rank.trusted),// Im allowing trusted to do this, but with a 10s cooldown to prevent spam.
 		handler({lastUsedSuccessfullySender}){
 			if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`command on cooldown, please wait`);
 			Call.sendMessage(`[white]Power Voids () are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teamates`);

@@ -505,8 +505,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         },
     }, void: {
         args: [],
-        description: '',
-        perm: commands_1.Perm.fromRank(ranks_1.Rank.trusted),
+        description: 'sends a reminder in chat power voids',
+        perm: commands_1.Perm.fromRank(ranks_1.Rank.trusted), // Im allowing trusted to do this, but with a 10s cooldown to prevent spam.
         handler: function (_a) {
             var lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
             if (Date.now() - lastUsedSuccessfullySender < 10000)
