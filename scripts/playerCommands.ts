@@ -559,7 +559,7 @@ Available types:[yellow]
 				if(currentVotes >= requiredVotes){
 					let oldTime = Vars.state.wavetime;
 					Vars.state.wavetime = 1;
-					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
+					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})}); // a bastard of a line of code, but it works
 					Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
 				}
 			}

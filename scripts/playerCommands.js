@@ -586,7 +586,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (currentVotes >= requiredVotes) {
                     var oldTime_2 = Vars.state.wavetime;
                     Vars.state.wavetime = 1;
-                    Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); });
+                    Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); }); // a bastard of a line of code, but it works
                     Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
                 }
             }
