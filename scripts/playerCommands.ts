@@ -481,7 +481,7 @@ Available types:[yellow]
 		args: [],
 		description: '',
 		perm: Perm.fromRank(Rank.trusted),
-		handler({outputFail,outputSuccess,lastUsedSuccessfullySender}){
+		handler({lastUsedSuccessfullySender}){
 			if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`command on cooldown, please wait`);
 			Call.sendMessage(`[white]Power Voids () are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teamates`);
 		},
