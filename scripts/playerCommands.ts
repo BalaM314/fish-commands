@@ -477,6 +477,16 @@ Available types:[yellow]
 		},
 	},
 
+	void: {
+		args: [],
+		description: 'sends a reminder in chat power voids',
+		perm: Perm.fromRank(Rank.trusted),// Im allowing trusted to do this, but with a 10s cooldown to prevent spam.
+		handler({lastUsedSuccessfullySender}){
+			if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`command on cooldown, please wait`);
+			Call.sendMessage(`[white]Power Voids () are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teamates`);
+		},
+	},
+
 	team: {
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
@@ -517,6 +527,69 @@ Available types:[yellow]
 			}
 		}
 	},
+	
+	forcevnw: { // will work on all servers for testing / trol purposes
+		args: ["force:boolean?"],
+		description: 'Force skip to the next map.',
+		perm: Perm.admin,
+		handler({args, sender, allCommands}){
+			if(args.force === false){
+				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
+				allCommands.vnw.data.votes.clear();
+			} else {
+				let oldTime = Vars.state.wavetime;
+				Vars.state.wavetime = 1;
+				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
+				Call.sendMessage(`VNW [yellow]${sender.name}[red] Has forced the next wave to start`);
+			}
+		}
+	},
+	vnw: command(() => { // only works on survival
+		const votes = new Set<string>();
+		const ratio = 0.33;//It takes 1/2 for rtv, and that is always a slog, i figured 1/3 vote shows cooperation, but not 
+
+		Events.on(EventType.PlayerLeave, ({player}) => {
+			if(votes.has(player.uuid())){
+				votes.delete(player.uuid());
+				const currentVotes = votes.size;
+				const requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`VNW: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				if(currentVotes >= requiredVotes){
+					let oldTime = Vars.state.wavetime;
+					Vars.state.wavetime = 1;
+					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})}); // a bastard of a line of code, but it works
+					Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
+				}
+			}
+		});		
+		Events.on(EventType.GameOverEvent, () => votes.clear());
+
+		return {
+			args: [],
+			description: 'Vote to start next wave',
+			perm: Perm.play,
+			data: {votes},
+			handler({sender, lastUsedSuccessfullySender}){
+				if(!Mode.survival()) fail(`you can only skip waves on survival`);
+				if(Vars.state.gameOver) fail(`This game is already over`);
+				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
+				votes.add(sender.uuid);
+				let currentVotes = votes.size;
+				let requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`RTV: [accent]${sender.cleanedName}[] wants to skip this wave, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				if(currentVotes >= requiredVotes){
+					let oldTime = Vars.state.wavetime;
+					Vars.state.wavetime = 1;
+					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
+					Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
+				}
+			}
+		}	
+	}),
 
 	rtv: command(() => {
 		const votes = new Set<string>();
