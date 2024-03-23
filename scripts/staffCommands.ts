@@ -174,8 +174,8 @@ export const commands = commandList({
 			function stop(option:PlayerInfo, time:number){
 				const fishP = FishPlayer.getFromInfo(option);
 				if(sender.canModerate(fishP, true)){
-					fishP.stop(sender, time);
 					logAction(fishP.marked() ? time == 1000 ? "freed" : "updated stop time of" : "stopped", sender, option, undefined, time);
+					fishP.stop(sender, time);
 					outputSuccess(f`Player ${option} was marked for ${formatTime(time)}.`);
 				} else {
 					outputFail(`You do not have permission to stop this player.`);

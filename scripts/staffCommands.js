@@ -217,8 +217,8 @@ exports.commands = (0, commands_1.commandList)({
             function stop(option, time) {
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (sender.canModerate(fishP, true)) {
-                    fishP.stop(sender, time);
                     (0, utils_1.logAction)(fishP.marked() ? time == 1000 ? "freed" : "updated stop time of" : "stopped", sender, option, undefined, time);
+                    fishP.stop(sender, time);
                     outputSuccess(f(templateObject_21 || (templateObject_21 = __makeTemplateObject(["Player ", " was marked for ", "."], ["Player ", " was marked for ", "."])), option, (0, utils_1.formatTime)(time)));
                 }
                 else {
