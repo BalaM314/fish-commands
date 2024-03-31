@@ -24,8 +24,8 @@ exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([
-    "uwu",
-    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger",
+    "uwu", //lol
+    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", //our apologies to citizens of the Republic of Niger
     "re" + "tard",
     'kill yourself', 'kill urself', /\bkys\b/,
     /\bkill blacks\b/,
@@ -179,7 +179,7 @@ exports.tips = {
         "All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.",
         "Players with a ".concat(ranks_1.Rank.trusted.prefix, " in front of their name aren't staff members, but they do have extra powers."),
         "Staff members will have the following prefixes in front of their name: ".concat(ranks_1.Rank.manager.prefix, ", ").concat(ranks_1.Rank.admin.prefix, ", ").concat(ranks_1.Rank.mod.prefix),
-        "wave cooldown to long? skip the wait with /VSW"
+        "Wave cooldown too long? Skip the wait with /vnw"
     ],
     staff: []
 };

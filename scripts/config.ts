@@ -165,7 +165,7 @@ export const tips = {
 		`All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.`,
 		`Players with a ${Rank.trusted.prefix} in front of their name aren't staff members, but they do have extra powers.`,
 		`Staff members will have the following prefixes in front of their name: ${Rank.manager.prefix}, ${Rank.admin.prefix}, ${Rank.mod.prefix}`,
-		`wave cooldown to long? skip the wait with /VSW`
+		`Wave cooldown too long? Skip the wait with /vnw`
 	],
 	staff: [
 

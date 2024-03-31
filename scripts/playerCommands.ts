@@ -544,7 +544,7 @@ Available types:[yellow]
 			}
 		}
 	},
-	vnw: command(() => { // only works on survival
+	vnw: command(() => {
 		const votes = new Set<string>();
 		const ratio = 0.33;//It takes 1/2 for rtv, and that is always a slog, i figured 1/3 vote shows cooperation, but not 
 
@@ -559,7 +559,7 @@ Available types:[yellow]
 				if(currentVotes >= requiredVotes){
 					let oldTime = Vars.state.wavetime;
 					Vars.state.wavetime = 1;
-					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})}); // a bastard of a line of code, but it works
+					Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
 					Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
 				}
 			}
@@ -574,12 +574,12 @@ Available types:[yellow]
 			handler({sender, lastUsedSuccessfullySender}){
 				if(!Mode.survival()) fail(`you can only skip waves on survival`);
 				if(Vars.state.gameOver) fail(`This game is already over`);
-				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
+				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
 				votes.add(sender.uuid);
 				let currentVotes = votes.size;
 				let requiredVotes = Math.ceil(ratio * Groups.player.size());
 				Call.sendMessage(
-					`RTV: [accent]${sender.cleanedName}[] wants to skip this wave, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+					`VNW: [accent]${sender.cleanedName}[] wants to skip this wave, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
 				);
 				if(currentVotes >= requiredVotes){
 					let oldTime = Vars.state.wavetime;

@@ -586,7 +586,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (currentVotes >= requiredVotes) {
                     var oldTime_2 = Vars.state.wavetime;
                     Vars.state.wavetime = 1;
-                    Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); }); // a bastard of a line of code, but it works
+                    Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); });
                     Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
                 }
             }
@@ -603,12 +603,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("you can only skip waves on survival");
                 if (Vars.state.gameOver)
                     (0, commands_1.fail)("This game is already over");
-                if (Date.now() - lastUsedSuccessfullySender < 1000)
+                if (Date.now() - lastUsedSuccessfullySender < 10000)
                     (0, commands_1.fail)("This command was run recently and is on cooldown.");
                 votes.add(sender.uuid);
                 var currentVotes = votes.size;
                 var requiredVotes = Math.ceil(ratio * Groups.player.size());
-                Call.sendMessage("RTV: [accent]".concat(sender.cleanedName, "[] wants to skip this wave, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
+                Call.sendMessage("VNW: [accent]".concat(sender.cleanedName, "[] wants to skip this wave, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
                 if (currentVotes >= requiredVotes) {
                     var oldTime_3 = Vars.state.wavetime;
                     Vars.state.wavetime = 1;
