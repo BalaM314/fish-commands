@@ -511,7 +511,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
             if (Date.now() - lastUsedSuccessfullySender < 10000)
                 (0, commands_1.fail)("command on cooldown, please wait");
-            Call.sendMessage("[white]Power Voids (\uF83F) are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teamates");
+            Call.sendMessage("[white]Power Voids (\uF83F) are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teammates");
         },
     }, team: {
         args: ['team:team', 'target:player?'],
