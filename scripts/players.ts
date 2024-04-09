@@ -299,6 +299,7 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
+			fishPlayer.checkNew();
 			api.getStopped(player.uuid(), (unmarkTime) => {
 				if(unmarkTime)
 					fishPlayer.unmarkTime = unmarkTime;
@@ -641,6 +642,19 @@ We apologize for the inconvenience.`
 			//Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
 			Timer.schedule(() => this.sendMessage(message), 3);
 		}
+	}
+	checkNew(){
+		if(this.marked()) return; 
+		if(this.ranksAtLeast(Rank.trusted)) return; //no demoting 
+		if(this.joinsLessThan(config.JOINS_TILL_NOT_NEW) ||  this.stats.timeInGame < config.TIME_TILL_NOT_NEW){
+			if(this.rank.level != -1){
+				this.setRank(Rank.new);
+				return;
+			}
+		}else{
+			this.setRank(Rank.player);
+		}
+		
 	}
 	//#endregion
 

@@ -3,7 +3,7 @@ import type { SelectClasslikeEnumKeys as SelectEnumClassKeys } from "./types";
 export class Rank {
 	static ranks:Record<string, Rank> = {};
 	
-	static new = new Rank("new", -1, "For new players.", "", "[N]", "[forest]");
+	static new = new Rank("new", -1, "For new players.", "\uE827", "[N]", "[forest]");
 	static player = new Rank("player", 0, "Ordinary players.", "", "[P]", "");
 	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
 	static mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&g[M]&fr", "[#6FFC7C]");

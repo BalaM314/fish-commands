@@ -326,6 +326,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
+            fishPlayer.checkNew();
             api.getStopped(player.uuid(), function (unmarkTime) {
                 if (unmarkTime)
                     fishPlayer.unmarkTime = unmarkTime;
@@ -707,6 +708,21 @@ var FishPlayer = /** @class */ (function () {
             var message_1 = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
             //Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
             Timer.schedule(function () { return _this.sendMessage(message_1); }, 3);
+        }
+    };
+    FishPlayer.prototype.checkNew = function () {
+        if (this.marked())
+            return;
+        if (this.ranksAtLeast(ranks_1.Rank.trusted))
+            return; //no demoting 
+        if (this.joinsLessThan(config.JOINS_TILL_NOT_NEW) || this.stats.timeInGame < config.TIME_TILL_NOT_NEW) {
+            if (this.rank.level != -1) {
+                this.setRank(ranks_1.Rank.new);
+                return;
+            }
+        }
+        else {
+            this.setRank(ranks_1.Rank.player);
         }
     };
     //#endregion
