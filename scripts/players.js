@@ -94,7 +94,7 @@ var FishPlayer = /** @class */ (function () {
         this.player = player;
         this.rainbow = rainbow;
         this.cleanedName = (0, utils_1.escapeStringColorsServer)(Strings.stripColors(this.name));
-        this.rank = (_o = ranks_1.Rank.getByName(rank)) !== null && _o !== void 0 ? _o : ranks_1.Rank.new;
+        this.rank = (_o = ranks_1.Rank.getByName(rank)) !== null && _o !== void 0 ? _o : ranks_1.Rank.player;
         this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
         if (member)
             this.flags.add(ranks_1.RoleFlag.member);
@@ -326,7 +326,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
-            fishPlayer.checkNew();
+            fishPlayer.checkAutoRanks();
             api.getStopped(player.uuid(), function (unmarkTime) {
                 if (unmarkTime)
                     fishPlayer.unmarkTime = unmarkTime;
@@ -710,19 +710,29 @@ var FishPlayer = /** @class */ (function () {
             Timer.schedule(function () { return _this.sendMessage(message_1); }, 3);
         }
     };
-    FishPlayer.prototype.checkNew = function () {
-        if (this.marked())
+    FishPlayer.prototype.checkAutoRanks = function () {
+        var e_8, _a;
+        if (this.stelled())
             return;
-        if (this.ranksAtLeast(ranks_1.Rank.trusted))
-            return; //no demoting 
-        if (this.joinsLessThan(config.JOINS_TILL_NOT_NEW) || this.stats.timeInGame < config.TIME_TILL_NOT_NEW) {
-            if (this.rank.level != -1) {
-                this.setRank(ranks_1.Rank.new);
-                return;
+        try {
+            for (var _b = __values(ranks_1.Rank.autoRanks), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var rankToAssign = _c.value;
+                if (!this.ranksAtLeast(rankToAssign) && rankToAssign.autoRankData) {
+                    if (this.joinsAtLeast(rankToAssign.autoRankData.joins) &&
+                        this.stats.blocksPlaced >= rankToAssign.autoRankData.blocksPlaced &&
+                        this.stats.timeInGame >= rankToAssign.autoRankData.playtime) {
+                        this.setRank(rankToAssign);
+                        this.sendMessage("You have been automatically promoted to rank ".concat(rankToAssign.coloredName(), "!"));
+                    }
+                }
             }
         }
-        else {
-            this.setRank(ranks_1.Rank.player);
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_8) throw e_8.error; }
         }
     };
     //#endregion
@@ -947,7 +957,7 @@ var FishPlayer = /** @class */ (function () {
     };
     /** Does not include stats */
     FishPlayer.prototype.hasData = function () {
-        return (this.rank != ranks_1.Rank.new && this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
+        return (this.rank != ranks_1.Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
     };
     FishPlayer.getFishPlayersString = function () {
         if (Core.settings.has("fish-subkeys")) {
@@ -986,7 +996,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_8, _a;
+        var e_9, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -1000,12 +1010,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        catch (e_9_1) { e_9 = { error: e_9_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_8) throw e_8.error; }
+            finally { if (e_9) throw e_9.error; }
         }
     };
     //#endregion

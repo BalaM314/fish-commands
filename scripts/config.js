@@ -16,13 +16,11 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.TIME_TILL_NOT_NEW = exports.JOINS_TILL_NOT_NEW = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 exports.MUTED_PREFIX = '[white](muted)';
-exports.JOINS_TILL_NOT_NEW = 25;
-exports.TIME_TILL_NOT_NEW = 1 * 60 * 60 * 1000;
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([

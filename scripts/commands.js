@@ -86,6 +86,7 @@ var Perm = /** @class */ (function () {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
     };
     Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
+    Perm.trusted = Perm.fromRank(ranks_1.Rank.trusted);
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
     Perm.member = new Perm("member", function (fishP) { return fishP.hasFlag("member") && !fishP.marked(); }, "[pink]", "You must have a [pink]Fish Membership[] to use this command. Subscribe on the [sky]/discord[yellow]!");

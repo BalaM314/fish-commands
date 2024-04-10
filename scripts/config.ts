@@ -3,8 +3,6 @@ import { Rank } from "./ranks";
 
 export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 export const MUTED_PREFIX = '[white](muted)';
-export const JOINS_TILL_NOT_NEW = 25;
-export const TIME_TILL_NOT_NEW = 1 * 60 * 60 * 1000;
 export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
