@@ -33,7 +33,7 @@ export function loadPacketHandlers() {
             handleLabel(player, content, true);
         } catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e as Error);
+            //Log.err(e as Error);
 
             player.sendMessage(procError);            
         }
@@ -85,7 +85,7 @@ export function loadPacketHandlers() {
             }
         } catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e as Error);
+            //Log.err(e as Error);
 
             player.sendMessage(procError);
         }
@@ -104,7 +104,7 @@ export function loadPacketHandlers() {
             lastAccessedLine = p;
         } catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e as Error);
+            //Log.err(e as Error);
 
             player.sendMessage(procError);
         }
@@ -130,7 +130,7 @@ export function loadPacketHandlers() {
             lastAccessedBulkLine = p;
         } catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e as Error);
+            //Log.err(e as Error);
 
             player.sendMessage(procError);
         }

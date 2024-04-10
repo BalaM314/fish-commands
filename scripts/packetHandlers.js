@@ -30,7 +30,7 @@ function loadPacketHandlers() {
         }
         catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e);
+            //Log.err(e as Error);
             player.sendMessage(procError);
         }
     });
@@ -79,7 +79,7 @@ function loadPacketHandlers() {
         }
         catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e);
+            //Log.err(e as Error);
             player.sendMessage(procError);
         }
     });
@@ -97,7 +97,7 @@ function loadPacketHandlers() {
         }
         catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e);
+            //Log.err(e as Error);
             player.sendMessage(procError);
         }
     });
@@ -121,7 +121,7 @@ function loadPacketHandlers() {
         }
         catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
-            Log.err(e);
+            //Log.err(e as Error);
             player.sendMessage(procError);
         }
     });
