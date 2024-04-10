@@ -326,7 +326,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
-            fishPlayer.checkAutoRanks();
+            // fishPlayer.checkAutoRanks();
             api.getStopped(player.uuid(), function (unmarkTime) {
                 if (unmarkTime)
                     fishPlayer.unmarkTime = unmarkTime;

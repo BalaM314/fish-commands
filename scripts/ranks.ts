@@ -3,9 +3,9 @@ import type { SelectClasslikeEnumKeys as SelectEnumClassKeys } from "./types";
 export class Rank {
 	static ranks:Record<string, Rank> = {};
 	static autoRanks: Rank[] = [];
-	
+
 	static player = new Rank("player", 0, "Ordinary players.", "", "&lk[p]&fr", "");
-	static active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "", "&g[P]&fr", "[forest]", {
+	static active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[#E67E22]\uE800[]>[]", "&g[P]&fr", "[forest]", {
 		joins: 25, playtime: 3600_000, blocksPlaced: 2000
 	});
 	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");

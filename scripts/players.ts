@@ -299,7 +299,7 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
-			fishPlayer.checkAutoRanks();
+			// fishPlayer.checkAutoRanks();
 			api.getStopped(player.uuid(), (unmarkTime) => {
 				if(unmarkTime)
 					fishPlayer.unmarkTime = unmarkTime;
