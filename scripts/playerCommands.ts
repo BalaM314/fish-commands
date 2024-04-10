@@ -1,13 +1,13 @@
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm } from './commands';
-import { FishServers, getGamemode, Mode, rules } from './config';
-import { ipPattern, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { FishServers, Mode, rules } from './config';
+import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import {
-	capitalizeText, formatTimeRelative, getColor, nearbyEnemyTile, neutralGameover, StringBuilder, StringIO,
-	teleportPlayer, to2DArray
+	capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover,
+	StringBuilder, StringIO, teleportPlayer, to2DArray
 } from './utils';
 // import { votekickmanager } from './votes';
 
@@ -478,12 +478,29 @@ Available types:[yellow]
 	},
 
 	void: {
-		args: [],
-		description: 'sends a reminder in chat power voids',
-		perm: Perm.fromRank(Rank.trusted),// Im allowing trusted to do this, but with a 10s cooldown to prevent spam.
-		handler({lastUsedSuccessfullySender}){
-			if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`command on cooldown, please wait`);
-			Call.sendMessage(`[white]Power Voids () are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teammates`);
+		args: ["player:player?"],
+		description: 'Warns other players about power voids.',
+		perm: Perm.play,
+		handler({args, sender, lastUsedSuccessfullySender}){
+			if(args.player){
+				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
+				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
+				menu("\uf83f [scarlet]WARNING[] \uf83f",
+`[white]Don't break the Power Void (\uf83f), it's a trap!
+Power voids disable anything they are connected to.
+If you break it, [scarlet]you will get attacked[] by enemy units.
+Please stop attacking and [lime]build defenses[] first!`,
+					["I understand"], sender
+				);
+				logAction("showed void warning", sender, args.player);
+			} else {
+				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was used recently and is on cooldown.`);
+				Call.sendMessage(
+`[white]Don't break the Power Void (\uf83f), it's a trap!
+Power voids disable anything they are connected to. If you break it, [scarlet]you will get attacked[] by enemy units.
+Please stop attacking and [lime]build defenses[] first!`
+				);
+			}
 		},
 	},
 

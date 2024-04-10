@@ -504,14 +504,24 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
         },
     }, void: {
-        args: [],
-        description: 'sends a reminder in chat power voids',
-        perm: commands_1.Perm.fromRank(ranks_1.Rank.trusted), // Im allowing trusted to do this, but with a 10s cooldown to prevent spam.
+        args: ["player:player?"],
+        description: 'Warns other players about power voids.',
+        perm: commands_1.Perm.play,
         handler: function (_a) {
-            var lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
-            if (Date.now() - lastUsedSuccessfullySender < 10000)
-                (0, commands_1.fail)("command on cooldown, please wait");
-            Call.sendMessage("[white]Power Voids (\uF83F) are commonly used to create traps that trigger once they are destroyed. Please avoid destroying them for the sake of your teammates");
+            var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+            if (args.player) {
+                if (Date.now() - lastUsedSuccessfullySender < 20000)
+                    (0, commands_1.fail)("This command was used recently and is on cooldown.");
+                if (!sender.hasPerm("trusted"))
+                    (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
+                (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], sender);
+                (0, utils_1.logAction)("showed void warning", sender, args.player);
+            }
+            else {
+                if (Date.now() - lastUsedSuccessfullySender < 10000)
+                    (0, commands_1.fail)("This command was used recently and is on cooldown.");
+                Call.sendMessage("[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to. If you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!");
+            }
         },
     }, team: {
         args: ['team:team', 'target:player?'],

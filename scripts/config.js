@@ -26,8 +26,8 @@ exports.TIME_TILL_NOT_NEW = 1 * 60 * 60 * 1000;
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([
-    "uwu", //lol
-    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", //our apologies to citizens of the Republic of Niger
+    "uwu",
+    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger",
     "re" + "tard",
     'kill yourself', 'kill urself', /\bkys\b/,
     /\bkill blacks\b/,
