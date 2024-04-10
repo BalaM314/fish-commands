@@ -127,7 +127,7 @@ export class FishPlayer {
 		this.player = player;
 		this.rainbow = rainbow;
 		this.cleanedName = escapeStringColorsServer(Strings.stripColors(this.name));
-		this.rank = Rank.getByName(rank) ?? Rank.new;
+		this.rank = Rank.getByName(rank) ?? Rank.player;
 		this.flags = new Set(flags.map(RoleFlag.getByName).filter((f):f is RoleFlag => f != null));
 		if(member) this.flags.add(RoleFlag.member);
 		if(rank == "developer"){
@@ -299,6 +299,7 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
+			fishPlayer.checkAutoRanks();
 			api.getStopped(player.uuid(), (unmarkTime) => {
 				if(unmarkTime)
 					fishPlayer.unmarkTime = unmarkTime;
@@ -642,6 +643,22 @@ We apologize for the inconvenience.`
 			Timer.schedule(() => this.sendMessage(message), 3);
 		}
 	}
+	checkAutoRanks(){
+		if(this.stelled()) return; 
+		for(const rankToAssign of Rank.autoRanks){
+			if(!this.ranksAtLeast(rankToAssign) && rankToAssign.autoRankData){
+				if(
+					this.joinsAtLeast(rankToAssign.autoRankData.joins) &&
+					this.stats.blocksPlaced >= rankToAssign.autoRankData.blocksPlaced &&
+					this.stats.timeInGame >= rankToAssign.autoRankData.playtime
+				){
+					this.setRank(rankToAssign);
+					this.sendMessage(`You have been automatically promoted to rank ${rankToAssign.coloredName()}!`);
+				}
+			}
+		}
+		
+	}
 	//#endregion
 
 	//#region I/O
@@ -848,7 +865,7 @@ We apologize for the inconvenience.`
 	}
 	/** Does not include stats */
 	hasData(){
-		return (this.rank != Rank.new && this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
+		return (this.rank != Rank.player) || this.muted || (this.flags.size > 0) || this.chatStrictness != "chat";
 	}
 	static getFishPlayersString(){
 		if(Core.settings.has("fish-subkeys")){

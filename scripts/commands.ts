@@ -47,6 +47,7 @@ export function command(input:unknown){
 /** Represents a permission that is required to do something. */
 export class Perm {
 	static none = new Perm("all", fishP => true, "[sky]");
+	static trusted = Perm.fromRank(Rank.trusted);
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
 	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a [pink]Fish Membership[] to use this command. Subscribe on the [sky]/discord[yellow]!`);

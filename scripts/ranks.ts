@@ -2,15 +2,25 @@ import type { SelectClasslikeEnumKeys as SelectEnumClassKeys } from "./types";
 
 export class Rank {
 	static ranks:Record<string, Rank> = {};
+	static autoRanks: Rank[] = [];
 	
-	static new = new Rank("new", -1, "For new players.", "", "[N]", "[forest]");
-	static player = new Rank("player", 0, "Ordinary players.", "", "[P]", "");
+	static player = new Rank("player", 0, "Ordinary players.", "", "&lk[p]&fr", "");
+	static active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "", "&g[P]&fr", "[forest]", {
+		joins: 25, playtime: 3600_000, blocksPlaced: 2000
+	});
 	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
-	static mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&g[M]&fr", "[#6FFC7C]");
+	static mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&lg[M]&fr", "[#6FFC7C]");
 	static admin = new Rank("admin", 4, "Administrators with the power to ban players.", "[black]<[#C30202]\uE82C[]>[]", "&lr[A]&fr", "[#C30202]");
 	static manager = new Rank("manager", 10, "Managers have file and console access.", "[black]<[scarlet]\uE88E[]>[]", "&c[E]&fr", "[scarlet]");
 	static pi = new Rank("pi", 11, "3.14159265358979323846264338327950288419716 (manager)", "[black]<[#FF8000]\u03C0[]>[]", "&b[+]&fr", "[blue]");//i want pi rank
 	static fish = new Rank("fish", 999, "Owner.", "[blue]>|||>[] ", "&b[F]&fr", "[blue]");//Might want to change this to like owner or something
+
+	autoRankData?: {
+		joins: number;
+		playtime: number;
+		blocksPlaced: number;
+	}
+
 	constructor(
 		public name:string,
 		/** Used to determine whether a rank outranks another. */ public level:number,
@@ -18,8 +28,21 @@ export class Rank {
 		public prefix:string,
 		public shortPrefix:string,
 		public color:string,
+		autoRankData?: {
+			joins?: number;
+			playtime?: number;
+			blocksPlaced?: number;
+		}
 	){
 		Rank.ranks[name] = this;
+		if(autoRankData){
+			this.autoRankData = {
+				joins: autoRankData.joins ?? 0,
+				playtime: autoRankData.playtime ?? 0,
+				blocksPlaced: autoRankData.blocksPlaced ?? 0,
+			};
+			Rank.autoRanks.push(this);
+		}
 	}
 	static getByName(name:string):Rank | null {
 		return Rank.ranks[name] ?? null;

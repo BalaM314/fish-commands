@@ -1,13 +1,13 @@
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm } from './commands';
-import { FishServers, getGamemode, Mode, rules } from './config';
-import { ipPattern, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { FishServers, Mode, rules } from './config';
+import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import {
-	capitalizeText, formatTimeRelative, getColor, nearbyEnemyTile, neutralGameover, StringBuilder, StringIO,
-	teleportPlayer, to2DArray
+	capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover,
+	StringBuilder, StringIO, teleportPlayer, to2DArray
 } from './utils';
 // import { votekickmanager } from './votes';
 
@@ -477,6 +477,33 @@ Available types:[yellow]
 		},
 	},
 
+	void: {
+		args: ["player:player?"],
+		description: 'Warns other players about power voids.',
+		perm: Perm.play,
+		handler({args, sender, lastUsedSuccessfullySender}){
+			if(args.player){
+				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
+				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
+				menu("\uf83f [scarlet]WARNING[] \uf83f",
+`[white]Don't break the Power Void (\uf83f), it's a trap!
+Power voids disable anything they are connected to.
+If you break it, [scarlet]you will get attacked[] by enemy units.
+Please stop attacking and [lime]build defenses[] first!`,
+					["I understand"], sender
+				);
+				logAction("showed void warning", sender, args.player);
+			} else {
+				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was used recently and is on cooldown.`);
+				Call.sendMessage(
+`[white]Don't break the Power Void (\uf83f), it's a trap!
+Power voids disable anything they are connected to. If you break it, [scarlet]you will get attacked[] by enemy units.
+Please stop attacking and [lime]build defenses[] first!`
+				);
+			}
+		},
+	},
+
 	team: {
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
@@ -517,6 +544,68 @@ Available types:[yellow]
 			}
 		}
 	},
+	
+	forcevnw: { // will work on all servers for testing / trol purposes
+		args: ["force:boolean?"],
+		description: 'Force the next wave.',
+		perm: Perm.admin,
+		handler({args, sender, allCommands}){
+			if(args.force === false){
+				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
+				allCommands.vnw.data.votes.clear();
+			} else {
+				let oldTime = Vars.state.wavetime;
+				Vars.state.wavetime = 1;
+				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
+				logAction("forced next wave", sender);
+			}
+		}
+	},
+	vnw: command(() => {
+		const votes = new Set<string>();
+		const ratio = 0.4;
+
+		const checkVotes = (currentVotes:number, requiredVotes:number) => {
+			if(currentVotes >= requiredVotes){
+				const oldTime = Vars.state.wavetime;
+				Vars.state.wavetime = 1;
+				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
+				Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
+			}
+		}
+
+		Events.on(EventType.PlayerLeave, ({player}) => {
+			if(votes.has(player.uuid())){
+				votes.delete(player.uuid());
+				const currentVotes = votes.size;
+				const requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`VNW: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				checkVotes(currentVotes, requiredVotes);
+			}
+		});		
+		Events.on(EventType.GameOverEvent, () => votes.clear());
+
+		return {
+			args: [],
+			description: "Vote to start the next wave.",
+			perm: Perm.play,
+			data: {votes},
+			handler({sender, lastUsedSuccessfullySender}){
+				if(!Mode.survival()) fail(`You can only skip waves on survival.`);
+				if(Vars.state.gameOver) fail(`This game is already over.`);
+				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
+				votes.add(sender.uuid);
+				const currentVotes = votes.size;
+				const requiredVotes = Math.ceil(ratio * Groups.player.size());
+				Call.sendMessage(
+					`[white]VNW: ${sender.name}[white] wants to skip this wave, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+				);
+				checkVotes(currentVotes, requiredVotes);
+			}
+		}	
+	}),
 
 	rtv: command(() => {
 		const votes = new Set<string>();
