@@ -7,7 +7,9 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
+	//>:( -dart
 	"uwu", //lol
+	
 	"nig"+"ger", "nig" + "ga", "niger", "ni8"+"8ger", //our apologies to citizens of the Republic of Niger
 	"re"+"tard",
 	'kill yourself', 'kill urself', /\bkys\b/,

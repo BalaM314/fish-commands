@@ -1,185 +1,238 @@
 "use strict";
-/**
- * contributed by frogo
- * the code style was AAAAAAAAAAAA, see 59bf37bc10cc13a9c1f294ca8d91b0a99be41e62 -BalaM314
- */
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = exports.loadPacketHandlers = void 0;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
-var lastLabelText = "";
+//info tracker
+var lastLabel = '';
 var lastAccessedBulkLabel = null;
 var lastAccessedLabel = null;
 var lastAccessedBulkLine = null;
 var lastAccessedLine = null;
+var bulkLimit = 4096;
+var noPermissionText = '[red]You don\'t have permission to use this packet.';
+var invalidContentText = '[red]Invalid label content.';
+var bulkSeparator = '|';
+var procError = '[red]An error occured while processing your request.';
+var invalidReq = '[red]Invalid request. Please consult the documentation.';
 function loadPacketHandlers() {
-    Vars.netServer.addPacketHandler("label", function (player, content) {
+    //labels
+    //fmt: "content,duration,x,y"
+    Vars.netServer.addPacketHandler('label', function (player, content) {
         try {
-            var fishP = players_1.FishPlayer.get(player);
-            if (!fishP.hasPerm("play"))
-                return;
-            var parts = content.split(',');
-            if (parts.length != 4) {
-                player.kick("An error has occured while trying to process your label request:\nImproperly formatted content, correct format: text,duration,x,y\nExample: \"E,10,Vars.player.x,Vars.player.y\"\nIf duration is larger than 10 it will be set to 3\nif text length is above 41 you will be kicked", 0);
-            }
-            else if (parts[0].length > 41) {
-                player.kick("ok that's a lot of characters, 41 is the limit here", 0);
+            var p = players_1.FishPlayer.get(player);
+            if (!p.hasPerm('play')) {
+                player.sendMessage(noPermissionText);
                 return;
             }
-            else {
-                var duration = Number(parts[1]) <= 10 ? Number(parts[1]) : 3;
-                Call.label(parts[0], duration, Number(parts[2]), Number(parts[3]));
-                lastAccessedLabel = fishP;
-                lastLabelText = parts[0];
-            }
+            lastAccessedLabel = p;
+            handleLabel(player, content, true);
         }
         catch (e) {
-            player.kick("An error has occured while trying to process your label request:\n" + e, 0);
+            //TEMP FOR DEBUGGING: REMOVE L8R
+            Log.err(e);
+            player.sendMessage(procError);
         }
     });
-    Vars.netServer.addPacketHandler("bulkLabel", function (player, content) {
-        var e_1, _a;
-        var fishP = players_1.FishPlayer.get(player);
-        if (!fishP.hasPerm("bulkLabelPacket")) {
-            player.kick("Not an admin or a moderator, cannot access BulkLabel", 0);
-            return;
-        }
+    Vars.netServer.addPacketHandler('bulkLabel', function (player, content) {
         try {
-            var parts = content.split('|');
-            if (parts.length > 1000) {
-                player.kick("Hey man that's a... i get you're an admin or a moderator but... that's too much labels", 0);
+            var p = players_1.FishPlayer.get(player);
+            if (!p.hasPerm('play') || !p.hasPerm('bulkLabelPacket')) {
+                player.sendMessage(noPermissionText);
                 return;
             }
-            try {
-                for (var parts_1 = __values(parts), parts_1_1 = parts_1.next(); !parts_1_1.done; parts_1_1 = parts_1.next()) {
-                    var labelData = parts_1_1.value;
-                    var parts_of_part = labelData.split(",");
-                    Call.labelReliable(parts_of_part[0], Number(parts_of_part[1]), Number(parts_of_part[2]), Number(parts_of_part[3]));
+            lastAccessedBulkLabel = p;
+            //get individual labels
+            var labels = [];
+            var inQuotes = false;
+            var startIdx = 0;
+            for (var i = 0; i < content.length; i++) {
+                switch (content[i]) {
+                    case '"':
+                        if (i > 0 && content[i - 1] == '\\')
+                            break;
+                        inQuotes = !inQuotes;
+                        break;
+                    //separate
+                    case bulkSeparator:
+                        if (inQuotes)
+                            break;
+                        labels.push(content.substring(startIdx, i));
+                        startIdx = i + 1;
+                        break;
+                    default:
+                        break;
                 }
             }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (parts_1_1 && !parts_1_1.done && (_a = parts_1.return)) _a.call(parts_1);
-                }
-                finally { if (e_1) throw e_1.error; }
+            //last label
+            if (startIdx < content.length) {
+                labels.push(content.substring(startIdx, content.length - 1));
             }
-            lastAccessedBulkLabel = fishP;
+            //display labels
+            for (var i = 0; i < labels.length; i++) {
+                var label = labels[i];
+                if (label.trim().length <= 0)
+                    continue;
+                if (!handleLabel(player, label, false))
+                    return;
+            }
         }
         catch (e) {
-            player.kick("An error has occured while trying to process your label request:\n" + e, 0);
+            //TEMP FOR DEBUGGING: REMOVE L8R
+            Log.err(e);
+            player.sendMessage(procError);
         }
     });
-    Vars.netServer.addPacketHandler("lineEffect", function (player, content) {
-        var fishP = players_1.FishPlayer.get(player);
-        if (!fishP.hasPerm("play"))
-            return;
+    //lines
+    Vars.netServer.addPacketHandler('lineEffect', function (player, content) {
         try {
-            var parts = content.split(',');
-            if (parts.length != 5) {
-                player.kick("An error has occured while trying to process your lineEffect request: invalid format: format is origin_x,origin_y,end_x,end_y,color\nexample: [5,5,100,100,Color.green].join(\",\")", 0);
+            var p = players_1.FishPlayer.get(player);
+            if (!p.hasPerm('play')) {
+                player.sendMessage(noPermissionText);
                 return;
             }
-            Call.effect(Fx.pointBeam, Number(parts[0]), Number(parts[1]), 0, Color.valueOf(parts[4]), new Vec2(Number(parts[2]), Number(parts[3])));
-            lastAccessedLine = fishP;
+            if (!handleLine(content, player))
+                return;
+            lastAccessedLine = p;
         }
         catch (e) {
-            player.kick("An error has occured while trying to process your lineEffect request:\n" + e, 0);
-        }
-    }); // this is the silas effect
-    Vars.netServer.addPacketHandler("bulkLineEffect", function (player, content) {
-        var e_2, _a;
-        var fishP = players_1.FishPlayer.get(player);
-        if (!fishP.hasPerm("play"))
-            return;
-        try {
-            var parts = content.split('|');
-            if (!fishP.hasPerm("bulkLabelPacket") && parts.length > 10) {
-                player.kick("Non admins can only have a bulk line of 10 parts", 0);
-                return;
-            }
-            if (parts.length >= 1000) {
-                player.kick("Hey man that's a... i get you're an admin but... that's too much effects", 0);
-                return;
-            }
-            try {
-                for (var parts_2 = __values(parts), parts_2_1 = parts_2.next(); !parts_2_1.done; parts_2_1 = parts_2.next()) {
-                    var effectData = parts_2_1.value;
-                    var parts_of_part = effectData.split(",");
-                    Call.effect(Fx.pointBeam, Number(parts_of_part[0]), Number(parts_of_part[1]), 0, Color.valueOf(parts_of_part[4]), new Vec2(Number(parts_of_part[2]), Number(parts_of_part[3])));
-                }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (parts_2_1 && !parts_2_1.done && (_a = parts_2.return)) _a.call(parts_2);
-                }
-                finally { if (e_2) throw e_2.error; }
-            }
-            lastAccessedBulkLine = fishP;
-        }
-        catch (e) {
-            player.kick("An error has occured while trying to process your bulkLineEffect request:\n" + e, 0);
+            //TEMP FOR DEBUGGING: REMOVE L8R
+            Log.err(e);
+            player.sendMessage(procError);
         }
     });
-    // this is the silas effect but it gets real
-    // too real perhap?
+    //this is the silas effect but it's way too real
+    Vars.netServer.addPacketHandler('bulkLineEffect', function (player, content) {
+        try {
+            var p = players_1.FishPlayer.get(player);
+            if (!p.hasPerm('play') || !p.hasPerm('bulkLabelPacket')) {
+                player.sendMessage(noPermissionText);
+                return;
+            }
+            var lines = content.split(bulkSeparator);
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                if (line.trim().length <= 0)
+                    continue;
+                if (!handleLine(line, player))
+                    return;
+            }
+            lastAccessedBulkLine = p;
+        }
+        catch (e) {
+            //TEMP FOR DEBUGGING: REMOVE L8R
+            Log.err(e);
+            player.sendMessage(procError);
+        }
+    });
 }
 exports.loadPacketHandlers = loadPacketHandlers;
+//commands
 exports.commands = (0, commands_1.commandList)({
-    packet_handler_last_accessed: {
+    pklast: {
         args: [],
-        description: "Gives you the players and the packet handler which they last accessed",
+        description: 'Tells you who last accessed the packet handlers.',
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var output = _a.output;
-            var outputText = [""];
-            if (lastAccessedLabel && lastLabelText)
-                outputText.push("label: ".concat(lastAccessedLabel.name, " last text performed with it: ").concat(lastLabelText));
-            if (lastAccessedBulkLine)
-                outputText.push("bulkLine: ".concat(lastAccessedBulkLine.name));
-            if (lastAccessedLine)
-                outputText.push("line: ".concat(lastAccessedLine.name));
-            if (lastAccessedBulkLabel)
-                outputText.push("line: ".concat(lastAccessedBulkLabel.name));
-            if (outputText.length > 0) {
-                output(outputText.join("\n"));
+            var outputLines = [];
+            if (lastAccessedLabel && lastLabel) {
+                outputLines.push("".concat(lastAccessedLabel.name, " created label \"").concat(lastLabel, "\"."));
             }
-            else {
-                output("No packet handlers have been accessed.");
+            if (lastAccessedBulkLabel) {
+                outputLines.push("".concat(lastAccessedBulkLabel.name, " last used the bulk label effect."));
             }
+            if (lastAccessedLine) {
+                outputLines.push("".concat(lastAccessedLine.name, " last used the line effect."));
+            }
+            if (lastAccessedBulkLine) {
+                outputLines.push("".concat(lastAccessedBulkLine.name, " last used the bulk line effect."));
+            }
+            output(outputLines.length > 0 ? outputLines.join('\n') : 'No packet handlers have been accessed yet.');
         }
     },
-    packet_handler_docs: {
-        description: "Documentation on how to use packet handlers that are in this server",
+    pkdocs: {
+        description: 'Packet handler documentation.',
         args: [],
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var sender = _a.sender;
-            var con = sender.player.con;
-            Call.infoMessage(con, "also keep in mind that T H E R E  I S   A   P A C K E T   S P A M   L I M I T");
-            Call.infoMessage(con, "[green]Also keep in mind that you have to multiply by 8 to spawn it at a clear coordinate (For example instead of 5,5 you'd have to do 5*8,5*8 to spawn a thing at 5,5, does this sound confusing...)");
-            Call.infoMessage(con, "\"worst error handling i have ever seen, why kick the player???\"\n  -ASimpleBeginner");
-            Call.infoMessage(con, "\"The code style when submitted was beyond drunk... but it worked... barely \" -BalaM314");
-            Call.infoMessage(con, "these packet handlers and everything related to them were made by [green]frog");
-            Call.infoMessage(con, "All commands mentioned should be performed on the client side console");
-            if (sender.hasPerm("bulkLabelPacket")) {
-                Call.infoMessage(con, "bulkLabel - Call.serverPacketReliable(\"bulkLabel\",/*it's basically like label but seperated by | you get the idea*/) - this is admin only");
-            }
-            Call.infoMessage(con, "label - Call.serverPacketReliable(\"label\",[text,duration,x,y].join(\",\"))\nthe text cannot be larger than 41 characters, duration cannot be larger than 10");
-            Call.infoMessage(con, "lineEffect - Call.serverPacketReliable(\"lineEffect\",[startX,startY,endX,endY,color].join(\",\"))\n The color is a hex code and a string");
-            Call.infoMessage(con, "bulkLineEffect - Call.serverPacketReliable(\"bulkLineEffect\",[startX,startY,endX,endY,color].join(\",\")+\"|\"+[startX,startY,endX,endY,color].join(\",\")+\"|\"))) - lineEffect but seperated by | so packet spam won't be a problem, can only contain 10 effects");
+            var sender = _a.sender, output = _a.output;
+            var responseLines = [];
+            var canBulk = sender.hasPerm('bulkLabelPacket');
+            responseLines.push('Line effect: "lineEffect", "x0,y0,x1,y1,hexColor" (for example "20.7,19.3,50.4,28.9,#FF0000")\n');
+            if (canBulk)
+                responseLines.push('Bulk line effect: "bulkLineEffect", equivalent to multiple lineEffect packets, with every line separated by a \'|\' symbol.\n');
+            responseLines.push('Label effect: "label", "content,duration,x,y" (for example ""Hi!",10,20,28")\n');
+            if (canBulk)
+                responseLines.push('Bulk label effect: "bulkLabel", equivalent to multiple label packets, with every label separated by a \'|\' symbol.\n');
+            responseLines.push('Use "Call.serverPacketReliable" to send these.');
+            responseLines.push('You need to multiply world coordinates by Vars.tilesize (8) for things to work properly. This is a relic from the v3 days where every tile was 8 pixels.');
+            responseLines.push('Keep in mind there\'s a packet spam limit. Use at your own risk.');
+            responseLines.push(''); //empty line
+            //credit
+            responseLines.push('These packet handlers and everything related to them were made by [green]frog[white].');
+            responseLines.push('Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[white].');
+            responseLines.push('"The code style when submitted was beyond drunk... but it worked... barely"\n    -BalaM314');
+            responseLines.push('"worst error handling i have ever seen, why kick the player???"\n    -ASimpleBeginner');
+            //bulkInfoMsg(responseLines, sender.player.con as NetConnection);
+            output(responseLines.join('\n'));
         }
     }
 });
+//#region utils
+function findEndQuote(content, startPos) {
+    if (content[startPos] != '"') {
+        //not a start quote??
+        return -1;
+    }
+    for (var i = startPos + 1; i < content.length; i++) {
+        if (content[i] == '"' && (i < 1 || content[i - 1] != '\\')) {
+            return i;
+        }
+    }
+    return -1;
+}
+function handleLabel(player, content, setLast) {
+    var endPos = findEndQuote(content, 0);
+    if (endPos == -1) {
+        //invalid content
+        player.sendMessage(invalidContentText);
+        return false;
+    }
+    //label, clean up \"s
+    var message = content.substring(1, endPos).replace('\\"', '"');
+    var parts = content.substring(endPos + 2).split(',');
+    if (parts.length != 3) { //dur,x,y
+        player.sendMessage(invalidReq);
+        return false;
+    }
+    if (setLast) {
+        lastLabel = message;
+    }
+    Call.labelReliable(message, //message
+    Number(parts[0]), //duration
+    Number(parts[1]), //x
+    Number(parts[2]) //y
+    );
+    return true;
+}
+function handleLine(content, player) {
+    var parts = content.split(',');
+    if (parts.length != 5) { //x0,y0,x1,y1,color
+        player.sendMessage(invalidReq);
+        return false;
+    }
+    Tmp.v1.set(Number(parts[2]), Number(parts[3])); //x1,y1
+    Color.valueOf(Tmp.c1, parts[4]); //color
+    Call.effect(Fx.pointBeam, Number(parts[0]), Number(parts[1]), //x,y
+    0, Tmp.c1, //color
+    Tmp.v1 //x1,y1
+    );
+    return true;
+}
+function bulkInfoMsg(messages, conn) {
+    for (var i = messages.length - 1; i >= 0; i--) {
+        Call.infoMessage(conn, messages[i]);
+    }
+}
+//#endregion

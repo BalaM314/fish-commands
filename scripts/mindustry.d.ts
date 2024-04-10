@@ -169,6 +169,8 @@ declare const Groups: {
 type Fire = any;
 declare class Vec2 {
 	constructor(x:number, y:number);
+	set(v:Vec2);
+	set(x:number, y:number);
 }
 /* mindustry.gen.Player */
 declare type mindustryPlayer = any;
@@ -181,6 +183,7 @@ declare class Color {
 	constructor(r:number, g:number, b:number, a:number);
 	constructor(color:Color);
 	static valueOf(string:string):Color;
+	static valueOf(color:Color, hex:string);
 	static HSVtoRGB(hue:number, saturation:number, value:number):Color;
 	rand():Color;
 }
@@ -469,4 +472,23 @@ interface Array<T> {
 }
 declare const Threads: {
 	daemon(callback:() => unknown):void;
+}
+declare const Tmp: {
+	//not full
+	v1:Vec2;
+	v2:Vec2;
+	v3:Vec2;
+	v4:Vec2;
+	v5:Vec2;
+	v6:Vec2;
+	
+	v31:Vec2;
+	v32:Vec2;
+	v33:Vec2;
+	v34:Vec2;
+
+	c1:Color;
+	c2:Color;
+	c3:Color;
+	c4:Color;
 }
