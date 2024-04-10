@@ -232,7 +232,7 @@ function handleLabel(player:mindustryPlayer, content:string, setLast:boolean):bo
 	}
 
 	Call.labelReliable(
-		message,		  //message
+		message,          //message
 		Number(parts[0]), //duration
 		Number(parts[1]), //x
 		Number(parts[2])  //y
@@ -254,8 +254,8 @@ function handleLine(content:string, player:mindustryPlayer):boolean {
 	Call.effect(
 		Fx.pointBeam,
 		Number(parts[0]), Number(parts[1]), //x,y
-		0, Tmp.c1,						  //color
-		Tmp.v1							  //x1,y1
+		0, Tmp.c1,                          //color
+		Tmp.v1                              //x1,y1
 	);
 	return true;
 }
