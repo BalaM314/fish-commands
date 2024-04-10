@@ -23,7 +23,7 @@ var Rank = /** @class */ (function () {
         return this.color + this.name + "[]";
     };
     Rank.ranks = {};
-    Rank.new = new Rank("new", -1, "For new players.", "\uE827", "[N]", "[forest]");
+    Rank.new = new Rank("new", -1, "For new players.", "[orange]\uE827", "[N]", "[forest]");
     Rank.player = new Rank("player", 0, "Ordinary players.", "", "[P]", "");
     Rank.trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
     Rank.mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&g[M]&fr", "[#6FFC7C]");
