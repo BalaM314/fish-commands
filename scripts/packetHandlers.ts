@@ -122,7 +122,7 @@ export function loadPacketHandlers() {
 			const lines:string[] = content.split(bulkSeparator);
 
 			for (let i = 0; i < lines.length; i++) {
-				const line = lines[i];
+				const line:string = lines[i];
 				if (line.trim().length <= 0) continue;
 				if (!handleLine(line, player)) return;
 			}
@@ -183,9 +183,9 @@ export const commands = commandList({
 
 			//credit
 			responseLines.push('These packet handlers and everything related to them were made by [green]frog[white].');
-			responseLines.push('Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[white].');
 			responseLines.push('"The code style when submitted was beyond drunk... but it worked... barely"\n    -BalaM314');
 			responseLines.push('"worst error handling i have ever seen, why kick the player???"\n    -ASimpleBeginner');
+			responseLines.push('Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[white].');
 
 			//bulkInfoMsg(responseLines, sender.player.con as NetConnection);
 			output(responseLines.join('\n'));
@@ -210,7 +210,7 @@ function findEndQuote(content:string, startPos:number) {
 	return -1;
 }
 
-function handleLabel(player:mindustryPlayer, content:string, setLast:boolean):boolean {
+function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):boolean {
 	const endPos:number = findEndQuote(content, 0);
 	if (endPos == -1) {
 		//invalid content
@@ -227,7 +227,7 @@ function handleLabel(player:mindustryPlayer, content:string, setLast:boolean):bo
 		return false;
 	}
 
-	if (setLast) {
+	if (isSingle) {
 		lastLabel = message;
 	}
 

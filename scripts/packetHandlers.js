@@ -171,9 +171,9 @@ exports.commands = (0, commands_1.commandList)({
             responseLines.push(''); //empty line
             //credit
             responseLines.push('These packet handlers and everything related to them were made by [green]frog[white].');
-            responseLines.push('Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[white].');
             responseLines.push('"The code style when submitted was beyond drunk... but it worked... barely"\n    -BalaM314');
             responseLines.push('"worst error handling i have ever seen, why kick the player???"\n    -ASimpleBeginner');
+            responseLines.push('Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[white].');
             //bulkInfoMsg(responseLines, sender.player.con as NetConnection);
             output(responseLines.join('\n'));
         }
@@ -192,7 +192,7 @@ function findEndQuote(content, startPos) {
     }
     return -1;
 }
-function handleLabel(player, content, setLast) {
+function handleLabel(player, content, isSingle) {
     var endPos = findEndQuote(content, 0);
     if (endPos == -1) {
         //invalid content
@@ -206,7 +206,7 @@ function handleLabel(player, content, setLast) {
         player.sendMessage(invalidReq);
         return false;
     }
-    if (setLast) {
+    if (isSingle) {
         lastLabel = message;
     }
     Call.labelReliable(message, //message
