@@ -23,6 +23,9 @@ declare const Vars: {
 		currentlyKicking: VoteSession | null;
 		votesRequired():number;
 	}
+	net: {
+		send(object:any, reliable:boolean):void;
+	}
 	mods: {
 		getScripts(): Scripts;
 	}
@@ -491,4 +494,18 @@ declare const Tmp: {
 	c2:Color;
 	c3:Color;
 	c4:Color;
+}
+declare class EffectCallPacket2 {
+	effect:Effect;
+	x:number;
+	y:number;
+	rotation:number;
+	color:Color;
+	data:any;
+}
+declare class LabelReliableCallPacket {
+	message:string;
+	duration:number;
+	worldx:number;
+	worldy:number;
 }

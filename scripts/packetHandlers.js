@@ -15,7 +15,14 @@ var invalidContentText = '[red]Invalid label content.';
 var bulkSeparator = '|';
 var procError = '[red]An error occured while processing your request.';
 var invalidReq = '[red]Invalid request. Please consult the documentation.';
+var tmpLinePacket = new EffectCallPacket2();
+var tmpLabelPacket = new LabelReliableCallPacket();
 function loadPacketHandlers() {
+    //initialize line packet
+    tmpLinePacket.effect = Fx.pointBeam;
+    tmpLinePacket.rotation = 0.0;
+    tmpLinePacket.color = Tmp.c1;
+    tmpLinePacket.data = Tmp.v1;
     //labels
     //fmt: "content,duration,x,y"
     Vars.netServer.addPacketHandler('label', function (player, content) {
@@ -209,11 +216,17 @@ function handleLabel(player, content, isSingle) {
     if (isSingle) {
         lastLabel = message;
     }
-    Call.labelReliable(message, //message
-    Number(parts[0]), //duration
-    Number(parts[1]), //x
-    Number(parts[2]) //y
-    );
+    /*Call.labelReliable(
+        message,          //message
+        Number(parts[0]), //duration
+        Number(parts[1]), //x
+        Number(parts[2])  //y
+    );*/
+    tmpLabelPacket.message = message;
+    tmpLabelPacket.duration = Number(parts[0]);
+    tmpLabelPacket.worldx = Number(parts[1]);
+    tmpLabelPacket.worldy = Number(parts[2]);
+    Vars.net.send(tmpLabelPacket, true); //maybe do false
     return true;
 }
 function handleLine(content, player) {
@@ -224,10 +237,15 @@ function handleLine(content, player) {
     }
     Tmp.v1.set(Number(parts[2]), Number(parts[3])); //x1,y1
     Color.valueOf(Tmp.c1, parts[4]); //color
-    Call.effect(Fx.pointBeam, Number(parts[0]), Number(parts[1]), //x,y
-    0, Tmp.c1, //color
-    Tmp.v1 //x1,y1
-    );
+    /*Call.effect(
+        Fx.pointBeam,
+        Number(parts[0]), Number(parts[1]), //x,y
+        0, Tmp.c1,                          //color
+        Tmp.v1                              //x1,y1
+    );*/
+    tmpLinePacket.x = Number(parts[0]);
+    tmpLinePacket.y = Number(parts[1]);
+    Vars.net.send(tmpLinePacket, false); //could do true for reliable but prob too laggy (?)
     return true;
 }
 function bulkInfoMsg(messages, conn) {

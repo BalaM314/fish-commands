@@ -16,7 +16,16 @@ const bulkSeparator:string = '|';
 const procError:string = '[red]An error occured while processing your request.';
 const invalidReq:string = '[red]Invalid request. Please consult the documentation.';
 
+const tmpLinePacket = new EffectCallPacket2();
+const tmpLabelPacket = new LabelReliableCallPacket();
+
 export function loadPacketHandlers() {
+	//initialize line packet
+	tmpLinePacket.effect = Fx.pointBeam;
+	tmpLinePacket.rotation = 0.0;
+	tmpLinePacket.color = Tmp.c1;
+	tmpLinePacket.data = Tmp.v1;
+
 	//labels
 
 	//fmt: "content,duration,x,y"
@@ -231,12 +240,17 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 		lastLabel = message;
 	}
 
-	Call.labelReliable(
+	/*Call.labelReliable(
 		message,          //message
 		Number(parts[0]), //duration
 		Number(parts[1]), //x
 		Number(parts[2])  //y
-	);
+	);*/
+	tmpLabelPacket.message = message;
+	tmpLabelPacket.duration = Number(parts[0]);
+	tmpLabelPacket.worldx = Number(parts[1]);
+	tmpLabelPacket.worldy = Number(parts[2]);
+	Vars.net.send(tmpLabelPacket, true); //maybe do false
 	return true;
 }
 
@@ -251,12 +265,16 @@ function handleLine(content:string, player:mindustryPlayer):boolean {
 	Tmp.v1.set(Number(parts[2]), Number(parts[3])); //x1,y1
 	Color.valueOf(Tmp.c1, parts[4]); //color
 
-	Call.effect(
+	/*Call.effect(
 		Fx.pointBeam,
 		Number(parts[0]), Number(parts[1]), //x,y
 		0, Tmp.c1,                          //color
 		Tmp.v1                              //x1,y1
-	);
+	);*/
+	tmpLinePacket.x = Number(parts[0]);
+	tmpLinePacket.y = Number(parts[1]);
+	Vars.net.send(tmpLinePacket, false); //could do true for reliable but prob too laggy (?)
+
 	return true;
 }
 
