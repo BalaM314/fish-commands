@@ -8,10 +8,11 @@ let lastAccessedLabel:FishPlayer | null = null;
 let lastAccessedBulkLine:FishPlayer | null = null;
 let lastAccessedLine:FishPlayer | null = null;
 
-const bulkLimit:number = 4096;
+const bulkLimit:number = 1000;
 
-const noPermissionText:string = '[red]You don\'t have permission to use this packet.';
+const noPermissionText:string = "[red]You don't have permission to use this packet.";
 const invalidContentText:string = '[red]Invalid label content.';
+const tooLongText:string = '[red]Bulk content length exceeded, please use fewer effects.';
 const bulkSeparator:string = '|';
 const procError:string = '[red]An error occured while processing your request.';
 const invalidReq:string = '[red]Invalid request. Please consult the documentation.';
@@ -86,6 +87,11 @@ export function loadPacketHandlers() {
 				labels.push(content.substring(startIdx, content.length - 1));
 			}
 
+			if(labels.length > bulkLimit){
+				p.sendMessage(tooLongText, 1000);
+				return;
+			}
+
 			//display labels
 			for (let i = 0; i < labels.length; i++) {
 				const label:string = labels[i];
@@ -129,6 +135,11 @@ export function loadPacketHandlers() {
 			}
 
 			const lines:string[] = content.split(bulkSeparator);
+
+			if(lines.length > bulkLimit){
+				p.sendMessage(tooLongText, 1000);
+				return;
+			}
 
 			for (let i = 0; i < lines.length; i++) {
 				const line:string = lines[i];

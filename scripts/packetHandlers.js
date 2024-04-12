@@ -9,9 +9,10 @@ var lastAccessedBulkLabel = null;
 var lastAccessedLabel = null;
 var lastAccessedBulkLine = null;
 var lastAccessedLine = null;
-var bulkLimit = 4096;
-var noPermissionText = '[red]You don\'t have permission to use this packet.';
+var bulkLimit = 1000;
+var noPermissionText = "[red]You don't have permission to use this packet.";
 var invalidContentText = '[red]Invalid label content.';
+var tooLongText = '[red]Bulk content length exceeded, please use fewer effects.';
 var bulkSeparator = '|';
 var procError = '[red]An error occured while processing your request.';
 var invalidReq = '[red]Invalid request. Please consult the documentation.';
@@ -75,6 +76,10 @@ function loadPacketHandlers() {
             if (startIdx < content.length) {
                 labels.push(content.substring(startIdx, content.length - 1));
             }
+            if (labels.length > bulkLimit) {
+                p.sendMessage(tooLongText, 1000);
+                return;
+            }
             //display labels
             for (var i = 0; i < labels.length; i++) {
                 var label = labels[i];
@@ -117,6 +122,10 @@ function loadPacketHandlers() {
                 return;
             }
             var lines = content.split(bulkSeparator);
+            if (lines.length > bulkLimit) {
+                p.sendMessage(tooLongText, 1000);
+                return;
+            }
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i];
                 if (line.trim().length <= 0)
