@@ -54,11 +54,12 @@ export class Perm {
 	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast("mod"));
 	static bypassChatFilter = new Perm("bypassChatFilter", "admin");
 	static seeMutedMessages = new Perm("seeMutedMessages", fishP => fishP.muted || fishP.autoflagged || fishP.ranksAtLeast("mod"));
-	static play = new Perm("play", fishP => (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast("mod"));
+	static play = new Perm("play", fishP => !fishP.stelled() || fishP.ranksAtLeast("mod"));
 	static seeErrorMessages = new Perm("seeErrorMessages", "admin");
 	static viewUUIDs = new Perm("viewUUIDs", "admin");
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
-	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => fishP.ranksAtLeast("mod") || fishP.hasFlag("developer") || fishP.hasFlag("member"));
+	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => ((fishP.hasFlag("developer") || fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"));
+	static visualEffects = new Perm("visualEffects", fishP => !fishP.stelled() || fishP.ranksAtLeast("mod"));
 	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
 	static bypassVotekick = new Perm("bypassVotekick", "mod");
 	static warn = new Perm("warn", "mod");

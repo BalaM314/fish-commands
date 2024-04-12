@@ -24,6 +24,7 @@ exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
     return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
 })([
+    //>:( -dart
     "uwu",
     "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger",
     "re" + "tard",
