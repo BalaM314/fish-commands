@@ -28,7 +28,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler('label', function (player, content) {
         try {
             var p = players_1.FishPlayer.get(player);
-            if (!p.hasPerm('play')) {
+            if (!p.hasPerm("visualEffects")) {
                 player.sendMessage(noPermissionText);
                 return;
             }
@@ -44,7 +44,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler('bulkLabel', function (player, content) {
         try {
             var p = players_1.FishPlayer.get(player);
-            if (!p.hasPerm('play') || !p.hasPerm('bulkLabelPacket')) {
+            if (!p.hasPerm('bulkLabelPacket')) {
                 player.sendMessage(noPermissionText);
                 return;
             }
@@ -94,7 +94,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler('lineEffect', function (player, content) {
         try {
             var p = players_1.FishPlayer.get(player);
-            if (!p.hasPerm('play')) {
+            if (!p.hasPerm("visualEffects")) {
                 player.sendMessage(noPermissionText);
                 return;
             }
@@ -112,7 +112,7 @@ function loadPacketHandlers() {
     Vars.netServer.addPacketHandler('bulkLineEffect', function (player, content) {
         try {
             var p = players_1.FishPlayer.get(player);
-            if (!p.hasPerm('play') || !p.hasPerm('bulkLabelPacket')) {
+            if (!p.hasPerm('bulkLabelPacket')) {
                 player.sendMessage(noPermissionText);
                 return;
             }

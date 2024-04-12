@@ -93,11 +93,12 @@ var Perm = /** @class */ (function () {
     Perm.chat = new Perm("chat", function (fishP) { return (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast("mod"); });
     Perm.bypassChatFilter = new Perm("bypassChatFilter", "admin");
     Perm.seeMutedMessages = new Perm("seeMutedMessages", function (fishP) { return fishP.muted || fishP.autoflagged || fishP.ranksAtLeast("mod"); });
-    Perm.play = new Perm("play", function (fishP) { return (!fishP.marked() && !fishP.autoflagged) || fishP.ranksAtLeast("mod"); });
+    Perm.play = new Perm("play", function (fishP) { return !fishP.stelled() || fishP.ranksAtLeast("mod"); });
     Perm.seeErrorMessages = new Perm("seeErrorMessages", "admin");
     Perm.viewUUIDs = new Perm("viewUUIDs", "admin");
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
-    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return fishP.ranksAtLeast("mod") || fishP.hasFlag("developer") || fishP.hasFlag("member"); });
+    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return ((fishP.hasFlag("developer") || fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"); });
+    Perm.visualEffects = new Perm("visualEffects", function (fishP) { return !fishP.stelled() || fishP.ranksAtLeast("mod"); });
     Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
     Perm.bypassVotekick = new Perm("bypassVotekick", "mod");
     Perm.warn = new Perm("warn", "mod");

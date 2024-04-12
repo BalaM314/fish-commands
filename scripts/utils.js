@@ -592,17 +592,17 @@ function getMap(name) {
     var maps = Vars.maps.all();
     var filters = [
         //m => m.name() === name, //exact match
-        function (m) { return m.name().replace(/ /g, "_") === name; }, //exact match with spaces replaced
+        function (m) { return m.name().replace(/ /g, "_") === name; },
         function (//exact match with spaces replaced
-        m) { return m.name().replace(/ /g, "_").toLowerCase() === name.toLowerCase(); }, //exact match with spaces replaced ignoring case
+        m) { return m.name().replace(/ /g, "_").toLowerCase() === name.toLowerCase(); },
         function (//exact match with spaces replaced ignoring case
-        m) { return m.plainName().replace(/ /g, "_").toLowerCase() === name.toLowerCase(); }, //exact match with spaces replaced ignoring case and colors
+        m) { return m.plainName().replace(/ /g, "_").toLowerCase() === name.toLowerCase(); },
         function (//exact match with spaces replaced ignoring case and colors
-        m) { return m.plainName().toLowerCase().includes(name.toLowerCase()); }, //partial match ignoring case and colors
+        m) { return m.plainName().toLowerCase().includes(name.toLowerCase()); },
         function (//partial match ignoring case and colors
-        m) { return m.plainName().replace(/ /g, "_").toLowerCase().includes(name.toLowerCase()); }, //partial match with spaces replaced ignoring case and colors
+        m) { return m.plainName().replace(/ /g, "_").toLowerCase().includes(name.toLowerCase()); },
         function (//partial match with spaces replaced ignoring case and colors
-        m) { return m.plainName().replace(/ /g, "").toLowerCase().includes(name.toLowerCase()); }, //partial match with spaces removed ignoring case and colors
+        m) { return m.plainName().replace(/ /g, "").toLowerCase().includes(name.toLowerCase()); },
         function (//partial match with spaces removed ignoring case and colors
         m) { return m.plainName().replace(/[^a-zA-Z]/gi, "").toLowerCase().includes(name.toLowerCase()); },
     ];
