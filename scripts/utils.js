@@ -589,7 +589,8 @@ function getMap(name) {
     var e_5, _a;
     if (name == "")
         return "none";
-    var maps = Vars.maps.all();
+    var mode = Vars.state.rules.mode();
+    var maps = Vars.maps.all() /*.select(m => mode.valid(m))*/; //this doesn't work...
     var filters = [
         //m => m.name() === name, //exact match
         function (m) { return m.name().replace(/ /g, "_") === name; },

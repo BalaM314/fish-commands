@@ -68,6 +68,7 @@ class Gamemode {
 	static sandbox:Gamemode;
 	static editor:Gamemode;
 	name():string;
+	valid(map:MMap):boolean;
 }
 declare type Throwable = any;
 declare class Administration {

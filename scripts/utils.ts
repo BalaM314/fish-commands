@@ -467,7 +467,8 @@ export function getUnitType(type:string):Unit | string {
 //TODO refactor this, lots of duped code across multiple select functions
 export function getMap(name:string):MMap | "none" | "multiple" {
 	if(name == "") return "none";
-	const maps = Vars.maps.all();
+	const mode = Vars.state.rules.mode();
+	const maps = Vars.maps.all() /*.select(m => mode.valid(m))*/; //this doesn't work...
 	
 	const filters:((m:MMap) => boolean)[] = [
 		//m => m.name() === name, //exact match
