@@ -80,6 +80,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastMousePosition = [0, 0];
         this.lastUnitPosition = [0, 0];
         this.lastActive = Date.now();
+        this.lastRatelimitedMessage = -1;
         this.chatStrictness = "chat";
         this.uuid = (_l = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _l !== void 0 ? _l : (0, utils_1.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_m = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _m !== void 0 ? _m : "Unnamed player [ERROR]";
@@ -1098,9 +1099,17 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.info = function () {
         return Vars.netServer.admins.getInfo(this.uuid);
     };
-    FishPlayer.prototype.sendMessage = function (message) {
+    /**
+     * Sends this player a chat message.
+     * @param ratelimit Time in milliseconds before sending another ratelimited message.
+     */
+    FishPlayer.prototype.sendMessage = function (message, ratelimit) {
         var _a;
-        return (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);
+        if (ratelimit === void 0) { ratelimit = 0; }
+        if (Date.now() - this.lastRatelimitedMessage >= ratelimit) {
+            (_a = this.player) === null || _a === void 0 ? void 0 : _a.sendMessage(message);
+            this.lastRatelimitedMessage = Date.now();
+        }
     };
     FishPlayer.prototype.setRank = function (rank) {
         if (rank == ranks_1.Rank.pi && !config.localDebug)

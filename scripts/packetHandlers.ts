@@ -33,7 +33,7 @@ export function loadPacketHandlers() {
 		try {
 			const p:FishPlayer = FishPlayer.get(player);
 			if (!p.hasPerm("visualEffects")) {
-				player.sendMessage(noPermissionText);
+				p.sendMessage(noPermissionText, 1000);
 				return;
 			}
 
@@ -49,10 +49,10 @@ export function loadPacketHandlers() {
 	});
 
 	Vars.netServer.addPacketHandler('bulkLabel', (player:mindustryPlayer, content:string) => {
+		const p:FishPlayer = FishPlayer.get(player);
 		try {
-			const p:FishPlayer = FishPlayer.get(player);
 			if (!p.hasPerm('bulkLabelPacket')) {
-				player.sendMessage(noPermissionText);
+				p.sendMessage(noPermissionText, 1000);
 				return;
 			}
 
@@ -96,16 +96,16 @@ export function loadPacketHandlers() {
 			//TEMP FOR DEBUGGING: REMOVE L8R
 			//Log.err(e as Error);
 
-			player.sendMessage(procError);
+			p.sendMessage(procError, 1000);
 		}
 	});
 
 	//lines
 	Vars.netServer.addPacketHandler('lineEffect', (player:mindustryPlayer, content:string) => {
+		const p:FishPlayer = FishPlayer.get(player);
 		try {
-			const p:FishPlayer = FishPlayer.get(player);
 			if (!p.hasPerm("visualEffects")) {
-				player.sendMessage(noPermissionText);
+				p.sendMessage(noPermissionText, 1000);
 				return;
 			}
 
@@ -115,16 +115,16 @@ export function loadPacketHandlers() {
 			//TEMP FOR DEBUGGING: REMOVE L8R
 			//Log.err(e as Error);
 
-			player.sendMessage(procError);
+			p.sendMessage(procError, 1000);
 		}
 	});
 
 	//this is the silas effect but it's way too real
 	Vars.netServer.addPacketHandler('bulkLineEffect', (player:mindustryPlayer, content:string) => {
+		const p:FishPlayer = FishPlayer.get(player);
 		try {
-			const p:FishPlayer = FishPlayer.get(player);
 			if (!p.hasPerm('bulkLabelPacket')) {
-				player.sendMessage(noPermissionText);
+				p.sendMessage(noPermissionText, 1000);
 				return;
 			}
 
@@ -141,7 +141,7 @@ export function loadPacketHandlers() {
 			//TEMP FOR DEBUGGING: REMOVE L8R
 			//Log.err(e as Error);
 
-			player.sendMessage(procError);
+			p.sendMessage(procError, 1000);
 		}
 	});
 }

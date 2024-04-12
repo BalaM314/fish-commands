@@ -29,7 +29,7 @@ function loadPacketHandlers() {
         try {
             var p = players_1.FishPlayer.get(player);
             if (!p.hasPerm("visualEffects")) {
-                player.sendMessage(noPermissionText);
+                p.sendMessage(noPermissionText, 1000);
                 return;
             }
             lastAccessedLabel = p;
@@ -42,10 +42,10 @@ function loadPacketHandlers() {
         }
     });
     Vars.netServer.addPacketHandler('bulkLabel', function (player, content) {
+        var p = players_1.FishPlayer.get(player);
         try {
-            var p = players_1.FishPlayer.get(player);
             if (!p.hasPerm('bulkLabelPacket')) {
-                player.sendMessage(noPermissionText);
+                p.sendMessage(noPermissionText, 1000);
                 return;
             }
             lastAccessedBulkLabel = p;
@@ -87,15 +87,15 @@ function loadPacketHandlers() {
         catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
             //Log.err(e as Error);
-            player.sendMessage(procError);
+            p.sendMessage(procError, 1000);
         }
     });
     //lines
     Vars.netServer.addPacketHandler('lineEffect', function (player, content) {
+        var p = players_1.FishPlayer.get(player);
         try {
-            var p = players_1.FishPlayer.get(player);
             if (!p.hasPerm("visualEffects")) {
-                player.sendMessage(noPermissionText);
+                p.sendMessage(noPermissionText, 1000);
                 return;
             }
             if (!handleLine(content, player))
@@ -105,15 +105,15 @@ function loadPacketHandlers() {
         catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
             //Log.err(e as Error);
-            player.sendMessage(procError);
+            p.sendMessage(procError, 1000);
         }
     });
     //this is the silas effect but it's way too real
     Vars.netServer.addPacketHandler('bulkLineEffect', function (player, content) {
+        var p = players_1.FishPlayer.get(player);
         try {
-            var p = players_1.FishPlayer.get(player);
             if (!p.hasPerm('bulkLabelPacket')) {
-                player.sendMessage(noPermissionText);
+                p.sendMessage(noPermissionText, 1000);
                 return;
             }
             var lines = content.split(bulkSeparator);
@@ -129,7 +129,7 @@ function loadPacketHandlers() {
         catch (e) {
             //TEMP FOR DEBUGGING: REMOVE L8R
             //Log.err(e as Error);
-            player.sendMessage(procError);
+            p.sendMessage(procError, 1000);
         }
     });
 }
