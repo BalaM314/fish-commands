@@ -666,3 +666,32 @@ export function updateBans(message?:(player:mindustryPlayer) => string){
 		}
 	});
 }
+
+export function processChat(player:mindustryPlayer, message:string, effects = false){
+	const fishPlayer = FishPlayer.get(player);
+	let highlight = fishPlayer.highlight;
+	let filterTripText;
+	if(
+		(!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
+		&& (filterTripText = matchFilter(message, fishPlayer.chatStrictness))
+	){
+		if(effects){
+			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(message)}"; contained "${filterTripText}"`);
+			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${message}" contained "${filterTripText}"`);
+		}
+		message = `I really hope everyone is having a fun time :) <3`;
+		highlight ??= `[#f456f]`;
+	}
+
+	if(message.startsWith("./")) message = message.replace("./", "/");
+
+	if(!fishPlayer.hasPerm("chat")){
+		if(effects){
+			FishPlayer.messageMuted(player.name, message);
+			Log.info(`<muted>${player.name}: ${message}`);
+		}
+		return null;
+	}
+
+	return (highlight ?? "") + message;
+}
