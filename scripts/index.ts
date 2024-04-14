@@ -15,7 +15,7 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, crash, escapeStringColorsServer, logErrors, matchFilter, serverRestartLoop } from "./utils";
+import { StringIO, crash, escapeStringColorsServer, logErrors, matchFilter, processChat, serverRestartLoop } from "./utils";
 
 
 
@@ -96,6 +96,7 @@ Events.on(EventType.ContentInitEvent, () => {
 	UnitTypes.latum.hidden = false;
 	UnitTypes.renale.hidden = false;
 });
+Events.on(EventType.PlayerChatEvent, (e) => processChat(e.player, e.message, true));
 
 Events.on(EventType.ServerLoadEvent, (e) => {
 	const clientHandler = Vars.netServer.clientCommands;
@@ -106,30 +107,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	menus.registerListeners();
 
 	// Mute muted players
-	Vars.netServer.admins.addChatFilter((player, text) => {
-		const fishPlayer = FishPlayer.get(player);
-		let highlight = fishPlayer.highlight;
-		let filterTrip;
-		if(
-			(!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
-			&& (filterTrip = matchFilter(text, fishPlayer.chatStrictness))
-		){
-			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(text)}"; contained "${filterTrip}"`);
-			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${text}" contained "${filterTrip}"`);
-			text = `I really hope everyone is having a fun time :) <3`;
-			highlight ??= `[#f456f]`;
-		}
-
-		if(text.startsWith("./")) text = text.replace("./", "/");
-
-		if(!fishPlayer.hasPerm("chat")){
-			FishPlayer.messageMuted(player.name, text);
-			Log.info(`<muted>${player.name}: ${text}`);
-			return null;
-		}
-
-		return (highlight ?? "") + text;
-	});
+	Vars.netServer.admins.addChatFilter((player, message) => processChat(player, message));
 
 	// Action filters
 	Vars.netServer.admins.addActionFilter((action:PlayerAction) => {

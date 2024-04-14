@@ -119,6 +119,7 @@ Events.on(EventType.ContentInitEvent, function () {
     UnitTypes.latum.hidden = false;
     UnitTypes.renale.hidden = false;
 });
+Events.on(EventType.PlayerChatEvent, function (e) { return (0, utils_1.processChat)(e.player, e.message, true); });
 Events.on(EventType.ServerLoadEvent, function (e) {
     var clientHandler = Vars.netServer.clientCommands;
     var serverHandler = ServerControl.instance.handler;
@@ -126,26 +127,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     timers.initializeTimers();
     menus.registerListeners();
     // Mute muted players
-    Vars.netServer.admins.addChatFilter(function (player, text) {
-        var fishPlayer = players_1.FishPlayer.get(player);
-        var highlight = fishPlayer.highlight;
-        var filterTrip;
-        if ((!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
-            && (filterTrip = (0, utils_1.matchFilter)(text, fishPlayer.chatStrictness))) {
-            Log.info("Censored message from player ".concat(player.name, ": \"").concat((0, utils_1.escapeStringColorsServer)(text), "\"; contained \"").concat(filterTrip, "\""));
-            players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(text, "\" contained \"").concat(filterTrip, "\""));
-            text = "I really hope everyone is having a fun time :) <3";
-            highlight !== null && highlight !== void 0 ? highlight : (highlight = "[#f456f]");
-        }
-        if (text.startsWith("./"))
-            text = text.replace("./", "/");
-        if (!fishPlayer.hasPerm("chat")) {
-            players_1.FishPlayer.messageMuted(player.name, text);
-            Log.info("<muted>".concat(player.name, ": ").concat(text));
-            return null;
-        }
-        return (highlight !== null && highlight !== void 0 ? highlight : "") + text;
-    });
+    Vars.netServer.admins.addChatFilter(function (player, message) { return (0, utils_1.processChat)(player, message); });
     // Action filters
     Vars.netServer.admins.addActionFilter(function (action) {
         var _a, _b;

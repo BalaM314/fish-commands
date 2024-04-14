@@ -467,7 +467,8 @@ export function getUnitType(type:string):Unit | string {
 //TODO refactor this, lots of duped code across multiple select functions
 export function getMap(name:string):MMap | "none" | "multiple" {
 	if(name == "") return "none";
-	const maps = Vars.maps.all();
+	const mode = Vars.state.rules.mode();
+	const maps = Vars.maps.all() /*.select(m => mode.valid(m))*/; //this doesn't work...
 	
 	const filters:((m:MMap) => boolean)[] = [
 		//m => m.name() === name, //exact match
@@ -664,4 +665,33 @@ export function updateBans(message?:(player:mindustryPlayer) => string){
 				Call.sendMessage(message(player));
 		}
 	});
+}
+
+export function processChat(player:mindustryPlayer, message:string, effects = false){
+	const fishPlayer = FishPlayer.get(player);
+	let highlight = fishPlayer.highlight;
+	let filterTripText;
+	if(
+		(!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
+		&& (filterTripText = matchFilter(message, fishPlayer.chatStrictness))
+	){
+		if(effects){
+			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(message)}"; contained "${filterTripText}"`);
+			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${message}" contained "${filterTripText}"`);
+		}
+		message = `I really hope everyone is having a fun time :) <3`;
+		highlight ??= `[#f456f]`;
+	}
+
+	if(message.startsWith("./")) message = message.replace("./", "/");
+
+	if(!fishPlayer.hasPerm("chat")){
+		if(effects){
+			FishPlayer.messageMuted(player.name, message);
+			Log.info(`<muted>${player.name}: ${message}`);
+		}
+		return null;
+	}
+
+	return (highlight ?? "") + message;
 }
