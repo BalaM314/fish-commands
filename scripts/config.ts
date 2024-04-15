@@ -7,16 +7,18 @@ export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
 	(words:(string | string[] | RegExp)[]) =>
 		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
 )([
+	//>:( -dart
 	"uwu", //lol
+	
 	"nig"+"ger", "nig" + "ga", "niger", "ni8"+"8ger", //our apologies to citizens of the Republic of Niger
 	"re"+"tard",
 	'kill yourself', 'kill urself', /\bkys\b/,
 	/\bkill blacks\b/,
-	["co"+"ck", "cockroach"],
+	["co"+"ck", "cockroach", "poppycock"],
 	"iamasussyimposter",
 	["cu"+"nt", "scunthorpe"],
 	["penis", "peniston"],
-	["rape", "grape", "therap", "drape", "scrape", "trapez"],
+	["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
 	/\bf(a)g\b/, "fa"+"gg"+"ot",
 	/\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
 	["porn", "maporn"],

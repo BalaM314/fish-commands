@@ -37,7 +37,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.outputConsole = exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
-exports.updateBans = void 0;
+exports.processChat = exports.updateBans = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -589,7 +589,8 @@ function getMap(name) {
     var e_5, _a;
     if (name == "")
         return "none";
-    var maps = Vars.maps.all();
+    var mode = Vars.state.rules.mode();
+    var maps = Vars.maps.all() /*.select(m => mode.valid(m))*/; //this doesn't work...
     var filters = [
         //m => m.name() === name, //exact match
         function (m) { return m.name().replace(/ /g, "_") === name; },
@@ -813,3 +814,29 @@ function updateBans(message) {
     });
 }
 exports.updateBans = updateBans;
+function processChat(player, message, effects) {
+    if (effects === void 0) { effects = false; }
+    var fishPlayer = players_1.FishPlayer.get(player);
+    var highlight = fishPlayer.highlight;
+    var filterTripText;
+    if ((!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
+        && (filterTripText = matchFilter(message, fishPlayer.chatStrictness))) {
+        if (effects) {
+            Log.info("Censored message from player ".concat(player.name, ": \"").concat(escapeStringColorsServer(message), "\"; contained \"").concat(filterTripText, "\""));
+            players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(message, "\" contained \"").concat(filterTripText, "\""));
+        }
+        message = "I really hope everyone is having a fun time :) <3";
+        highlight !== null && highlight !== void 0 ? highlight : (highlight = "[#f456f]");
+    }
+    if (message.startsWith("./"))
+        message = message.replace("./", "/");
+    if (!fishPlayer.hasPerm("chat")) {
+        if (effects) {
+            players_1.FishPlayer.messageMuted(player.name, message);
+            Log.info("<muted>".concat(player.name, ": ").concat(message));
+        }
+        return null;
+    }
+    return (highlight !== null && highlight !== void 0 ? highlight : "") + message;
+}
+exports.processChat = processChat;

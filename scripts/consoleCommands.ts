@@ -462,7 +462,8 @@ TPS: ${colorNumber(Core.graphics.getFramesPerSecond(), f => f > 58 ? "&g" : f > 
 Memory: &c${Math.round(Core.app.getJavaHeap() / 1048576)}&fr MB
 Server uptime: ${formatTime(uptime)} (since ${formatTimestamp(Date.now() - uptime)})
 ${[
-	fishState.restartQueued ? "&lrRestart queued&fr" : "",
+	fishState.restartQueued ? "&by&lwRestart queued&fr" : "",
+	fishState.restartLoopTask ? "&by&lwRestarting now&fr" : "",
 	FishPlayer.antiBotMode() ? "&br&wANTIBOT ACTIVE!&fr" + getAntiBotInfo("server") : "",
 ].filter(l => l.length > 0).join("\n")}\
 

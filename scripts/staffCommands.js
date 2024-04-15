@@ -99,6 +99,8 @@ exports.commands = (0, commands_1.commandList)({
             var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f, sender = _a.sender;
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to kick this player.");
+            if (!sender.hasPerm("admin") && args.duration && args.duration > 3600000 * 6)
+                (0, commands_1.fail)("Maximum kick duration is 6 hours.");
             var reason = (_b = args.reason) !== null && _b !== void 0 ? _b : "A staff member did not like your actions.";
             var duration = (_c = args.duration) !== null && _c !== void 0 ? _c : 60000;
             args.player.kick(reason, duration);

@@ -62,6 +62,7 @@ export const commands = commandList({
 		perm: Perm.mod,
 		handler({args, outputSuccess, f, sender}){
 			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
+			if(!sender.hasPerm("admin") && args.duration && args.duration > 3600_000 * 6) fail(`Maximum kick duration is 6 hours.`);
 			const reason = args.reason ?? "A staff member did not like your actions.";
 			const duration = args.duration ?? 60_000;
 			args.player.kick(reason, duration);

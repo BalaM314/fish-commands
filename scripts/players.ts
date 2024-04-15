@@ -81,6 +81,7 @@ export class FishPlayer {
 	lastMousePosition = [0, 0] as [x:number, y:number];
 	lastUnitPosition = [0, 0] as [x:number, y:number];
 	lastActive:number = Date.now();
+	lastRatelimitedMessage = -1;
 	
 	//Stored data
 	uuid: string;
@@ -982,8 +983,15 @@ We apologize for the inconvenience.`
 	info():PlayerInfo {
 		return Vars.netServer.admins.getInfo(this.uuid);
 	}
-	sendMessage(message:string){
-		return this.player?.sendMessage(message);
+	/**
+	 * Sends this player a chat message.
+	 * @param ratelimit Time in milliseconds before sending another ratelimited message.
+	 */
+	sendMessage(message:string, ratelimit:number = 0){
+		if(Date.now() - this.lastRatelimitedMessage >= ratelimit){
+			this.player?.sendMessage(message);
+			this.lastRatelimitedMessage = Date.now();
+		}
 	}
 
 	setRank(rank:Rank){
