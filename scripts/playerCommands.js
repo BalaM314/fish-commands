@@ -514,7 +514,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
                 if (!sender.hasPerm("trusted"))
                     (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
-                (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], sender);
+                (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
             }
             else {

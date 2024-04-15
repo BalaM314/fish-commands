@@ -490,7 +490,7 @@ Available types:[yellow]
 Power voids disable anything they are connected to.
 If you break it, [scarlet]you will get attacked[] by enemy units.
 Please stop attacking and [lime]build defenses[] first!`,
-					["I understand"], sender
+					["I understand"], args.player
 				);
 				logAction("showed void warning", sender, args.player);
 			} else {
