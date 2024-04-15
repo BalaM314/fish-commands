@@ -449,11 +449,14 @@ export const commands = commandList({
 	},
 
 	info: {
-		args: ["target:player"],
+		args: ["target:player", "hideColors:boolean?"],
 		description: "Displays information about an online player. See also /infos",
 		perm: Perm.none,
 		handler({sender, args, output, f}){
 			const info = args.target.player.info as PlayerInfo;
+			const names = args.hideColors
+				? [...new Set(info.names.map(n => Strings.stripColors(n)).toArray())].join(", ")
+				: info.names.map(escapeStringColorsClient).toString(", ");
 			output(f`\
 [accent]Info for player ${args.target} [gray](${escapeStringColorsClient(args.target.name)}) (#${args.target.player.id.toString()})
 	[accent]Rank: ${args.target.rank}
@@ -463,7 +466,7 @@ export const commands = commandList({
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
 	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
 	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
-	[accent]Names used: [[${info.names.map(escapeStringColorsClient).items.join(", ")}]`
+	[accent]Names used: [[${names}]`
 			);
 			if(sender.hasPerm("viewUUIDs"))
 				output(f`\
