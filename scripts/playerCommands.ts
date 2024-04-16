@@ -558,6 +558,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				Vars.state.wavetime = 1;
 				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
 				logAction("forced next wave", sender);
+				allCommands.vnw.data.votes.clear();
 			}
 		}
 	},
@@ -571,6 +572,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				Vars.state.wavetime = 1;
 				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
 				Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
+				votes.clear();
 			}
 		}
 

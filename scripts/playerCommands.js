@@ -581,6 +581,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 Vars.state.wavetime = 1;
                 Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_1; }); });
                 (0, utils_1.logAction)("forced next wave", sender);
+                allCommands.vnw.data.votes.clear();
             }
         }
     }, vnw: (0, commands_1.command)(function () {
@@ -592,6 +593,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 Vars.state.wavetime = 1;
                 Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); });
                 Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
+                votes.clear();
             }
         };
         Events.on(EventType.PlayerLeave, function (_a) {
