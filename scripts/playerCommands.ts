@@ -122,6 +122,17 @@ export const commands = commandList({
 			else outputSuccess(`You are no longer marked as AFK.`);
 		},
 	},
+	vanish:{
+		args: [],
+		description: `Toggles visibility of your rank prefix`,
+		perm:Perm.trusted,
+		handler({sender, outputSuccess}){
+			sender.showRankPrefix = !sender.showRankPrefix;
+			if(sender.showRankPrefix) outputSuccess(`Rank now visible`);
+			else outputSuccess(`Rank now hidden`);
+		},
+	},
+	
 
 	tileid: {
 		args: [],
@@ -481,7 +492,7 @@ Available types:[yellow]
 		args: ["player:player?"],
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
-		handler({args, sender, lastUsedSuccessfullySender}){
+		handler({args, sender, lastUsedSuccessfullySender,outputSuccess}){
 			if(args.player){
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
@@ -493,6 +504,7 @@ Please stop attacking and [lime]build defenses[] first!`,
 					["I understand"], args.player
 				);
 				logAction("showed void warning", sender, args.player);
+				outputSuccess(`Informed ${args.player} about Power Void traps`);
 			} else {
 				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was used recently and is on cooldown.`);
 				Call.sendMessage(

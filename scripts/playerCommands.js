@@ -164,6 +164,18 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             else
                 outputSuccess("You are no longer marked as AFK.");
         },
+    }, vanish: {
+        args: [],
+        description: "Toggles visibility of your rank prefix",
+        perm: commands_1.Perm.trusted,
+        handler: function (_a) {
+            var sender = _a.sender, outputSuccess = _a.outputSuccess;
+            sender.showRankPrefix = !sender.showRankPrefix;
+            if (sender.showRankPrefix)
+                outputSuccess("Rank now visible");
+            else
+                outputSuccess("Rank now hidden");
+        },
     }, tileid: {
         args: [],
         description: 'Checks id of a tile.',
@@ -508,7 +520,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Warns other players about power voids.',
         perm: commands_1.Perm.play,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+            var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, outputSuccess = _a.outputSuccess;
             if (args.player) {
                 if (Date.now() - lastUsedSuccessfullySender < 20000)
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
@@ -516,6 +528,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
                 (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
+                outputSuccess("Informed ".concat(args.player, " about Power Void traps"));
             }
             else {
                 if (Date.now() - lastUsedSuccessfullySender < 10000)

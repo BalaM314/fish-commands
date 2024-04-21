@@ -57,6 +57,7 @@ export class FishPlayer {
 		color: Color;
 	} | null = null;
 	cleanedName:string;
+	showRankPrefix:boolean = false;
 	/** Used to freeze players when votekicking. */
 	frozen:boolean = false;
 	usageData: Record<string, {
@@ -478,7 +479,7 @@ export class FishPlayer {
 		for(const flag of this.flags){
 			prefix += flag.prefix;
 		}
-		prefix += this.rank.prefix;
+		if(this.showRankPrefix) prefix += this.rank.prefix;
 		if(prefix.length > 0) prefix += " ";
 		let replacedName;
 		if(cleanText(this.name, true).includes("hacker")){
