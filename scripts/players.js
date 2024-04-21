@@ -61,7 +61,7 @@ var FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
-        this.showRankPrefix = false;
+        this.showRankPrefix = true;
         /** Used to freeze players when votekicking. */
         this.frozen = false;
         this.usageData = {};

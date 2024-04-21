@@ -595,6 +595,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_1; }); });
                 (0, utils_1.logAction)("forced next wave", sender);
                 allCommands.vnw.data.votes.clear();
+                Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], skipping to next wave"));
             }
         }
     }, vnw: (0, commands_1.command)(function () {

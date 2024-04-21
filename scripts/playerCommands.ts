@@ -571,6 +571,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
 				logAction("forced next wave", sender);
 				allCommands.vnw.data.votes.clear();
+				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
 			}
 		}
 	},

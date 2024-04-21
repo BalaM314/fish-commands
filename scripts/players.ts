@@ -57,7 +57,7 @@ export class FishPlayer {
 		color: Color;
 	} | null = null;
 	cleanedName:string;
-	showRankPrefix:boolean = false;
+	showRankPrefix:boolean = true;
 	/** Used to freeze players when votekicking. */
 	frozen:boolean = false;
 	usageData: Record<string, {
