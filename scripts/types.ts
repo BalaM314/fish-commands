@@ -50,7 +50,7 @@ export type UnionToIntersection<U> = (
  **/
 export type ArgsFromArgStringUnion<ArgStringUnion extends string> =
 	[ArgStringUnion] extends [never] ? Record<string, any> : //If any was passed, return Record<string, any>
-	'a' extends ('b' & ArgStringUnion) ? Record<string, any> : //If any was passed, return Record<string, any>
+	'a' extends ('b' & ArgStringUnion) ? Record<string, any> : //If any was passed, return Record<string, any>... wait what? TODO cleanup
 	UnionToIntersection<ObjectTypeFor<ArgStringUnion>>;
 //Typescript distributes the generic across the union type, producing a union of all the objects types, then we convert the union to an intersection
 
