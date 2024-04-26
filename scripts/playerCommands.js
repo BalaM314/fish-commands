@@ -166,15 +166,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         },
     }, vanish: {
         args: [],
-        description: "Toggles visibility of your rank prefix",
+        description: "Toggles visibility of your rank prefix.",
         perm: commands_1.Perm.trusted,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
             sender.showRankPrefix = !sender.showRankPrefix;
-            if (sender.showRankPrefix)
-                outputSuccess("Rank now visible");
-            else
-                outputSuccess("Rank now hidden");
+            outputSuccess("Your rank prefix is now ".concat(sender.showRankPrefix ? "visible" : "hidden", "."));
         },
     }, tileid: {
         args: [],
@@ -528,7 +525,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
                 (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
-                outputSuccess("Informed ".concat(args.player, " about Power Void traps"));
+                outputSuccess("Warned ".concat(args.player, " about power voids with a popup message."));
             }
             else {
                 if (Date.now() - lastUsedSuccessfullySender < 10000)
