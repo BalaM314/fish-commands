@@ -122,6 +122,16 @@ export const commands = commandList({
 			else outputSuccess(`You are no longer marked as AFK.`);
 		},
 	},
+	vanish: {
+		args: [],
+		description: `Toggles visibility of your rank prefix.`,
+		perm: Perm.trusted,
+		handler({sender, outputSuccess}){
+			sender.showRankPrefix = !sender.showRankPrefix;
+			outputSuccess(`Your rank prefix is now ${sender.showRankPrefix ? "visible" : "hidden"}.`);
+		},
+	},
+	
 
 	tileid: {
 		args: [],
@@ -481,7 +491,7 @@ Available types:[yellow]
 		args: ["player:player?"],
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
-		handler({args, sender, lastUsedSuccessfullySender}){
+		handler({args, sender, lastUsedSuccessfullySender, outputSuccess}){
 			if(args.player){
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
@@ -493,6 +503,7 @@ Please stop attacking and [lime]build defenses[] first!`,
 					["I understand"], args.player
 				);
 				logAction("showed void warning", sender, args.player);
+				outputSuccess(`Warned ${args.player} about power voids with a popup message.`);
 			} else {
 				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was used recently and is on cooldown.`);
 				Call.sendMessage(
@@ -559,6 +570,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
 				logAction("forced next wave", sender);
 				allCommands.vnw.data.votes.clear();
+				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
 			}
 		}
 	},

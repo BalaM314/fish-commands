@@ -61,6 +61,7 @@ var FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
+        this.showRankPrefix = true;
         /** Used to freeze players when votekicking. */
         this.frozen = false;
         this.usageData = {};
@@ -539,7 +540,8 @@ var FishPlayer = /** @class */ (function () {
             }
             finally { if (e_6) throw e_6.error; }
         }
-        prefix += this.rank.prefix;
+        if (this.showRankPrefix)
+            prefix += this.rank.prefix;
         if (prefix.length > 0)
             prefix += " ";
         var replacedName;
