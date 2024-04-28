@@ -129,7 +129,7 @@ exports.FishServers = {
     },
     all: []
 };
-exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp];
+exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.hexed];
 var getGamemode = function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); };
 exports.getGamemode = getGamemode;
 exports.Mode = {

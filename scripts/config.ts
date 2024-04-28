@@ -117,7 +117,7 @@ export const FishServers = {
 	},
 	all: [] as FishServer[]
 };
-FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp];
+FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.hexed];
 export const getGamemode = () => Core.settings.get("mode", Vars.state.rules.mode().name());
 export const Mode = {
 	attack: () => getGamemode() == "attack",
