@@ -66,6 +66,7 @@ export class Perm {
 	static changeTeam = new Perm("changeTeam", fishP => 
 		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
 			: Mode.attack() ? fishP.ranksAtLeast("admin")
+			: Mode.hexed() ? fishP.ranksAtLeast("mod")
 			: Mode.pvp() ? fishP.ranksAtLeast("trusted")
 			: fishP.ranksAtLeast("admin")
 	);

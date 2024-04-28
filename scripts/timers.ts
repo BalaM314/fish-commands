@@ -3,6 +3,7 @@ import { getStaffMessages } from './api'
 import * as config from "./config";
 import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
 import { ipJoins } from "./globals";
+import { Mode } from "./config";
 
 
 export function initializeTimers(){
@@ -17,7 +18,7 @@ export function initializeTimers(){
 	}, 10, 300);
 	//Memory corruption prank
 	Timer.schedule(() => {
-		if(Math.random() < 0.2){
+		if(Math.random() < 0.2 && !Mode.hexed()){
 			//Timer triggers every 17 hours, and the random chance is 20%, so the average interval between pranks is 85 hours
 			definitelyRealMemoryCorruption();
 		}
@@ -32,7 +33,7 @@ export function initializeTimers(){
 			getStaffMessages((messages) => {
 				if(messages.length) FishPlayer.messageStaff(messages);
 			})
-		}, 5, 3);
+		}, 5, 2);
 	//Tip
 	Timer.schedule(() => {
 		const showAd = Math.random() < 0.10; //10% chance every 15 minutes

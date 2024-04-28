@@ -105,8 +105,9 @@ var Perm = /** @class */ (function () {
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
         return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted")
             : config_1.Mode.attack() ? fishP.ranksAtLeast("admin")
-                : config_1.Mode.pvp() ? fishP.ranksAtLeast("trusted")
-                    : fishP.ranksAtLeast("admin");
+                : config_1.Mode.hexed() ? fishP.ranksAtLeast("mod")
+                    : config_1.Mode.pvp() ? fishP.ranksAtLeast("trusted")
+                        : fishP.ranksAtLeast("admin");
     });
     Perm.changeTeamExternal = new Perm("changeTeamExternal", "admin");
     Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Mode.pvp(); }, "", "Ohnos are disabled in PVP.");

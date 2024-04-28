@@ -135,7 +135,7 @@ exports.getGamemode = getGamemode;
 exports.Mode = {
     attack: function () { return (0, exports.getGamemode)() == "attack"; },
     survival: function () { return (0, exports.getGamemode)() == "survival"; },
-    pvp: function () { return (0, exports.getGamemode)() == "pvp"; },
+    pvp: function () { return (0, exports.getGamemode)() == "pvp" || (0, exports.getGamemode)() == "hexed"; },
     sandbox: function () { return (0, exports.getGamemode)() == "sandbox"; },
     hexed: function () { return (0, exports.getGamemode)() == "hexed"; },
     name: function () { return Vars.state.rules.mode().name(); }

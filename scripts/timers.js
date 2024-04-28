@@ -6,6 +6,7 @@ var api_1 = require("./api");
 var config = require("./config");
 var utils_1 = require("./utils");
 var globals_1 = require("./globals");
+var config_1 = require("./config");
 function initializeTimers() {
     //Autosave
     Timer.schedule(function () {
@@ -18,7 +19,7 @@ function initializeTimers() {
     }, 10, 300);
     //Memory corruption prank
     Timer.schedule(function () {
-        if (Math.random() < 0.2) {
+        if (Math.random() < 0.2 && !config_1.Mode.hexed()) {
             //Timer triggers every 17 hours, and the random chance is 20%, so the average interval between pranks is 85 hours
             (0, utils_1.definitelyRealMemoryCorruption)();
         }
@@ -34,7 +35,7 @@ function initializeTimers() {
                 if (messages.length)
                     players_1.FishPlayer.messageStaff(messages);
             });
-        }, 5, 3);
+        }, 5, 2);
     //Tip
     Timer.schedule(function () {
         var showAd = Math.random() < 0.10; //10% chance every 15 minutes

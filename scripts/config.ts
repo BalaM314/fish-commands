@@ -122,7 +122,7 @@ export const getGamemode = () => Core.settings.get("mode", Vars.state.rules.mode
 export const Mode = {
 	attack: () => getGamemode() == "attack",
 	survival: () => getGamemode() == "survival",
-	pvp: () => getGamemode() == "pvp",
+	pvp: () => getGamemode() == "pvp" || getGamemode() == "hexed",
 	sandbox: () => getGamemode() == "sandbox",
 	hexed: () => getGamemode() == "hexed",
 	name: () => Vars.state.rules.mode().name()
