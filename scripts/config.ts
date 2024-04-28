@@ -117,12 +117,13 @@ export const FishServers = {
 	all: [] as FishServer[]
 };
 FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp];
-export const getGamemode = () => Vars.state.rules.mode().name();
+export const getGamemode = () => Core.settings.get("mode", Vars.state.rules.mode().name());
 export const Mode = {
 	attack: () => getGamemode() == "attack",
 	survival: () => getGamemode() == "survival",
 	pvp: () => getGamemode() == "pvp",
 	sandbox: () => getGamemode() == "sandbox",
+	hexed: () => getGamemode() == "hexed",
 	name: () => Vars.state.rules.mode().name()
 };
 export const localDebug = new Fi("config/.debug").exists();

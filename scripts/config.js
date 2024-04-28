@@ -129,13 +129,14 @@ exports.FishServers = {
     all: []
 };
 exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp];
-var getGamemode = function () { return Vars.state.rules.mode().name(); };
+var getGamemode = function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); };
 exports.getGamemode = getGamemode;
 exports.Mode = {
     attack: function () { return (0, exports.getGamemode)() == "attack"; },
     survival: function () { return (0, exports.getGamemode)() == "survival"; },
     pvp: function () { return (0, exports.getGamemode)() == "pvp"; },
     sandbox: function () { return (0, exports.getGamemode)() == "sandbox"; },
+    hexed: function () { return (0, exports.getGamemode)() == "hexed"; },
     name: function () { return Vars.state.rules.mode().name(); }
 };
 exports.localDebug = new Fi("config/.debug").exists();

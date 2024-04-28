@@ -193,7 +193,7 @@ declare class Color {
 }
 declare const Core: {
 	settings: {
-		get(key:string, defaultValue?:any):any;
+		get<T = unknown>(key:string, defaultValue?:T):T;
 		getDataDirectory():Fi;
 		getInt(key:string, defaultValue?:number):number;
 		put(key:string, value:any):void;
