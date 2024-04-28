@@ -98,7 +98,7 @@ export const multiCharSubstitutions:[RegExp, string][] = [
 	[/\|-\|/g, "H"]
 ];
 // export const ip = 'localhost';
-export const ip = '45.79.202.111';
+export const ip = '45.79.202.111:5082';
 type FishServer = {
 	ip:string;
 	port:string;

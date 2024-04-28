@@ -7,7 +7,7 @@ var players_1 = require("./players");
 function addStopped(uuid, time) {
     if (config_1.localDebug)
         return;
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/addStopped"), JSON.stringify({ id: uuid, time: time }))
+    var req = Http.post("http://".concat(config_1.ip, "/api/addStopped"), JSON.stringify({ id: uuid, time: time }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
@@ -21,7 +21,7 @@ exports.addStopped = addStopped;
 function free(uuid) {
     if (config_1.localDebug)
         return;
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/free"), JSON.stringify({ id: uuid }))
+    var req = Http.post("http://".concat(config_1.ip, "/api/free"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
@@ -43,7 +43,7 @@ function getStopped(uuid, callback, callbackError) {
     }
     if (config_1.localDebug)
         return fail("local debug mode");
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/getStopped"), JSON.stringify({ id: uuid }))
+    var req = Http.post("http://".concat(config_1.ip, "/api/getStopped"), JSON.stringify({ id: uuid }))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
@@ -88,7 +88,7 @@ function sendModerationMessage(message) {
         Log.info("Sent moderation log message: ".concat(message));
         return;
     }
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/mod-dump"), JSON.stringify({ message: message })).header('Content-Type', 'application/json').header('Accept', '*/*');
+    var req = Http.post("http://".concat(config_1.ip, "/api/mod-dump"), JSON.stringify({ message: message })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     req.error(function () { return Log.err("[API] Network error when trying to call api.sendModerationMessage()"); });
     req.submit(function (response) {
@@ -101,7 +101,7 @@ function getStaffMessages(callback) {
     if (config_1.localDebug)
         return;
     var server = (0, config_1.getGamemode)();
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/getStaffMessages"), JSON.stringify({ server: server }))
+    var req = Http.post("http://".concat(config_1.ip, "/api/getStaffMessages"), JSON.stringify({ server: server }))
         .header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     req.error(function () { return Log.err("[API] Network error when trying to call api.getStaffMessages()"); });
@@ -119,7 +119,7 @@ function sendStaffMessage(message, playerName, callback) {
     if (config_1.localDebug)
         return;
     var server = (0, config_1.getGamemode)();
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/sendStaffMessage"), 
+    var req = Http.post("http://".concat(config_1.ip, "/api/sendStaffMessage"), 
     // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
     JSON.stringify({ message: message, playerName: playerName, cleanedName: Strings.stripColors(playerName), server: server })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
@@ -141,7 +141,7 @@ function ban(data, callback) {
     if (callback === void 0) { callback = function () { }; }
     if (config_1.localDebug)
         return;
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/ban"), JSON.stringify(data))
+    var req = Http.post("http://".concat(config_1.ip, "/api/ban"), JSON.stringify(data))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
@@ -159,7 +159,7 @@ function unban(data, callback) {
     if (callback === void 0) { callback = function () { }; }
     if (config_1.localDebug)
         return;
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/unban"), JSON.stringify(data))
+    var req = Http.post("http://".concat(config_1.ip, "/api/unban"), JSON.stringify(data))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;
@@ -180,7 +180,7 @@ function getBanned(data, callback) {
         callback(false);
         return;
     }
-    var req = Http.post("http://".concat(config_1.ip, ":5000/api/checkIsBanned"), JSON.stringify(data))
+    var req = Http.post("http://".concat(config_1.ip, "/api/checkIsBanned"), JSON.stringify(data))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');
     req.timeout = 10000;

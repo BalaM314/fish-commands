@@ -115,7 +115,7 @@ exports.multiCharSubstitutions = [
     [/\|-\|/g, "H"]
 ];
 // export const ip = 'localhost';
-exports.ip = '45.79.202.111';
+exports.ip = '45.79.202.111:5082';
 exports.FishServers = {
     attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
     survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
