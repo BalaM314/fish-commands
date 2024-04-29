@@ -154,7 +154,7 @@ const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any)
 		if(e.breaking){
 			action = "broke";
 			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
-			if(e.unit?.player?.uuid()){
+			if(e.unit?.player?.uuid() && e.tile.build?.team != Team.derelict){
 				const fishP = FishPlayer.get(e.unit.player);
 				//TODO move this code
 				fishP.tstats.blocksBroken ++;

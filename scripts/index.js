@@ -160,7 +160,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
 });
 /**Keeps track of any action performed on a tile for use in tilelog. */
 var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entry", function (e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         tile = e.tile;
@@ -168,7 +168,7 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
         if (e.breaking) {
             action = "broke";
             type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
-            if ((_g = (_f = e.unit) === null || _f === void 0 ? void 0 : _f.player) === null || _g === void 0 ? void 0 : _g.uuid()) {
+            if (((_g = (_f = e.unit) === null || _f === void 0 ? void 0 : _f.player) === null || _g === void 0 ? void 0 : _g.uuid()) && ((_h = e.tile.build) === null || _h === void 0 ? void 0 : _h.team) != Team.derelict) {
                 var fishP = players_1.FishPlayer.get(e.unit.player);
                 //TODO move this code
                 fishP.tstats.blocksBroken++;
@@ -178,7 +178,7 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
         else {
             action = "built";
             type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
-            if ((_j = (_h = e.unit) === null || _h === void 0 ? void 0 : _h.player) === null || _j === void 0 ? void 0 : _j.uuid()) {
+            if ((_k = (_j = e.unit) === null || _j === void 0 ? void 0 : _j.player) === null || _k === void 0 ? void 0 : _k.uuid()) {
                 var fishP = players_1.FishPlayer.get(e.unit.player);
                 //TODO move this code
                 fishP.stats.blocksPlaced++;
@@ -187,13 +187,13 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     }
     else if (e instanceof EventType.ConfigEvent) {
         tile = e.tile.tile;
-        uuid = (_l = (_k = e.player) === null || _k === void 0 ? void 0 : _k.uuid()) !== null && _l !== void 0 ? _l : "unknown";
+        uuid = (_m = (_l = e.player) === null || _l === void 0 ? void 0 : _l.uuid()) !== null && _m !== void 0 ? _m : "unknown";
         action = "configured";
         type = e.tile.block.name;
     }
     else if (e instanceof EventType.BuildRotateEvent) {
         tile = e.build.tile;
-        uuid = (_r = (_p = (_o = (_m = e.unit) === null || _m === void 0 ? void 0 : _m.player) === null || _o === void 0 ? void 0 : _o.uuid()) !== null && _p !== void 0 ? _p : (_q = e.unit) === null || _q === void 0 ? void 0 : _q.type.name) !== null && _r !== void 0 ? _r : "unknown";
+        uuid = (_s = (_q = (_p = (_o = e.unit) === null || _o === void 0 ? void 0 : _o.player) === null || _p === void 0 ? void 0 : _p.uuid()) !== null && _q !== void 0 ? _q : (_r = e.unit) === null || _r === void 0 ? void 0 : _r.type.name) !== null && _s !== void 0 ? _s : "unknown";
         action = "rotated";
         type = e.build.block.name;
     }
@@ -201,22 +201,22 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
         tile = e.unit.tileOn();
         if (!tile)
             return;
-        uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_s = e.unit.lastCommanded) !== null && _s !== void 0 ? _s : "unknown";
+        uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_t = e.unit.lastCommanded) !== null && _t !== void 0 ? _t : "unknown";
         action = "killed";
         type = e.unit.type.name;
     }
     else if (e instanceof EventType.BlockDestroyEvent) {
-        if (config_1.Mode.attack() && ((_t = e.tile.build) === null || _t === void 0 ? void 0 : _t.team) != Vars.state.rules.defaultTeam)
+        if (config_1.Mode.attack() && ((_u = e.tile.build) === null || _u === void 0 ? void 0 : _u.team) != Vars.state.rules.defaultTeam)
             return; //Don't log destruction of enemy blocks
         tile = e.tile;
         uuid = "[[something]";
         action = "killed";
-        type = (_v = (_u = e.tile.block()) === null || _u === void 0 ? void 0 : _u.name) !== null && _v !== void 0 ? _v : "air";
+        type = (_w = (_v = e.tile.block()) === null || _v === void 0 ? void 0 : _v.name) !== null && _w !== void 0 ? _w : "air";
     }
     else if (e instanceof EventType.PayloadDropEvent) {
         action = "pay-dropped";
         var controller = e.carrier.controller();
-        uuid = (_y = (_x = (_w = e.carrier.player) === null || _w === void 0 ? void 0 : _w.uuid()) !== null && _x !== void 0 ? _x : (controller instanceof LogicAI ? "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _y !== void 0 ? _y : e.carrier.type.name;
+        uuid = (_z = (_y = (_x = e.carrier.player) === null || _x === void 0 ? void 0 : _x.uuid()) !== null && _y !== void 0 ? _y : (controller instanceof LogicAI ? "".concat(e.carrier.type.name, " controlled by ").concat(controller.controller.block.name, " at ").concat(controller.controller.tileX(), ",").concat(controller.controller.tileY(), " last accessed by ").concat(e.carrier.getControllerName()) : null)) !== null && _z !== void 0 ? _z : e.carrier.type.name;
         if (e.build) {
             tile = e.build.tile;
             type = e.build.block.name;
@@ -254,7 +254,7 @@ var addToTileHistory = (0, utils_1.logErrors)("Error while saving a tilelog entr
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
         var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
-        tile = (_z = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _z !== void 0 ? _z : (0, utils_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
+        tile = (_0 = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _0 !== void 0 ? _0 : (0, utils_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
     }
     else
         return;
