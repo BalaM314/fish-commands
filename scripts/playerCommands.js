@@ -165,16 +165,22 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 outputSuccess("You are no longer marked as AFK.");
         },
     }, vanish: {
-        args: [],
+        args: ['target:player?'],
         description: "Toggles visibility of your rank and flags.",
         perm: commands_1.Perm.trusted,
         handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var _b;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (sender.stelled())
                 (0, commands_1.fail)("Marked players may not hide flags.");
             if (sender.muted)
                 (0, commands_1.fail)("Muted players may not hide flags.");
-            sender.showPrefix = !sender.showPrefix;
+            (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
+            if (sender != args.target && args.target.hasPerm("blockTrolling"))
+                (0, commands_1.fail)("Target is insufficentlly trollable.");
+            if (sender != args.target && sender.ranksAtLeast("admin"))
+                (0, commands_1.fail)("Insufficent rank to vanish other players.");
+            args.target.showPrefix = !args.target.showPrefix;
             outputSuccess("Your rank prefix is now ".concat(sender.showPrefix ? "visible" : "hidden", "."));
         },
     }, tileid: {
