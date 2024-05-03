@@ -1,5 +1,5 @@
 import * as api from './api';
-import { command, commandList, fail, formatArg, Perm } from './commands';
+import { allCommands, command, commandList, fail, formatArg, Perm } from './commands';
 import { FishServers, Mode, rules } from './config';
 import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
@@ -269,10 +269,11 @@ export const commands = commandList({
 		});
 		return {
 			args : ['target:player?'],
-			description : `Toggles spectator mode in pvp games`,
+			description : `Toggles spectator mode in PVP games.`,
 			perm: Perm.play,
 			handler({args,sender,outputSuccess}){
 				args.target ??= sender;
+				if(!(Mode.hexed() || Mode.pvp ()) && !sender.ranksAtLeast("mod")) fail (`Insufficent rank to spectate on a non-pvp server.`);
 				if(args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Insufficent permission to force target to spectate.`);
 				if(args.target !== sender && !sender.ranksAtLeast("admin")) fail(`Insufficent permission to force another player to spectate.`);
 				if(Spectators.has(args.target)){
@@ -280,7 +281,7 @@ export const commands = commandList({
 					outputSuccess((args.target == sender) ? (`Rejoining game as team ${args.target.team()}.`):(`Forced ${args.target.name} out of spectator mode.`));
 				}else{
 					spectate(args.target);
-					outputSuccess((args.target == sender) ? (`Joined team spectators. Run /spectate again to resume gameplay.`):(`Forced ${args.target.name} into spectator mode`));
+					outputSuccess((args.target == sender) ? (`Joined team spectators. Run /spectate again to resume gameplay.`):(`Forced ${args.target.name} into spectator mode.`));
 				}
 			}
 		};
@@ -728,6 +729,19 @@ Please stop attacking and [lime]build defenses[] first!`
 	// 		votekickmanager.handleVote(sender, args ? 1 : -1);
 	//	 }
 	// },
+
+	//this was made with bees in mind
+	forceNextMap:{
+		args: ["map:map"],
+		description: 'Override the next map in queue',
+		perm: Perm.admin,
+		handler({args,sender,outputSuccess}){
+			Vars.maps.setNextMapOverride(args.map);
+			allCommands.nextmap.data.votes.clear();
+			outputSuccess(`[red]Admin ${sender.name} has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
+		},
+
+	},
 
 	maps: {
 		args: [],

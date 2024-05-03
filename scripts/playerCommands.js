@@ -320,12 +320,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         });
         return {
             args: ['target:player?'],
-            description: "Toggles spectator mode in pvp games",
+            description: "Toggles spectator mode in PVP games.",
             perm: commands_1.Perm.play,
             handler: function (_a) {
                 var _b;
                 var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
                 (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
+                if (!(config_1.Mode.hexed() || config_1.Mode.pvp()) && !sender.ranksAtLeast("mod"))
+                    (0, commands_1.fail)("Insufficent rank to spectate on a non-pvp server.");
                 if (args.target !== sender && args.target.hasPerm("blockTrolling"))
                     (0, commands_1.fail)("Insufficent permission to force target to spectate.");
                 if (args.target !== sender && !sender.ranksAtLeast("admin"))
@@ -336,7 +338,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 }
                 else {
                     spectate(args.target);
-                    outputSuccess((args.target == sender) ? ("Joined team spectators. Run /spectate again to resume gameplay.") : ("Forced ".concat(args.target.name, " into spectator mode")));
+                    outputSuccess((args.target == sender) ? ("Joined team spectators. Run /spectate again to resume gameplay.") : ("Forced ".concat(args.target.name, " into spectator mode.")));
                 }
             }
         };
@@ -752,7 +754,18 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     // 		votekickmanager.handleVote(sender, args ? 1 : -1);
     //	 }
     // },
-    maps: {
+    //this was made with bees in mind
+    forceNextMap: {
+        args: ["map:map"],
+        description: 'Override the next map in queue',
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            Vars.maps.setNextMapOverride(args.map);
+            commands_1.allCommands.nextmap.data.votes.clear();
+            outputSuccess("[red]Admin ".concat(sender.name, " has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
+        },
+    }, maps: {
         args: [],
         description: 'Lists the available maps.',
         perm: commands_1.Perm.none,
