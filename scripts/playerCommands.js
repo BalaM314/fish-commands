@@ -166,12 +166,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         },
     }, vanish: {
         args: [],
-        description: "Toggles visibility of your rank prefix.",
+        description: "Toggles visibility of your rank and flags.",
         perm: commands_1.Perm.trusted,
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
-            sender.showRankPrefix = !sender.showRankPrefix;
-            outputSuccess("Your rank prefix is now ".concat(sender.showRankPrefix ? "visible" : "hidden", "."));
+            if (sender.stelled())
+                (0, commands_1.fail)("Marked players may not hide flags.");
+            if (sender.muted)
+                (0, commands_1.fail)("Muted players may not hide flags.");
+            sender.showPrefix = !sender.showPrefix;
+            outputSuccess("Your rank prefix is now ".concat(sender.showPrefix ? "visible" : "hidden", "."));
         },
     }, tileid: {
         args: [],

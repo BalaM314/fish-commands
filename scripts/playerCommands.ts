@@ -124,11 +124,13 @@ export const commands = commandList({
 	},
 	vanish: {
 		args: [],
-		description: `Toggles visibility of your rank prefix.`,
+		description: `Toggles visibility of your rank and flags.`,
 		perm: Perm.trusted,
 		handler({sender, outputSuccess}){
-			sender.showRankPrefix = !sender.showRankPrefix;
-			outputSuccess(`Your rank prefix is now ${sender.showRankPrefix ? "visible" : "hidden"}.`);
+			if(sender.stelled()) fail(`Marked players may not hide flags.`);
+			if(sender.muted) fail (`Muted players may not hide flags.`);
+			sender.showPrefix = !sender.showPrefix;
+			outputSuccess(`Your rank prefix is now ${sender.showPrefix ? "visible" : "hidden"}.`);
 		},
 	},
 	

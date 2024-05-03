@@ -61,7 +61,7 @@ var FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
-        this.showRankPrefix = true;
+        this.showPrefix = true;
         /** Used to freeze players when votekicking. */
         this.frozen = false;
         this.usageData = {};
@@ -527,20 +527,22 @@ var FishPlayer = /** @class */ (function () {
             prefix += config.MUTED_PREFIX;
         if (this.afk())
             prefix += "[orange]\uE876 AFK \uE876 | [white]";
-        try {
-            for (var _b = __values(this.flags), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var flag = _c.value;
-                prefix += flag.prefix;
-            }
-        }
-        catch (e_6_1) { e_6 = { error: e_6_1 }; }
-        finally {
+        if (this.showPrefix) {
             try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                for (var _b = __values(this.flags), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var flag = _c.value;
+                    prefix += flag.prefix;
+                }
             }
-            finally { if (e_6) throw e_6.error; }
+            catch (e_6_1) { e_6 = { error: e_6_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_6) throw e_6.error; }
+            }
         }
-        if (this.showRankPrefix)
+        if (this.showPrefix)
             prefix += this.rank.prefix;
         if (prefix.length > 0)
             prefix += " ";
@@ -1219,6 +1221,7 @@ var FishPlayer = /** @class */ (function () {
             time: Date.now(),
         });
         this.setPunishedIP(config.stopAntiEvadeTime);
+        this.showPrefix = true;
         this.updateName();
         if (this.connected() && notify) {
             this.stopUnit();
@@ -1298,6 +1301,7 @@ var FishPlayer = /** @class */ (function () {
         if (this.muted)
             return;
         this.muted = true;
+        this.showPrefix = true;
         this.updateName();
         this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
         this.setPunishedIP(config.stopAntiEvadeTime);

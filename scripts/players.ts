@@ -57,7 +57,7 @@ export class FishPlayer {
 		color: Color;
 	} | null = null;
 	cleanedName:string;
-	showRankPrefix:boolean = true;
+	showPrefix:boolean = true;
 	/** Used to freeze players when votekicking. */
 	frozen:boolean = false;
 	usageData: Record<string, {
@@ -476,10 +476,12 @@ export class FishPlayer {
 		else if(this.autoflagged) prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
 		if(this.muted) prefix += config.MUTED_PREFIX;
 		if(this.afk()) prefix += "[orange]\uE876 AFK \uE876 | [white]";
-		for(const flag of this.flags){
-			prefix += flag.prefix;
+		if(this.showPrefix){
+			for(const flag of this.flags){
+				prefix += flag.prefix;
+			}
 		}
-		if(this.showRankPrefix) prefix += this.rank.prefix;
+		if(this.showPrefix) prefix += this.rank.prefix;
 		if(prefix.length > 0) prefix += " ";
 		let replacedName;
 		if(cleanText(this.name, true).includes("hacker")){
@@ -1093,6 +1095,7 @@ We apologize for the inconvenience.`
 			time: Date.now(),
 		});
 		this.setPunishedIP(config.stopAntiEvadeTime);
+		this.showPrefix = true;
 		this.updateName();
 		if(this.connected() && notify){
 			this.stopUnit();
@@ -1160,6 +1163,7 @@ We apologize for the inconvenience.`
 	mute(by:FishPlayer | string){
 		if(this.muted) return;
 		this.muted = true;
+		this.showPrefix = true;
 		this.updateName();
 		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
 		this.setPunishedIP(config.stopAntiEvadeTime);
