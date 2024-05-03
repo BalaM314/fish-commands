@@ -244,7 +244,44 @@ export const commands = commandList({
 			}
 		},
 	},
-
+	spectate: command(() => {
+		let Spectators = new Map<FishPlayer,Team>;
+		function spectate(target:FishPlayer):void{
+			if(Spectators.has(target)) return;
+			Spectators.set(target,target.team())
+			target.player.team(Team.derelict);
+			target.forceRespawn();
+		}
+		function resume(target:FishPlayer):void{
+			if(!Spectators.has(target)) return; 
+			target.player.team(Spectators.get(target));
+			Spectators.delete(target);
+			target.forceRespawn()
+			}
+		Events.on(EventType.PlayerLeave, ({player}) => {
+			Spectators.delete(player);
+		})
+		Events.on(EventType.GameOverEvent, () => {
+			Spectators.clear();
+		});
+		return {
+			args : ['target:player?'],
+			description : `Toggles spectator mode in pvp games`,
+			perm: Perm.play,
+			handler({args,sender,outputSuccess}){
+				args.target ??= sender;
+				if(args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Insufficent permission to force target to spectate.`);
+				if(args.target !== sender && !sender.ranksAtLeast("admin")) fail(`Insufficent permission to force another player to spectate.`);
+				if(Spectators.has(args.target)){
+					resume(args.target);
+					outputSuccess((args.target == sender) ? (`Rejoining game as team ${args.target.team()}.`):(`Forced ${args.target.name} out of spectator mode.`));
+				}else{
+					spectate(args.target);
+					outputSuccess((args.target == sender) ? (`Joined team spectators. Run /spectate again to resume gameplay.`):(`Forced ${args.target.name} into spectator mode`));
+				}
+			}
+		};
+	}),
 	help: {
 		args: ['name:string?'],
 		description: 'Displays a list of all commands.',
@@ -505,7 +542,7 @@ Please stop attacking and [lime]build defenses[] first!`,
 					["I understand"], args.player
 				);
 				logAction("showed void warning", sender, args.player);
-				outputSuccess(`Warned ${args.player} about power voids with a popup message.`);
+				outputSuccess(`Warned ${args.player.name} about power voids with a popup message.`);
 			} else {
 				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was used recently and is on cooldown.`);
 				Call.sendMessage(

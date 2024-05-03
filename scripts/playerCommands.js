@@ -289,7 +289,52 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 outputFail("No player to unwatch.");
             }
         },
-    }, help: {
+    }, spectate: (0, commands_1.command)(function () {
+        var Spectators = new Map;
+        function spectate(target) {
+            if (Spectators.has(target))
+                return;
+            Spectators.set(target, target.team());
+            target.player.team(Team.derelict);
+            target.forceRespawn();
+        }
+        function resume(target) {
+            if (!Spectators.has(target))
+                return;
+            target.player.team(Spectators.get(target));
+            Spectators.delete(target);
+            target.forceRespawn();
+        }
+        Events.on(EventType.PlayerLeave, function (_a) {
+            var player = _a.player;
+            Spectators.delete(player);
+        });
+        Events.on(EventType.GameOverEvent, function () {
+            Spectators.clear();
+        });
+        return {
+            args: ['target:player?'],
+            description: "Toggles spectator mode in pvp games",
+            perm: commands_1.Perm.play,
+            handler: function (_a) {
+                var _b;
+                var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+                (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
+                if (args.target !== sender && args.target.hasPerm("blockTrolling"))
+                    (0, commands_1.fail)("Insufficent permission to force target to spectate.");
+                if (args.target !== sender && !sender.ranksAtLeast("admin"))
+                    (0, commands_1.fail)("Insufficent permission to force another player to spectate.");
+                if (Spectators.has(args.target)) {
+                    resume(args.target);
+                    outputSuccess((args.target == sender) ? ("Rejoining game as team ".concat(args.target.team(), ".")) : ("Forced ".concat(args.target.name, " out of spectator mode.")));
+                }
+                else {
+                    spectate(args.target);
+                    outputSuccess((args.target == sender) ? ("Joined team spectators. Run /spectate again to resume gameplay.") : ("Forced ".concat(args.target.name, " into spectator mode")));
+                }
+            }
+        };
+    }), help: {
         args: ['name:string?'],
         description: 'Displays a list of all commands.',
         perm: commands_1.Perm.none,
@@ -529,7 +574,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
                 (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
-                outputSuccess("Warned ".concat(args.player, " about power voids with a popup message."));
+                outputSuccess("Warned ".concat(args.player.name, " about power voids with a popup message."));
             }
             else {
                 if (Date.now() - lastUsedSuccessfullySender < 10000)
