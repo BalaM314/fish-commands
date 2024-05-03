@@ -115,11 +115,12 @@ exports.multiCharSubstitutions = [
     [/\|-\|/g, "H"]
 ];
 // export const ip = 'localhost';
-exports.ip = '45.79.202.111';
+exports.ip = '45.79.202.111:5082';
 exports.FishServers = {
     attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
     survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
     pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
+    hexed: { name: "hexed", ip: "162.248.101.53", port: "6567", aliases: ["hexed", "hex", "h", "he"] },
     // sandbox: { ip: "162.248.102.204", port: "6567" },
     byName: function (input) {
         var _a;
@@ -128,14 +129,15 @@ exports.FishServers = {
     },
     all: []
 };
-exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp];
-var getGamemode = function () { return Vars.state.rules.mode().name(); };
+exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.hexed];
+var getGamemode = function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); };
 exports.getGamemode = getGamemode;
 exports.Mode = {
     attack: function () { return (0, exports.getGamemode)() == "attack"; },
     survival: function () { return (0, exports.getGamemode)() == "survival"; },
-    pvp: function () { return (0, exports.getGamemode)() == "pvp"; },
+    pvp: function () { return (0, exports.getGamemode)() == "pvp" || (0, exports.getGamemode)() == "hexed"; },
     sandbox: function () { return (0, exports.getGamemode)() == "sandbox"; },
+    hexed: function () { return (0, exports.getGamemode)() == "hexed"; },
     name: function () { return Vars.state.rules.mode().name(); }
 };
 exports.localDebug = new Fi("config/.debug").exists();
@@ -175,7 +177,7 @@ exports.tips = {
         "Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!",
         "Griefers will often be found with the text ".concat(exports.MARKED_PREFIX, " prepended to their name."),
         "Players marked as [yellow]\u26A0[orange]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.",
-        "Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[]",
+        "Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[] or type [#7289da]/discord[]",
         "Want to send the phrase [white]\"/command\"[] in chat? Type [white]\"./command\"[] and the [white].[] will be removed.",
         "All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.",
         "Players with a ".concat(ranks_1.Rank.trusted.prefix, " in front of their name aren't staff members, but they do have extra powers."),

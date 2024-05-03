@@ -4,7 +4,7 @@ import { FishPlayer } from './players';
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {
 	if(localDebug) return;
-	const req = Http.post(`http://${ip}:5000/api/addStopped`, JSON.stringify({ id: uuid, time }))
+	const req = Http.post(`http://${ip}/api/addStopped`, JSON.stringify({ id: uuid, time }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
@@ -17,7 +17,7 @@ export function addStopped(uuid: string, time:number) {
 /** Mark a player as freed */
 export function free(uuid: string) {
 	if(localDebug) return;
-	const req = Http.post(`http://${ip}:5000/api/free`, JSON.stringify({ id: uuid }))
+	const req = Http.post(`http://${ip}/api/free`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
@@ -43,7 +43,7 @@ export function getStopped(uuid:string, callback: (unmark:any) => unknown, callb
 
 	if(localDebug) return fail("local debug mode");
 
-	const req = Http.post(`http://${ip}:5000/api/getStopped`, JSON.stringify({ id: uuid }))
+	const req = Http.post(`http://${ip}/api/getStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
@@ -83,7 +83,7 @@ export function sendModerationMessage(message: string) {
 		Log.info(`Sent moderation log message: ${message}`);
 		return;
 	}
-	const req = Http.post(`http://${ip}:5000/api/mod-dump`, JSON.stringify({ message })).header('Content-Type', 'application/json').header('Accept', '*/*');
+	const req = Http.post(`http://${ip}/api/mod-dump`, JSON.stringify({ message })).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 
 	req.error(() => Log.err(`[API] Network error when trying to call api.sendModerationMessage()`));
@@ -96,7 +96,7 @@ export function sendModerationMessage(message: string) {
 export function getStaffMessages(callback: (messages: string) => unknown) {
 	if(localDebug) return;
 	const server = getGamemode();
-	const req = Http.post(`http://${ip}:5000/api/getStaffMessages`, JSON.stringify({ server }))
+	const req = Http.post(`http://${ip}/api/getStaffMessages`, JSON.stringify({ server }))
 		.header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 	req.error(() => Log.err(`[API] Network error when trying to call api.getStaffMessages()`));
@@ -112,7 +112,7 @@ export function sendStaffMessage(message:string, playerName:string, callback?: (
 	if(localDebug) return;
 	const server = getGamemode();
 	const req = Http.post(
-		`http://${ip}:5000/api/sendStaffMessage`,
+		`http://${ip}/api/sendStaffMessage`,
 		// need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
 		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server })
 	).header('Content-Type', 'application/json').header('Accept', '*/*');
@@ -131,7 +131,7 @@ export function sendStaffMessage(message:string, playerName:string, callback?: (
 /** Bans the provided ip and/or uuid. */
 export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) => unknown = () => {}){
 	if(localDebug) return;
-	const req = Http.post(`http://${ip}:5000/api/ban`, JSON.stringify(data))
+	const req = Http.post(`http://${ip}/api/ban`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
@@ -146,7 +146,7 @@ export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) =
 /** Unbans the provided ip and/or uuid. */
 export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string, error?:string) => unknown = () => {}){
 	if(localDebug) return;
-	const req = Http.post(`http://${ip}:5000/api/unban`, JSON.stringify(data))
+	const req = Http.post(`http://${ip}/api/unban`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;
@@ -166,7 +166,7 @@ export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:bool
 		callback(false);
 		return;
 	}
-	const req = Http.post(`http://${ip}:5000/api/checkIsBanned`, JSON.stringify(data))
+	const req = Http.post(`http://${ip}/api/checkIsBanned`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
 	req.timeout = 10000;

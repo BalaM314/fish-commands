@@ -753,7 +753,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var output = _a.output;
             output("[yellow]Use [white]/nextmap [lightgray]<map name> [yellow]to vote on a map.\n\n[blue]Available maps:\n_________________________\n".concat(Vars.maps.customMaps().toArray().map(function (map, i) {
-                return "[white]".concat(i, " - [yellow]").concat(map.name());
+                return "[white]".concat(i + 1, " - [yellow]").concat(map.name());
             }).join("\n")));
         }
     }, nextmap: (0, commands_1.command)(function () {
@@ -810,6 +810,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             data: { votes: votes, voteEndTime: voteEndTime, resetVotes: resetVotes, endVote: endVote },
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+                if (config_1.Mode.hexed())
+                    (0, commands_1.fail)("This command is disabled in Hexed.");
                 if (votes.get(sender))
                     (0, commands_1.fail)("You have already voted.");
                 if (Date.now() - lastUsedSuccessfullySender < 10000)

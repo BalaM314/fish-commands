@@ -1382,7 +1382,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.activateHeuristics = function () {
         var _this = this;
         //Blocks broken check
-        if (this.joinsLessThan(5)) {
+        if (this.joinsLessThan(5) && !config_2.Mode.hexed()) {
             var tripped_1 = false;
             FishPlayer.stats.heuristics.total++;
             Timer.schedule(function () {

@@ -735,7 +735,10 @@ function getEnemyTeam() {
 exports.getEnemyTeam = getEnemyTeam;
 function neutralGameover() {
     players_1.FishPlayer.ignoreGameover(function () {
-        Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+        if (config_1.Mode.hexed())
+            serverRestartLoop(15);
+        else
+            Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
     });
 }
 exports.neutralGameover = neutralGameover;
