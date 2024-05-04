@@ -129,11 +129,11 @@ export const commands = commandList({
 		handler({args,sender, outputSuccess}){
 			if(sender.stelled()) fail(`Marked players may not hide flags.`);
 			if(sender.muted) fail (`Muted players may not hide flags.`);
-			args.target ??= sender
+			args.target ??= sender;
 			if(sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
-			if(sender != args.target && sender.ranksAtLeast("admin")) fail(`Insufficent rank to vanish other players.`);
+			if(sender != args.target && !sender.ranksAtLeast("admin")) fail(`Insufficent rank to vanish other players.`);
 			args.target.showPrefix = !args.target.showPrefix;
-			outputSuccess(`Your rank prefix is now ${sender.showPrefix ? "visible" : "hidden"}.`);
+			outputSuccess((args.target == sender)?(`Your`):(`${args.target.name}'s`) + ` rank prefix is now ${args.target.showPrefix ? "visible" : "hidden"}.`);
 		},
 	},
 	
@@ -256,7 +256,7 @@ export const commands = commandList({
 			target.forceRespawn();
 		}
 		function resume(target:FishPlayer):void{
-			if(!Spectators.has(target)) return; 
+			if(!Spectators.has(target)) return; //ohno, they got trapped
 			target.player.team(Spectators.get(target));
 			Spectators.delete(target);
 			target.forceRespawn()
@@ -731,14 +731,14 @@ Please stop attacking and [lime]build defenses[] first!`
 	// },
 
 	//this was made with bees in mind
-	forceNextMap:{
+	overridemap:{
 		args: ["map:map"],
-		description: 'Override the next map in queue',
+		description: 'Override the next map in queue.',
 		perm: Perm.admin,
-		handler({args,sender,outputSuccess}){
+		handler({args,sender}){
 			Vars.maps.setNextMapOverride(args.map);
-			allCommands.nextmap.data.votes.clear();
-			outputSuccess(`[red]Admin ${sender.name} has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
+			allCommands.nextmap.data.resetVotes()
+			Call.sendMessage(`[red]Admin ${sender.name}[red] has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
 		},
 
 	},

@@ -178,10 +178,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (sender != args.target && args.target.hasPerm("blockTrolling"))
                 (0, commands_1.fail)("Target is insufficentlly trollable.");
-            if (sender != args.target && sender.ranksAtLeast("admin"))
+            if (sender != args.target && !sender.ranksAtLeast("admin"))
                 (0, commands_1.fail)("Insufficent rank to vanish other players.");
             args.target.showPrefix = !args.target.showPrefix;
-            outputSuccess("Your rank prefix is now ".concat(sender.showPrefix ? "visible" : "hidden", "."));
+            outputSuccess((args.target == sender) ? ("Your") : ("".concat(args.target.name, "'s")) + " rank prefix is now ".concat(args.target.showPrefix ? "visible" : "hidden", "."));
         },
     }, tileid: {
         args: [],
@@ -306,7 +306,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }
         function resume(target) {
             if (!Spectators.has(target))
-                return;
+                return; //ohno, they got trapped
             target.player.team(Spectators.get(target));
             Spectators.delete(target);
             target.forceRespawn();
@@ -755,15 +755,15 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     //	 }
     // },
     //this was made with bees in mind
-    forceNextMap: {
+    overridemap: {
         args: ["map:map"],
-        description: 'Override the next map in queue',
+        description: 'Override the next map in queue.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var args = _a.args, sender = _a.sender;
             Vars.maps.setNextMapOverride(args.map);
-            commands_1.allCommands.nextmap.data.votes.clear();
-            outputSuccess("[red]Admin ".concat(sender.name, " has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
+            commands_1.allCommands.nextmap.data.resetVotes();
+            Call.sendMessage("[red]Admin ".concat(sender.name, "[red] has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
         },
     }, maps: {
         args: [],
