@@ -328,6 +328,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
+            fishPlayer.unvanish();
             // fishPlayer.checkAutoRanks();
             api.getStopped(player.uuid(), function (unmarkTime) {
                 if (unmarkTime)
@@ -682,6 +683,12 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.displayTrail = function () {
         if (this.trail)
             Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+    };
+    //temperary code to de-vanish all the trusted players
+    FishPlayer.prototype.unvanish = function () {
+        if (!this.showPrefix && !this.ranksAtLeast(ranks_1.Rank.mod)) {
+            this.showPrefix = true;
+        }
     };
     FishPlayer.prototype.sendWelcomeMessage = function () {
         var _this = this;

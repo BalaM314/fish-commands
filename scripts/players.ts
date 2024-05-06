@@ -301,6 +301,7 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
+			fishPlayer.unvanish();
 			// fishPlayer.checkAutoRanks();
 			api.getStopped(player.uuid(), (unmarkTime) => {
 				if(unmarkTime)
@@ -608,6 +609,12 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	displayTrail(){
 		if(this.trail) Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+	}
+	//temperary code to de-vanish all the trusted players
+	unvanish(){
+		if(!this.showPrefix && !this.ranksAtLeast(Rank.mod)){
+			this.showPrefix = true;
+		}
 	}
 	sendWelcomeMessage(){
 		if(this.marked()) this.sendMessage(

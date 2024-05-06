@@ -125,13 +125,13 @@ export const commands = commandList({
 	vanish: {
 		args: ['target:player?'], 
 		description: `Toggles visibility of your rank and flags.`,
-		perm: Perm.trusted,
+		perm: Perm.mod,
 		handler({args,sender, outputSuccess}){
 			if(sender.stelled()) fail(`Marked players may not hide flags.`);
 			if(sender.muted) fail (`Muted players may not hide flags.`);
 			args.target ??= sender;
 			if(sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
-			if(sender != args.target && !sender.ranksAtLeast("admin")) fail(`Insufficent rank to vanish other players.`);
+			if(sender != args.target && !sender.ranksAtLeast("mod")) fail(`Insufficent rank to vanish other players.`);
 			args.target.showPrefix = !args.target.showPrefix;
 			outputSuccess((args.target == sender)?(`Your`):(`${args.target.name}'s`) + ` rank prefix is now ${args.target.showPrefix ? "visible" : "hidden"}.`);
 		},

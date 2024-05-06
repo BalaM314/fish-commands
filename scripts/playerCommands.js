@@ -167,7 +167,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     }, vanish: {
         args: ['target:player?'],
         description: "Toggles visibility of your rank and flags.",
-        perm: commands_1.Perm.trusted,
+        perm: commands_1.Perm.mod,
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
@@ -178,7 +178,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (sender != args.target && args.target.hasPerm("blockTrolling"))
                 (0, commands_1.fail)("Target is insufficentlly trollable.");
-            if (sender != args.target && !sender.ranksAtLeast("admin"))
+            if (sender != args.target && !sender.ranksAtLeast("mod"))
                 (0, commands_1.fail)("Insufficent rank to vanish other players.");
             args.target.showPrefix = !args.target.showPrefix;
             outputSuccess((args.target == sender) ? ("Your") : ("".concat(args.target.name, "'s")) + " rank prefix is now ".concat(args.target.showPrefix ? "visible" : "hidden", "."));
