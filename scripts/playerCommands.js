@@ -763,7 +763,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             Vars.maps.setNextMapOverride(args.map);
             if (allCommands.nextmap.data.voteEndTime() > -1) {
                 //Cancel /nextmap vote if it's ongoing
-                allCommands.nextmap.data.cancelVotes();
+                allCommands.nextmap.data.cancelVote();
                 Call.sendMessage("[red]Admin ".concat(sender.name, "[red] has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
             }
         },
@@ -787,7 +787,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             voteEndTime = -1;
         }
         /** Must be called only if there is an ongoing vote. */
-        function cancelVotes() {
+        function cancelVote() {
             resetVotes();
             task.cancel();
         }
@@ -802,7 +802,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }
         function startVote() {
             voteEndTime = Date.now() + voteDuration;
-            Timer.schedule(endVote, voteDuration / 1000);
+            task = Timer.schedule(endVote, voteDuration / 1000);
         }
         function endVote() {
             if (voteEndTime == -1)
@@ -833,7 +833,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             args: ['map:map'],
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
-            data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
+            data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote, cancelVote: cancelVote },
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
                 if (config_1.Mode.hexed())

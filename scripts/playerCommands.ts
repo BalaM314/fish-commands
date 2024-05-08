@@ -126,7 +126,7 @@ export const commands = commandList({
 		args: ['target:player?'], 
 		description: `Toggles visibility of your rank and flags.`,
 		perm: Perm.vanish,
-		handler({args,sender, outputSuccess}){
+		handler({ args, sender, outputSuccess }){
 			if(sender.stelled()) fail(`Marked players may not hide flags.`);
 			if(sender.muted) fail (`Muted players may not hide flags.`);
 			args.target ??= sender;
@@ -738,7 +738,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			Vars.maps.setNextMapOverride(args.map);
 			if(allCommands.nextmap.data.voteEndTime() > -1){
 				//Cancel /nextmap vote if it's ongoing
-				allCommands.nextmap.data.cancelVotes();
+				allCommands.nextmap.data.cancelVote();
 				Call.sendMessage(`[red]Admin ${sender.name}[red] has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
 			}
 		},
@@ -774,7 +774,7 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 		}
 
 		/** Must be called only if there is an ongoing vote. */
-		function cancelVotes(){
+		function cancelVote(){
 			resetVotes();
 			task!.cancel();
 		}
@@ -797,7 +797,7 @@ ${getMapData().map(({key:map, value:votes}) =>
 
 		function startVote(){
 			voteEndTime = Date.now() + voteDuration;
-			Timer.schedule(endVote, voteDuration / 1000);
+			task = Timer.schedule(endVote, voteDuration / 1000);
 		}
 
 		function endVote(){
@@ -833,7 +833,7 @@ ${getMapData().map(({key:map, value:votes}) =>
 			args: ['map:map'],
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
-			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
+			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote, cancelVote},
 			handler({args:{map}, sender, lastUsedSuccessfullySender}){
 				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
 				if(votes.get(sender)) fail(`You have already voted.`);
