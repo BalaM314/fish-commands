@@ -181,7 +181,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (sender != args.target && !sender.ranksAtLeast("mod"))
                 (0, commands_1.fail)("You do not have permission to vanish other players.");
             args.target.showRankPrefix = !args.target.showRankPrefix;
-            outputSuccess((args.target == sender) ? ("Your") : ("".concat(args.target.name, "'s")) + " rank prefix is now ".concat(args.target.showRankPrefix ? "visible" : "hidden", "."));
+            outputSuccess("".concat(args.target == sender ? "Your" : "".concat(args.target.name, "'s"), " rank prefix is now ").concat(args.target.showRankPrefix ? "visible" : "hidden", "."));
         },
     }, tileid: {
         args: [],

@@ -128,12 +128,14 @@ export const commands = commandList({
 		perm: Perm.vanish,
 		handler({ args, sender, outputSuccess }){
 			if(sender.stelled()) fail(`Marked players may not hide flags.`);
-			if(sender.muted) fail (`Muted players may not hide flags.`);
+			if(sender.muted) fail(`Muted players may not hide flags.`);
 			args.target ??= sender;
 			if(sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
 			if(sender != args.target && !sender.ranksAtLeast("mod")) fail(`You do not have permission to vanish other players.`);
 			args.target.showRankPrefix = !args.target.showRankPrefix;
-			outputSuccess((args.target == sender)?(`Your`):(`${args.target.name}'s`) + ` rank prefix is now ${args.target.showRankPrefix ? "visible" : "hidden"}.`);
+			outputSuccess(
+`${args.target == sender ? `Your` : `${args.target.name}'s`} rank prefix is now ${args.target.showRankPrefix ? "visible" : "hidden"}.`
+			);
 		},
 	},
 	
