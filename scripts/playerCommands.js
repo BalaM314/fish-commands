@@ -179,7 +179,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (sender != args.target && args.target.hasPerm("blockTrolling"))
                 (0, commands_1.fail)("Target is insufficentlly trollable.");
             if (sender != args.target && !sender.ranksAtLeast("mod"))
-                (0, commands_1.fail)("Insufficent rank to vanish other players.");
+                (0, commands_1.fail)("You do not have permission to vanish other players.");
             args.target.showRankPrefix = !args.target.showRankPrefix;
             outputSuccess((args.target == sender) ? ("Your") : ("".concat(args.target.name, "'s")) + " rank prefix is now ".concat(args.target.showRankPrefix ? "visible" : "hidden", "."));
         },
@@ -296,49 +296,42 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
         },
     }, spectate: (0, commands_1.command)(function () {
-        var Spectators = new Map;
+        var spectators = new Map();
         function spectate(target) {
-            if (Spectators.has(target))
-                return;
-            Spectators.set(target, target.team());
+            spectators.set(target, target.team());
             target.player.team(Team.derelict);
             target.forceRespawn();
         }
         function resume(target) {
-            if (!Spectators.has(target))
-                return; //ohno, they got trapped
-            target.player.team(Spectators.get(target));
-            Spectators.delete(target);
+            var _a;
+            target.player.team((_a = spectators.get(target)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("impossible"));
+            spectators.delete(target);
             target.forceRespawn();
         }
-        Events.on(EventType.PlayerLeave, function (_a) {
-            var player = _a.player;
-            Spectators.delete(player);
-        });
-        Events.on(EventType.GameOverEvent, function () {
-            Spectators.clear();
-        });
+        Events.on(EventType.GameOverEvent, function () { return spectators.clear(); });
         return {
-            args: ['target:player?'],
+            args: ["target:player?"],
             description: "Toggles spectator mode in PVP games.",
             perm: commands_1.Perm.play,
             handler: function (_a) {
                 var _b;
-                var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+                var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
                 (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
-                if (!(config_1.Mode.hexed() || config_1.Mode.pvp()) && !sender.ranksAtLeast("mod"))
-                    (0, commands_1.fail)("Insufficent rank to spectate on a non-pvp server.");
+                if (!config_1.Mode.pvp() && !sender.hasPerm("mod"))
+                    (0, commands_1.fail)("You do not have permission to spectate on a non-pvp server.");
                 if (args.target !== sender && args.target.hasPerm("blockTrolling"))
-                    (0, commands_1.fail)("Insufficent permission to force target to spectate.");
+                    (0, commands_1.fail)("Target player is insufficiently trollable.");
                 if (args.target !== sender && !sender.ranksAtLeast("admin"))
-                    (0, commands_1.fail)("Insufficent permission to force another player to spectate.");
-                if (Spectators.has(args.target)) {
+                    (0, commands_1.fail)("You do not have permission to force other players to spectate.");
+                if (spectators.has(args.target)) {
                     resume(args.target);
-                    outputSuccess((args.target == sender) ? ("Rejoining game as team ".concat(args.target.team(), ".")) : ("Forced ".concat(args.target.name, " out of spectator mode.")));
+                    outputSuccess(args.target == sender
+                        ? f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Rejoining game as team ", "."], ["Rejoining game as team ", "."])), args.target.team()) : f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Forced ", " out of spectator mode."], ["Forced ", " out of spectator mode."])), args.target));
                 }
                 else {
                     spectate(args.target);
-                    outputSuccess((args.target == sender) ? ("Joined team spectators. Run /spectate again to resume gameplay.") : ("Forced ".concat(args.target.name, " into spectator mode.")));
+                    outputSuccess(args.target == sender
+                        ? f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Now spectating. Run /spectate again to resume gameplay."], ["Now spectating. Run /spectate again to resume gameplay."]))) : f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Forced ", " into spectator mode."], ["Forced ", " into spectator mode."])), args.target));
                 }
             }
         };
@@ -405,7 +398,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, sender = _a.sender, output = _a.output, f = _a.f;
             globals_1.recentWhispers[args.player.uuid] = sender.uuid;
             args.player.sendMessage("".concat(sender.player.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
-            output(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "."], ["[#BBBBBB]Message sent to ", "."])), args.player));
+            output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "."], ["[#BBBBBB]Message sent to ", "."])), args.player));
         },
     }, r: {
         args: ['message:string'],
@@ -559,7 +552,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (!sender.hasPerm("warn"))
                     (0, commands_1.fail)("You do not have permission to show rules to other players.");
                 if (target.hasPerm("blockTrolling"))
-                    (0, commands_1.fail)(f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
+                    (0, commands_1.fail)(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             }
             (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["I agree to abide by these rules", "No"], target, function (_a) {
                 var option = _a.option;
@@ -567,7 +560,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
             }, false);
             if (target !== sender)
-                outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
+                outputSuccess(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
         },
     }, void: {
         args: ["player:player?"],
@@ -599,16 +592,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true))
-                (0, commands_1.fail)(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+                (0, commands_1.fail)(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
             if (!sender.hasPerm("changeTeamExternal") && args.team.data().cores.size <= 0)
                 (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
             if (!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore)))
                 args.target.forceRespawn();
             args.target.player.team(args.team);
             if (args.target === sender)
-                outputSuccess(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
+                outputSuccess(f(templateObject_11 || (templateObject_11 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
             else
-                outputSuccess(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
+                outputSuccess(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
         },
     }, rank: {
         args: ['player:player'],
@@ -616,7 +609,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, f = _a.f;
-            output(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
+            output(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
     }, forcertv: {
         args: ["force:boolean?"],
@@ -859,7 +852,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: "Views a player's stats.",
         handler: function (_a) {
             var target = _a.args.target, output = _a.output, f = _a.f;
-            output(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
+            output(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
         }
     } }));
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14;

@@ -6,7 +6,7 @@ import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import {
-	capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover,
+	capitalizeText, crash, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover,
 	StringBuilder, StringIO, teleportPlayer, to2DArray
 } from './utils';
 // import { votekickmanager } from './votes';
@@ -131,7 +131,7 @@ export const commands = commandList({
 			if(sender.muted) fail (`Muted players may not hide flags.`);
 			args.target ??= sender;
 			if(sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
-			if(sender != args.target && !sender.ranksAtLeast("mod")) fail(`Insufficent rank to vanish other players.`);
+			if(sender != args.target && !sender.ranksAtLeast("mod")) fail(`You do not have permission to vanish other players.`);
 			args.target.showRankPrefix = !args.target.showRankPrefix;
 			outputSuccess((args.target == sender)?(`Your`):(`${args.target.name}'s`) + ` rank prefix is now ${args.target.showRankPrefix ? "visible" : "hidden"}.`);
 		},
@@ -248,40 +248,39 @@ export const commands = commandList({
 		},
 	},
 	spectate: command(() => {
-		let Spectators = new Map<FishPlayer,Team>;
-		function spectate(target:FishPlayer):void{
-			if(Spectators.has(target)) return;
-			Spectators.set(target,target.team())
+		const spectators = new Map<FishPlayer, Team>();
+		function spectate(target:FishPlayer){
+			spectators.set(target, target.team());
 			target.player.team(Team.derelict);
 			target.forceRespawn();
 		}
-		function resume(target:FishPlayer):void{
-			if(!Spectators.has(target)) return; //ohno, they got trapped
-			target.player.team(Spectators.get(target));
-			Spectators.delete(target);
-			target.forceRespawn()
-			}
-		Events.on(EventType.PlayerLeave, ({player}) => {
-			Spectators.delete(player);
-		})
-		Events.on(EventType.GameOverEvent, () => {
-			Spectators.clear();
-		});
+		function resume(target:FishPlayer){
+			target.player.team(spectators.get(target) ?? crash("impossible"));
+			spectators.delete(target);
+			target.forceRespawn();
+		}
+		Events.on(EventType.GameOverEvent, () => spectators.clear());
 		return {
-			args : ['target:player?'],
-			description : `Toggles spectator mode in PVP games.`,
+			args: ["target:player?"],
+			description: `Toggles spectator mode in PVP games.`,
 			perm: Perm.play,
-			handler({args,sender,outputSuccess}){
+			handler({args, sender, outputSuccess, f}){
 				args.target ??= sender;
-				if(!(Mode.hexed() || Mode.pvp ()) && !sender.ranksAtLeast("mod")) fail (`Insufficent rank to spectate on a non-pvp server.`);
-				if(args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Insufficent permission to force target to spectate.`);
-				if(args.target !== sender && !sender.ranksAtLeast("admin")) fail(`Insufficent permission to force another player to spectate.`);
-				if(Spectators.has(args.target)){
+				if(!Mode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
+				if(args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
+				if(args.target !== sender && !sender.ranksAtLeast("admin")) fail(`You do not have permission to force other players to spectate.`);
+				if(spectators.has(args.target)){
 					resume(args.target);
-					outputSuccess((args.target == sender) ? (`Rejoining game as team ${args.target.team()}.`):(`Forced ${args.target.name} out of spectator mode.`));
-				}else{
+					outputSuccess(args.target == sender
+						? f`Rejoining game as team ${args.target.team()}.`
+						: f`Forced ${args.target} out of spectator mode.`
+					);
+				} else {
 					spectate(args.target);
-					outputSuccess((args.target == sender) ? (`Joined team spectators. Run /spectate again to resume gameplay.`):(`Forced ${args.target.name} into spectator mode.`));
+					outputSuccess(args.target == sender
+						? f`Now spectating. Run /spectate again to resume gameplay.`
+						: f`Forced ${args.target} into spectator mode.`)
+					;
 				}
 			}
 		};
