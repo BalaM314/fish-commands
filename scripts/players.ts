@@ -57,7 +57,7 @@ export class FishPlayer {
 		color: Color;
 	} | null = null;
 	cleanedName:string;
-	showPrefix:boolean = true;
+	showRankPrefix:boolean = true;
 	/** Used to freeze players when votekicking. */
 	frozen:boolean = false;
 	usageData: Record<string, {
@@ -301,7 +301,6 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
-			fishPlayer.unvanish();
 			// fishPlayer.checkAutoRanks();
 			api.getStopped(player.uuid(), (unmarkTime) => {
 				if(unmarkTime)
@@ -477,12 +476,12 @@ export class FishPlayer {
 		else if(this.autoflagged) prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
 		if(this.muted) prefix += config.MUTED_PREFIX;
 		if(this.afk()) prefix += "[orange]\uE876 AFK \uE876 | [white]";
-		if(this.showPrefix){
+		if(this.showRankPrefix){
 			for(const flag of this.flags){
 				prefix += flag.prefix;
 			}
+			prefix += this.rank.prefix;
 		}
-		if(this.showPrefix) prefix += this.rank.prefix;
 		if(prefix.length > 0) prefix += " ";
 		let replacedName;
 		if(cleanText(this.name, true).includes("hacker")){
@@ -609,12 +608,6 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	displayTrail(){
 		if(this.trail) Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
-	}
-	//temperary code to de-vanish all the trusted players
-	unvanish(){
-		if(!this.showPrefix && !this.ranksAtLeast(Rank.mod)){
-			this.showPrefix = true;
-		}
 	}
 	sendWelcomeMessage(){
 		if(this.marked()) this.sendMessage(
@@ -1102,7 +1095,7 @@ We apologize for the inconvenience.`
 			time: Date.now(),
 		});
 		this.setPunishedIP(config.stopAntiEvadeTime);
-		this.showPrefix = true;
+		this.showRankPrefix = true;
 		this.updateName();
 		if(this.connected() && notify){
 			this.stopUnit();
@@ -1170,7 +1163,7 @@ We apologize for the inconvenience.`
 	mute(by:FishPlayer | string){
 		if(this.muted) return;
 		this.muted = true;
-		this.showPrefix = true;
+		this.showRankPrefix = true;
 		this.updateName();
 		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
 		this.setPunishedIP(config.stopAntiEvadeTime);

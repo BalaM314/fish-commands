@@ -132,8 +132,8 @@ export const commands = commandList({
 			args.target ??= sender;
 			if(sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
 			if(sender != args.target && !sender.ranksAtLeast("mod")) fail(`Insufficent rank to vanish other players.`);
-			args.target.showPrefix = !args.target.showPrefix;
-			outputSuccess((args.target == sender)?(`Your`):(`${args.target.name}'s`) + ` rank prefix is now ${args.target.showPrefix ? "visible" : "hidden"}.`);
+			args.target.showRankPrefix = !args.target.showRankPrefix;
+			outputSuccess((args.target == sender)?(`Your`):(`${args.target.name}'s`) + ` rank prefix is now ${args.target.showRankPrefix ? "visible" : "hidden"}.`);
 		},
 	},
 	

@@ -61,7 +61,7 @@ var FishPlayer = /** @class */ (function () {
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
-        this.showPrefix = true;
+        this.showRankPrefix = true;
         /** Used to freeze players when votekicking. */
         this.frozen = false;
         this.usageData = {};
@@ -328,7 +328,6 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
-            fishPlayer.unvanish();
             // fishPlayer.checkAutoRanks();
             api.getStopped(player.uuid(), function (unmarkTime) {
                 if (unmarkTime)
@@ -528,7 +527,7 @@ var FishPlayer = /** @class */ (function () {
             prefix += config.MUTED_PREFIX;
         if (this.afk())
             prefix += "[orange]\uE876 AFK \uE876 | [white]";
-        if (this.showPrefix) {
+        if (this.showRankPrefix) {
             try {
                 for (var _b = __values(this.flags), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var flag = _c.value;
@@ -542,9 +541,8 @@ var FishPlayer = /** @class */ (function () {
                 }
                 finally { if (e_6) throw e_6.error; }
             }
-        }
-        if (this.showPrefix)
             prefix += this.rank.prefix;
+        }
         if (prefix.length > 0)
             prefix += " ";
         var replacedName;
@@ -683,12 +681,6 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.displayTrail = function () {
         if (this.trail)
             Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
-    };
-    //temperary code to de-vanish all the trusted players
-    FishPlayer.prototype.unvanish = function () {
-        if (!this.showPrefix && !this.ranksAtLeast(ranks_1.Rank.mod)) {
-            this.showPrefix = true;
-        }
     };
     FishPlayer.prototype.sendWelcomeMessage = function () {
         var _this = this;
@@ -1228,7 +1220,7 @@ var FishPlayer = /** @class */ (function () {
             time: Date.now(),
         });
         this.setPunishedIP(config.stopAntiEvadeTime);
-        this.showPrefix = true;
+        this.showRankPrefix = true;
         this.updateName();
         if (this.connected() && notify) {
             this.stopUnit();
@@ -1308,7 +1300,7 @@ var FishPlayer = /** @class */ (function () {
         if (this.muted)
             return;
         this.muted = true;
-        this.showPrefix = true;
+        this.showRankPrefix = true;
         this.updateName();
         this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
         this.setPunishedIP(config.stopAntiEvadeTime);
