@@ -115,14 +115,11 @@ export class FishPlayer {
 		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
 		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid,
 		chatStrictness = "chat", lastJoined, stats, showRankPrefix = true,
-		//deprecated
-		member, stopped,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
 		this.uuid = uuid ?? player?.uuid() ?? crash(`Attempted to create FishPlayer with no UUID`);
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
 		this.muted = muted;
 		this.unmarkTime = unmarked;
-		if(stopped) this.unmarkTime = Date.now() + 2592000; //30 days
 		this.lastJoined = lastJoined ?? -1;
 		this.autoflagged = autoflagged;
 		this.highlight = highlight;
@@ -132,11 +129,6 @@ export class FishPlayer {
 		this.cleanedName = escapeStringColorsServer(Strings.stripColors(this.name));
 		this.rank = Rank.getByName(rank) ?? Rank.player;
 		this.flags = new Set(flags.map(RoleFlag.getByName).filter((f):f is RoleFlag => f != null));
-		if(member) this.flags.add(RoleFlag.member);
-		if(rank == "developer"){
-			this.rank = Rank.admin;
-			this.flags.add(RoleFlag.developer);
-		}
 		this.usid = usid ?? player?.usid() ?? null;
 		this.chatStrictness = chatStrictness;
 		this.stats = stats ?? {
@@ -675,127 +667,8 @@ We apologize for the inconvenience.`
 	}
 	static read(version:number, fishPlayerData:StringIO, player:mindustryPlayer | null){
 		switch(version){
-			case 0:
-				return new this({
-					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
-					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
-					muted: fishPlayerData.readBool(),
-					member: fishPlayerData.readBool(),
-					stopped: fishPlayerData.readBool(),
-					highlight: fishPlayerData.readString(3),
-					history: fishPlayerData.readArray(str => ({
-						action: str.readString(2) ?? "null",
-						by: str.readString(2) ?? "null",
-						time: str.readNumber(15)
-					})),
-					rainbow: ((n:number) => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
-					rank: fishPlayerData.readString(2) ?? "",
-					usid: fishPlayerData.readString(3)
-				}, player);
-			case 1:
-				return new this({
-					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
-					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
-					muted: fishPlayerData.readBool(),
-					member: fishPlayerData.readBool(),
-					stopped: fishPlayerData.readBool(),
-					highlight: fishPlayerData.readString(2),
-					history: fishPlayerData.readArray(str => ({
-						action: str.readString(2) ?? "null",
-						by: str.readString(2) ?? "null",
-						time: str.readNumber(15)
-					})),
-					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
-					rank: fishPlayerData.readString(2) ?? "",
-					usid: fishPlayerData.readString(2)
-				}, player);
-			case 2:
-				return new this({
-					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
-					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
-					muted: fishPlayerData.readBool(),
-					stopped: fishPlayerData.readBool(),
-					highlight: fishPlayerData.readString(2),
-					history: fishPlayerData.readArray(str => ({
-						action: str.readString(2) ?? "null",
-						by: str.readString(2) ?? "null",
-						time: str.readNumber(15)
-					})),
-					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
-					rank: fishPlayerData.readString(2) ?? "",
-					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
-					usid: fishPlayerData.readString(2)
-				}, player);
-			case 3:
-				//Extremely cursed due to a catastrophic error
-				let dataPart1 = {
-					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
-					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
-					muted: fishPlayerData.readBool(),
-					autoflagged: fishPlayerData.readBool()
-				};
-				let unmarkTime;
-				try {
-					unmarkTime = fishPlayerData.readNumber(13)
-				} catch(err){
-					Log.warn(`Invalid stored unmark time: (${(<Error>err).message.split(": ")[1]}) Attempting repair...`);
-					fishPlayerData.offset -= 13;
-					const chars = fishPlayerData.read(24);
-					if(chars !== dataPart1.uuid) crash(`Unable to repair data: next 24 chars ${chars} were not equal to uuid ${dataPart1.uuid}`);
-					Log.warn(`Repaired stored data for ${chars}.`);
-					unmarkTime = -1; //the data is lost, set as default
-				}
-				return new this({
-					...dataPart1,
-					unmarkTime,
-					highlight: fishPlayerData.readString(2),
-					history: fishPlayerData.readArray(str => ({
-						action: str.readString(2) ?? "null",
-						by: str.readString(2) ?? "null",
-						time: str.readNumber(15)
-					})),
-					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
-					rank: fishPlayerData.readString(2) ?? "",
-					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
-					usid: fishPlayerData.readString(2)
-				}, player);
-			case 4:
-				return new this({
-					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
-					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
-					muted: fishPlayerData.readBool(),
-					autoflagged: fishPlayerData.readBool(),
-					unmarkTime: fishPlayerData.readNumber(13),
-					highlight: fishPlayerData.readString(2),
-					history: fishPlayerData.readArray(str => ({
-						action: str.readString(2) ?? "null",
-						by: str.readString(2) ?? "null",
-						time: str.readNumber(15)
-					})),
-					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
-					rank: fishPlayerData.readString(2) ?? "",
-					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
-					usid: fishPlayerData.readString(2)
-				}, player);
-			case 5:
-				return new this({
-					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
-					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
-					muted: fishPlayerData.readBool(),
-					autoflagged: fishPlayerData.readBool(),
-					unmarkTime: fishPlayerData.readNumber(13),
-					highlight: fishPlayerData.readString(2),
-					history: fishPlayerData.readArray(str => ({
-						action: str.readString(2) ?? "null",
-						by: str.readString(2) ?? "null",
-						time: str.readNumber(15)
-					})),
-					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
-					rank: fishPlayerData.readString(2) ?? "",
-					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
-					usid: fishPlayerData.readString(2),
-					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
-				}, player);
+			case 0: case 1: case 2: case 3: case 4: case 5:
+				crash(`Version ${version} is not longer supported, this should not be possible`);
 			case 6: case 7:
 				return new this({
 					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),

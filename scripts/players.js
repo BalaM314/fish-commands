@@ -49,9 +49,7 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, _k = _a.chatStrictness, chatStrictness = _k === void 0 ? "chat" : _k, lastJoined = _a.lastJoined, stats = _a.stats, _l = _a.showRankPrefix, showRankPrefix = _l === void 0 ? true : _l, 
-        //deprecated
-        member = _a.member, stopped = _a.stopped;
+        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, _k = _a.chatStrictness, chatStrictness = _k === void 0 ? "chat" : _k, lastJoined = _a.lastJoined, stats = _a.stats, _l = _a.showRankPrefix, showRankPrefix = _l === void 0 ? true : _l;
         var _m, _o, _p, _q;
         //Transients
         this.player = null;
@@ -86,8 +84,6 @@ var FishPlayer = /** @class */ (function () {
         this.name = (_o = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _o !== void 0 ? _o : "Unnamed player [ERROR]";
         this.muted = muted;
         this.unmarkTime = unmarked;
-        if (stopped)
-            this.unmarkTime = Date.now() + 2592000; //30 days
         this.lastJoined = lastJoined !== null && lastJoined !== void 0 ? lastJoined : -1;
         this.autoflagged = autoflagged;
         this.highlight = highlight;
@@ -97,12 +93,6 @@ var FishPlayer = /** @class */ (function () {
         this.cleanedName = (0, utils_1.escapeStringColorsServer)(Strings.stripColors(this.name));
         this.rank = (_p = ranks_1.Rank.getByName(rank)) !== null && _p !== void 0 ? _p : ranks_1.Rank.player;
         this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
-        if (member)
-            this.flags.add(ranks_1.RoleFlag.member);
-        if (rank == "developer") {
-            this.rank = ranks_1.Rank.admin;
-            this.flags.add(ranks_1.RoleFlag.developer);
-        }
         this.usid = (_q = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _q !== void 0 ? _q : null;
         this.chatStrictness = chatStrictness;
         this.stats = stats !== null && stats !== void 0 ? stats : {
@@ -747,16 +737,24 @@ var FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+        var _a, _b, _c, _d, _e, _f;
         switch (version) {
             case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                (0, utils_1.crash)("Version ".concat(version, " is not longer supported, this should not be possible"));
+            case 6:
+            case 7:
                 return new this({
                     uuid: (_a = fishPlayerData.readString(2)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_b = fishPlayerData.readString(2)) !== null && _b !== void 0 ? _b : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
-                    member: fishPlayerData.readBool(),
-                    stopped: fishPlayerData.readBool(),
-                    highlight: fishPlayerData.readString(3),
+                    autoflagged: fishPlayerData.readBool(),
+                    unmarkTime: fishPlayerData.readNumber(13),
+                    highlight: fishPlayerData.readString(2),
                     history: fishPlayerData.readArray(function (str) {
                         var _a, _b;
                         return ({
@@ -767,139 +765,6 @@ var FishPlayer = /** @class */ (function () {
                     }),
                     rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
                     rank: (_c = fishPlayerData.readString(2)) !== null && _c !== void 0 ? _c : "",
-                    usid: fishPlayerData.readString(3)
-                }, player);
-            case 1:
-                return new this({
-                    uuid: (_d = fishPlayerData.readString(2)) !== null && _d !== void 0 ? _d : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
-                    name: (_e = fishPlayerData.readString(2)) !== null && _e !== void 0 ? _e : "Unnamed player [ERROR]",
-                    muted: fishPlayerData.readBool(),
-                    member: fishPlayerData.readBool(),
-                    stopped: fishPlayerData.readBool(),
-                    highlight: fishPlayerData.readString(2),
-                    history: fishPlayerData.readArray(function (str) {
-                        var _a, _b;
-                        return ({
-                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
-                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
-                            time: str.readNumber(15)
-                        });
-                    }),
-                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_f = fishPlayerData.readString(2)) !== null && _f !== void 0 ? _f : "",
-                    usid: fishPlayerData.readString(2)
-                }, player);
-            case 2:
-                return new this({
-                    uuid: (_g = fishPlayerData.readString(2)) !== null && _g !== void 0 ? _g : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
-                    name: (_h = fishPlayerData.readString(2)) !== null && _h !== void 0 ? _h : "Unnamed player [ERROR]",
-                    muted: fishPlayerData.readBool(),
-                    stopped: fishPlayerData.readBool(),
-                    highlight: fishPlayerData.readString(2),
-                    history: fishPlayerData.readArray(function (str) {
-                        var _a, _b;
-                        return ({
-                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
-                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
-                            time: str.readNumber(15)
-                        });
-                    }),
-                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_j = fishPlayerData.readString(2)) !== null && _j !== void 0 ? _j : "",
-                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
-                    usid: fishPlayerData.readString(2)
-                }, player);
-            case 3:
-                //Extremely cursed due to a catastrophic error
-                var dataPart1 = {
-                    uuid: (_k = fishPlayerData.readString(2)) !== null && _k !== void 0 ? _k : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
-                    name: (_l = fishPlayerData.readString(2)) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]",
-                    muted: fishPlayerData.readBool(),
-                    autoflagged: fishPlayerData.readBool()
-                };
-                var unmarkTime = void 0;
-                try {
-                    unmarkTime = fishPlayerData.readNumber(13);
-                }
-                catch (err) {
-                    Log.warn("Invalid stored unmark time: (".concat(err.message.split(": ")[1], ") Attempting repair..."));
-                    fishPlayerData.offset -= 13;
-                    var chars = fishPlayerData.read(24);
-                    if (chars !== dataPart1.uuid)
-                        (0, utils_1.crash)("Unable to repair data: next 24 chars ".concat(chars, " were not equal to uuid ").concat(dataPart1.uuid));
-                    Log.warn("Repaired stored data for ".concat(chars, "."));
-                    unmarkTime = -1; //the data is lost, set as default
-                }
-                return new this(__assign(__assign({}, dataPart1), { unmarkTime: unmarkTime, highlight: fishPlayerData.readString(2), history: fishPlayerData.readArray(function (str) {
-                        var _a, _b;
-                        return ({
-                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
-                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
-                            time: str.readNumber(15)
-                        });
-                    }), rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)), rank: (_m = fishPlayerData.readString(2)) !== null && _m !== void 0 ? _m : "", flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }), usid: fishPlayerData.readString(2) }), player);
-            case 4:
-                return new this({
-                    uuid: (_o = fishPlayerData.readString(2)) !== null && _o !== void 0 ? _o : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
-                    name: (_p = fishPlayerData.readString(2)) !== null && _p !== void 0 ? _p : "Unnamed player [ERROR]",
-                    muted: fishPlayerData.readBool(),
-                    autoflagged: fishPlayerData.readBool(),
-                    unmarkTime: fishPlayerData.readNumber(13),
-                    highlight: fishPlayerData.readString(2),
-                    history: fishPlayerData.readArray(function (str) {
-                        var _a, _b;
-                        return ({
-                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
-                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
-                            time: str.readNumber(15)
-                        });
-                    }),
-                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_q = fishPlayerData.readString(2)) !== null && _q !== void 0 ? _q : "",
-                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
-                    usid: fishPlayerData.readString(2)
-                }, player);
-            case 5:
-                return new this({
-                    uuid: (_r = fishPlayerData.readString(2)) !== null && _r !== void 0 ? _r : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
-                    name: (_s = fishPlayerData.readString(2)) !== null && _s !== void 0 ? _s : "Unnamed player [ERROR]",
-                    muted: fishPlayerData.readBool(),
-                    autoflagged: fishPlayerData.readBool(),
-                    unmarkTime: fishPlayerData.readNumber(13),
-                    highlight: fishPlayerData.readString(2),
-                    history: fishPlayerData.readArray(function (str) {
-                        var _a, _b;
-                        return ({
-                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
-                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
-                            time: str.readNumber(15)
-                        });
-                    }),
-                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_t = fishPlayerData.readString(2)) !== null && _t !== void 0 ? _t : "",
-                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
-                    usid: fishPlayerData.readString(2),
-                    chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
-                }, player);
-            case 6:
-            case 7:
-                return new this({
-                    uuid: (_u = fishPlayerData.readString(2)) !== null && _u !== void 0 ? _u : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
-                    name: (_v = fishPlayerData.readString(2)) !== null && _v !== void 0 ? _v : "Unnamed player [ERROR]",
-                    muted: fishPlayerData.readBool(),
-                    autoflagged: fishPlayerData.readBool(),
-                    unmarkTime: fishPlayerData.readNumber(13),
-                    highlight: fishPlayerData.readString(2),
-                    history: fishPlayerData.readArray(function (str) {
-                        var _a, _b;
-                        return ({
-                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
-                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
-                            time: str.readNumber(15)
-                        });
-                    }),
-                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_w = fishPlayerData.readString(2)) !== null && _w !== void 0 ? _w : "",
                     flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
                     usid: fishPlayerData.readString(2),
                     chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
@@ -915,8 +780,8 @@ var FishPlayer = /** @class */ (function () {
                 }, player);
             case 8:
                 return new this({
-                    uuid: (_x = fishPlayerData.readString(2)) !== null && _x !== void 0 ? _x : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
-                    name: (_y = fishPlayerData.readString(2)) !== null && _y !== void 0 ? _y : "Unnamed player [ERROR]",
+                    uuid: (_d = fishPlayerData.readString(2)) !== null && _d !== void 0 ? _d : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
+                    name: (_e = fishPlayerData.readString(2)) !== null && _e !== void 0 ? _e : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool(),
                     unmarkTime: fishPlayerData.readNumber(13),
@@ -930,7 +795,7 @@ var FishPlayer = /** @class */ (function () {
                         });
                     }),
                     rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
-                    rank: (_z = fishPlayerData.readString(2)) !== null && _z !== void 0 ? _z : "",
+                    rank: (_f = fishPlayerData.readString(2)) !== null && _f !== void 0 ? _f : "",
                     flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
                     usid: fishPlayerData.readString(2),
                     chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),

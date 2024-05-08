@@ -201,10 +201,6 @@ export interface FishPlayerData {
 	name: string;
 	muted: boolean;
 	autoflagged: boolean;
-	/**@deprecated */
-	member: boolean;
-	/**@deprecated */
-	stopped: boolean;
 	unmarkTime: number;
 	rank: string;
 	flags: string[];
