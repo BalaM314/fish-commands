@@ -15,7 +15,7 @@ import {
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 7;
+	static readonly saveVersion = 8;
 	static readonly chunkSize = 50000;
 
 	//Static transients
@@ -57,7 +57,6 @@ export class FishPlayer {
 		color: Color;
 	} | null = null;
 	cleanedName:string;
-	showRankPrefix:boolean = true;
 	/** Used to freeze players when votekicking. */
 	frozen:boolean = false;
 	usageData: Record<string, {
@@ -110,10 +109,12 @@ export class FishPlayer {
 		gamesFinished: number;
 		gamesWon: number;
 	};
+	showRankPrefix:boolean;
 
 	constructor({
 		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
-		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid, chatStrictness = "chat", lastJoined, stats,
+		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid,
+		chatStrictness = "chat", lastJoined, stats, showRankPrefix = true,
 		//deprecated
 		member, stopped,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
@@ -146,6 +147,7 @@ export class FishPlayer {
 			gamesFinished: 0,
 			gamesWon: 0,
 		};
+		this.showRankPrefix = showRankPrefix;
 	}
 
 	//#region getplayer
@@ -623,6 +625,8 @@ We apologize for the inconvenience.`
 `[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.
 To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
 We apologize for the inconvenience.`
+		); else if(!this.showRankPrefix) this.sendMessage(
+`[gold]Hello there! Your rank prefix is currently hidden. You can show it again by running [white]/vanish[].`
 		); else {
 			this.sendMessage(`[gold]Welcome![]`);
 
@@ -793,33 +797,62 @@ We apologize for the inconvenience.`
 					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
 				}, player);
 			case 6: case 7:
-			return new this({
-				uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
-				name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
-				muted: fishPlayerData.readBool(),
-				autoflagged: fishPlayerData.readBool(),
-				unmarkTime: fishPlayerData.readNumber(13),
-				highlight: fishPlayerData.readString(2),
-				history: fishPlayerData.readArray(str => ({
-					action: str.readString(2) ?? "null",
-					by: str.readString(2) ?? "null",
-					time: str.readNumber(15)
-				})),
-				rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
-				rank: fishPlayerData.readString(2) ?? "",
-				flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
-				usid: fishPlayerData.readString(2),
-				chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
-				lastJoined: fishPlayerData.readNumber(15),
-				stats: {
-					blocksBroken: fishPlayerData.readNumber(10),
-					blocksPlaced: fishPlayerData.readNumber(10),
-					timeInGame: fishPlayerData.readNumber(15),
-					chatMessagesSent: fishPlayerData.readNumber(7),
-					gamesFinished: fishPlayerData.readNumber(5),
-					gamesWon: fishPlayerData.readNumber(5),
-				}
-			}, player);
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					autoflagged: fishPlayerData.readBool(),
+					unmarkTime: fishPlayerData.readNumber(13),
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2),
+					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+					lastJoined: fishPlayerData.readNumber(15),
+					stats: {
+						blocksBroken: fishPlayerData.readNumber(10),
+						blocksPlaced: fishPlayerData.readNumber(10),
+						timeInGame: fishPlayerData.readNumber(15),
+						chatMessagesSent: fishPlayerData.readNumber(7),
+						gamesFinished: fishPlayerData.readNumber(5),
+						gamesWon: fishPlayerData.readNumber(5),
+					}
+				}, player);
+			case 8:
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					autoflagged: fishPlayerData.readBool(),
+					unmarkTime: fishPlayerData.readNumber(13),
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2),
+					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+					lastJoined: fishPlayerData.readNumber(15),
+					stats: {
+						blocksBroken: fishPlayerData.readNumber(10),
+						blocksPlaced: fishPlayerData.readNumber(10),
+						timeInGame: fishPlayerData.readNumber(15),
+						chatMessagesSent: fishPlayerData.readNumber(7),
+						gamesFinished: fishPlayerData.readNumber(5),
+						gamesWon: fishPlayerData.readNumber(5),
+					},
+					showRankPrefix: fishPlayerData.readBool(),
+				}, player);
 			default: crash(`Unknown save version ${version}`);
 		}
 	}
@@ -848,6 +881,7 @@ We apologize for the inconvenience.`
 		out.writeNumber(this.stats.chatMessagesSent, 7, true);
 		out.writeNumber(this.stats.gamesFinished, 5, true);
 		out.writeNumber(this.stats.gamesWon, 5, true);
+		out.writeBool(this.showRankPrefix);
 	}
 	/**Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){

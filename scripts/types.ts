@@ -222,6 +222,7 @@ export interface FishPlayerData {
 		gamesFinished: number;
 		gamesWon: number;
 	};
+	showRankPrefix: boolean;
 }
 
 export interface PlayerHistoryEntry {
