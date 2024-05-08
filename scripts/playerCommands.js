@@ -167,7 +167,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     }, vanish: {
         args: ['target:player?'],
         description: "Toggles visibility of your rank and flags.",
-        perm: commands_1.Perm.mod,
+        perm: commands_1.Perm.vanish,
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;

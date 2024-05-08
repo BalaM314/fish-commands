@@ -63,6 +63,7 @@ export class Perm {
 	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
 	static bypassVotekick = new Perm("bypassVotekick", "mod");
 	static warn = new Perm("warn", "mod");
+	static vanish = new Perm("vanish", "mod");
 	static changeTeam = new Perm("changeTeam", fishP => 
 		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
 			: Mode.attack() ? fishP.ranksAtLeast("admin")

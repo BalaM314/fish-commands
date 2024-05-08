@@ -125,7 +125,7 @@ export const commands = commandList({
 	vanish: {
 		args: ['target:player?'], 
 		description: `Toggles visibility of your rank and flags.`,
-		perm: Perm.mod,
+		perm: Perm.vanish,
 		handler({args,sender, outputSuccess}){
 			if(sender.stelled()) fail(`Marked players may not hide flags.`);
 			if(sender.muted) fail (`Muted players may not hide flags.`);
