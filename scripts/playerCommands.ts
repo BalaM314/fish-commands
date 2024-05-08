@@ -1,5 +1,5 @@
 import * as api from './api';
-import { allCommands, command, commandList, fail, formatArg, Perm } from './commands';
+import { command, commandList, fail, formatArg, Perm } from './commands';
 import { FishServers, Mode, rules } from './config';
 import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
@@ -730,15 +730,17 @@ Please stop attacking and [lime]build defenses[] first!`
 	//	 }
 	// },
 
-	//this was made with bees in mind
-	overridemap:{
+	forcenextmap: {
 		args: ["map:map"],
 		description: 'Override the next map in queue.',
 		perm: Perm.admin,
-		handler({args,sender}){
+		handler({allCommands, args, sender}){
 			Vars.maps.setNextMapOverride(args.map);
-			allCommands.nextmap.data.resetVotes()
-			Call.sendMessage(`[red]Admin ${sender.name}[red] has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
+			if(allCommands.nextmap.data.voteEndTime() > -1){
+				//Cancel /nextmap vote if it's ongoing
+				allCommands.nextmap.data.cancelVotes();
+				Call.sendMessage(`[red]Admin ${sender.name}[red] has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
+			}
 		},
 
 	},
@@ -764,11 +766,18 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 		const votes = new Map<FishPlayer, MMap>();
 		let voteEndTime = -1;
 		const voteDuration = 1.5 * 60000; // 1.5 mins
+		let task: TimerTask | null = null;
 
 		function resetVotes(){
 			votes.clear();
 			voteEndTime = -1;
-		};
+		}
+
+		/** Must be called only if there is an ongoing vote. */
+		function cancelVotes(){
+			resetVotes();
+			task!.cancel();
+		}
 
 		function getMapData():Seq<ObjectIntMapEntry<MMap>> {
 			return [...votes.values()].reduce(
@@ -824,7 +833,7 @@ ${getMapData().map(({key:map, value:votes}) =>
 			args: ['map:map'],
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
-			data: {votes, voteEndTime, resetVotes, endVote},
+			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
 			handler({args:{map}, sender, lastUsedSuccessfullySender}){
 				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
 				if(votes.get(sender)) fail(`You have already voted.`);

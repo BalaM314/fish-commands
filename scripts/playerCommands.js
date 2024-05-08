@@ -754,16 +754,18 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     // 		votekickmanager.handleVote(sender, args ? 1 : -1);
     //	 }
     // },
-    //this was made with bees in mind
-    overridemap: {
+    forcenextmap: {
         args: ["map:map"],
         description: 'Override the next map in queue.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender;
+            var allCommands = _a.allCommands, args = _a.args, sender = _a.sender;
             Vars.maps.setNextMapOverride(args.map);
-            commands_1.allCommands.nextmap.data.resetVotes();
-            Call.sendMessage("[red]Admin ".concat(sender.name, "[red] has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
+            if (allCommands.nextmap.data.voteEndTime() > -1) {
+                //Cancel /nextmap vote if it's ongoing
+                allCommands.nextmap.data.cancelVotes();
+                Call.sendMessage("[red]Admin ".concat(sender.name, "[red] has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
+            }
         },
     }, maps: {
         args: [],
@@ -779,11 +781,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         var votes = new Map();
         var voteEndTime = -1;
         var voteDuration = 1.5 * 60000; // 1.5 mins
+        var task = null;
         function resetVotes() {
             votes.clear();
             voteEndTime = -1;
         }
-        ;
+        /** Must be called only if there is an ongoing vote. */
+        function cancelVotes() {
+            resetVotes();
+            task.cancel();
+        }
         function getMapData() {
             return __spreadArray([], __read(votes.values()), false).reduce(function (acc, map) { return (acc.increment(map), acc); }, new ObjectIntMap()).entries().toArray();
         }
@@ -826,7 +833,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             args: ['map:map'],
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
-            data: { votes: votes, voteEndTime: voteEndTime, resetVotes: resetVotes, endVote: endVote },
+            data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
                 if (config_1.Mode.hexed())
