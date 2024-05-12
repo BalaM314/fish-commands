@@ -36,6 +36,7 @@ declare const Vars: {
 			defaultTeam:Team;
 			waveTeam:Team;
 			waves:boolean;
+			waitEnemies:boolean;
 		}
 		set(state:GameState);
 		gameOver:boolean;

@@ -637,55 +637,154 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 allCommands.vnw.data.votes.clear();
             }
             else {
-                var oldTime_1 = Vars.state.wavetime;
-                Vars.state.wavetime = 1;
-                Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_1; }); });
-                (0, utils_1.logAction)("forced next wave", sender);
-                allCommands.vnw.data.votes.clear();
-                Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], skipping to next wave"));
+                var wavesSkip_1 = 0;
+                (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", ["1 Wave", "5 Waves", "10 Waves"], sender, function (_a) {
+                    var option = _a.option;
+                    switch (option) {
+                        case "1 Wave": {
+                            wavesSkip_1 = 1;
+                            break;
+                        }
+                        case "5 Waves": {
+                            wavesSkip_1 = 5;
+                            break;
+                        }
+                        case "10 Waves": {
+                            wavesSkip_1 = 10;
+                            break;
+                        }
+                    }
+                });
+                if (wavesSkip_1 != 0) {
+                    Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], skipping to next wave"));
+                    (0, utils_1.logAction)("forced next wave", sender);
+                    var saveWaveTime_1 = Vars.state.wavetime;
+                    var saveWaveEnemies_1 = Vars.state.rules.waitEnemies;
+                    Core.app.post(function () {
+                        Vars.state.wave += wavesSkip_1 - 1;
+                        Vars.state.wavetime = 1;
+                        Vars.state.rules.waitEnemies = false;
+                        Core.app.post(function () {
+                            Core.app.post(function () {
+                                Vars.state.wavetime = saveWaveTime_1;
+                                Vars.state.rules.waitEnemies = saveWaveEnemies_1;
+                            });
+                        });
+                    });
+                    allCommands.vnw.data.cancelVote();
+                }
             }
         }
     }, vnw: (0, commands_1.command)(function () {
-        var votes = new Set();
-        var ratio = 0.4;
-        var checkVotes = function (currentVotes, requiredVotes) {
-            if (currentVotes >= requiredVotes) {
-                var oldTime_2 = Vars.state.wavetime;
-                Vars.state.wavetime = 1;
-                Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); });
-                Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
-                votes.clear();
+        var votes = new Map();
+        var voteDuration = 1.5 * 60000;
+        var goal = 3; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
+        var target = 0; // the ideal amount of waves to skip
+        var timer;
+        function scoreVotes() {
+            var scoredVote = 0;
+            votes.forEach(function (vote) { return (scoredVote += vote); });
+            return scoredVote;
+        }
+        function getGoal() {
+            if (Groups.player.size() >= goal) {
+                return (goal);
             }
-        };
+            return (Groups.player.size());
+        }
+        function checkVotes() {
+            if (target == 0)
+                return;
+            if (scoreVotes() >= getGoal()) {
+                //my got this is a abomination, but its reliable
+                var saveWaveTime_2 = Vars.state.wavetime;
+                var saveWaveEnemies_2 = Vars.state.rules.waitEnemies;
+                Core.app.post(function () {
+                    Vars.state.wave += target - 1;
+                    Vars.state.wavetime = 1;
+                    Vars.state.rules.waitEnemies = false;
+                    Core.app.post(function () {
+                        Core.app.post(function () {
+                            Vars.state.wavetime = saveWaveTime_2;
+                            Vars.state.rules.waitEnemies = saveWaveEnemies_2;
+                        });
+                    });
+                });
+                Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
+                cancelVote();
+            }
+        }
+        function cancelVote() {
+            votes.clear();
+            timer.cancel();
+        }
+        function startVote(waves) {
+            target = waves;
+            timer = Timer.schedule(endVote, voteDuration / 1000);
+        }
+        function addVote(player, vote) {
+            votes.set(player, vote);
+            if (vote > 0) {
+                Call.sendMessage("[white]VNW: ".concat(player.name, "[white] has to skip ").concat(target, " wave(s). (").concat(scoreVotes(), "/").concat(getGoal(), ")"));
+            }
+            else {
+                Call.sendMessage("[white]VNW: ".concat(player.name, "[white] has against skipping ").concat(target, " wave(s). (").concat(scoreVotes(), "/").concat(getGoal(), ")"));
+            }
+            checkVotes();
+        }
+        function endVote() {
+            votes.clear();
+            Call.sendMessage('VNW: [red] vote failed.');
+        }
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
-            if (votes.has(player.uuid())) {
-                votes.delete(player.uuid());
-                var currentVotes = votes.size;
-                var requiredVotes = Math.ceil(ratio * Groups.player.size());
-                Call.sendMessage("VNW: [accent]".concat(player.name, "[] left, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
-                checkVotes(currentVotes, requiredVotes);
+            if (votes.has(player)) {
+                votes.delete(player);
+                Call.sendMessage("VNW: [accent]".concat(player.name, "[] left, (").concat(scoreVotes(), "/").concat(getGoal(), ")"));
+                checkVotes();
             }
         });
         Events.on(EventType.GameOverEvent, function () { return votes.clear(); });
         return {
-            args: [],
+            args: ["vote:boolean?"], // will cast "yes" and "no" ... thats good.
             description: "Vote to start the next wave.",
             perm: commands_1.Perm.play,
             data: { votes: votes },
             handler: function (_a) {
-                var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+                var _b;
+                var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
                 if (!config_1.Mode.survival())
                     (0, commands_1.fail)("You can only skip waves on survival.");
                 if (Vars.state.gameOver)
                     (0, commands_1.fail)("This game is already over.");
-                if (Date.now() - lastUsedSuccessfullySender < 10000)
+                if (Date.now() - lastUsedSuccessfullySender < 5000)
                     (0, commands_1.fail)("This command was run recently and is on cooldown.");
-                votes.add(sender.uuid);
-                var currentVotes = votes.size;
-                var requiredVotes = Math.ceil(ratio * Groups.player.size());
-                Call.sendMessage("[white]VNW: ".concat(sender.name, "[white] wants to skip this wave, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
-                checkVotes(currentVotes, requiredVotes);
+                if (votes.size == 0) {
+                    (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", ["1 Wave", "5 Waves", "10 Waves"], sender, function (_a) {
+                        var option = _a.option;
+                        switch (option) {
+                            case "1 Wave": {
+                                startVote(1);
+                                addVote(sender, 1);
+                                break;
+                            }
+                            case "5 Waves": {
+                                startVote(5);
+                                addVote(sender, 1);
+                                break;
+                            }
+                            case "10 Waves": {
+                                startVote(10);
+                                addVote(sender, 1);
+                                break;
+                            }
+                        }
+                    });
+                }
+                else {
+                    (_b = args.vote) !== null && _b !== void 0 ? _b : (args.vote = true); // keep old command behavior
+                    addVote(sender, (args.vote) ? (1) : (-1));
+                }
             }
         };
     }), rtv: (0, commands_1.command)(function () {

@@ -609,58 +609,133 @@ Please stop attacking and [lime]build defenses[] first!`
 				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.vnw.data.votes.clear();
 			} else {
-				let oldTime = Vars.state.wavetime;
-				Vars.state.wavetime = 1;
-				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
-				logAction("forced next wave", sender);
-				allCommands.vnw.data.votes.clear();
-				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
+				let wavesSkip = 0;
+				menu(
+					"Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",["1 Wave", "5 Waves", "10 Waves"],sender,({option}) => {
+						switch(option){
+							case "1 Wave":{wavesSkip = 1; break;}
+							case "5 Waves":{wavesSkip = 5; break;}
+							case "10 Waves":{wavesSkip = 10; break;}
+						}
+				});
+				if(wavesSkip != 0){
+					Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
+					logAction("forced next wave", sender);
+					let saveWaveTime = Vars.state.wavetime;
+					let saveWaveEnemies = Vars.state.rules.waitEnemies;
+					Core.app.post(() => {
+						Vars.state.wave += wavesSkip - 1;
+						Vars.state.wavetime = 1;
+						Vars.state.rules.waitEnemies = false;
+						Core.app.post(() => {
+							Core.app.post(() => {
+								Vars.state.wavetime = saveWaveTime;
+								Vars.state.rules.waitEnemies = saveWaveEnemies;
+							});
+						});
+					});
+					allCommands.vnw.data.cancelVote();
+				}
 			}
 		}
 	},
 	vnw: command(() => {
-		const votes = new Set<string>();
-		const ratio = 0.4;
-
-		const checkVotes = (currentVotes:number, requiredVotes:number) => {
-			if(currentVotes >= requiredVotes){
-				const oldTime = Vars.state.wavetime;
-				Vars.state.wavetime = 1;
-				Core.app.post(() => {Core.app.post(() => {Vars.state.wavetime = oldTime;})});
-				Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
-				votes.clear();
+		const votes = new Map<FishPlayer,number>();
+		const voteDuration = 1.5 * 60000;
+		const goal = 3; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
+		let target = 0; // the ideal amount of waves to skip
+		let timer:TimerTask | null;
+		function scoreVotes():number{
+			let scoredVote:number = 0;
+			votes.forEach((vote)=>(scoredVote += vote));
+			return scoredVote;
+		}
+		function getGoal():number{
+			if(Groups.player.size() >= goal){
+				return(goal);
+			}
+			return(Groups.player.size());
+		}
+		function checkVotes(){
+			if(target == 0) return;
+			if(scoreVotes() >= getGoal()){
+				//my got this is a abomination, but its reliable
+				let saveWaveTime = Vars.state.wavetime;
+				let saveWaveEnemies = Vars.state.rules.waitEnemies;
+				Core.app.post(() => {
+					Vars.state.wave += target - 1;
+					Vars.state.wavetime = 1;
+					Vars.state.rules.waitEnemies = false;
+						Core.app.post(() => {
+							Core.app.post(() => {
+								Vars.state.wavetime = saveWaveTime;
+								Vars.state.rules.waitEnemies = saveWaveEnemies;
+							});
+					});
+				});
+				Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
+				cancelVote();
 			}
 		}
-
-		Events.on(EventType.PlayerLeave, ({player}) => {
-			if(votes.has(player.uuid())){
-				votes.delete(player.uuid());
-				const currentVotes = votes.size;
-				const requiredVotes = Math.ceil(ratio * Groups.player.size());
+		function cancelVote(){
+			votes.clear();
+			timer!.cancel();
+		}
+		function startVote(waves:number):void{
+			target = waves;
+			timer = Timer.schedule(endVote, voteDuration / 1000)
+		}
+		function addVote(player:FishPlayer,vote:number):void{
+			votes.set(player,vote);
+			if(vote > 0){
 				Call.sendMessage(
-					`VNW: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
+					`[white]VNW: ${player.name}[white] has to skip ${target} wave(s). (${scoreVotes()}/${getGoal()})`
 				);
-				checkVotes(currentVotes, requiredVotes);
+			}else{
+				Call.sendMessage(
+					`[white]VNW: ${player.name}[white] has against skipping ${target} wave(s). (${scoreVotes()}/${getGoal()})`
+				);
+			}
+			checkVotes();
+		}
+		function endVote(){
+			votes.clear();
+			Call.sendMessage('VNW: [red] vote failed.');
+		}
+		Events.on(EventType.PlayerLeave, ({player}) => {
+			if(votes.has(player)){
+				votes.delete(player);
+				Call.sendMessage(
+					`VNW: [accent]${player.name}[] left, (${scoreVotes()}/${getGoal()})`
+				);
+				checkVotes();
 			}
 		});		
 		Events.on(EventType.GameOverEvent, () => votes.clear());
 
 		return {
-			args: [],
+			args:["vote:boolean?"], // will cast "yes" and "no" ... thats good.
 			description: "Vote to start the next wave.",
 			perm: Perm.play,
 			data: {votes},
-			handler({sender, lastUsedSuccessfullySender}){
+			handler({args,sender, lastUsedSuccessfullySender}){
 				if(!Mode.survival()) fail(`You can only skip waves on survival.`);
 				if(Vars.state.gameOver) fail(`This game is already over.`);
-				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
-				votes.add(sender.uuid);
-				const currentVotes = votes.size;
-				const requiredVotes = Math.ceil(ratio * Groups.player.size());
-				Call.sendMessage(
-					`[white]VNW: ${sender.name}[white] wants to skip this wave, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
-				);
-				checkVotes(currentVotes, requiredVotes);
+				if(Date.now() - lastUsedSuccessfullySender < 5000) fail(`This command was run recently and is on cooldown.`);
+				if(votes.size == 0){
+					menu(
+						"Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",["1 Wave", "5 Waves", "10 Waves"],sender,({option}) => {
+							switch(option){
+								case "1 Wave":{startVote(1); addVote(sender,1); break;}
+								case "5 Waves":{startVote(5); addVote(sender,1); break;}
+								case "10 Waves":{startVote(10); addVote(sender,1); break;}
+							}
+						});
+				}else{
+					args.vote ??= true; // keep old command behavior
+					addVote(sender,(args.vote)?(1):(-1));
+				}
+				
 			}
 		}	
 	}),
