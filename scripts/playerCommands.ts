@@ -262,6 +262,7 @@ export const commands = commandList({
 			target.forceRespawn();
 		}
 		Events.on(EventType.GameOverEvent, () => spectators.clear());
+		Events.on(EventType.PlayerLeave, (player) => resume(player));
 		return {
 			args: ["target:player?"],
 			description: `Toggles spectator mode in PVP games.`,
@@ -601,48 +602,39 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 	
 	forcevnw: { // will work on all servers for testing / trol purposes
-		args: ["force:boolean?"],
+		args:["waves:number"],
 		description: 'Force the next wave.',
 		perm: Perm.admin,
 		handler({args, sender, allCommands}){
-			if(args.force === false){
+			if(args.waves < 0) fail(`Waves to skip must not be negitive.`);
+			if(args.waves == 0){
 				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
-				allCommands.vnw.data.votes.clear();
-			} else {
-				let wavesSkip = 0;
-				menu(
-					"Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",["1 Wave", "5 Waves", "10 Waves"],sender,({option}) => {
-						switch(option){
-							case "1 Wave":{wavesSkip = 1; break;}
-							case "5 Waves":{wavesSkip = 5; break;}
-							case "10 Waves":{wavesSkip = 10; break;}
-						}
-				});
-				if(wavesSkip != 0){
-					Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
-					logAction("forced next wave", sender);
-					let saveWaveTime = Vars.state.wavetime;
-					let saveWaveEnemies = Vars.state.rules.waitEnemies;
+				allCommands.vnw.data.cancelVote();
+			}else{
+				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
+				logAction("forced next wave", sender);
+				let saveWaveTime = Vars.state.wavetime;
+				let saveWaveEnemies = Vars.state.rules.waitEnemies;
+				Core.app.post(() => {
+					Vars.state.wave += args.waves - 1;
+					Vars.state.wavetime = 1;
+					Vars.state.rules.waitEnemies = false;
 					Core.app.post(() => {
-						Vars.state.wave += wavesSkip - 1;
-						Vars.state.wavetime = 1;
-						Vars.state.rules.waitEnemies = false;
 						Core.app.post(() => {
-							Core.app.post(() => {
-								Vars.state.wavetime = saveWaveTime;
-								Vars.state.rules.waitEnemies = saveWaveEnemies;
-							});
+							Vars.state.wavetime = saveWaveTime;
+							Vars.state.rules.waitEnemies = saveWaveEnemies;
 						});
 					});
-					allCommands.vnw.data.cancelVote();
-				}
+				});
+
 			}
 		}
 	},
+
 	vnw: command(() => {
 		const votes = new Map<FishPlayer,number>();
 		const voteDuration = 1.5 * 60000;
-		const goal = 3; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
+		const goal = 5; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
 		let target = 0; // the ideal amount of waves to skip
 		let timer:TimerTask | null;
 		function scoreVotes():number{
@@ -656,7 +648,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			}
 			return(Groups.player.size());
 		}
-		function checkVotes(){
+		function checkVotes():void{
 			if(target == 0) return;
 			if(scoreVotes() >= getGoal()){
 				//my got this is a abomination, but its reliable
@@ -677,7 +669,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				cancelVote();
 			}
 		}
-		function cancelVote(){
+		function cancelVote():void{
 			votes.clear();
 			timer!.cancel();
 		}
@@ -689,16 +681,16 @@ Please stop attacking and [lime]build defenses[] first!`
 			votes.set(player,vote);
 			if(vote > 0){
 				Call.sendMessage(
-					`[white]VNW: ${player.name}[white] has to skip ${target} wave(s). (${scoreVotes()}/${getGoal()})`
+					`[white]VNW: ${player.name}[white] has voted to skip ${target} wave(s). (${scoreVotes()}/${getGoal()})`
 				);
 			}else{
 				Call.sendMessage(
-					`[white]VNW: ${player.name}[white] has against skipping ${target} wave(s). (${scoreVotes()}/${getGoal()})`
+					`[white]VNW: ${player.name}[white] has voted against skipping ${target} wave(s). (${scoreVotes()}/${getGoal()})`
 				);
 			}
 			checkVotes();
 		}
-		function endVote(){
+		function endVote():void{
 			votes.clear();
 			Call.sendMessage('VNW: [red] vote failed.');
 		}
@@ -721,7 +713,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			handler({args,sender, lastUsedSuccessfullySender}){
 				if(!Mode.survival()) fail(`You can only skip waves on survival.`);
 				if(Vars.state.gameOver) fail(`This game is already over.`);
-				if(Date.now() - lastUsedSuccessfullySender < 5000) fail(`This command was run recently and is on cooldown.`);
+				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
 				if(votes.size == 0){
 					menu(
 						"Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",["1 Wave", "5 Waves", "10 Waves"],sender,({option}) => {
