@@ -303,12 +303,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             target.forceRespawn();
         }
         function resume(target) {
-            var _a;
-            target.player.team((_a = spectators.get(target)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("impossible"));
+            if (spectators.get(target) == null)
+                return; // this state is possible for a person who left not in spectate
+            target.player.team(spectators.get(target));
             spectators.delete(target);
             target.forceRespawn();
         }
         Events.on(EventType.GameOverEvent, function () { return spectators.clear(); });
+        Events.on(EventType.PlayerLeave, function (player) { return resume(player); });
         return {
             args: ["target:player?"],
             description: "Toggles spectator mode in PVP games.",
@@ -627,33 +629,24 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
         }
     }, forcevnw: {
-        args: ["waves:number"],
-        description: 'Force the next wave.',
+        args: ["force:boolean?"],
+        description: 'Force the results of a VNW vote',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
+            var _b;
             var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
-            if (args.waves < 0)
-                (0, commands_1.fail)("Waves to skip must not be negitive.");
-            if (args.waves == 0) {
+            (_b = args.force) !== null && _b !== void 0 ? _b : (args.force = true);
+            if (args.force == false) {
                 Call.sendMessage("VNW: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
-                allCommands.vnw.data.cancelVote();
+                //allCommands.vnw.data.cancelVote();
             }
-            else {
+            else if (allCommands.vnw.data.target !== 0) {
                 Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], skipping to next wave"));
                 (0, utils_1.logAction)("forced next wave", sender);
-                var saveWaveTime_1 = Vars.state.wavetime;
-                var saveWaveEnemies_1 = Vars.state.rules.waitEnemies;
-                Core.app.post(function () {
-                    Vars.state.wave += args.waves - 1;
-                    Vars.state.wavetime = 1;
-                    Vars.state.rules.waitEnemies = false;
-                    Core.app.post(function () {
-                        Core.app.post(function () {
-                            Vars.state.wavetime = saveWaveTime_1;
-                            Vars.state.rules.waitEnemies = saveWaveEnemies_1;
-                        });
-                    });
-                });
+                allCommands.vnw.data.spawnWave();
+            }
+            else {
+                (0, commands_1.fail)("No current vote is going on right now.");
             }
         }
     }, vnw: (0, commands_1.command)(function () {
@@ -677,27 +670,31 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (target == 0)
                 return;
             if (scoreVotes() >= getGoal()) {
-                //my got this is a abomination, but its reliable
-                var saveWaveTime_2 = Vars.state.wavetime;
-                var saveWaveEnemies_2 = Vars.state.rules.waitEnemies;
+                spawnWave();
+            }
+        }
+        function spawnWave() {
+            //my got this is a abomination, but its reliable
+            var saveWaveTime = Vars.state.wavetime;
+            var saveWaveEnemies = Vars.state.rules.waitEnemies;
+            Core.app.post(function () {
+                Vars.state.wave += target - 1;
+                Vars.state.wavetime = 1;
+                Vars.state.rules.waitEnemies = false;
                 Core.app.post(function () {
-                    Vars.state.wave += target - 1;
-                    Vars.state.wavetime = 1;
-                    Vars.state.rules.waitEnemies = false;
                     Core.app.post(function () {
-                        Core.app.post(function () {
-                            Vars.state.wavetime = saveWaveTime_2;
-                            Vars.state.rules.waitEnemies = saveWaveEnemies_2;
-                        });
+                        Vars.state.wavetime = saveWaveTime;
+                        Vars.state.rules.waitEnemies = saveWaveEnemies;
                     });
                 });
-                Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
-                cancelVote();
-            }
+            });
+            Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
+            cancelVote();
         }
         function cancelVote() {
             votes.clear();
             timer.cancel();
+            target = 0;
         }
         function startVote(waves) {
             target = waves;

@@ -257,7 +257,8 @@ export const commands = commandList({
 			target.forceRespawn();
 		}
 		function resume(target:FishPlayer){
-			target.player.team(spectators.get(target) ?? crash("impossible"));
+			if(spectators.get(target) == null) return; // this state is possible for a person who left not in spectate
+			target.player.team(spectators.get(target));
 			spectators.delete(target);
 			target.forceRespawn();
 		}
@@ -602,31 +603,20 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 	
 	forcevnw: { // will work on all servers for testing / trol purposes
-		args:["waves:number"],
-		description: 'Force the next wave.',
+		args:["force:boolean?"],
+		description: 'Force the results of a VNW vote',
 		perm: Perm.admin,
 		handler({args, sender, allCommands}){
-			if(args.waves < 0) fail(`Waves to skip must not be negitive.`);
-			if(args.waves == 0){
+			args.force ??= true;
+			if(args.force == false){
 				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
-				allCommands.vnw.data.cancelVote();
-			}else{
+				//allCommands.vnw.data.cancelVote();
+			}else if(allCommands.vnw.data.target !== 0){
 				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
 				logAction("forced next wave", sender);
-				let saveWaveTime = Vars.state.wavetime;
-				let saveWaveEnemies = Vars.state.rules.waitEnemies;
-				Core.app.post(() => {
-					Vars.state.wave += args.waves - 1;
-					Vars.state.wavetime = 1;
-					Vars.state.rules.waitEnemies = false;
-					Core.app.post(() => {
-						Core.app.post(() => {
-							Vars.state.wavetime = saveWaveTime;
-							Vars.state.rules.waitEnemies = saveWaveEnemies;
-						});
-					});
-				});
-
+				allCommands.vnw.data.spawnWave();
+			}else{
+				fail(`No current vote is going on right now.`);
 			}
 		}
 	},
@@ -651,27 +641,31 @@ Please stop attacking and [lime]build defenses[] first!`
 		function checkVotes():void{
 			if(target == 0) return;
 			if(scoreVotes() >= getGoal()){
-				//my got this is a abomination, but its reliable
-				let saveWaveTime = Vars.state.wavetime;
-				let saveWaveEnemies = Vars.state.rules.waitEnemies;
-				Core.app.post(() => {
-					Vars.state.wave += target - 1;
-					Vars.state.wavetime = 1;
-					Vars.state.rules.waitEnemies = false;
-						Core.app.post(() => {
-							Core.app.post(() => {
-								Vars.state.wavetime = saveWaveTime;
-								Vars.state.rules.waitEnemies = saveWaveEnemies;
-							});
-					});
-				});
-				Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
-				cancelVote();
+				spawnWave();
 			}
 		}
-		function cancelVote():void{
+		function spawnWave():void{
+			//my got this is a abomination, but its reliable
+			let saveWaveTime = Vars.state.wavetime;
+			let saveWaveEnemies = Vars.state.rules.waitEnemies;
+			Core.app.post(() => {
+				Vars.state.wave += target - 1;
+				Vars.state.wavetime = 1;
+				Vars.state.rules.waitEnemies = false;
+					Core.app.post(() => {
+						Core.app.post(() => {
+							Vars.state.wavetime = saveWaveTime;
+							Vars.state.rules.waitEnemies = saveWaveEnemies;
+						});
+				});
+			});
+			Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
+			cancelVote();
+		}
+		function cancelVote():void{// called whenever a vote passes, or is forced
 			votes.clear();
 			timer!.cancel();
+			target = 0;
 		}
 		function startVote(waves:number):void{
 			target = waves;
