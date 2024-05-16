@@ -602,24 +602,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		}
 	},
 	
-	forcevnw: { // will work on all servers for testing / trol purposes
-		args:["force:boolean?"],
-		description: 'Force the results of a VNW vote',
-		perm: Perm.admin,
-		handler({args, sender, allCommands}){
-			args.force ??= true;
-			if(args.force == false){
-				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
-				//allCommands.vnw.data.cancelVote();
-			}else if(allCommands.vnw.data.target !== 0){
-				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], skipping to next wave`);
-				logAction("forced next wave", sender);
-				allCommands.vnw.data.spawnWave();
-			}else{
-				fail(`No current vote is going on right now.`);
-			}
-		}
-	},
+	//just use /wave instead of /forcevn, basiclly equivlent
 
 	vnw: command(() => {
 		const votes = new Map<FishPlayer,number>();

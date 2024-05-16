@@ -638,7 +638,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             (_b = args.force) !== null && _b !== void 0 ? _b : (args.force = true);
             if (args.force == false) {
                 Call.sendMessage("VNW: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
-                //allCommands.vnw.data.cancelVote();
+                allCommands.vnw.data.cancelVote();
             }
             else if (allCommands.vnw.data.target !== 0) {
                 Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], skipping to next wave"));
