@@ -535,7 +535,7 @@ Available types:[yellow]
 		args: ["player:player?"],
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
-		handler({args, sender, lastUsedSuccessfullySender, outputSuccess}){
+		handler({args, sender, lastUsedSuccessfullySender, outputSuccess, f}){
 			if(args.player){
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
@@ -547,7 +547,7 @@ Please stop attacking and [lime]build defenses[] first!`,
 					["I understand"], args.player
 				);
 				logAction("showed void warning", sender, args.player);
-				outputSuccess(`Warned ${args.player.name} about power voids with a popup message.`);
+				outputSuccess(f`Warned ${args.player} about power voids with a popup message.`);
 			} else {
 				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was used recently and is on cooldown.`);
 				Call.sendMessage(
