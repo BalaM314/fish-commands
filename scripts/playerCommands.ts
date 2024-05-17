@@ -602,13 +602,27 @@ Please stop attacking and [lime]build defenses[] first!`
 		}
 	},
 	
-	//just use /wave instead of /forcevn, basiclly equivlent
+	forcevnw:{
+		args: ["force:boolean?"],
+		description : 'Force skip to the next wave.',
+		perm: Perm.admin,
+		handler({allCommands,sender,args}){
+			if (allCommands.vnw.data.target == 0) fail(`No /VNW vote is in session.`);
+			if(args.force === false){
+				Call.sendMessage(`VNW: [red] vote canceled by admin [yellow]${sender.name}[red].`);
+				allCommands.vnw.data.resetVote();
+			} else {
+				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green]`);
+				allCommands.vnw.data.spawnWave();
+			}
+		},
+	},
 
 	vnw: command(() => {
 		const votes = new Map<FishPlayer,number>();
 		const voteDuration = 1.5 * 60000;
 		const goal = 5; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
-		let target = 0; // the ideal amount of waves to skip
+		let target = 0; // the ideal amount of waves to skip. equal to zero when no vote is going on
 		let timer:TimerTask | null;
 		function scoreVotes():number{
 			let scoredVote:number = 0;
@@ -643,9 +657,9 @@ Please stop attacking and [lime]build defenses[] first!`
 				});
 			});
 			Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
-			cancelVote();
+			resetVote();
 		}
-		function cancelVote():void{// called whenever a vote passes, or is forced
+		function resetVote():void{// called whenever a vote passes, or is forced
 			votes.clear();
 			timer!.cancel();
 			target = 0;
@@ -655,6 +669,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			timer = Timer.schedule(endVote, voteDuration / 1000)
 		}
 		function addVote(player:FishPlayer,vote:number):void{
+			if(player.ranksAtLeast('trusted')) vote *= 2; // double weight on trusted votes.
 			votes.set(player,vote);
 			if(vote > 0){
 				Call.sendMessage(
@@ -670,6 +685,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		function endVote():void{
 			votes.clear();
 			Call.sendMessage('VNW: [red] vote failed.');
+			target = 0;
 		}
 		Events.on(EventType.PlayerLeave, ({player}) => {
 			if(votes.has(player)){
@@ -686,7 +702,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			args:["vote:boolean?"], // will cast "yes" and "no" ... thats good.
 			description: "Vote to start the next wave.",
 			perm: Perm.play,
-			data: {votes},
+			data: {votes, target, spawnWave, resetVote},
 			handler({args,sender, lastUsedSuccessfullySender}){
 				if(!Mode.survival()) fail(`You can only skip waves on survival.`);
 				if(Vars.state.gameOver) fail(`This game is already over.`);

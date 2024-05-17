@@ -630,30 +630,26 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }
     }, forcevnw: {
         args: ["force:boolean?"],
-        description: 'Force the results of a VNW vote',
+        description: 'Force skip to the next wave.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var _b;
-            var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
-            (_b = args.force) !== null && _b !== void 0 ? _b : (args.force = true);
-            if (args.force == false) {
-                Call.sendMessage("VNW: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
-                allCommands.vnw.data.cancelVote();
-            }
-            else if (allCommands.vnw.data.target !== 0) {
-                Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], skipping to next wave"));
-                (0, utils_1.logAction)("forced next wave", sender);
-                allCommands.vnw.data.spawnWave();
+            var allCommands = _a.allCommands, sender = _a.sender, args = _a.args;
+            if (allCommands.vnw.data.target == 0)
+                (0, commands_1.fail)("No /VNW vote is in session.");
+            if (args.force === false) {
+                Call.sendMessage("VNW: [red] vote canceled by admin [yellow]".concat(sender.name, "[red]."));
+                allCommands.vnw.data.resetVote();
             }
             else {
-                (0, commands_1.fail)("No current vote is going on right now.");
+                Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green]"));
+                allCommands.vnw.data.spawnWave();
             }
-        }
+        },
     }, vnw: (0, commands_1.command)(function () {
         var votes = new Map();
         var voteDuration = 1.5 * 60000;
         var goal = 5; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
-        var target = 0; // the ideal amount of waves to skip
+        var target = 0; // the ideal amount of waves to skip. equal to zero when no vote is going on
         var timer;
         function scoreVotes() {
             var scoredVote = 0;
@@ -689,9 +685,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 });
             });
             Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
-            cancelVote();
+            resetVote();
         }
-        function cancelVote() {
+        function resetVote() {
             votes.clear();
             timer.cancel();
             target = 0;
@@ -701,6 +697,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             timer = Timer.schedule(endVote, voteDuration / 1000);
         }
         function addVote(player, vote) {
+            if (player.ranksAtLeast('trusted'))
+                vote *= 2; // double weight on trusted votes.
             votes.set(player, vote);
             if (vote > 0) {
                 Call.sendMessage("[white]VNW: ".concat(player.name, "[white] has voted to skip ").concat(target, " wave(s). (").concat(scoreVotes(), "/").concat(getGoal(), ")"));
@@ -713,6 +711,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         function endVote() {
             votes.clear();
             Call.sendMessage('VNW: [red] vote failed.');
+            target = 0;
         }
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
@@ -727,7 +726,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             args: ["vote:boolean?"], // will cast "yes" and "no" ... thats good.
             description: "Vote to start the next wave.",
             perm: commands_1.Perm.play,
-            data: { votes: votes },
+            data: { votes: votes, target: target, spawnWave: spawnWave, resetVote: resetVote },
             handler: function (_a) {
                 var _b;
                 var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
