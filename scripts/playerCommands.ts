@@ -594,7 +594,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		description : 'Force skip to the next wave.',
 		perm: Perm.admin,
 		handler({allCommands,sender,args}){
-			if(allCommands.vnw.data.manager.voting) fail(`No VNW vote is in session, start one with /VNW.`);
+			if(!allCommands.vnw.data.manager.voting) fail(`No VNW vote is in session, start one with /VNW.`);
 			if(args.force === false){
 				Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.vnw.data.manager.forceVote(false);
@@ -679,7 +679,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
 		handler({args, sender, allCommands}){
-			if(allCommands.rtv.data.manager.voting) fail(`No RTV vote is in session, start one with /RTV.`);
+			if(!allCommands.rtv.data.manager.voting) fail(`No RTV vote is in session, start one with /RTV.`);
 			if(args.force === false){
 				Call.sendMessage(`RTV: [red]votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.rtv.data.manager.forceVote(false);
@@ -712,7 +712,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		Events.on(EventType.GameOverEvent, () => {manager.resetVote()})
 		return {
 			args: ["vote:boolean?"],
-			description: 'Rock the vote to change map',
+			description: 'Rock the vote to change map.',
 			perm: Perm.play,
 			data: {manager},
 			handler({args, sender, lastUsedSuccessfullySender}){

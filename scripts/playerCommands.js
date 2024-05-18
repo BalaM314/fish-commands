@@ -620,7 +620,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var allCommands = _a.allCommands, sender = _a.sender, args = _a.args;
-            if (allCommands.vnw.data.manager.voting)
+            if (!allCommands.vnw.data.manager.voting)
                 (0, commands_1.fail)("No VNW vote is in session, start one with /VNW.");
             if (args.force === false) {
                 Call.sendMessage("VNW: [red]Votes cleared by admin [yellow]".concat(sender.name, "[red]."));
@@ -713,7 +713,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
-            if (allCommands.rtv.data.manager.voting)
+            if (!allCommands.rtv.data.manager.voting)
                 (0, commands_1.fail)("No RTV vote is in session, start one with /RTV.");
             if (args.force === false) {
                 Call.sendMessage("RTV: [red]votes cleared by admin [yellow]".concat(sender.name, "[red]."));
@@ -741,7 +741,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         Events.on(EventType.GameOverEvent, function () { manager.resetVote(); });
         return {
             args: ["vote:boolean?"],
-            description: 'Rock the vote to change map',
+            description: 'Rock the vote to change map.',
             perm: commands_1.Perm.play,
             data: { manager: manager },
             handler: function (_a) {
