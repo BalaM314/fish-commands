@@ -829,8 +829,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote, cancelVote: cancelVote },
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
-                if (config_1.Mode.hexed())
-                    (0, commands_1.fail)("This command is disabled in Hexed.");
                 if (votes.get(sender))
                     (0, commands_1.fail)("You have already voted.");
                 if (Date.now() - lastUsedSuccessfullySender < 10000)
