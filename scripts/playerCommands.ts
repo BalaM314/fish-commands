@@ -10,6 +10,7 @@ import {
 	StringBuilder, StringIO, teleportPlayer, to2DArray
 } from './utils';
 // import { votekickmanager } from './votes';
+import { VoteManager } from './votes';
 
 export const commands = commandList({
 	unpause: {
@@ -587,6 +588,90 @@ Please stop attacking and [lime]build defenses[] first!`
 		},
 	},
 
+	
+	forcevnw:{
+		args: ["force:boolean?"],
+		description : 'Force skip to the next wave.',
+		perm: Perm.admin,
+		handler({allCommands,sender,args}){
+			if(args.force === false){
+				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
+				allCommands.vnw.data.manager.forceVote(false);
+			}
+			Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);
+			allCommands.vnw.data.manager.forceVote(true);
+		},
+	},
+
+	vnw: command(() => {
+		const voteDuration = 1.5 * 60000; 
+		const threshold = 5;
+		let target = 0; // the ideal amount of waves to skip
+		let manager:VoteManager = new VoteManager(
+			() => {
+				//my got this is a abomination, but its reliable
+				let saveWaveTime = Vars.state.wavetime;
+				let saveWaveEnemies = Vars.state.rules.waitEnemies;
+				Core.app.post(() => {
+					Vars.state.wave += target - 1;
+					Vars.state.wavetime = 1;
+					Vars.state.rules.waitEnemies = false;
+						Core.app.post(() => {
+							Core.app.post(() => {
+								Vars.state.wavetime = saveWaveTime;
+								Vars.state.rules.waitEnemies = saveWaveEnemies;
+							});
+					});
+				});
+				Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
+			}, 
+			() => {
+				Call.sendMessage('VNW: [red] vote failed.');
+				target = 0;
+			},
+			(player) => {
+				Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping ${threshold} wave(s). (${manager.scoreVotes()} votes, ${manager.getGoal()} required)`)
+			},
+			(player) => {
+				Call.sendMessage(`VNW: ${player.name} [white] has left. ${manager.scoreVotes()} votes, ${manager.getGoal()} required.`)
+			},
+		);
+		
+		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvote(player);});		
+		Events.on(EventType.GameOverEvent, () => manager.resetVote());
+
+		return {
+			args:["vote:boolean?"], // will cast "yes" and "no" ... thats good.
+			description: "Vote to start the next wave.",
+			perm: Perm.play,
+			data: {target, manager},
+			handler({args,sender, lastUsedSuccessfullySender}){
+				if(!Mode.survival()) fail(`You can only skip waves on survival.`);
+				if(Vars.state.gameOver) fail(`This game is already over.`);
+				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
+
+				args.vote ??= true;
+				let playerVote = (args.vote)?(1):(-1);
+				playerVote *= sender.ranksAtLeast('trusted')?(2):(1); // vote weights
+
+				if(!manager.voting){
+					menu(
+						"Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",["1 Wave", "5 Waves", "10 Waves"],sender,({option}) => {
+							switch(option){
+								case "1 Wave":{target = 1; break;}
+								case "5 Waves":{target = 5; break;}
+								case "10 Waves":{target = 10; break;}
+							};
+							manager.start(sender,playerVote,voteDuration,threshold);
+						});
+				}else{
+					manager.vote(sender,playerVote);
+				}
+				
+			}
+		}	
+	}),
+
 	forcertv: {
 		args: ["force:boolean?"],
 		description: 'Force skip to the next map.',
@@ -594,177 +679,47 @@ Please stop attacking and [lime]build defenses[] first!`
 		handler({args, sender, allCommands}){
 			if(args.force === false){
 				Call.sendMessage(`RTV: [red] votes cleared by admin [yellow]${sender.name}[red].`);
-				allCommands.rtv.data.votes.clear();
+				allCommands.rtv.data.manager.cancelVote(false);
 			} else {
-				Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);
-				neutralGameover();
+				Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green].`);
+				allCommands.rtv.data.manager.forceVote(true);
 			}
 		}
 	},
-	
-	forcevnw:{
-		args: ["force:boolean?"],
-		description : 'Force skip to the next wave.',
-		perm: Perm.admin,
-		handler({allCommands,sender,args}){
-			if (allCommands.vnw.data.target == 0) fail(`No /VNW vote is in session.`);
-			if(args.force === false){
-				Call.sendMessage(`VNW: [red] vote canceled by admin [yellow]${sender.name}[red].`);
-				allCommands.vnw.data.resetVote();
-			} else {
-				Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green]`);
-				allCommands.vnw.data.spawnWave();
-			}
-		},
-	},
-
-	vnw: command(() => {
-		const votes = new Map<FishPlayer,number>();
-		const voteDuration = 1.5 * 60000;
-		const goal = 5; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
-		let target = 0; // the ideal amount of waves to skip. equal to zero when no vote is going on
-		let timer:TimerTask | null;
-		function scoreVotes():number{
-			let scoredVote:number = 0;
-			votes.forEach((vote)=>(scoredVote += vote));
-			return scoredVote;
-		}
-		function getGoal():number{
-			if(Groups.player.size() >= goal){
-				return(goal);
-			}
-			return(Groups.player.size());
-		}
-		function checkVotes():void{
-			if(target == 0) return;
-			if(scoreVotes() >= getGoal()){
-				spawnWave();
-			}
-		}
-		function spawnWave():void{
-			//my got this is a abomination, but its reliable
-			let saveWaveTime = Vars.state.wavetime;
-			let saveWaveEnemies = Vars.state.rules.waitEnemies;
-			Core.app.post(() => {
-				Vars.state.wave += target - 1;
-				Vars.state.wavetime = 1;
-				Vars.state.rules.waitEnemies = false;
-					Core.app.post(() => {
-						Core.app.post(() => {
-							Vars.state.wavetime = saveWaveTime;
-							Vars.state.rules.waitEnemies = saveWaveEnemies;
-						});
-				});
-			});
-			Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
-			resetVote();
-		}
-		function resetVote():void{// called whenever a vote passes, or is forced
-			votes.clear();
-			timer!.cancel();
-			target = 0;
-		}
-		function startVote(waves:number):void{
-			target = waves;
-			timer = Timer.schedule(endVote, voteDuration / 1000)
-		}
-		function addVote(player:FishPlayer,vote:number):void{
-			if(player.ranksAtLeast('trusted')) vote *= 2; // double weight on trusted votes.
-			votes.set(player,vote);
-			if(vote > 0){
-				Call.sendMessage(
-					`[white]VNW: ${player.name}[white] has voted to skip ${target} wave(s). (${scoreVotes()}/${getGoal()})`
-				);
-			}else{
-				Call.sendMessage(
-					`[white]VNW: ${player.name}[white] has voted against skipping ${target} wave(s). (${scoreVotes()}/${getGoal()})`
-				);
-			}
-			checkVotes();
-		}
-		function endVote():void{
-			votes.clear();
-			Call.sendMessage('VNW: [red] vote failed.');
-			target = 0;
-		}
-		Events.on(EventType.PlayerLeave, ({player}) => {
-			if(votes.has(player)){
-				votes.delete(player);
-				Call.sendMessage(
-					`VNW: [accent]${player.name}[] left, (${scoreVotes()}/${getGoal()})`
-				);
-				checkVotes();
-			}
-		});		
-		Events.on(EventType.GameOverEvent, () => votes.clear());
-
-		return {
-			args:["vote:boolean?"], // will cast "yes" and "no" ... thats good.
-			description: "Vote to start the next wave.",
-			perm: Perm.play,
-			data: {votes, target, spawnWave, resetVote},
-			handler({args,sender, lastUsedSuccessfullySender}){
-				if(!Mode.survival()) fail(`You can only skip waves on survival.`);
-				if(Vars.state.gameOver) fail(`This game is already over.`);
-				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
-				if(votes.size == 0){
-					menu(
-						"Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",["1 Wave", "5 Waves", "10 Waves"],sender,({option}) => {
-							switch(option){
-								case "1 Wave":{startVote(1); addVote(sender,1); break;}
-								case "5 Waves":{startVote(5); addVote(sender,1); break;}
-								case "10 Waves":{startVote(10); addVote(sender,1); break;}
-							}
-						});
-				}else{
-					args.vote ??= true; // keep old command behavior
-					addVote(sender,(args.vote)?(1):(-1));
-				}
-				
-			}
-		}	
-	}),
 
 	rtv: command(() => {
-		const votes = new Set<string>();
-		const ratio = 0.5;
-
-		Events.on(EventType.PlayerLeave, ({player}) => {
-			if(votes.has(player.uuid())){
-				votes.delete(player.uuid());
-				const currentVotes = votes.size;
-				const requiredVotes = Math.ceil(ratio * Groups.player.size());
-				Call.sendMessage(
-					`RTV: [accent]${player.name}[] left, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
-				);
-				if(currentVotes >= requiredVotes){
-					Call.sendMessage('RTV: [green] vote passed, changing map.');
-					neutralGameover();
-				}
-			}
-		});		
-		Events.on(EventType.GameOverEvent, () => votes.clear());
-
+		const voteDuration = 1.5 * 60000;
+		const threshold = 5;
+		let manager:VoteManager = new VoteManager(
+			() => {
+				Call.sendMessage(`RTV:[green] Vote has passed, changing map.`);
+				neutralGameover();
+			},
+			() => {
+				Call.sendMessage(`RTV:[red] Vote failed.`)
+			},
+			(player) => {
+				Call.sendMessage(`RTV: ${player.name} wants to change the map. ${manager.scoreVotes()} votes, ${manager.getGoal()} required.`);
+			},
+			(player) => {
+				Call.sendMessage(`RTV: ${player.name} has left the game. ${manager.scoreVotes()} votes, ${manager.getGoal()} required.`);
+			},
+		);
 		return {
-			args: [],
+			args: ["vote:boolean?"],
 			description: 'Rock the vote to change map',
 			perm: Perm.play,
-			data: {votes},
-			handler({sender, lastUsedSuccessfullySender}){
+			data: {manager},
+			handler({args, sender, lastUsedSuccessfullySender}){
 				if(Vars.state.gameOver) fail(`This map is already finished, cannot RTV. Wait until the next map loads.`);
 				if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
 
-				votes.add(sender.uuid);
-			
-				let currentVotes = votes.size;
-				let requiredVotes = Math.ceil(ratio * Groups.player.size());
-				Call.sendMessage(
-					`RTV: [accent]${sender.cleanedName}[] wants to change the map, [green]${currentVotes}[] votes, [green]${requiredVotes}[] required`
-				);
-				if(currentVotes >= requiredVotes){
-					Call.sendMessage('RTV: [green] vote passed, changing map.');
-					neutralGameover();
-				}
+				args.vote ??= true;
+				let playerVote = (args.vote)?(1):(-1);
+				playerVote *= sender.ranksAtLeast('trusted')?(2):(1);
+
+				if(manager.voting) manager.start(sender, playerVote, voteDuration, threshold)
+				else manager.vote(sender, playerVote);
 			}
 		}	
 	}),

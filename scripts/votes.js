@@ -1,97 +1,98 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.votekickmanager = void 0;
-var players_1 = require("./players");
+exports.VoteManager = void 0;
+/**
+ * manages a threshold based voting instance. mimics a votekick-style voting system
+ */
 var VoteManager = /** @class */ (function () {
-    function VoteManager(onStart, onPass, onFail, getVotesToPass, allowNoVotes, timeout, endOnVoteReached) {
-        if (getVotesToPass === void 0) { getVotesToPass = function () { return Math.ceil(Groups.player.size() / 2); }; }
-        if (allowNoVotes === void 0) { allowNoVotes = true; }
-        if (timeout === void 0) { timeout = 30; }
-        if (endOnVoteReached === void 0) { endOnVoteReached = true; }
-        this.onStart = onStart;
-        this.onPass = onPass;
+    function VoteManager(onSuccess, // implementation handle vote success
+    onFail) {
+        this.onSuccess = onSuccess;
         this.onFail = onFail;
-        this.getVotesToPass = getVotesToPass;
-        this.allowNoVotes = allowNoVotes;
-        this.timeout = timeout;
-        this.endOnVoteReached = endOnVoteReached;
-        this.currentSession = null;
+        this.goal = 5;
+        this.voting = false;
+        this.timer = null;
+        this.votes = new Map();
+        this.onSuccess = onSuccess;
+        this.onFail = onFail;
     }
     ;
-    VoteManager.prototype.start = function (data, player) {
-        var _this = this;
-        this.currentSession = {
-            votes: {},
-            data: data
-        };
-        this.onStart(this.currentSession);
-        if (player)
-            this.handleVote(player, 1);
-        if (this.timeout)
-            Timer.schedule(function () { return _this.end(); }, this.timeout);
+    //public triggers
+    //start the vote
+    VoteManager.prototype.start = function (player, value, voteTime) {
+        this.voting = true;
+        this.timer = Timer.schedule(this.end, voteTime / 1000);
+        this.vote(player, value);
     };
-    VoteManager.prototype.handleVote = function (player, vote) {
-        if (vote == -1 && !this.allowNoVotes)
-            return; //no votes are not allowed
-        if (!this.currentSession)
-            return; //no active vote session
-        this.currentSession.votes[player.uuid] = vote;
-        //maybe end the votekick
-        if (this.endOnVoteReached && this.checkPass())
-            this.pass();
-    };
+    //end the vote
     VoteManager.prototype.end = function () {
-        if (!this.currentSession)
+        if (!this.checkVote()) {
+            this.failed();
+        }
+    };
+    //add or change a vote
+    VoteManager.prototype.vote = function (player, value) {
+        if (!this.voting)
+            return; //no vote is going on
+        this.votes.set(player, value);
+        this.checkVote();
+    };
+    //unvote, for players leaving
+    VoteManager.prototype.unvote = function (player) {
+        if (!this.voting)
+            return; // still no vote
+        this.votes.delete(player);
+        this.checkVote();
+    };
+    //force a vote outcome
+    VoteManager.prototype.forceVote = function (force) {
+        if (!this.voting)
             return;
-        if (this.checkPass())
-            this.pass();
+        if (force)
+            this.succeeded();
         else
-            this.fail();
+            this.failed();
     };
-    VoteManager.prototype.checkPass = function () {
-        if (!this.currentSession)
-            return false; //no active vote session, error
-        var votes = VoteManager.totalVotes(this.currentSession);
-        return votes >= this.getVotesToPass();
+    //private handlers
+    //reset manager when vote fail
+    VoteManager.prototype.failed = function () {
+        this.resetVote();
+        this.onFail();
     };
-    VoteManager.prototype.pass = function () {
-        if (!this.currentSession)
-            return;
-        this.onPass(this.currentSession);
-        this.currentSession = null;
+    //resets manager when the vote passes
+    VoteManager.prototype.succeeded = function () {
+        this.resetVote();
+        this.onSuccess();
     };
-    VoteManager.prototype.fail = function () {
-        if (!this.currentSession)
-            return;
-        this.onFail(this.currentSession);
-        this.currentSession = null;
+    //reset timer / maps
+    VoteManager.prototype.resetVote = function () {
+        this.timer.cancel();
+        this.votes.clear();
+        this.voting = false;
     };
-    VoteManager.totalVotes = function (session) {
-        return Object.values(session.votes).reduce(function (acc, a) { return acc + a; }, 0);
+    //voting utilities
+    //get threshold for votes
+    VoteManager.prototype.getGoal = function () {
+        if (Groups.player.size() >= this.goal) {
+            return (this.goal);
+        }
+        return (Groups.player.size());
+    };
+    //score out the votes
+    VoteManager.prototype.scoreVotes = function () {
+        var scoredVote = 0;
+        this.votes.forEach(function (vote) { return (scoredVote += vote); });
+        return scoredVote;
+    };
+    //checks if vote passed
+    VoteManager.prototype.checkVote = function () {
+        if (this.scoreVotes() >= this.getGoal()) {
+            this.succeeded();
+            return true;
+        }
+        return false;
     };
     return VoteManager;
 }());
-exports.votekickmanager = new VoteManager(function (_a) {
-    var data = _a.data;
-    if (!data.initiator.hasPerm("bypassVoteFreeze")) {
-        data.initiator.freeze(); //TODO freeze
-    }
-    if (!data.target.hasPerm("bypassVoteFreeze")) {
-        data.target.freeze();
-    }
-}, function (_a) {
-    var data = _a.data;
-    data.target.player.kick(Packets.KickReason.vote, 3600 * 1000);
-    data.initiator.unfreeze();
-}, function (_a) {
-    var data = _a.data;
-    data.target.unfreeze();
-    data.initiator.unfreeze();
-}, undefined, true, 30, false);
-//test
-exports.votekickmanager.start({
-    initiator: players_1.FishPlayer.getByName("BalaM314"),
-    target: players_1.FishPlayer.getByName("sussyGreefer"),
-});
-exports.votekickmanager.handleVote(players_1.FishPlayer.getByName("Fish"), 1);
-// this should end the votekick
+exports.VoteManager = VoteManager;
+//I removed votekickmanager, because it seems to be unused

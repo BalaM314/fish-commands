@@ -50,6 +50,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 // import { votekickmanager } from './votes';
+var votes_1 = require("./votes");
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
         description: 'Unpauses the game.',
@@ -613,63 +614,28 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, output = _a.output, f = _a.f;
             output(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
-    }, forcertv: {
-        args: ["force:boolean?"],
-        description: 'Force skip to the next map.',
-        perm: commands_1.Perm.admin,
-        handler: function (_a) {
-            var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
-            if (args.force === false) {
-                Call.sendMessage("RTV: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
-                allCommands.rtv.data.votes.clear();
-            }
-            else {
-                Call.sendMessage("RTV: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
-                (0, utils_1.neutralGameover)();
-            }
-        }
     }, forcevnw: {
         args: ["force:boolean?"],
         description: 'Force skip to the next wave.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var allCommands = _a.allCommands, sender = _a.sender, args = _a.args;
-            if (allCommands.vnw.data.target == 0)
-                (0, commands_1.fail)("No /VNW vote is in session.");
             if (args.force === false) {
-                Call.sendMessage("VNW: [red] vote canceled by admin [yellow]".concat(sender.name, "[red]."));
-                allCommands.vnw.data.resetVote();
+                Call.sendMessage("VNW: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
+                allCommands.vnw.data.manager.forceVote(false);
             }
-            else {
-                Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green]"));
-                allCommands.vnw.data.spawnWave();
-            }
+            Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
+            allCommands.vnw.data.manager.forceVote(true);
         },
     }, vnw: (0, commands_1.command)(function () {
-        var votes = new Map();
         var voteDuration = 1.5 * 60000;
-        var goal = 5; // how many more votes "yes" than "no" are needed (same as vc) when the server is ful;
-        var target = 0; // the ideal amount of waves to skip. equal to zero when no vote is going on
-        var timer;
-        function scoreVotes() {
-            var scoredVote = 0;
-            votes.forEach(function (vote) { return (scoredVote += vote); });
-            return scoredVote;
+        var target = 0; // the ideal amount of waves to skip
+        var manager = new votes_1.VoteManager(function () { return succeeded(); }, function () { return failed(); });
+        function failed() {
+            Call.sendMessage('VNW: [red] vote failed.');
+            target = 0;
         }
-        function getGoal() {
-            if (Groups.player.size() >= goal) {
-                return (goal);
-            }
-            return (Groups.player.size());
-        }
-        function checkVotes() {
-            if (target == 0)
-                return;
-            if (scoreVotes() >= getGoal()) {
-                spawnWave();
-            }
-        }
-        function spawnWave() {
+        function succeeded() {
             //my got this is a abomination, but its reliable
             var saveWaveTime = Vars.state.wavetime;
             var saveWaveEnemies = Vars.state.rules.waitEnemies;
@@ -685,86 +651,81 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 });
             });
             Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
-            resetVote();
-        }
-        function resetVote() {
-            votes.clear();
-            timer.cancel();
-            target = 0;
-        }
-        function startVote(waves) {
-            target = waves;
-            timer = Timer.schedule(endVote, voteDuration / 1000);
-        }
-        function addVote(player, vote) {
-            if (player.ranksAtLeast('trusted'))
-                vote *= 2; // double weight on trusted votes.
-            votes.set(player, vote);
-            if (vote > 0) {
-                Call.sendMessage("[white]VNW: ".concat(player.name, "[white] has voted to skip ").concat(target, " wave(s). (").concat(scoreVotes(), "/").concat(getGoal(), ")"));
-            }
-            else {
-                Call.sendMessage("[white]VNW: ".concat(player.name, "[white] has voted against skipping ").concat(target, " wave(s). (").concat(scoreVotes(), "/").concat(getGoal(), ")"));
-            }
-            checkVotes();
-        }
-        function endVote() {
-            votes.clear();
-            Call.sendMessage('VNW: [red] vote failed.');
-            target = 0;
         }
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
-            if (votes.has(player)) {
-                votes.delete(player);
-                Call.sendMessage("VNW: [accent]".concat(player.name, "[] left, (").concat(scoreVotes(), "/").concat(getGoal(), ")"));
-                checkVotes();
-            }
+            manager.unvote(player);
         });
-        Events.on(EventType.GameOverEvent, function () { return votes.clear(); });
+        Events.on(EventType.GameOverEvent, function () { return manager.resetVote(); });
         return {
             args: ["vote:boolean?"], // will cast "yes" and "no" ... thats good.
             description: "Vote to start the next wave.",
             perm: commands_1.Perm.play,
-            data: { votes: votes, target: target, spawnWave: spawnWave, resetVote: resetVote },
+            data: { target: target, manager: manager },
             handler: function (_a) {
                 var _b;
                 var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+                //error checking
                 if (!config_1.Mode.survival())
                     (0, commands_1.fail)("You can only skip waves on survival.");
                 if (Vars.state.gameOver)
                     (0, commands_1.fail)("This game is already over.");
                 if (Date.now() - lastUsedSuccessfullySender < 1000)
                     (0, commands_1.fail)("This command was run recently and is on cooldown.");
-                if (votes.size == 0) {
+                //set up a player's vote
+                (_b = args.vote) !== null && _b !== void 0 ? _b : (args.vote = true);
+                var playerVote = (args.vote) ? (1) : (-1);
+                playerVote *= sender.ranksAtLeast('trusted') ? (2) : (1); // vote weights
+                if (!manager.voting) {
+                    //start a vote
                     (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", ["1 Wave", "5 Waves", "10 Waves"], sender, function (_a) {
                         var option = _a.option;
+                        var waves = 0;
                         switch (option) {
                             case "1 Wave": {
-                                startVote(1);
-                                addVote(sender, 1);
-                                break;
+                                waves = 1;
                             }
                             case "5 Waves": {
-                                startVote(5);
-                                addVote(sender, 1);
-                                break;
+                                waves = 5;
                             }
                             case "10 Waves": {
-                                startVote(10);
-                                addVote(sender, 1);
-                                break;
+                                waves = 10;
                             }
                         }
+                        ;
+                        Call.sendMessage("[white]VNW: ".concat(sender.name, "[white] has started a vote to skip ").concat(waves, " waves. (").concat(playerVote, "/").concat(manager.getGoal(), ")"));
+                        target = waves;
+                        manager.start(sender, playerVote, voteDuration);
                     });
                 }
                 else {
-                    (_b = args.vote) !== null && _b !== void 0 ? _b : (args.vote = true); // keep old command behavior
-                    addVote(sender, (args.vote) ? (1) : (-1));
+                    //vote in running contest
+                    if (args.vote) {
+                        Call.sendMessage("[white]VNW: ".concat(sender.name, "[white] has voted to skip ").concat(target, " wave(s). (").concat(manager.scoreVotes(), "/").concat(manager.getGoal(), ")"));
+                    }
+                    else {
+                        Call.sendMessage("[white]VNW: ".concat(sender.name, "[white] has voted against skipping ").concat(target, " wave(s). (").concat(manager.scoreVotes(), "/").concat(manager.getGoal(), ")"));
+                    }
+                    manager.vote(sender, playerVote);
                 }
             }
         };
-    }), rtv: (0, commands_1.command)(function () {
+    }), forcertv: {
+        args: ["force:boolean?"],
+        description: 'Force skip to the next map.',
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
+            if (args.force === false) {
+                Call.sendMessage("RTV: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
+                allCommands.rtv.data.votes.clear();
+            }
+            else {
+                Call.sendMessage("RTV: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
+                (0, utils_1.neutralGameover)();
+            }
+        }
+    }, rtv: (0, commands_1.command)(function () {
         var votes = new Set();
         var ratio = 0.5;
         Events.on(EventType.PlayerLeave, function (_a) {
