@@ -836,7 +836,6 @@ ${getMapData().map(({key:map, value:votes}) =>
 			perm: Perm.play,
 			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote, cancelVote},
 			handler({args:{map}, sender, lastUsedSuccessfullySender}){
-				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
 				if(votes.get(sender)) fail(`You have already voted.`);
 				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
 	
