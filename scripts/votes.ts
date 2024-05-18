@@ -25,7 +25,7 @@ export class VoteManager{
 	public start(player:FishPlayer, value:number, voteTime:number, threshold:number){
 		this.goal = threshold;
 		this.voting = true;
-		this.timer = Timer.schedule(this.end, voteTime / 1000);
+		this.timer = Timer.schedule(() => this.end(), voteTime / 1000);
 		this.vote(player,value);
 	}
 
@@ -66,7 +66,7 @@ export class VoteManager{
 	}
 	
 	public resetVote(){
-		this.timer!.cancel();
+		if(this.timer !== null) this.timer!.cancel();
 		this.votes.clear();
 		this.voting = false;
 	}

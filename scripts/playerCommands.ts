@@ -594,12 +594,14 @@ Please stop attacking and [lime]build defenses[] first!`
 		description : 'Force skip to the next wave.',
 		perm: Perm.admin,
 		handler({allCommands,sender,args}){
+			if(allCommands.vnw.data.manager.voting) fail(`No VNW vote is in session, start one with /VNW.`);
 			if(args.force === false){
-				Call.sendMessage(`VNW: [red] votes cleared by admin [yellow]${sender.name}[red].`);
+				Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.vnw.data.manager.forceVote(false);
+			}else{
+				Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], changing map.`);
+				allCommands.vnw.data.manager.forceVote(true);
 			}
-			Call.sendMessage(`VNW: [green] vote was forced by admin [yellow]${sender.name}[green], changing map.`);
-			allCommands.vnw.data.manager.forceVote(true);
 		},
 	},
 
@@ -630,15 +632,15 @@ Please stop attacking and [lime]build defenses[] first!`
 				target = 0;
 			},
 			(player) => {
-				Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping ${threshold} wave(s). (${manager.scoreVotes()} votes, ${manager.getGoal()} required)`)
+				Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${target}[white] wave(s). [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`)
 			},
 			(player) => {
-				Call.sendMessage(`VNW: ${player.name} [white] has left. ${manager.scoreVotes()} votes, ${manager.getGoal()} required.`)
+				Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()}[white] required.`)
 			},
 		);
 		
 		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvote(player);});		
-		Events.on(EventType.GameOverEvent, () => manager.resetVote());
+		Events.on(EventType.GameOverEvent, () => {manager.resetVote()});
 
 		return {
 			args:["vote:boolean?"], // will cast "yes" and "no" ... thats good.
@@ -677,11 +679,12 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
 		handler({args, sender, allCommands}){
+			if(allCommands.rtv.data.manager.voting) fail(`No RTV vote is in session, start one with /RTV.`);
 			if(args.force === false){
-				Call.sendMessage(`RTV: [red] votes cleared by admin [yellow]${sender.name}[red].`);
-				allCommands.rtv.data.manager.cancelVote(false);
+				Call.sendMessage(`RTV: [red]votes cleared by admin [yellow]${sender.name}[red].`);
+				allCommands.rtv.data.manager.forceVote(false);
 			} else {
-				Call.sendMessage(`RTV: [green] vote was forced by admin [yellow]${sender.name}[green].`);
+				Call.sendMessage(`RTV: [green]vote was forced by admin [yellow]${sender.name}[green].`);
 				allCommands.rtv.data.manager.forceVote(true);
 			}
 		}
@@ -699,12 +702,14 @@ Please stop attacking and [lime]build defenses[] first!`
 				Call.sendMessage(`RTV:[red] Vote failed.`)
 			},
 			(player) => {
-				Call.sendMessage(`RTV: ${player.name} wants to change the map. ${manager.scoreVotes()} votes, ${manager.getGoal()} required.`);
+				Call.sendMessage(`RTV: ${player.name}[white] wants to change the map. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
 			},
 			(player) => {
-				Call.sendMessage(`RTV: ${player.name} has left the game. ${manager.scoreVotes()} votes, ${manager.getGoal()} required.`);
+				Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
 			},
 		);
+		Events.on(EventType.PlayerLeave, (player) => {manager.unvote(player)})
+		Events.on(EventType.GameOverEvent, () => {manager.resetVote()})
 		return {
 			args: ["vote:boolean?"],
 			description: 'Rock the vote to change map',
@@ -718,8 +723,11 @@ Please stop attacking and [lime]build defenses[] first!`
 				let playerVote = (args.vote)?(1):(-1);
 				playerVote *= sender.ranksAtLeast('trusted')?(2):(1);
 
-				if(manager.voting) manager.start(sender, playerVote, voteDuration, threshold)
-				else manager.vote(sender, playerVote);
+				if(!manager.voting) {
+					manager.start(sender, playerVote, voteDuration, threshold);
+				}else{
+					manager.vote(sender, playerVote);
+				}
 			}
 		}	
 	}),
