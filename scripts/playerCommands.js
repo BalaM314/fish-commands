@@ -650,9 +650,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     });
                 });
             });
-            Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
+            Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.');
         }, function () {
-            Call.sendMessage('VNW: [red] vote failed.');
+            Call.sendMessage('VNW: [red]Vote failed.');
             target = 0;
         }, function (player) {
             Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(target, "[white] wave(s). [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal(), "[white] required."));
@@ -716,11 +716,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (!allCommands.rtv.data.manager.voting)
                 (0, commands_1.fail)("No RTV vote is in session, start one with /RTV.");
             if (args.force === false) {
-                Call.sendMessage("RTV: [red]votes cleared by admin [yellow]".concat(sender.name, "[red]."));
+                Call.sendMessage("RTV: [red]Votes cleared by admin [yellow]".concat(sender.name, "[red]."));
                 allCommands.rtv.data.manager.forceVote(false);
             }
             else {
-                Call.sendMessage("RTV: [green]vote was forced by admin [yellow]".concat(sender.name, "[green]."));
+                Call.sendMessage("RTV: [green]Vote was forced by admin [yellow]".concat(sender.name, "[green]."));
                 allCommands.rtv.data.manager.forceVote(true);
             }
         }

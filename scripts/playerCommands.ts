@@ -625,10 +625,10 @@ Please stop attacking and [lime]build defenses[] first!`
 							});
 					});
 				});
-				Call.sendMessage('VNW: [green] vote passed, skipping to next wave.');
+				Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.');
 			}, 
 			() => {
-				Call.sendMessage('VNW: [red] vote failed.');
+				Call.sendMessage('VNW: [red]Vote failed.');
 				target = 0;
 			},
 			(player) => {
@@ -681,10 +681,10 @@ Please stop attacking and [lime]build defenses[] first!`
 		handler({args, sender, allCommands}){
 			if(!allCommands.rtv.data.manager.voting) fail(`No RTV vote is in session, start one with /RTV.`);
 			if(args.force === false){
-				Call.sendMessage(`RTV: [red]votes cleared by admin [yellow]${sender.name}[red].`);
+				Call.sendMessage(`RTV: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.rtv.data.manager.forceVote(false);
 			} else {
-				Call.sendMessage(`RTV: [green]vote was forced by admin [yellow]${sender.name}[green].`);
+				Call.sendMessage(`RTV: [green]Vote was forced by admin [yellow]${sender.name}[green].`);
 				allCommands.rtv.data.manager.forceVote(true);
 			}
 		}
