@@ -3,7 +3,7 @@ import { FishPlayer } from "./players";
 
 export class VoteManager{
  
-	public votes:Map<FishPlayer,number>
+	public votes:Map<string,number>
 	public goal = 0;
 	public timer:TimerTask | null;
 	public voting:boolean = false;
@@ -11,11 +11,12 @@ export class VoteManager{
 	constructor(
 		public onSuccess: () => (unknown),// implementation handle vote success
 		public onFail: () => (unknown),// implementation handle vote fail
+		//I hate that this is inconsistant, but its the best setup 
 		public onVote: (player:FishPlayer) => (unknown), // implemenation handle player voting
-		public onUnVote: (player:FishPlayer) => (unknown), // implementation handle player unvoting
+		public onUnVote: (player:mindustryPlayer) => (unknown), // implementation handle player unvoting
 	){
 		this.timer = null;
-		this.votes = new Map<FishPlayer,number>();
+		this.votes = new Map<string,number>();
 		this.onSuccess = onSuccess;
 		this.onFail = onFail;
 		this.onVote = onVote;
@@ -36,15 +37,26 @@ export class VoteManager{
 	}
 
 	public vote(player:FishPlayer, value:number):void{
-		if(!this.voting) return; //no vote is going on
-		this.votes.set(player,value);
+		if(!this.voting || player == null || player.usid == null) return; //no vote is going on
+		this.votes.set(player.uuid,value);
+		Log.info(`Player voted, Name : ${player.name},UUID : ${player.uuid}`);
 		this.onVote(player);
 		this.checkVote();
 	}
-	
-	public unvote(player:FishPlayer):void{
-		if(!this.voting) return; // still no vote
-		this.votes.delete(player);
+
+	//unused unvote talking a proper fish player, useful If we ever add a unvote command
+	public unvoteFish(player:FishPlayer):void{
+		if(!this.voting || player == null || player.uuid == null) return; 
+		if(!this.votes.delete(player.uuid)) Log.err(`Failed to Unvote Player uuid:${player.usid}`);
+		this.onUnVote(player);
+		this.checkVote();
+	}
+
+	//unvote with a mindustry player, which occurs during a playerleave event.
+	//I hate this method with a passion
+	public unvoteMindustry(player:mindustryPlayer):void{
+		if(!this.voting || player == null) return; 
+		if(!this.votes.delete(player.uuid())) Log.err(`Failed to Unvote Player uuid:${player.uuid()}`);
 		this.onUnVote(player);
 		this.checkVote();
 	}

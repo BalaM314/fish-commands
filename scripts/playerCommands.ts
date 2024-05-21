@@ -635,11 +635,11 @@ Please stop attacking and [lime]build defenses[] first!`
 				Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${target}[white] wave(s). [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`)
 			},
 			(player) => {
-				Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()}[white] required.`)
+				Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()-1}[white] required.`)
 			},
 		);
 		
-		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvote(player);});		
+		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvoteMindustry(player);});		
 		Events.on(EventType.GameOverEvent, () => {manager.resetVote()});
 
 		return {
@@ -705,10 +705,10 @@ Please stop attacking and [lime]build defenses[] first!`
 				Call.sendMessage(`RTV: ${player.name}[white] wants to change the map. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
 			},
 			(player) => {
-				Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
+				Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()-1}[white] required.`);
 			},
 		);
-		Events.on(EventType.PlayerLeave, (player) => {manager.unvote(player)})
+		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvoteMindustry(player)})
 		Events.on(EventType.GameOverEvent, () => {manager.resetVote()})
 		return {
 			args: ["vote:boolean?"],

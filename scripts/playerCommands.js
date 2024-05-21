@@ -657,11 +657,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }, function (player) {
             Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(target, "[white] wave(s). [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal(), "[white] required."));
         }, function (player) {
-            Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(manager.scoreVotes(), "[white] votes, [green[").concat(manager.getGoal(), "[white] required."));
+            Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(manager.scoreVotes(), "[white] votes, [green[").concat(manager.getGoal() - 1, "[white] required."));
         });
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
-            manager.unvote(player);
+            manager.unvoteMindustry(player);
         });
         Events.on(EventType.GameOverEvent, function () { manager.resetVote(); });
         return {
@@ -735,9 +735,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }, function (player) {
             Call.sendMessage("RTV: ".concat(player.name, "[white] wants to change the map. [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal(), "[white] required."));
         }, function (player) {
-            Call.sendMessage("RTV: ".concat(player.name, "[white] has left the game. [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal(), "[white] required."));
+            Call.sendMessage("RTV: ".concat(player.name, "[white] has left the game. [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal() - 1, "[white] required."));
         });
-        Events.on(EventType.PlayerLeave, function (player) { manager.unvote(player); });
+        Events.on(EventType.PlayerLeave, function (_a) {
+            var player = _a.player;
+            manager.unvoteMindustry(player);
+        });
         Events.on(EventType.GameOverEvent, function () { manager.resetVote(); });
         return {
             args: ["vote:boolean?"],
