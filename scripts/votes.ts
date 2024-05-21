@@ -47,7 +47,7 @@ export class VoteManager{
 	//unused unvote talking a proper fish player, useful If we ever add a unvote command
 	public unvoteFish(player:FishPlayer):void{
 		if(!this.voting || player == null || player.uuid == null) return; 
-		if(!this.votes.delete(player.uuid)) Log.err(`Failed to Unvote Player uuid:${player.usid}`);
+		if(!this.votes.delete(player.uuid)) Log.err(`Failed to Unvote Player uuid:${player.uuid}`);
 		this.onUnVote(player);
 		this.checkVote();
 	}

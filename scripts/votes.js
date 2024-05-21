@@ -46,7 +46,7 @@ var VoteManager = /** @class */ (function () {
         if (!this.voting || player == null || player.uuid == null)
             return;
         if (!this.votes.delete(player.uuid))
-            Log.err("Failed to Unvote Player uuid:".concat(player.usid));
+            Log.err("Failed to Unvote Player uuid:".concat(player.uuid));
         this.onUnVote(player);
         this.checkVote();
     };
