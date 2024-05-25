@@ -123,6 +123,7 @@ export const commands = commandList({
 			else outputSuccess(`You are no longer marked as AFK.`);
 		},
 	},
+
 	vanish: {
 		args: ['target:player?'], 
 		description: `Toggles visibility of your rank and flags.`,
@@ -140,7 +141,6 @@ export const commands = commandList({
 		},
 	},
 	
-
 	tileid: {
 		args: [],
 		description: 'Checks id of a tile.',
@@ -162,6 +162,7 @@ export const commands = commandList({
 				description: `Switches to the ${server.name} server.`,
 				perm: Perm.none,
 				handler({ sender }) {
+					if(server.name == Mode.name()) fail(`You are already connected to ${server.name}.`);
 					Call.sendMessage(`${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
 					Call.connect(sender.con, server.ip, server.port);
 				},
