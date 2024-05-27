@@ -85,6 +85,9 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 			e.connection.kick(Packets.KickReason.banned);
 			Vars.netServer.admins.banPlayerIP(e.connection.address);
 			Vars.netServer.admins.banPlayerID(e.packet.uuid);
+		} else {
+			Vars.netServer.admins.banPlayerIP(e.connection.address);
+			Vars.netServer.admins.banPlayerID(e.packet.uuid);
 		}
 	});
 });
@@ -105,6 +108,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	FishPlayer.loadAll();
 	timers.initializeTimers();
 	menus.registerListeners();
+
+	//Cap delta
+	Time.setDeltaProvider(() => Math.min(Core.graphics.getDeltaTime() * 60, 10));
 
 	// Mute muted players
 	Vars.netServer.admins.addChatFilter((player, message) => processChat(player, message));

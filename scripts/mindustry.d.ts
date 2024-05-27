@@ -209,6 +209,7 @@ declare const Core: {
 	}
 	graphics: {
 		getFramesPerSecond():number;
+		getDeltaTime():number;
 	}
 }
 declare const Mathf: {
@@ -231,6 +232,7 @@ declare class TimerTask {
 }
 declare const Time: {
 	millis(): number;
+	setDeltaProvider(provider: () => number):void;
 }
 declare const GameState: {
 	State: Record<"playing" | "paused", any>;
