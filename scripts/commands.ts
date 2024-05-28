@@ -8,7 +8,7 @@ import type {
 	Formattable, PartialFormatString, SelectClasslikeEnumKeys, ServerCommandHandler, TagFunction
 } from "./types";
 import {
-	crash, escapeStringColorsServer, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage,
+	crash, escapeStringColorsClient, escapeStringColorsServer, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage,
 	outputSuccess, parseError, parseTimeString, tagProcessor, tagProcessorPartial
 } from "./utils";
 
@@ -566,7 +566,7 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, ({option}) => {
 			processedArgs[argToResolve.name] = FishPlayer.get(option);
 			resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
-		}, true, player => player.name)
+		}, true, player => Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : escapeStringColorsClient(player.name))
 
 	}
 

@@ -677,7 +677,7 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
             var option = _a.option;
             processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(option);
             resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
-        }, true, function (player) { return player.name; });
+        }, true, function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, utils_1.escapeStringColorsClient)(player.name); });
     }
 }
 /** @deprecated */
