@@ -80,20 +80,20 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to too many connections"));
         return;
     }
-    if (e.packet.name.includes("discord.gg/GnEdS9TdV6")) {
+    /*if(e.packet.name.includes("discord.gg/GnEdS9TdV6")){
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
-        players_1.FishPlayer.onBotWhack();
-        Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to omni discord link"));
+        FishPlayer.onBotWhack();
+        Log.info(`&yAntibot killed connection ${e.connection.address} due to omni discord link`);
         return;
     }
-    if (e.packet.name.includes("счастливого 2024 года!")) {
+    if(e.packet.name.includes("счастливого 2024 года!")){
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
-        players_1.FishPlayer.onBotWhack();
-        Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to known bad name"));
+        FishPlayer.onBotWhack();
+        Log.info(`&yAntibot killed connection ${e.connection.address} due to known bad name`);
         return;
-    }
+    }*/
     if (Vars.netServer.admins.isDosBlacklisted(e.connection.address)) {
         //threading moment, i think
         e.connection.kicked = true;
@@ -108,6 +108,10 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
             e.connection.kick(Packets.KickReason.banned);
             Vars.netServer.admins.banPlayerIP(e.connection.address);
             Vars.netServer.admins.banPlayerID(e.packet.uuid);
+        }
+        else {
+            Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+            Vars.netServer.admins.unbanPlayerID(e.packet.uuid);
         }
     });
 });
@@ -126,6 +130,8 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
     menus.registerListeners();
+    //Cap delta
+    Time.setDeltaProvider(function () { return Math.min(Core.graphics.getDeltaTime() * 60, 10); });
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, message) { return (0, utils_1.processChat)(player, message); });
     // Action filters

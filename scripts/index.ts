@@ -57,7 +57,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		Log.info(`&yAntibot killed connection ${e.connection.address} due to too many connections`);
 		return;
 	}
-	if(e.packet.name.includes("discord.gg/GnEdS9TdV6")){
+	/*if(e.packet.name.includes("discord.gg/GnEdS9TdV6")){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
 		e.connection.kicked = true;
 		FishPlayer.onBotWhack();
@@ -70,7 +70,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		FishPlayer.onBotWhack();
 		Log.info(`&yAntibot killed connection ${e.connection.address} due to known bad name`);
 		return;
-	}
+	}*/
 	if(Vars.netServer.admins.isDosBlacklisted(e.connection.address)){
 		//threading moment, i think
 		e.connection.kicked = true;
@@ -86,8 +86,8 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 			Vars.netServer.admins.banPlayerIP(e.connection.address);
 			Vars.netServer.admins.banPlayerID(e.packet.uuid);
 		} else {
-			Vars.netServer.admins.banPlayerIP(e.connection.address);
-			Vars.netServer.admins.banPlayerID(e.packet.uuid);
+			Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+			Vars.netServer.admins.unbanPlayerID(e.packet.uuid);
 		}
 	});
 });
