@@ -18,7 +18,18 @@ import * as timers from './timers';
 import { StringIO, crash, escapeStringColorsServer, logErrors, matchFilter, processChat, serverRestartLoop } from "./utils";
 
 
-
+Events.on(EventType.ConnectionEvent, (e) => {
+	api.getBanned({
+		ip: e.connection.address,
+	}, (banned) => {
+		if(banned){
+			//do nothing, wait for them to get through to ConnectPacketEvent
+		} else {
+			Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+			//the outer function will continue and kick them with "banned" anyway... unavoidable
+		}
+	});
+});
 Events.on(EventType.PlayerConnect, (e) => {
 	if(FishPlayer.shouldKickNewPlayers() && e.player.info.timesJoined == 1){
 		e.player.kick(Packets.KickReason.kick, 3600000);
@@ -82,7 +93,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 	}, (banned) => {
 		if(banned){
 			Log.info(`&lrSynced ban of ${e.packet.uuid}/${e.connection.address}.`);
-			e.connection.kick(Packets.KickReason.banned);
+			e.connection.kick(Packets.KickReason.banned, 1);
 			Vars.netServer.admins.banPlayerIP(e.connection.address);
 			Vars.netServer.admins.banPlayerID(e.packet.uuid);
 		} else {

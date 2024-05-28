@@ -44,6 +44,19 @@ var players_1 = require("./players");
 var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
+Events.on(EventType.ConnectionEvent, function (e) {
+    api.getBanned({
+        ip: e.connection.address,
+    }, function (banned) {
+        if (banned) {
+            //do nothing, wait for them to get through to ConnectPacketEvent
+        }
+        else {
+            Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+            //the outer function will continue and kick them with "banned" anyway... unavoidable
+        }
+    });
+});
 Events.on(EventType.PlayerConnect, function (e) {
     if (players_1.FishPlayer.shouldKickNewPlayers() && e.player.info.timesJoined == 1) {
         e.player.kick(Packets.KickReason.kick, 3600000);
@@ -105,7 +118,7 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
     }, function (banned) {
         if (banned) {
             Log.info("&lrSynced ban of ".concat(e.packet.uuid, "/").concat(e.connection.address, "."));
-            e.connection.kick(Packets.KickReason.banned);
+            e.connection.kick(Packets.KickReason.banned, 1);
             Vars.netServer.admins.banPlayerIP(e.connection.address);
             Vars.netServer.admins.banPlayerID(e.packet.uuid);
         }
