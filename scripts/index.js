@@ -45,17 +45,17 @@ var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
 Events.on(EventType.ConnectionEvent, function (e) {
-    api.getBanned({
-        ip: e.connection.address,
-    }, function (banned) {
-        if (banned) {
-            //do nothing, wait for them to get through to ConnectPacketEvent
-        }
-        else {
-            Vars.netServer.admins.unbanPlayerIP(e.connection.address);
-            //the outer function will continue and kick them with "banned" anyway... unavoidable
-        }
-    });
+    if (Vars.netServer.admins.isIPBanned(e.connection.address)) {
+        api.getBanned({
+            ip: e.connection.address,
+        }, function (banned) {
+            if (!banned) {
+                //If they were previously banned locally, but the API says they aren't banned, then unban them and clear the kick that the outer function already did
+                Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+                Vars.netServer.admins.kickedIPs.remove(e.connection.address);
+            }
+        });
+    }
 });
 Events.on(EventType.PlayerConnect, function (e) {
     if (players_1.FishPlayer.shouldKickNewPlayers() && e.player.info.timesJoined == 1) {

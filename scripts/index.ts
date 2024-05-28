@@ -15,20 +15,21 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, crash, escapeStringColorsServer, logErrors, matchFilter, processChat, serverRestartLoop } from "./utils";
+import { StringIO, crash, logErrors, processChat, serverRestartLoop } from "./utils";
 
 
 Events.on(EventType.ConnectionEvent, (e) => {
-	api.getBanned({
-		ip: e.connection.address,
-	}, (banned) => {
-		if(banned){
-			//do nothing, wait for them to get through to ConnectPacketEvent
-		} else {
-			Vars.netServer.admins.unbanPlayerIP(e.connection.address);
-			//the outer function will continue and kick them with "banned" anyway... unavoidable
-		}
-	});
+	if(Vars.netServer.admins.isIPBanned(e.connection.address)){
+		api.getBanned({
+			ip: e.connection.address,
+		}, (banned) => {
+			if(!banned){
+				//If they were previously banned locally, but the API says they aren't banned, then unban them and clear the kick that the outer function already did
+				Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+				Vars.netServer.admins.kickedIPs.remove(e.connection.address);
+			}
+		});
+	}
 });
 Events.on(EventType.PlayerConnect, (e) => {
 	if(FishPlayer.shouldKickNewPlayers() && e.player.info.timesJoined == 1){

@@ -75,11 +75,12 @@ class Gamemode {
 }
 declare type Throwable = any;
 declare class Administration {
+	dosBlacklist: ObjectSet<string>;
+	kickedIPs: ObjectMap<string, number>;
 	findByName(info:string):ObjectSet<PlayerInfo>;
 	searchNames(name:string):ObjectSet<PlayerInfo>;
 	getInfo(uuid:string):PlayerInfo;
 	getInfoOptional(uuid:string):PlayerInfo | null;
-	dosBlacklist: ObjectSet<string>;
 	findByIP(ip:string):PlayerInfo | null;
 	findByIPs(ip:string):Seq<PlayerInfo>;
 	isIPBanned(ip:string):boolean;
@@ -289,6 +290,14 @@ declare class ObjectSet<T> {
 	contains(item:T):boolean;
 	get(key:T):T;
 	first():T;
+}
+declare class ObjectMap<K, V> {
+	put(key:K, value:V):void;
+	get(key:K):V;
+	remove(key:K):V | null;
+	clear():void;
+	size:number;
+	entries(): unknown;
 }
 declare class ObjectIntMap<K> {
 	put(key:K, value:number):void;
