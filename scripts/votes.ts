@@ -1,52 +1,45 @@
 //le overhaul
 import { FishPlayer } from "./players";
 
-export class VoteManager{
+export class VoteManager {
  
-	public votes:Map<string,number>
-	public goal = 0;
-	public timer:TimerTask | null;
-	public voting:boolean = false;
+	votes = new Map<string, number>();
+	goal = 0;
+	timer:TimerTask | null = null;
+	active = false;
 
 	constructor(
-		public onSuccess: () => (unknown),// implementation handle vote success
-		public onFail: () => (unknown),// implementation handle vote fail
+		public onSuccess: () => unknown,
+		public onFail: () => unknown,
 		//I hate that this is inconsistant, but its the best setup 
-		public onVote: (player:FishPlayer) => (unknown), // implemenation handle player voting
-		public onUnVote: (player:mindustryPlayer) => (unknown), // implementation handle player unvoting
-	){
-		this.timer = null;
-		this.votes = new Map<string,number>();
-		this.onSuccess = onSuccess;
-		this.onFail = onFail;
-		this.onVote = onVote;
-		this.onUnVote = onUnVote;
-	};
+		public onVote: (player:FishPlayer) => unknown,
+		public onUnVote: (player:mindustryPlayer) => unknown, //TODO:PR change param to FishPlayer
+	){} //TODO:PR use builder pattern to clarify call site
 
-	public start(player:FishPlayer, value:number, voteTime:number, threshold:number){
-		this.goal = threshold;
-		this.voting = true;
+	start(player:FishPlayer, value:number, voteTime:number, threshold:number){
+		this.goal = threshold; //TODO:PR shouldn't this be a constant instance property?
+		this.active = true;
 		this.timer = Timer.schedule(() => this.end(), voteTime / 1000);
-		this.vote(player,value);
+		this.vote(player, value);
 	}
 
-	public end(){ 
+	end(){ 
 		if(!this.checkVote()){
 			this.failed();
 		}
 	}
 
-	public vote(player:FishPlayer, value:number):void{
-		if(!this.voting || player == null || player.usid == null) return; //no vote is going on
-		this.votes.set(player.uuid,value);
+	vote(player:FishPlayer, value:number){
+		if(!this.active || player == null || player.usid == null) return; //no vote is going on
+		this.votes.set(player.uuid, value);
 		Log.info(`Player voted, Name : ${player.name},UUID : ${player.uuid}`);
 		this.onVote(player);
 		this.checkVote();
 	}
 
-	//unused unvote talking a proper fish player, useful If we ever add a unvote command
-	public unvoteFish(player:FishPlayer):void{
-		if(!this.voting || player == null || player.uuid == null) return; 
+	//unused unvote taking a fish player, useful if we ever add an unvote command
+	unvoteFish(player:FishPlayer){
+		if(!this.active || player == null || player.uuid == null) return; 
 		if(!this.votes.delete(player.uuid)) Log.err(`Failed to Unvote Player uuid:${player.uuid}`);
 		this.onUnVote(player);
 		this.checkVote();
@@ -54,50 +47,45 @@ export class VoteManager{
 
 	//unvote with a mindustry player, which occurs during a playerleave event.
 	//I hate this method with a passion
-	public unvoteMindustry(player:mindustryPlayer):void{
-		if(!this.voting || player == null) return; 
+	unvoteMindustry(player:mindustryPlayer){
+		if(!this.active || player == null) return; 
 		if(!this.votes.delete(player.uuid())) Log.err(`Failed to Unvote Player uuid:${player.uuid()}`);
 		this.onUnVote(player);
 		this.checkVote();
 	}
 
-	public forceVote(force:boolean):void{
-		if(!this.voting) return;
+	forceVote(force:boolean){
+		if(!this.active) return;
 		if(force) this.succeeded();
 		else this.failed()
 	}
 
-	private failed(){
-		this.resetVote();
+	failed(){
+		this.resetVote(); //TODO:PR wrong order
 		this.onFail()
 	}
 
-	private succeeded(){
-		this.resetVote();
+	succeeded(){
+		this.resetVote(); //TODO:PR wrong order
 		this.onSuccess();
 	}
 	
-	public resetVote(){
-		if(this.timer !== null) this.timer!.cancel();
+	resetVote(){
+		if(this.timer != null) this.timer.cancel();
 		this.votes.clear();
-		this.voting = false;
+		this.active = false;
 	}
 	
-	public getGoal():number{
-		if(Groups.player.size() >= this.goal){
-			return(this.goal);
-		}
-		return(Groups.player.size());
+	getGoal():number {
+		return Math.min(this.goal, Groups.player.size());
 	}
 
-	public scoreVotes():number{
-		let scoredVote:number = 0;
-		this.votes.forEach((vote)=>(scoredVote += vote));
-		return scoredVote;
+	scoreVotes():number {
+		return [...this.votes].reduce((acc, [k, v]) => acc + v, 0);
 	}
 
-	private checkVote():boolean{
-		if(this.scoreVotes() >= this.getGoal()){
+	private checkVote():boolean {
+		if(this.scoreVotes() >= this.getGoal()){ //TODO:PR bad logic
 			this.succeeded();
 			return true;
 		}

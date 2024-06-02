@@ -573,7 +573,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!config_1.Mode.attack())
-                (0, commands_1.fail)("This command can only be run on attack.");
+                (0, commands_1.fail)("This command can only be run in Attack.");
             if (args.player) {
                 if (Date.now() - lastUsedSuccessfullySender < 20000)
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
@@ -623,8 +623,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var allCommands = _a.allCommands, sender = _a.sender, args = _a.args;
-            if (!allCommands.vnw.data.manager.voting)
-                (0, commands_1.fail)("No VNW vote is in session, start one with /VNW.");
+            if (!allCommands.vnw.data.manager.active)
+                (0, commands_1.fail)("No VNW vote is in session, start one with /vnw."); //TODO:PR start it here
             if (args.force === false) {
                 Call.sendMessage("VNW: [red]Votes cleared by admin [yellow]".concat(sender.name, "[red]."));
                 allCommands.vnw.data.manager.forceVote(false);
@@ -637,7 +637,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     }, vnw: (0, commands_1.command)(function () {
         var voteDuration = 1.5 * 60000;
         var threshold = 5;
-        var target = 0; // the ideal amount of waves to skip
+        var target = 0; // the current amount of waves to skip
         var manager = new votes_1.VoteManager(function () {
             //my got this is a abomination, but its reliable
             var saveWaveTime = Vars.state.wavetime;
@@ -660,7 +660,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }, function (player) {
             Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(target, "[white] wave(s). [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal(), "[white] required."));
         }, function (player) {
-            Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(manager.scoreVotes(), "[white] votes, [green[").concat(manager.getGoal() - 1, "[white] required."));
+            Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(manager.scoreVotes(), "[white] votes, [green[").concat(manager.getGoal() - 1, "[white] required.")); //TODO:PR remove decrement
         });
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
@@ -668,7 +668,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         });
         Events.on(EventType.GameOverEvent, function () { manager.resetVote(); });
         return {
-            args: ["vote:boolean?"], // will cast "yes" and "no" ... thats good.
+            args: ["vote:boolean?"],
             description: "Vote to start the next wave.",
             perm: commands_1.Perm.play,
             data: { target: target, manager: manager },
@@ -676,34 +676,21 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 var _b;
                 var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
                 if (!config_1.Mode.survival())
-                    (0, commands_1.fail)("You can only skip waves on survival.");
+                    (0, commands_1.fail)("This command is only enabled in survival.");
                 if (Vars.state.gameOver)
-                    (0, commands_1.fail)("This game is already over.");
+                    (0, commands_1.fail)("This game is already over."); //TODO command run states system
                 if (Date.now() - lastUsedSuccessfullySender < 1000)
                     (0, commands_1.fail)("This command was run recently and is on cooldown.");
                 (_b = args.vote) !== null && _b !== void 0 ? _b : (args.vote = true);
-                var playerVote = (args.vote) ? (1) : (-1);
-                playerVote *= sender.ranksAtLeast('trusted') ? (2) : (1); // vote weights
-                if (!manager.voting) {
-                    (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", ["1 Wave", "5 Waves", "10 Waves"], sender, function (_a) {
+                var playerVote = args.vote ? 1 : -1;
+                //Vote weight
+                playerVote *= sender.ranksAtLeast('trusted') ? 2 : 1;
+                if (!manager.active) {
+                    (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [1, 5, 10], sender, function (_a) {
                         var option = _a.option;
-                        switch (option) {
-                            case "1 Wave": {
-                                target = 1;
-                                break;
-                            }
-                            case "5 Waves": {
-                                target = 5;
-                                break;
-                            }
-                            case "10 Waves": {
-                                target = 10;
-                                break;
-                            }
-                        }
-                        ;
+                        target = option;
                         manager.start(sender, playerVote, voteDuration, threshold);
-                    });
+                    }, true, function (n) { return "".concat(n, " waves"); });
                 }
                 else {
                     manager.vote(sender, playerVote);
@@ -742,9 +729,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         });
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
-            manager.unvoteMindustry(player);
+            return manager.unvoteMindustry(player);
         });
-        Events.on(EventType.GameOverEvent, function () { manager.resetVote(); });
+        Events.on(EventType.GameOverEvent, function () { return manager.resetVote(); });
         return {
             args: ["vote:boolean?"],
             description: 'Rock the vote to change map.',
@@ -758,9 +745,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (Date.now() - lastUsedSuccessfullySender < 3000)
                     (0, commands_1.fail)("This command was run recently and is on cooldown.");
                 (_b = args.vote) !== null && _b !== void 0 ? _b : (args.vote = true);
-                var playerVote = (args.vote) ? (1) : (-1);
-                playerVote *= sender.ranksAtLeast('trusted') ? (2) : (1);
-                if (!manager.voting) {
+                var playerVote = (args.vote ? 1 : -1) * (sender.ranksAtLeast('trusted') ? 2 : 1); //TODO:PR use perm instead
+                if (!manager.active) {
                     manager.start(sender, playerVote, voteDuration, threshold);
                 }
                 else {
