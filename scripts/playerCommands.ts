@@ -536,6 +536,7 @@ Available types:[yellow]
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
 		handler({args, sender, lastUsedSuccessfullySender, outputSuccess, f}){
+			if(!Mode.attack()) fail(`This command can only be run on attack.`);
 			if(args.player){
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
