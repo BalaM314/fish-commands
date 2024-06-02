@@ -320,6 +320,20 @@ exports.commands = (0, commands_1.consoleCommandList)({
             }
         }
     },
+    ban: {
+        args: ["any:string"],
+        description: "Please use the whack command instead.",
+        handler: function () {
+            (0, commands_1.fail)("Use the whack command instead.");
+        }
+    },
+    unban: {
+        args: ["any:string"],
+        description: "Please use the unwhack command instead.",
+        handler: function () {
+            (0, commands_1.fail)("Use the unwhack command instead.");
+        }
+    },
     loadfishplayerdata: {
         args: ["areyousure:boolean", "fishplayerdata:string"],
         description: "Overwrites current fish player data.",
