@@ -205,8 +205,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
-            if (server.name == config_1.Mode.name())
-                (0, commands_1.fail)("You are already connected to ".concat(server.name, "."));
             Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
             Call.connect(sender.con, server.ip, server.port);
         },
