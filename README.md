@@ -5,7 +5,7 @@ A custom commands plugin for >|||>Fish servers. Created by Brandons404, rewritte
 ## Clean and easy to use commands system
 Example code:
 ![image](https://github.com/BalaM314/fish-commands/assets/71201189/27ca4b91-dd6b-4ed2-a171-11526502bd9d)
-![image](https://github.com/BalaM314/fish-commands/assets/71201189/905cdb4e-b34f-4b4d-bc57-a8e6991d93c9)
+![image](https://github.com/BalaM314/fish-commands/assets/71201189/35d3885c-48cc-4ec8-92b0-1243bc98bdc4)
 ![image](https://github.com/BalaM314/fish-commands/assets/71201189/2c85d8d4-ef21-45b5-9235-2e79cacc9bd1)
 
 List of features:
