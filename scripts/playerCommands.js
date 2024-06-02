@@ -67,7 +67,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (!((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore))
                 (0, commands_1.fail)("Can only teleport while in a core unit.");
             if (config_1.Mode.pvp())
-                (0, commands_1.fail)("The /tp command is disabled in PVP.");
+                (0, commands_1.fail)("This command is disabled in PVP.");
             if (sender.team() !== args.player.team())
                 (0, commands_1.fail)("Cannot teleport to players on another team.");
             if ((_d = (_c = sender.unit()).hasPayload) === null || _d === void 0 ? void 0 : _d.call(_c))
@@ -572,7 +572,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!config_1.Mode.attack())
-                (0, commands_1.fail)("This command can only be run on attack.");
+                (0, commands_1.fail)("This command can only be run in Attack.");
             if (args.player) {
                 if (Date.now() - lastUsedSuccessfullySender < 20000)
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
@@ -681,7 +681,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             handler: function (_a) {
                 var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
                 if (!config_1.Mode.survival())
-                    (0, commands_1.fail)("You can only skip waves on survival.");
+                    (0, commands_1.fail)("This command is only enabled in Survival.");
                 if (Vars.state.gameOver)
                     (0, commands_1.fail)("This game is already over.");
                 if (Date.now() - lastUsedSuccessfullySender < 10000)

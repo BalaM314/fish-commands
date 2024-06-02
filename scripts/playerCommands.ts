@@ -24,7 +24,7 @@ export const commands = commandList({
 		perm: Perm.play,
 		handler({ args, sender }) {
 			if(!sender.unit()?.spawnedByCore) fail(`Can only teleport while in a core unit.`);
-			if(Mode.pvp()) fail(`The /tp command is disabled in PVP.`);
+			if(Mode.pvp()) fail(`This command is disabled in PVP.`);
 			if(sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
 			if(sender.unit().hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
 			teleportPlayer(sender.player, args.player.player);
@@ -536,7 +536,7 @@ Available types:[yellow]
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
 		handler({args, sender, lastUsedSuccessfullySender, outputSuccess, f}){
-			if(!Mode.attack()) fail(`This command can only be run on attack.`);
+			if(!Mode.attack()) fail(`This command can only be run in Attack.`);
 			if(args.player){
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
@@ -652,7 +652,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			perm: Perm.play,
 			data: {votes},
 			handler({sender, lastUsedSuccessfullySender}){
-				if(!Mode.survival()) fail(`You can only skip waves on survival.`);
+				if(!Mode.survival()) fail(`This command is only enabled in Survival.`);
 				if(Vars.state.gameOver) fail(`This game is already over.`);
 				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
 				votes.add(sender.uuid);
