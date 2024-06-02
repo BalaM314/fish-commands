@@ -299,16 +299,19 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         var spectators = new Map();
         function spectate(target) {
             spectators.set(target, target.team());
+            target.forceRespawn();
             target.player.team(Team.derelict);
             target.forceRespawn();
         }
         function resume(target) {
-            var _a;
-            target.player.team((_a = spectators.get(target)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("impossible"));
+            if (spectators.get(target) == null)
+                return; // this state is possible for a person who left not in spectate
+            target.player.team(spectators.get(target));
             spectators.delete(target);
             target.forceRespawn();
         }
         Events.on(EventType.GameOverEvent, function () { return spectators.clear(); });
+        Events.on(EventType.PlayerLeave, function (player) { return resume(player); });
         return {
             args: ["target:player?"],
             description: "Toggles spectator mode in PVP games.",
