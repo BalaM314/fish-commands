@@ -7,7 +7,7 @@ import * as commands from './commands';
 import { handleTapEvent } from './commands';
 import { Mode } from './config';
 import * as consoleCommands from "./consoleCommands";
-import { fishState, tileHistory, ipJoins } from "./globals";
+import { fishState, ipJoins, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
 import * as menus from "./menus";
 import * as packetHandlers from './packetHandlers';
@@ -15,10 +15,22 @@ import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, crash, escapeStringColorsServer, logErrors, matchFilter, processChat, serverRestartLoop } from "./utils";
+import { StringIO, crash, logErrors, processChat, serverRestartLoop } from "./utils";
 
 
-
+Events.on(EventType.ConnectionEvent, (e) => {
+	if(Vars.netServer.admins.isIPBanned(e.connection.address)){
+		api.getBanned({
+			ip: e.connection.address,
+		}, (banned) => {
+			if(!banned){
+				//If they were previously banned locally, but the API says they aren't banned, then unban them and clear the kick that the outer function already did
+				Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+				Vars.netServer.admins.kickedIPs.remove(e.connection.address);
+			}
+		});
+	}
+});
 Events.on(EventType.PlayerConnect, (e) => {
 	if(FishPlayer.shouldKickNewPlayers() && e.player.info.timesJoined == 1){
 		e.player.kick(Packets.KickReason.kick, 3600000);
@@ -57,7 +69,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		Log.info(`&yAntibot killed connection ${e.connection.address} due to too many connections`);
 		return;
 	}
-	if(e.packet.name.includes("discord.gg/GnEdS9TdV6")){
+	/*if(e.packet.name.includes("discord.gg/GnEdS9TdV6")){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
 		e.connection.kicked = true;
 		FishPlayer.onBotWhack();
@@ -70,7 +82,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		FishPlayer.onBotWhack();
 		Log.info(`&yAntibot killed connection ${e.connection.address} due to known bad name`);
 		return;
-	}
+	}*/
 	if(Vars.netServer.admins.isDosBlacklisted(e.connection.address)){
 		//threading moment, i think
 		e.connection.kicked = true;
@@ -82,9 +94,12 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 	}, (banned) => {
 		if(banned){
 			Log.info(`&lrSynced ban of ${e.packet.uuid}/${e.connection.address}.`);
-			e.connection.kick(Packets.KickReason.banned);
+			e.connection.kick(Packets.KickReason.banned, 1);
 			Vars.netServer.admins.banPlayerIP(e.connection.address);
 			Vars.netServer.admins.banPlayerID(e.packet.uuid);
+		} else {
+			Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+			Vars.netServer.admins.unbanPlayerID(e.packet.uuid);
 		}
 	});
 });
@@ -105,6 +120,9 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	FishPlayer.loadAll();
 	timers.initializeTimers();
 	menus.registerListeners();
+
+	//Cap delta
+	Time.setDeltaProvider(() => Math.min(Core.graphics.getDeltaTime() * 60, 10));
 
 	// Mute muted players
 	Vars.netServer.admins.addChatFilter((player, message) => processChat(player, message));

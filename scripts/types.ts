@@ -2,7 +2,7 @@ import type { CommandArgType, Perm } from "./commands";
 import type { FishPlayer } from "./players";
 import type { Rank, RoleFlag } from "./ranks";
 
-export type SelectClasslikeEnumKeys<C extends Function,
+export type SelectEnumClassKeys<C extends Function,
 	Key extends keyof C = keyof C
 > = Key extends unknown ? ( //trigger DCT
 	C[Key] extends C["prototype"] ? //if C[Key] is a C

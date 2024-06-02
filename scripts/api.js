@@ -180,6 +180,7 @@ function getBanned(data, callback) {
         callback(false);
         return;
     }
+    //TODO cache 4s
     var req = Http.post("http://".concat(config_1.ip, "/api/checkIsBanned"), JSON.stringify(data))
         .header('Content-Type', 'application/json')
         .header('Accept', '*/*');

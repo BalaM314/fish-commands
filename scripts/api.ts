@@ -166,6 +166,7 @@ export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:bool
 		callback(false);
 		return;
 	}
+	//TODO cache 4s
 	const req = Http.post(`http://${ip}/api/checkIsBanned`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');

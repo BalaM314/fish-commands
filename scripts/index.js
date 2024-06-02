@@ -44,6 +44,19 @@ var players_1 = require("./players");
 var staffCommands = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
+Events.on(EventType.ConnectionEvent, function (e) {
+    if (Vars.netServer.admins.isIPBanned(e.connection.address)) {
+        api.getBanned({
+            ip: e.connection.address,
+        }, function (banned) {
+            if (!banned) {
+                //If they were previously banned locally, but the API says they aren't banned, then unban them and clear the kick that the outer function already did
+                Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+                Vars.netServer.admins.kickedIPs.remove(e.connection.address);
+            }
+        });
+    }
+});
 Events.on(EventType.PlayerConnect, function (e) {
     if (players_1.FishPlayer.shouldKickNewPlayers() && e.player.info.timesJoined == 1) {
         e.player.kick(Packets.KickReason.kick, 3600000);
@@ -80,20 +93,20 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
         Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to too many connections"));
         return;
     }
-    if (e.packet.name.includes("discord.gg/GnEdS9TdV6")) {
+    /*if(e.packet.name.includes("discord.gg/GnEdS9TdV6")){
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
-        players_1.FishPlayer.onBotWhack();
-        Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to omni discord link"));
+        FishPlayer.onBotWhack();
+        Log.info(`&yAntibot killed connection ${e.connection.address} due to omni discord link`);
         return;
     }
-    if (e.packet.name.includes("счастливого 2024 года!")) {
+    if(e.packet.name.includes("счастливого 2024 года!")){
         Vars.netServer.admins.blacklistDos(e.connection.address);
         e.connection.kicked = true;
-        players_1.FishPlayer.onBotWhack();
-        Log.info("&yAntibot killed connection ".concat(e.connection.address, " due to known bad name"));
+        FishPlayer.onBotWhack();
+        Log.info(`&yAntibot killed connection ${e.connection.address} due to known bad name`);
         return;
-    }
+    }*/
     if (Vars.netServer.admins.isDosBlacklisted(e.connection.address)) {
         //threading moment, i think
         e.connection.kicked = true;
@@ -105,9 +118,13 @@ Events.on(EventType.ConnectPacketEvent, function (e) {
     }, function (banned) {
         if (banned) {
             Log.info("&lrSynced ban of ".concat(e.packet.uuid, "/").concat(e.connection.address, "."));
-            e.connection.kick(Packets.KickReason.banned);
+            e.connection.kick(Packets.KickReason.banned, 1);
             Vars.netServer.admins.banPlayerIP(e.connection.address);
             Vars.netServer.admins.banPlayerID(e.packet.uuid);
+        }
+        else {
+            Vars.netServer.admins.unbanPlayerIP(e.connection.address);
+            Vars.netServer.admins.unbanPlayerID(e.packet.uuid);
         }
     });
 });
@@ -126,6 +143,8 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     players_1.FishPlayer.loadAll();
     timers.initializeTimers();
     menus.registerListeners();
+    //Cap delta
+    Time.setDeltaProvider(function () { return Math.min(Core.graphics.getDeltaTime() * 60, 10); });
     // Mute muted players
     Vars.netServer.admins.addChatFilter(function (player, message) { return (0, utils_1.processChat)(player, message); });
     // Action filters

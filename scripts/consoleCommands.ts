@@ -5,7 +5,7 @@ import { Mode, maxTime } from "./config";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
-import { Rank, RoleFlag } from "./ranks";
+import { Rank } from "./ranks";
 import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
 
 
@@ -242,6 +242,20 @@ export const commands = consoleCommandList({
 			}
 		}
 
+	},
+	ban: {
+		args: ["any:string"],
+		description: "Please use the whack command instead.",
+		handler(){
+			fail(`Use the whack command instead.`);
+		}
+	},
+	unban: {
+		args: ["any:string"],
+		description: "Please use the unwhack command instead.",
+		handler(){
+			fail(`Use the unwhack command instead.`);
+		}
 	},
 	loadfishplayerdata: {
 		args: ["areyousure:boolean", "fishplayerdata:string"],
