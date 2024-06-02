@@ -193,7 +193,7 @@ class Color {
 	constructor(r:number, g:number, b:number);
 	constructor(r:number, g:number, b:number, a:number);
 	constructor(color:Color);
-	static blue: Color; static navy: Color; static royal: Color; static slate: Color; static sky: Color; static cyan: Color; static teal: Color; static green: Color; static acid: Color; static lime: Color; static forest: Color; static olive: Color; static yellow: Color; static gold: Color; static goldenrod: Color; static orange: Color; static brown: Color; static tan: Color; static brick: Color; static red: Color; static scarlet: Color; static crimson: Color; static coral: Color; static salmon: Color; static pink: Color; static magenta: Color; static purple: Color; static violet: Color; static maroon: Color;
+	static white: Color; static lightGray: Color; static gray: Color; static darkGray: Color; static black: Color; static clear: Color; static blue: Color; static navy: Color; static royal: Color; static slate: Color; static sky: Color; static cyan: Color; static teal: Color; static green: Color; static acid: Color; static lime: Color; static forest: Color; static olive: Color; static yellow: Color; static gold: Color; static goldenrod: Color; static orange: Color; static brown: Color; static tan: Color; static brick: Color; static red: Color; static scarlet: Color; static crimson: Color; static coral: Color; static salmon: Color; static pink: Color; static magenta: Color; static purple: Color; static violet: Color; static maroon: Color;
 	static valueOf(string:string):Color;
 	static valueOf(color:Color, hex:string):Color;
 	static HSVtoRGB(hue:number, saturation:number, value:number):Color;
@@ -481,10 +481,6 @@ class VoteSession {
 	private task: TimerTask;
 	private voted: ObjectIntMap<string>;
 	private votes: number;
-}
-const Reflect: {
-	get(thing:any, key:string):any;
-	set(thing:any, key:string, value:any):void;
 }
 
 interface Array<T> {

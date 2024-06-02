@@ -138,7 +138,7 @@ function getColor(input) {
         else if (input.includes('#')) {
             return Color.valueOf(input);
         }
-        else if (input in Color) {
+        else if ((function (input) { return input in Color; })(input)) {
             return Color[input];
         }
         else {
