@@ -43,7 +43,6 @@ var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
 var config_1 = require("./config");
-var config_2 = require("./config");
 var menus_1 = require("./menus");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -946,9 +945,9 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.onBotWhack = function () {
         this.antiBotModePersist = true;
         if (Date.now() - this.lastBotWhacked > 3600000) //1 hour since last bot whack
-            api.sendModerationMessage("!!! <@&1040193678817378305> Possible ongoing bot attack in **".concat(config_2.Mode.name(), "**"));
+            api.sendModerationMessage("!!! <@&1040193678817378305> Possible ongoing bot attack in **".concat(config_1.Mode.name(), "**"));
         else if (Date.now() - this.lastBotWhacked > 600000) //10 minutes
-            api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_2.Mode.name(), "**"));
+            api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_1.Mode.name(), "**"));
         this.lastBotWhacked = Date.now();
         this.whackFlaggedPlayers();
     };
@@ -1281,7 +1280,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.activateHeuristics = function () {
         var _this = this;
         //Blocks broken check
-        if (this.joinsLessThan(5) && !config_2.Mode.hexed()) {
+        if (this.joinsLessThan(5) && !config_1.Mode.hexed()) {
             var tripped_1 = false;
             FishPlayer.stats.heuristics.total++;
             Timer.schedule(function () {

@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initializeTimers = void 0;
-var players_1 = require("./players");
 var api_1 = require("./api");
 var config = require("./config");
-var utils_1 = require("./utils");
-var globals_1 = require("./globals");
 var config_1 = require("./config");
+var globals_1 = require("./globals");
+var players_1 = require("./players");
+var utils_1 = require("./utils");
 function initializeTimers() {
     //Autosave
     Timer.schedule(function () {

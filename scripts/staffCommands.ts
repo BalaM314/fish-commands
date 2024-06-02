@@ -1,16 +1,12 @@
 import * as api from "./api";
-import * as fjsContext from "./fjsContext";
 import { Perm, command, commandList, fail } from "./commands";
 import { getGamemode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
+import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
-import { Rank, RoleFlag } from "./ranks";
-
-import {
-	colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative,
-	getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans
-} from "./utils";
+import { Rank } from "./ranks";
+import { colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
 
 const spawnedUnits:Unit[] = [];
 

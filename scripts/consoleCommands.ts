@@ -5,7 +5,7 @@ import { Mode, maxTime } from "./config";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
-import { Rank, RoleFlag } from "./ranks";
+import { Rank } from "./ranks";
 import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
 
 

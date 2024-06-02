@@ -1,9 +1,9 @@
-import { FishPlayer } from "./players";
-import { getStaffMessages } from './api'
+import { getStaffMessages } from './api';
 import * as config from "./config";
-import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
-import { ipJoins } from "./globals";
 import { Mode } from "./config";
+import { ipJoins } from "./globals";
+import { FishPlayer } from "./players";
+import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
 
 
 export function initializeTimers(){

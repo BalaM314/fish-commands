@@ -7,7 +7,7 @@ import * as commands from './commands';
 import { handleTapEvent } from './commands';
 import { Mode } from './config';
 import * as consoleCommands from "./consoleCommands";
-import { fishState, tileHistory, ipJoins } from "./globals";
+import { fishState, ipJoins, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
 import * as menus from "./menus";
 import * as packetHandlers from './packetHandlers';

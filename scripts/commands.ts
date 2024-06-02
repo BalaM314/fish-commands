@@ -3,14 +3,8 @@ import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
-import type {
-	ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData,
-	Formattable, PartialFormatString, SelectClasslikeEnumKeys, ServerCommandHandler, TagFunction
-} from "./types";
-import {
-	crash, escapeStringColorsClient, escapeStringColorsServer, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage,
-	outputSuccess, parseError, parseTimeString, tagProcessor, tagProcessorPartial
-} from "./utils";
+import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
+import { crash, escapeStringColorsClient, escapeStringColorsServer, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
 
 //Behold, the power of typescript!
 
@@ -90,7 +84,7 @@ export class Perm {
 		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);
 	}
 }
-export type PermType = SelectClasslikeEnumKeys<typeof Perm>;
+export type PermType = SelectEnumClassKeys<typeof Perm>;
 
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */

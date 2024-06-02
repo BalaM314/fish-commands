@@ -2,8 +2,7 @@ import * as api from './api';
 import { Mode, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
 import { fishState, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
-import { Rank } from './ranks';
-import { Boolf, PartialFormatString, SelectClasslikeEnumKeys, TagFunction } from './types';
+import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
 
 export function logg(msg:string){ Call.sendMessage(msg); }
 export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
@@ -102,7 +101,7 @@ export function getColor(input:string):Color | null {
 			return new Color(col.r, col.g, col.b, col.a);
 		} else if(input.includes('#')){
 			return Color.valueOf(input);
-		} else if(((input):input is SelectClasslikeEnumKeys<typeof Color> => input in Color)(input)){
+		} else if(((input):input is SelectEnumClassKeys<typeof Color> => input in Color)(input)){
 			return Color[input];
 		} else {
 			return null;

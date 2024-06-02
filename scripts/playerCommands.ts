@@ -5,10 +5,7 @@ import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globa
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
-import {
-	capitalizeText, crash, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover,
-	StringBuilder, StringIO, teleportPlayer, to2DArray
-} from './utils';
+import { capitalizeText, crash, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
 // import { votekickmanager } from './votes';
 
 export const commands = commandList({
