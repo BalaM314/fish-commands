@@ -50,6 +50,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 // import { votekickmanager } from './votes';
+var votes_1 = require("./votes");
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
         description: 'Unpauses the game.',
@@ -572,7 +573,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!config_1.Mode.attack())
-                (0, commands_1.fail)("This command can only be run in Attack.");
+                (0, commands_1.fail)("This command can only be run on attack.");
             if (args.player) {
                 if (Date.now() - lastUsedSuccessfullySender < 20000)
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
@@ -616,118 +617,154 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, output = _a.output, f = _a.f;
             output(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
-    }, forcertv: {
+    }, forcevnw: {
+        args: ["force:boolean?"],
+        description: 'Force skip to the next wave.',
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var allCommands = _a.allCommands, sender = _a.sender, args = _a.args;
+            if (!allCommands.vnw.data.manager.voting)
+                (0, commands_1.fail)("No VNW vote is in session, start one with /VNW.");
+            if (args.force === false) {
+                Call.sendMessage("VNW: [red]Votes cleared by admin [yellow]".concat(sender.name, "[red]."));
+                allCommands.vnw.data.manager.forceVote(false);
+            }
+            else {
+                Call.sendMessage("VNW: [green]Vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
+                allCommands.vnw.data.manager.forceVote(true);
+            }
+        },
+    }, vnw: (0, commands_1.command)(function () {
+        var voteDuration = 1.5 * 60000;
+        var threshold = 5;
+        var target = 0; // the ideal amount of waves to skip
+        var manager = new votes_1.VoteManager(function () {
+            //my got this is a abomination, but its reliable
+            var saveWaveTime = Vars.state.wavetime;
+            var saveWaveEnemies = Vars.state.rules.waitEnemies;
+            Core.app.post(function () {
+                Vars.state.wave += target - 1;
+                Vars.state.wavetime = 1;
+                Vars.state.rules.waitEnemies = false;
+                Core.app.post(function () {
+                    Core.app.post(function () {
+                        Vars.state.wavetime = saveWaveTime;
+                        Vars.state.rules.waitEnemies = saveWaveEnemies;
+                    });
+                });
+            });
+            Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.');
+        }, function () {
+            Call.sendMessage('VNW: [red]Vote failed.');
+            target = 0;
+        }, function (player) {
+            Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(target, "[white] wave(s). [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal(), "[white] required."));
+        }, function (player) {
+            Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(manager.scoreVotes(), "[white] votes, [green[").concat(manager.getGoal() - 1, "[white] required."));
+        });
+        Events.on(EventType.PlayerLeave, function (_a) {
+            var player = _a.player;
+            manager.unvoteMindustry(player);
+        });
+        Events.on(EventType.GameOverEvent, function () { manager.resetVote(); });
+        return {
+            args: ["vote:boolean?"], // will cast "yes" and "no" ... thats good.
+            description: "Vote to start the next wave.",
+            perm: commands_1.Perm.play,
+            data: { target: target, manager: manager },
+            handler: function (_a) {
+                var _b;
+                var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+                if (!config_1.Mode.survival())
+                    (0, commands_1.fail)("You can only skip waves on survival.");
+                if (Vars.state.gameOver)
+                    (0, commands_1.fail)("This game is already over.");
+                if (Date.now() - lastUsedSuccessfullySender < 1000)
+                    (0, commands_1.fail)("This command was run recently and is on cooldown.");
+                (_b = args.vote) !== null && _b !== void 0 ? _b : (args.vote = true);
+                var playerVote = (args.vote) ? (1) : (-1);
+                playerVote *= sender.ranksAtLeast('trusted') ? (2) : (1); // vote weights
+                if (!manager.voting) {
+                    (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", ["1 Wave", "5 Waves", "10 Waves"], sender, function (_a) {
+                        var option = _a.option;
+                        switch (option) {
+                            case "1 Wave": {
+                                target = 1;
+                                break;
+                            }
+                            case "5 Waves": {
+                                target = 5;
+                                break;
+                            }
+                            case "10 Waves": {
+                                target = 10;
+                                break;
+                            }
+                        }
+                        ;
+                        manager.start(sender, playerVote, voteDuration, threshold);
+                    });
+                }
+                else {
+                    manager.vote(sender, playerVote);
+                }
+            }
+        };
+    }), forcertv: {
         args: ["force:boolean?"],
         description: 'Force skip to the next map.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
+            if (!allCommands.rtv.data.manager.voting)
+                (0, commands_1.fail)("No RTV vote is in session, start one with /RTV.");
             if (args.force === false) {
-                Call.sendMessage("RTV: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
-                allCommands.rtv.data.votes.clear();
+                Call.sendMessage("RTV: [red]Votes cleared by admin [yellow]".concat(sender.name, "[red]."));
+                allCommands.rtv.data.manager.forceVote(false);
             }
             else {
-                Call.sendMessage("RTV: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], changing map."));
-                (0, utils_1.neutralGameover)();
+                Call.sendMessage("RTV: [green]Vote was forced by admin [yellow]".concat(sender.name, "[green]."));
+                allCommands.rtv.data.manager.forceVote(true);
             }
         }
-    }, forcevnw: {
-        args: ["force:boolean?"],
-        description: 'Force the next wave.',
-        perm: commands_1.Perm.admin,
-        handler: function (_a) {
-            var args = _a.args, sender = _a.sender, allCommands = _a.allCommands;
-            if (args.force === false) {
-                Call.sendMessage("VNW: [red] votes cleared by admin [yellow]".concat(sender.name, "[red]."));
-                allCommands.vnw.data.votes.clear();
-            }
-            else {
-                var oldTime_1 = Vars.state.wavetime;
-                Vars.state.wavetime = 1;
-                Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_1; }); });
-                (0, utils_1.logAction)("forced next wave", sender);
-                allCommands.vnw.data.votes.clear();
-                Call.sendMessage("VNW: [green] vote was forced by admin [yellow]".concat(sender.name, "[green], skipping to next wave"));
-            }
-        }
-    }, vnw: (0, commands_1.command)(function () {
-        var votes = new Set();
-        var ratio = 0.4;
-        var checkVotes = function (currentVotes, requiredVotes) {
-            if (currentVotes >= requiredVotes) {
-                var oldTime_2 = Vars.state.wavetime;
-                Vars.state.wavetime = 1;
-                Core.app.post(function () { Core.app.post(function () { Vars.state.wavetime = oldTime_2; }); });
-                Call.sendMessage('VNW: [green] vote passed, skipping to next wave');
-                votes.clear();
-            }
-        };
+    }, rtv: (0, commands_1.command)(function () {
+        var voteDuration = 1.5 * 60000;
+        var threshold = 5;
+        var manager = new votes_1.VoteManager(function () {
+            Call.sendMessage("RTV:[green] Vote has passed, changing map.");
+            (0, utils_1.neutralGameover)();
+        }, function () {
+            Call.sendMessage("RTV:[red] Vote failed.");
+        }, function (player) {
+            Call.sendMessage("RTV: ".concat(player.name, "[white] wants to change the map. [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal(), "[white] required."));
+        }, function (player) {
+            Call.sendMessage("RTV: ".concat(player.name, "[white] has left the game. [green]").concat(manager.scoreVotes(), "[white] votes, [green]").concat(manager.getGoal() - 1, "[white] required."));
+        });
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
-            if (votes.has(player.uuid())) {
-                votes.delete(player.uuid());
-                var currentVotes = votes.size;
-                var requiredVotes = Math.ceil(ratio * Groups.player.size());
-                Call.sendMessage("VNW: [accent]".concat(player.name, "[] left, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
-                checkVotes(currentVotes, requiredVotes);
-            }
+            manager.unvoteMindustry(player);
         });
-        Events.on(EventType.GameOverEvent, function () { return votes.clear(); });
+        Events.on(EventType.GameOverEvent, function () { manager.resetVote(); });
         return {
-            args: [],
-            description: "Vote to start the next wave.",
+            args: ["vote:boolean?"],
+            description: 'Rock the vote to change map.',
             perm: commands_1.Perm.play,
-            data: { votes: votes },
+            data: { manager: manager },
             handler: function (_a) {
-                var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
-                if (!config_1.Mode.survival())
-                    (0, commands_1.fail)("This command is only enabled in Survival.");
-                if (Vars.state.gameOver)
-                    (0, commands_1.fail)("This game is already over.");
-                if (Date.now() - lastUsedSuccessfullySender < 10000)
-                    (0, commands_1.fail)("This command was run recently and is on cooldown.");
-                votes.add(sender.uuid);
-                var currentVotes = votes.size;
-                var requiredVotes = Math.ceil(ratio * Groups.player.size());
-                Call.sendMessage("[white]VNW: ".concat(sender.name, "[white] wants to skip this wave, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
-                checkVotes(currentVotes, requiredVotes);
-            }
-        };
-    }), rtv: (0, commands_1.command)(function () {
-        var votes = new Set();
-        var ratio = 0.5;
-        Events.on(EventType.PlayerLeave, function (_a) {
-            var player = _a.player;
-            if (votes.has(player.uuid())) {
-                votes.delete(player.uuid());
-                var currentVotes = votes.size;
-                var requiredVotes = Math.ceil(ratio * Groups.player.size());
-                Call.sendMessage("RTV: [accent]".concat(player.name, "[] left, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
-                if (currentVotes >= requiredVotes) {
-                    Call.sendMessage('RTV: [green] vote passed, changing map.');
-                    (0, utils_1.neutralGameover)();
-                }
-            }
-        });
-        Events.on(EventType.GameOverEvent, function () { return votes.clear(); });
-        return {
-            args: [],
-            description: 'Rock the vote to change map',
-            perm: commands_1.Perm.play,
-            data: { votes: votes },
-            handler: function (_a) {
-                var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+                var _b;
+                var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
                 if (Vars.state.gameOver)
                     (0, commands_1.fail)("This map is already finished, cannot RTV. Wait until the next map loads.");
                 if (Date.now() - lastUsedSuccessfullySender < 3000)
                     (0, commands_1.fail)("This command was run recently and is on cooldown.");
-                votes.add(sender.uuid);
-                var currentVotes = votes.size;
-                var requiredVotes = Math.ceil(ratio * Groups.player.size());
-                Call.sendMessage("RTV: [accent]".concat(sender.cleanedName, "[] wants to change the map, [green]").concat(currentVotes, "[] votes, [green]").concat(requiredVotes, "[] required"));
-                if (currentVotes >= requiredVotes) {
-                    Call.sendMessage('RTV: [green] vote passed, changing map.');
-                    (0, utils_1.neutralGameover)();
+                (_b = args.vote) !== null && _b !== void 0 ? _b : (args.vote = true);
+                var playerVote = (args.vote) ? (1) : (-1);
+                playerVote *= sender.ranksAtLeast('trusted') ? (2) : (1);
+                if (!manager.voting) {
+                    manager.start(sender, playerVote, voteDuration, threshold);
+                }
+                else {
+                    manager.vote(sender, playerVote);
                 }
             }
         };

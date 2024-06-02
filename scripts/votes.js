@@ -1,97 +1,105 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.votekickmanager = void 0;
-var players_1 = require("./players");
+exports.VoteManager = void 0;
 var VoteManager = /** @class */ (function () {
-    function VoteManager(onStart, onPass, onFail, getVotesToPass, allowNoVotes, timeout, endOnVoteReached) {
-        if (getVotesToPass === void 0) { getVotesToPass = function () { return Math.ceil(Groups.player.size() / 2); }; }
-        if (allowNoVotes === void 0) { allowNoVotes = true; }
-        if (timeout === void 0) { timeout = 30; }
-        if (endOnVoteReached === void 0) { endOnVoteReached = true; }
-        this.onStart = onStart;
-        this.onPass = onPass;
+    function VoteManager(onSuccess, // implementation handle vote success
+    onFail, // implementation handle vote fail
+    //I hate that this is inconsistant, but its the best setup 
+    onVote, // implemenation handle player voting
+    onUnVote) {
+        this.onSuccess = onSuccess;
         this.onFail = onFail;
-        this.getVotesToPass = getVotesToPass;
-        this.allowNoVotes = allowNoVotes;
-        this.timeout = timeout;
-        this.endOnVoteReached = endOnVoteReached;
-        this.currentSession = null;
+        this.onVote = onVote;
+        this.onUnVote = onUnVote;
+        this.goal = 0;
+        this.voting = false;
+        this.timer = null;
+        this.votes = new Map();
+        this.onSuccess = onSuccess;
+        this.onFail = onFail;
+        this.onVote = onVote;
+        this.onUnVote = onUnVote;
     }
     ;
-    VoteManager.prototype.start = function (data, player) {
+    VoteManager.prototype.start = function (player, value, voteTime, threshold) {
         var _this = this;
-        this.currentSession = {
-            votes: {},
-            data: data
-        };
-        this.onStart(this.currentSession);
-        if (player)
-            this.handleVote(player, 1);
-        if (this.timeout)
-            Timer.schedule(function () { return _this.end(); }, this.timeout);
-    };
-    VoteManager.prototype.handleVote = function (player, vote) {
-        if (vote == -1 && !this.allowNoVotes)
-            return; //no votes are not allowed
-        if (!this.currentSession)
-            return; //no active vote session
-        this.currentSession.votes[player.uuid] = vote;
-        //maybe end the votekick
-        if (this.endOnVoteReached && this.checkPass())
-            this.pass();
+        this.goal = threshold;
+        this.voting = true;
+        this.timer = Timer.schedule(function () { return _this.end(); }, voteTime / 1000);
+        this.vote(player, value);
     };
     VoteManager.prototype.end = function () {
-        if (!this.currentSession)
+        if (!this.checkVote()) {
+            this.failed();
+        }
+    };
+    VoteManager.prototype.vote = function (player, value) {
+        if (!this.voting || player == null || player.usid == null)
+            return; //no vote is going on
+        this.votes.set(player.uuid, value);
+        Log.info("Player voted, Name : ".concat(player.name, ",UUID : ").concat(player.uuid));
+        this.onVote(player);
+        this.checkVote();
+    };
+    //unused unvote talking a proper fish player, useful If we ever add a unvote command
+    VoteManager.prototype.unvoteFish = function (player) {
+        if (!this.voting || player == null || player.uuid == null)
             return;
-        if (this.checkPass())
-            this.pass();
+        if (!this.votes.delete(player.uuid))
+            Log.err("Failed to Unvote Player uuid:".concat(player.uuid));
+        this.onUnVote(player);
+        this.checkVote();
+    };
+    //unvote with a mindustry player, which occurs during a playerleave event.
+    //I hate this method with a passion
+    VoteManager.prototype.unvoteMindustry = function (player) {
+        if (!this.voting || player == null)
+            return;
+        if (!this.votes.delete(player.uuid()))
+            Log.err("Failed to Unvote Player uuid:".concat(player.uuid()));
+        this.onUnVote(player);
+        this.checkVote();
+    };
+    VoteManager.prototype.forceVote = function (force) {
+        if (!this.voting)
+            return;
+        if (force)
+            this.succeeded();
         else
-            this.fail();
+            this.failed();
     };
-    VoteManager.prototype.checkPass = function () {
-        if (!this.currentSession)
-            return false; //no active vote session, error
-        var votes = VoteManager.totalVotes(this.currentSession);
-        return votes >= this.getVotesToPass();
+    VoteManager.prototype.failed = function () {
+        this.resetVote();
+        this.onFail();
     };
-    VoteManager.prototype.pass = function () {
-        if (!this.currentSession)
-            return;
-        this.onPass(this.currentSession);
-        this.currentSession = null;
+    VoteManager.prototype.succeeded = function () {
+        this.resetVote();
+        this.onSuccess();
     };
-    VoteManager.prototype.fail = function () {
-        if (!this.currentSession)
-            return;
-        this.onFail(this.currentSession);
-        this.currentSession = null;
+    VoteManager.prototype.resetVote = function () {
+        if (this.timer !== null)
+            this.timer.cancel();
+        this.votes.clear();
+        this.voting = false;
     };
-    VoteManager.totalVotes = function (session) {
-        return Object.values(session.votes).reduce(function (acc, a) { return acc + a; }, 0);
+    VoteManager.prototype.getGoal = function () {
+        if (Groups.player.size() >= this.goal) {
+            return (this.goal);
+        }
+        return (Groups.player.size());
+    };
+    VoteManager.prototype.scoreVotes = function () {
+        var scoredVote = 0;
+        this.votes.forEach(function (vote) { return (scoredVote += vote); });
+        return scoredVote;
+    };
+    VoteManager.prototype.checkVote = function () {
+        if (this.scoreVotes() >= this.getGoal()) {
+            this.succeeded();
+            return true;
+        }
+        return false;
     };
     return VoteManager;
 }());
-exports.votekickmanager = new VoteManager(function (_a) {
-    var data = _a.data;
-    if (!data.initiator.hasPerm("bypassVoteFreeze")) {
-        data.initiator.freeze(); //TODO freeze
-    }
-    if (!data.target.hasPerm("bypassVoteFreeze")) {
-        data.target.freeze();
-    }
-}, function (_a) {
-    var data = _a.data;
-    data.target.player.kick(Packets.KickReason.vote, 3600 * 1000);
-    data.initiator.unfreeze();
-}, function (_a) {
-    var data = _a.data;
-    data.target.unfreeze();
-    data.initiator.unfreeze();
-}, undefined, true, 30, false);
-//test
-exports.votekickmanager.start({
-    initiator: players_1.FishPlayer.getByName("BalaM314"),
-    target: players_1.FishPlayer.getByName("sussyGreefer"),
-});
-exports.votekickmanager.handleVote(players_1.FishPlayer.getByName("Fish"), 1);
-// this should end the votekick
+exports.VoteManager = VoteManager;
