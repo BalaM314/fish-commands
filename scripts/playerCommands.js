@@ -302,6 +302,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         var spectators = new Map();
         function spectate(target) {
             spectators.set(target, target.team());
+            target.forceRespawn();
             target.player.team(Team.derelict);
             target.forceRespawn();
         }

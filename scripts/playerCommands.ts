@@ -255,6 +255,7 @@ export const commands = commandList({
 		const spectators = new Map<FishPlayer, Team>();
 		function spectate(target:FishPlayer){
 			spectators.set(target, target.team());
+			target.forceRespawn();
 			target.player.team(Team.derelict);
 			target.forceRespawn();
 		}
