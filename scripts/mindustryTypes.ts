@@ -1,20 +1,21 @@
 //this is fine
-//TODO move to `declare global`
 
-declare function floatf<T>(input:T):T;
+declare global {
 
-declare const Call: any;
-declare const Log: {
-	debug(message:string);
-	info(message:string);
-	warn(message:string);
-	err(message:string);
-	err(error:Error);
+function floatf<T>(input:T):T;
+
+const Call: any;
+const Log: {
+	debug(message:string):void;
+	info(message:string):void;
+	warn(message:string):void;
+	err(message:string):void;
+	err(error:Error):void;
 };
-declare const Strings: {
+const Strings: {
 	stripColors(string:string): string;
 };
-declare const Vars: {
+const Vars: {
 	netServer: {
 		admins: Administration;
 		clientCommands: CommandHandler;
@@ -37,7 +38,7 @@ declare const Vars: {
 			waveTeam:Team;
 			waves:boolean;
 		}
-		set(state:GameState);
+		set(state:State):void;
 		gameOver:boolean;
 		wave:number;
 		map: MMap;
@@ -54,8 +55,14 @@ declare const Vars: {
 	tilesize: 8;
 	world: World;
 };
-declare type CommandHandler = any;
-declare const CommandHandler: CommandHandler;
+class State {
+	static paused: State;
+	static playing: State;
+	static menu: State;
+}
+type Scripts = any;
+type CommandHandler = any;
+const CommandHandler: CommandHandler;
 type Content = any;
 class World {
 	build(x:number, y:number):Building | null;
@@ -73,8 +80,8 @@ class Gamemode {
 	name():string;
 	valid(map:MMap):boolean;
 }
-declare type Throwable = any;
-declare class Administration {
+type Throwable = any;
+class Administration {
 	dosBlacklist: ObjectSet<string>;
 	kickedIPs: ObjectMap<string, number>;
 	findByName(info:string):ObjectSet<PlayerInfo>;
@@ -100,12 +107,12 @@ declare class Administration {
 	static ActionType: ActionType;
 	static PlayerInfo: typeof PlayerInfo;
 }
-declare const Events: {
-	on(event:EventType, handler:(e:any) => void);
-	fire(event:Event);
+const Events: {
+	on(event:EventType, handler:(e:any) => void):void;
+	fire(event:MEvent):void;
 }
-type Event = any;
-declare class Tile {
+type MEvent = any;
+class Tile {
 	x:number; y:number;
 	build: Building | null;
 	breakable():boolean;
@@ -114,32 +121,32 @@ declare class Tile {
 	setNet(block:Block, team:Team, rotation:number):void;
 	getLinkedTiles(callback:(t:Tile) => void):void;
 }
-declare const Menus: {
+const Menus: {
 	registerMenu(listener:MenuListener):number;
 }
-type MenuListener = (player:Player, option:number) => unknown;
-declare const UnitTypes: {
+type MenuListener = (player:mindustryPlayer, option:number) => unknown;
+const UnitTypes: {
 	[index:string]: UnitType;
 }
-declare const Sounds: {
+const Sounds: {
 	[index:string]: Sound;
 }
 type Sound = any;
-declare const Blocks: {
+const Blocks: {
 	[index:string]: Block;
 }
-declare class Block {
+class Block {
 	name: string;
 	buildType: Building;
 	id: number;
 	localizedName: string;
 }
 type Building = any;
-declare const Items: Record<string, Item>;
-declare class Item {
+const Items: Record<string, Item>;
+class Item {
 	
 }
-declare class Team {
+class Team {
 	static derelict:Team;
 	static sharded:Team;
 	static crux:Team;
@@ -154,45 +161,45 @@ declare class Team {
 	id:number;
 }
 type TeamData = any;
-declare const StatusEffects: {
+const StatusEffects: {
 	[index:string]: StatusEffect;
 }
 type StatusEffect = any;
-declare const Fx: {
+const Fx: {
 	[index:string]: Effect;
 }
 type Effect = any;
-declare const Align: {
+const Align: {
 	[index:string]: any;
 }
-declare const Groups: {
+const Groups: {
 	player: EntityGroup<mindustryPlayer>;
 	unit: EntityGroup<Unit>;
 	fire: EntityGroup<Fire>;
 	build: EntityGroup<Building>;
 }
 type Fire = any;
-declare class Vec2 {
+class Vec2 {
 	constructor(x:number, y:number);
-	set(v:Vec2);
-	set(x:number, y:number);
+	set(v:Vec2):Vec2;
+	set(x:number, y:number):Vec2;
 }
 /* mindustry.gen.Player */
-declare type mindustryPlayer = any;
-declare const Player: mindustryPlayer;
-declare class Color {
-	static [index:string]: Color;
+type mindustryPlayer = any;
+const Player: mindustryPlayer;
+class Color {
 	constructor();
 	constructor(rgba8888:number);
 	constructor(r:number, g:number, b:number);
 	constructor(r:number, g:number, b:number, a:number);
 	constructor(color:Color);
+	static blue: Color; static navy: Color; static royal: Color; static slate: Color; static sky: Color; static cyan: Color; static teal: Color; static green: Color; static acid: Color; static lime: Color; static forest: Color; static olive: Color; static yellow: Color; static gold: Color; static goldenrod: Color; static orange: Color; static brown: Color; static tan: Color; static brick: Color; static red: Color; static scarlet: Color; static crimson: Color; static coral: Color; static salmon: Color; static pink: Color; static magenta: Color; static purple: Color; static violet: Color; static maroon: Color;
 	static valueOf(string:string):Color;
-	static valueOf(color:Color, hex:string);
+	static valueOf(color:Color, hex:string):Color;
 	static HSVtoRGB(hue:number, saturation:number, value:number):Color;
 	rand():Color;
 }
-declare const Core: {
+const Core: {
 	settings: {
 		get<T = unknown>(key:string, defaultValue?:T):T;
 		getDataDirectory():Fi;
@@ -213,7 +220,7 @@ declare const Core: {
 		getDeltaTime():number;
 	}
 }
-declare const Mathf: {
+const Mathf: {
 	halfPi: number;
 	PI2: number;
 
@@ -222,38 +229,37 @@ declare const Mathf: {
 	len(x:number, y:number):number;
 	atan2(x:number, y:number):number;
 }
-declare const SaveIO: {
+const SaveIO: {
 	save(file:Fi):void;
 }
-declare const Timer: {
+const Timer: {
 	schedule(func:() => unknown, delaySeconds:number, intervalSeconds?:number, repeatCount?:number):TimerTask;
 }
-declare class TimerTask {
+class TimerTask {
 	cancel():void;
 }
-declare const Time: {
+const Time: {
 	millis(): number;
 	setDeltaProvider(provider: () => number):void;
 }
-declare const GameState: {
+const GameState: {
 	State: Record<"playing" | "paused", any>;
 }
-declare class HttpRequest {
+class HttpRequest {
 	submit(func:(response:HttpResponse) => void):void;
 	error(func:(exception:any) => void):void;
 	header(name:string, value:string):HttpRequest;
 	timeout: number;
 }
-declare class HttpResponse {
+class HttpResponse {
 	getResultAsString():string;
 }
-declare const Http: {
+const Http: {
 	post(url:string, content:string):HttpRequest;
 	get(url:string):HttpRequest;
 	get(url:string, callback:(res:HttpResponse) => unknown, error:(err:any) => unknown):void;
 }
-type Administration = any;
-declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
+class Seq<T> {
 	items: (T | null)[];
 	size: number;
 	constructor();
@@ -268,10 +274,10 @@ declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
 	retainAll(pred:(item:T) => boolean):Seq<T>;
 	select(pred:(item:T) => boolean):Seq<T>;
 	find(pred:(item:T) => boolean):T;
-	each(func:(item:T) => unknown);
+	each(func:(item:T) => unknown):void;
 	isEmpty():boolean;
 	map<R>(mapFunc:(item:T) => R):Seq<R>;
-	toString(separator:string, stringifier?:(item:T) => string);
+	toString(separator?:string, stringifier?:(item:T) => string):string;
 	toArray():T[];
 	copy():Seq<T>;
 	sort(comparator?:(item:T) => number):Seq<T>;
@@ -280,7 +286,7 @@ declare class Seq<T> implements Iterable<T>, ArrayLike<T> {
 	get(index:number):T | null;
 }
 
-declare class ObjectSet<T> {
+class ObjectSet<T> {
 	size:number;
 	select(predicate:(item:T) => boolean):ObjectSet<T>;
 	each(func:(item:T) => unknown):void;
@@ -291,7 +297,7 @@ declare class ObjectSet<T> {
 	get(key:T):T;
 	first():T;
 }
-declare class ObjectMap<K, V> {
+class ObjectMap<K, V> {
 	put(key:K, value:V):void;
 	get(key:K):V;
 	remove(key:K):V | null;
@@ -299,22 +305,21 @@ declare class ObjectMap<K, V> {
 	size:number;
 	entries(): unknown;
 }
-declare class ObjectIntMap<K> {
+class ObjectIntMap<K> {
 	put(key:K, value:number):void;
 	get(key:K):number;
 	increment(key:K):void;
 	clear():void;
 	size:number;
 	entries(): {
-		forEach(func:(item:T) => unknown):void;
 		toArray():Seq<ObjectIntMapEntry<K>>;
 	};
 }
-declare class ObjectIntMapEntry<K> {
+class ObjectIntMapEntry<K> {
 	key:K;
 	value:number;
 }
-declare class EntityGroup<T> {
+class EntityGroup<T> {
 	copy(seq:Seq<T>):Seq<T>;
 	each(func:(item:T) => unknown):void;
 	getByID(id:number):T;
@@ -326,9 +331,9 @@ declare class EntityGroup<T> {
 	clear():void;
 }
 
-declare function importPackage(package:any):void;
-declare const Packages: Record<string, any>;
-declare const EventType: Record<string, EventType>;
+function importPackage(package:any):void;
+const Packages: Record<string, any>;
+const EventType: Record<string, EventType>;
 type EventType = any;
 interface PlayerAction {
 	player:mindustryPlayer;
@@ -336,18 +341,18 @@ interface PlayerAction {
 	tile:Tile | null;
 }
 type ActionType = any;
-declare const ActionType:Record<string, ActionType>;
+const ActionType:Record<string, ActionType>;
 type Unit = any;
 type NetConnection = any;
-declare class Command {
+class Command {
 	text:string;
 	paramText:string;
 	description:string;
 	params:any[];
 }
 
-declare class JavaFile {}
-declare class Fi {
+class JavaFile {}
+class Fi {
 	constructor(path:string);
 	file(): JavaFile;
 	child(path:string): Fi;
@@ -355,22 +360,22 @@ declare class Fi {
 	absolutePath():string;
 }
 
-declare class Pattern {
+class Pattern {
 	static matches(regex:string, target:string):boolean;
 	static compile(regex:string):Pattern;
 	matcher(input:string):Matcher;
 }
-declare class Matcher {
+class Matcher {
 	replaceAll(replacement:string):string;
 	matches():boolean;
 	group(index:number):string;
 }
-declare class Runtime {
+class Runtime {
 	static getRuntime():Runtime;
 	exec(command:string, envp:string[] | null, dir:JavaFile):Process;
 }
-declare class ProcessBuilder {
-	constructor(...args:string[]){}
+class ProcessBuilder {
+	constructor(...args:string[]);
 	directory(file?:JavaFile):ProcessBuilder;
 	redirectErrorStream(value:boolean):ProcessBuilder;
 	redirectOutput(value:any):ProcessBuilder;
@@ -381,26 +386,26 @@ declare class ProcessBuilder {
 		INHERIT: any;
 	}
 }
-declare class Process {
-	waitFor();
+class Process {
+	waitFor():void;
 	exitValue():number;
 }
 
-declare const Packets: {
+const Packets: {
 	KickReason: Record<string, KickReason>;
 };
-declare class KickReason {
+class KickReason {
 	quiet: boolean;
 }
 
-declare class ConstructBlock {
+class ConstructBlock {
 	static ConstructBuild: any;
 }
-declare const Prop: any;
+const Prop: any;
 
-declare function print(message:string):void;
+function print(message:string):void;
 
-declare class PlayerInfo {
+class PlayerInfo {
 	/**uuid */
 	id: string;
 	lastName: string;
@@ -416,7 +421,7 @@ declare class PlayerInfo {
 	plainLastName(): string;
 }
 
-declare class UnitType {
+class UnitType {
 	spawn(team:Team, x:number, y:number):Unit;
 	create(team:Team):Unit;
 	health: number;
@@ -425,8 +430,8 @@ declare class UnitType {
 	name: string;
 	localizedName: string;
 }
-declare class MissileUnitType extends UnitType {}
-declare class LogicAI {
+class MissileUnitType extends UnitType {}
+class LogicAI {
 	controller: Building | null;
 }
 interface MapTags {
@@ -439,15 +444,15 @@ interface MapTags {
 	build?:number;
 	genfilters?:string;
 }
-declare class Maps {
-	setNextMapOverride(map:MMap);
+class Maps {
+	setNextMapOverride(map:MMap):void;
 	all():Seq<MMap>;
 	customMaps():Seq<MMap>;
-	byName(name:string):MMap | Null;
+	byName(name:string):MMap | null;
 	reload():void;
 	saveMap(baseTags:MapTags):MMap;
 }
-declare class MMap {
+class MMap {
 	readonly custom:boolean;
 	readonly file:Fi;
 	width:number;
@@ -461,23 +466,23 @@ declare class MMap {
 	plainDescription():string;
 }
 
-declare class Sort {
+class Sort {
 	static instance():Sort;
-	sort(input:Seq<unknown> | unknown[]);
-	sort(input:Seq<unknown> | unknown[], fromIndex:number, toIndex:number);
+	sort(input:Seq<unknown> | unknown[]):void;
+	sort(input:Seq<unknown> | unknown[], fromIndex:number, toIndex:number):void;
 }
-declare class ServerControl {
+class ServerControl {
 	static instance: ServerControl;
 	handler: CommandHandler;
 }
 
-declare class VoteSession {
+class VoteSession {
 	private target: mindustryPlayer;
 	private task: TimerTask;
 	private voted: ObjectIntMap<string>;
 	private votes: number;
 }
-declare const Reflect: {
+const Reflect: {
 	get(thing:any, key:string):any;
 	set(thing:any, key:string, value:any):void;
 }
@@ -485,10 +490,10 @@ declare const Reflect: {
 interface Array<T> {
   filter(predicate: BooleanConstructor, thisArg?: any): (T extends (false | 0 | "" | null | undefined) ? never : T)[];
 }
-declare const Threads: {
+const Threads: {
 	daemon(callback:() => unknown):void;
 }
-declare const Tmp: {
+const Tmp: {
 	//not full
 	v1:Vec2;
 	v2:Vec2;
@@ -507,7 +512,7 @@ declare const Tmp: {
 	c3:Color;
 	c4:Color;
 }
-declare class EffectCallPacket2 {
+class EffectCallPacket2 {
 	effect:Effect;
 	x:number;
 	y:number;
@@ -515,9 +520,11 @@ declare class EffectCallPacket2 {
 	color:Color;
 	data:any;
 }
-declare class LabelReliableCallPacket {
+class LabelReliableCallPacket {
 	message:string;
 	duration:number;
 	worldx:number;
 	worldy:number;
+}
+
 }
