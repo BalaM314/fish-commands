@@ -250,15 +250,18 @@ export const commands = commandList({
 		const spectators = new Map<FishPlayer, Team>();
 		function spectate(target:FishPlayer){
 			spectators.set(target, target.team());
+			target.forceRespawn();
 			target.player.team(Team.derelict);
 			target.forceRespawn();
 		}
 		function resume(target:FishPlayer){
-			target.player.team(spectators.get(target) ?? crash("impossible"));
+			if(spectators.get(target) == null) return; // this state is possible for a person who left not in spectate
+			target.player.team(spectators.get(target));
 			spectators.delete(target);
 			target.forceRespawn();
 		}
 		Events.on(EventType.GameOverEvent, () => spectators.clear());
+		Events.on(EventType.PlayerLeave, (player) => resume(player));
 		return {
 			args: ["target:player?"],
 			description: `Toggles spectator mode in PVP games.`,
