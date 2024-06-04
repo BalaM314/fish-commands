@@ -144,7 +144,7 @@ exports.commands = (0, commands_1.commandList)({
             args.player.stop(sender, time, (_d = args.message) !== null && _d !== void 0 ? _d : undefined);
             (0, utils_1.logAction)('stopped', sender, args.player, (_e = args.message) !== null && _e !== void 0 ? _e : undefined, time);
             //TODO outputGlobal()
-            Call.sendMessage("[orange]Player \"".concat(args.player.name, "[orange]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
+            Call.sendMessage("[orange]Player \"".concat(args.player.prefixedName, "[orange]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
         }
     },
     free: {
@@ -307,7 +307,7 @@ exports.commands = (0, commands_1.commandList)({
             if (args.player.history && args.player.history.length > 0) {
                 output("[yellow]_______________Player history_______________\n\n" +
                     args.player.history.map(function (e) {
-                        return "".concat(e.by, " [yellow]").concat(e.action, " ").concat(args.player.name, " [white]").concat((0, utils_1.formatTimeRelative)(e.time));
+                        return "".concat(e.by, " [yellow]").concat(e.action, " ").concat(args.player.prefixedName, " [white]").concat((0, utils_1.formatTimeRelative)(e.time));
                     }).join("\n"));
             }
             else {
@@ -435,7 +435,7 @@ exports.commands = (0, commands_1.commandList)({
                         (0, utils_1.logAction)("banned", sender, uuid);
                         outputSuccess(f(templateObject_29 || (templateObject_29 = __makeTemplateObject(["Banned player ", ". [yellow]Unable to determine IP.[]"], ["Banned player ", ". [yellow]Unable to determine IP.[]"])), uuid));
                     }
-                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.player.name, "."); });
+                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
                 }, false);
                 return;
             }
@@ -453,7 +453,7 @@ exports.commands = (0, commands_1.commandList)({
                     Log.info("".concat(option.ip(), "/").concat(option.uuid(), " was banned."));
                     (0, utils_1.logAction)("banned", sender, option.getInfo());
                     outputSuccess(f(templateObject_30 || (templateObject_30 = __makeTemplateObject(["Banned player ", "."], ["Banned player ", "."])), option));
-                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.player.name, "."); });
+                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
                 }, false);
             }, true, function (opt) { return opt.name; });
         }
@@ -502,7 +502,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args;
-            players_1.FishPlayer.messageMuted(sender.player.name, args.message);
+            players_1.FishPlayer.messageMuted(sender.prefixedName, args.message);
         }
     },
     info: {
@@ -511,13 +511,13 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, output = _a.output, f = _a.f;
-            var info = args.target.player.info;
+            var info = args.target.info();
             var names = args.hideColors
                 ? __spreadArray([], __read(new Set(info.names.map(function (n) { return Strings.stripColors(n); }).toArray())), false).join(", ")
                 : info.names.map(utils_1.escapeStringColorsClient).toString(", ");
             output(f(templateObject_34 || (templateObject_34 = __makeTemplateObject(["[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]Names used: [[", "]"], ["\\\n[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]Names used: [[", "]"])), args.target, (0, utils_1.escapeStringColorsClient)(args.target.name), args.target.player.id.toString(), args.target.rank, Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), (0, utils_1.colorBadBoolean)(!args.target.hasPerm("play")), args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", (0, utils_1.colorBadBoolean)(args.target.muted), (0, utils_1.colorBadBoolean)(args.target.autoflagged), info.timesJoined, info.timesKicked, names));
             if (sender.hasPerm("viewUUIDs"))
-                output(f(templateObject_35 || (templateObject_35 = __makeTemplateObject(["\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""], ["\\\n\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""])), args.target.uuid, args.target.player.ip()));
+                output(f(templateObject_35 || (templateObject_35 = __makeTemplateObject(["\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""], ["\\\n\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""])), args.target.uuid, args.target.ip()));
         }
     },
     spawn: {

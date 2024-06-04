@@ -372,7 +372,7 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 		if(to instanceof FishPlayer){
 			name = escapeTextDiscord(to.name);
 			uuid = to.uuid;
-			ip = to.player.ip();
+			ip = to.ip();
 		} else if(typeof to == "string"){
 			if(uuidPattern.test(to)){
 				name = `[${to}]`;

@@ -476,7 +476,7 @@ function logAction(action, by, to, reason, duration) {
         if (to instanceof players_1.FishPlayer) {
             name = escapeTextDiscord(to.name);
             uuid = to.uuid;
-            ip = to.player.ip();
+            ip = to.ip();
         }
         else if (typeof to == "string") {
             if (globals_1.uuidPattern.test(to)) {

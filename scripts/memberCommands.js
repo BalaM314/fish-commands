@@ -89,9 +89,9 @@ exports.commands = (0, commands_1.commandList)({
             var colors = ['[red]', '[orange]', '[yellow]', '[acid]', '[blue]', '[purple]'];
             function rainbowLoop(index, fishP) {
                 Timer.schedule(function () {
-                    if (!fishP.rainbow)
+                    if (!(fishP.rainbow && fishP.player && fishP.connected()))
                         return;
-                    sender.player.name = colors[index % colors.length] + Strings.stripColors(sender.player.name);
+                    fishP.player.name = colors[index % colors.length] + Strings.stripColors(fishP.player.name);
                     rainbowLoop(index + 1, fishP);
                 }, args.speed / 5);
             }

@@ -27,7 +27,7 @@ export const commands = commandList({
 			if(Mode.pvp()) fail(`This command is disabled in PVP.`);
 			if(sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
 			if(sender.unit().hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
-			teleportPlayer(sender.player, args.player.player);
+			teleportPlayer(sender.player!, args.player.player!);
 		},
 	},
 
@@ -199,7 +199,7 @@ export const commands = commandList({
 					if(sent){
 						outputSuccess(`Message sent to [orange]all online staff.`);
 					} else {
-						const wasReceived = FishPlayer.messageStaff(sender.player.name, args.message);
+						const wasReceived = FishPlayer.messageStaff(sender.prefixedName, args.message);
 						if(wasReceived) outputSuccess(`Message sent to staff.`);
 						else outputFail(`No staff were online to receive your message.`);
 					}
@@ -228,7 +228,7 @@ export const commands = commandList({
 				sender.watch = true;
 				const stayX = sender.unit().x;
 				const stayY = sender.unit().y;
-				const target = args.player.player;
+				const target = args.player.player!;
 				const watch = () => {
 					if(sender.watch){
 						// Self.X+(172.5-Self.X)/10
@@ -247,21 +247,22 @@ export const commands = commandList({
 		},
 	},
 	spectate: command(() => {
+		//TODO revise code
 		const spectators = new Map<FishPlayer, Team>();
 		function spectate(target:FishPlayer){
 			spectators.set(target, target.team());
 			target.forceRespawn();
-			target.player.team(Team.derelict);
+			target.player!.team(Team.derelict);
 			target.forceRespawn();
 		}
 		function resume(target:FishPlayer){
 			if(spectators.get(target) == null) return; // this state is possible for a person who left not in spectate
-			target.player.team(spectators.get(target));
+			target.player!.team(spectators.get(target)!);
 			spectators.delete(target);
 			target.forceRespawn();
 		}
 		Events.on(EventType.GameOverEvent, () => spectators.clear());
-		Events.on(EventType.PlayerLeave, (player) => resume(player));
+		Events.on(EventType.PlayerLeave, ({player}:{player:mindustryPlayer}) => resume(FishPlayer.get(player)));
 		return {
 			args: ["target:player?"],
 			description: `Toggles spectator mode in PVP games.`,
@@ -353,7 +354,7 @@ export const commands = commandList({
 		perm: Perm.chat,
 		handler({ args, sender, output, f }) {
 			recentWhispers[args.player.uuid] = sender.uuid;
-			args.player.sendMessage(`${sender.player.name}[lightgray] whispered:[#BBBBBB] ${args.message}`);
+			args.player.sendMessage(`${sender.prefixedName}[lightgray] whispered:[#BBBBBB] ${args.message}`);
 			output(f`[#BBBBBB]Message sent to ${args.player}.`);
 		},
 	},
@@ -485,7 +486,7 @@ Available types:[yellow]
 		handler({ sender, outputFail, data:Ohnos }) {
 			const canSpawn = Ohnos.canSpawn(sender);
 			if (canSpawn === true) {
-				Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
+				Ohnos.makeOhno(sender.team(), sender.player!.x, sender.player!.y);
 			} else {
 				outputFail(canSpawn);
 			}
@@ -518,13 +519,13 @@ Available types:[yellow]
 			const target = args.player ?? sender;
 			if(target !== sender){
 				if(!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
-				if(target.hasPerm("blockTrolling")) fail(f`Player ${args.player} is insufficiently trollable.`);
+				if(target.hasPerm("blockTrolling")) fail(f`Player ${args.player!} is insufficiently trollable.`);
 			}
 			menu(
 				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
-				["I agree to abide by these rules", "No"], target,
+				["[green]I agree to abide by these rules[]", "No"], target,
 				({option}) => {
-					if(option == "No") target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+					if(option == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
 				}, false
 			);
 			if(target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
@@ -569,10 +570,10 @@ Please stop attacking and [lime]build defenses[] first!`
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true)) fail(f`You do not have permission to change the team of ${args.target}`);
 			if(!sender.hasPerm("changeTeamExternal") && args.team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
-			if(!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !sender.unit()?.spawnedByCore))
+			if(!sender.hasPerm("changeTeamExternal") && (!sender.player!.dead() && !sender.unit()?.spawnedByCore))
 				args.target.forceRespawn();
 
-			args.target.player.team(args.team);
+			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
 		},

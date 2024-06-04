@@ -354,15 +354,12 @@ export const commands = consoleCommandList({
 	rename: {
 		args: ["player:player", "newname:string"],
 		description: "Changes the name of a player.",
-		handler({args, outputFail, outputSuccess}){
-			if(args.player.hasPerm("blockTrolling")){
-				outputFail(`Operation aborted: Player ${args.player.name} is insufficiently trollable.`);
-			} else {
-				const oldName = args.player.name;
-				args.player.player.name = args.newname;
-				args.player.shouldUpdateName = false;
-				outputSuccess(`Renamed ${oldName} to ${args.newname}.`);
-			}
+		handler({args, f, outputSuccess}){
+			if(!args.player.hasPerm("blockTrolling")) fail(f`Operation aborted: Player ${args.player} is insufficiently trollable.`);
+			const oldName = args.player.name;
+			args.player.player!.name = args.player.prefixedName = args.newname;
+			args.player.shouldUpdateName = false;
+			outputSuccess(`Renamed ${oldName} to ${args.newname}.`);
 		}
 	},
 	fjs: {
@@ -388,13 +385,13 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 	stopplayer: {
 		args: ['player:player', "time:time?", "message:string?"],
 		description: 'Stops a player.',
-		handler({args, outputSuccess}){
+		handler({args, f, outputSuccess}){
 			if(args.player.marked()){
 				//overload: overwrite stoptime
-				if(!args.time) fail(`Player "${args.player.name}" is already marked.`);
-				const previousTime = formatTimeRelative(args.player.unmarkTime, true);
+				if(!args.time) fail(f`Player ${args.player} is already marked.`);
+				const previousTime = formatTime(args.player.unmarkTime - Date.now());
 				args.player.updateStopTime(args.time);
-				outputSuccess(`Player "${args.player.cleanedName}"'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
+				outputSuccess(f`Player ${args.player}'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
 
 				return;
 			}
@@ -403,7 +400,7 @@ Length of tilelog entries: ${Math.round(Object.values(tileHistory).reduce((acc, 
 			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
 			args.player.stop("console", time, args.message ?? undefined);
 			logAction('stopped', "console", args.player, args.message ?? undefined, time);
-			Call.sendMessage(`[scarlet]Player "${args.player.name}[scarlet]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
+			Call.sendMessage(`[scarlet]Player "${args.player.prefixedName}[scarlet]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
 		}
 	},
 	stopoffline: {

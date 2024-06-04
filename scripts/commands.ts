@@ -254,13 +254,13 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 
 const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((chunk) => {
 	if(chunk instanceof FishPlayer){
-		return `&c(${chunk.cleanedName})&fr`;
+		return `&c(${escapeStringColorsServer(chunk.cleanedName)})&fr`;
 	} else if(chunk instanceof Rank){
 		return `&p${chunk.name}&fr`;
 	} else if(chunk instanceof RoleFlag){
 		return `&p${chunk.name}&fr`;
 	} else if(chunk instanceof Error){
-		return `&r${chunk.toString()}&fr`;
+		return `&r${escapeStringColorsServer(chunk.toString())}&fr`;
 	} else if(chunk instanceof Player){
 		const player = chunk as mindustryPlayer; //not sure why this is necessary, typescript randomly converts any to unknown
 		return `&cPlayer#${player.id} (${escapeStringColorsServer(Strings.stripColors(player.name))})&fr`
@@ -276,8 +276,19 @@ const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((
 		return `&b${chunk.toString()}&fr`;
 	} else if(typeof chunk == "number"){
 		return `&b${chunk.toString()}&fr`;
+	} else if(chunk instanceof Administration.PlayerInfo){
+		return `&c${escapeStringColorsServer(chunk.plainLastName())}&fr`;
+	} else if(chunk instanceof UnitType){
+		return `&c${chunk.localizedName}&fr`;
+	} else if(chunk instanceof Block){
+		return `&c${chunk.localizedName}&fr`;
+	} else if(chunk instanceof Team){
+		return `&c${chunk.name}&fr`;
 	} else {
-		return chunk as string;
+		chunk satisfies never;
+		Log.err("Invalid format object!");
+		Log.info(chunk);
+		return chunk as string; //let it get stringified by the JS engine
 	}
 });
 const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((chunk, i, data, stringChunks) => {
@@ -315,6 +326,9 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((
 	} else if(chunk instanceof Team){
 		return `[white]${chunk.coloredName()}[][]`;
 	} else {
+		chunk satisfies never;
+		Log.err("Invalid format object!");
+		Log.info(chunk);
 		return chunk as string; //allow it to get stringified by the engine
 	}
 });

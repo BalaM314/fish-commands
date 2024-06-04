@@ -72,10 +72,6 @@ function initializeTimers() {
     Timer.schedule(function () {
         if (players_1.FishPlayer.antiBotMode()) {
             Call.infoToast("[scarlet]ANTIBOT ACTIVE!!![] DOS blacklist size: ".concat(Vars.netServer.admins.dosBlacklist.size), 2);
-            players_1.FishPlayer.forEachPlayer(function (p) {
-                if (p.autoflagged)
-                    p.player.kick(Packets.KickReason.banned, 10000000);
-            });
         }
     }, 0, 1);
     Timer.schedule(function () {

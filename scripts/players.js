@@ -81,6 +81,7 @@ var FishPlayer = /** @class */ (function () {
         this.chatStrictness = "chat";
         this.uuid = (_m = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _m !== void 0 ? _m : (0, utils_1.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_o = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _o !== void 0 ? _o : "Unnamed player [ERROR]";
+        this.prefixedName = this.name;
         this.muted = muted;
         this.unmarkTime = unmarked;
         this.lastJoined = lastJoined !== null && lastJoined !== void 0 ? lastJoined : -1;
@@ -346,16 +347,17 @@ var FishPlayer = /** @class */ (function () {
         fishPlayer.activateHeuristics();
     };
     FishPlayer.updateAFKCheck = function () {
-        this.forEachPlayer(function (p) {
-            if (p.lastMousePosition[0] != p.player.mouseX || p.lastMousePosition[1] != p.player.mouseY) {
-                p.lastActive = Date.now();
+        //TODO better AFK check
+        this.forEachPlayer(function (fishP, mp) {
+            if (fishP.lastMousePosition[0] != mp.mouseX || fishP.lastMousePosition[1] != mp.mouseY) {
+                fishP.lastActive = Date.now();
             }
-            p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
-            if (p.lastUnitPosition[0] != p.player.x || p.lastUnitPosition[1] != p.player.y) {
-                p.lastActive = Date.now();
+            fishP.lastMousePosition = [mp.mouseX, mp.mouseY];
+            if (fishP.lastUnitPosition[0] != mp.x || fishP.lastUnitPosition[1] != mp.y) {
+                fishP.lastActive = Date.now();
             }
-            p.lastUnitPosition = [p.player.x, p.player.y];
-            p.updateName();
+            fishP.lastUnitPosition = [mp.x, mp.y];
+            fishP.updateName();
         });
     };
     /**Must be run on PlayerLeaveEvent. */
@@ -377,7 +379,7 @@ var FishPlayer = /** @class */ (function () {
             var target = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
             var voted = Reflect.get(Vars.netServer.currentlyKicking, "voted");
             if (target.hasPerm("bypassVotekick")) {
-                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.player.name, "[lightgray].[accent] (-\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote cancelled."));
+                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.prefixedName, "[lightgray].[accent] (-\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote cancelled."));
                 Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
                 Vars.netServer.currentlyKicking = null;
             }
@@ -385,7 +387,7 @@ var FishPlayer = /** @class */ (function () {
                 //decrease votes by two, goes from 1 to negative 1
                 Reflect.set(Vars.netServer.currentlyKicking, "votes", Packages.java.lang.Integer(-1));
                 voted.put("__server__", -2);
-                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.player.name, "[lightgray].[accent] (-1/").concat(Vars.netServer.votesRequired(), ")\n[lightgray]Type[orange] /vote <y/n>[] to agree."));
+                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.prefixedName, "[lightgray].[accent] (-1/").concat(Vars.netServer.votesRequired(), ")\n[lightgray]Type[orange] /vote <y/n>[] to agree."));
             }
         }
     };
@@ -397,7 +399,7 @@ var FishPlayer = /** @class */ (function () {
                     //Sends /vote y within 5 seconds of joining
                     (0, utils_1.logHTrip)(fishP, "votekick bot");
                     fishP.setPunishedIP(1000); //If there are any further joins within 1 second, its definitely a bot, just ban
-                    fishP.player.kick(Packets.KickReason.kick, 30000);
+                    fishP.kick(Packets.KickReason.kick, 30000);
                 }
             }
         }
@@ -458,7 +460,7 @@ var FishPlayer = /** @class */ (function () {
                 return;
             }
             var fishP = _this.get(player);
-            func(fishP);
+            func(fishP, player);
         });
     };
     FishPlayer.mapPlayers = function (func) {
@@ -547,7 +549,7 @@ var FishPlayer = /** @class */ (function () {
         }
         else
             replacedName = this.name;
-        this.player.name = prefix + replacedName;
+        this.player.name = this.prefixedName = prefix + replacedName;
     };
     FishPlayer.prototype.updateAdminStatus = function () {
         if (this.hasPerm("admin")) {
@@ -572,7 +574,7 @@ var FishPlayer = /** @class */ (function () {
                     FishPlayer.messageStaff("[yellow]Automatically banned player [cyan]".concat(this.cleanedName, "[] for suspected stop evasion."));
                     Vars.netServer.admins.banPlayerIP(ip);
                     api.ban({ ip: ip, uuid: uuid });
-                    this.player.kick(Packets.KickReason.banned);
+                    this.kick(Packets.KickReason.banned);
                     return false;
                 }
             }
@@ -595,7 +597,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.checkVPNAndJoins = function () {
         var _this = this;
-        var ip = this.player.ip();
+        var ip = this.ip();
         var info = this.info();
         api.isVpn(ip, function (isVpn) {
             if (isVpn) {
@@ -632,7 +634,7 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
             if (info.timesJoined == 1) {
-                Log.info("&lrNew player joined: &c".concat(_this.cleanedName, "&lr (&c").concat(_this.uuid, "&lr/&c").concat(_this.player.ip(), "&lr)"));
+                Log.info("&lrNew player joined: &c".concat(_this.cleanedName, "&lr (&c").concat(_this.uuid, "&lr/&c").concat(ip, "&lr)"));
             }
         }, function (err) {
             Log.err("Error while checking for VPN status of ip ".concat(ip, "!"));
@@ -645,10 +647,10 @@ var FishPlayer = /** @class */ (function () {
     /**Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
         if ((0, utils_1.matchFilter)(this.name, "name")) {
-            this.player.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name because it contains a banned word.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
+            this.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name because it contains a banned word.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
         else if (Strings.stripColors(this.name).trim().length == 0) {
-            this.player.kick("[scarlet]\"".concat((0, utils_1.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is blank. Please change it."), 1);
+            this.kick("[scarlet]\"".concat((0, utils_1.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is blank. Please change it."), 1);
         }
         else {
             return true;
@@ -660,7 +662,7 @@ var FishPlayer = /** @class */ (function () {
         if (this.usid != null && this.usid != "" && this.player.usid() != this.usid) {
             Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
             if (this.hasPerm("usidCheck")) {
-                this.player.kick("Authorization failure!", 1);
+                this.kick("Authorization failure!", 1);
                 FishPlayer.lastAuthKicked = this;
             }
             return false;
@@ -983,6 +985,9 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.team = function () {
         return this.player.team();
+    };
+    FishPlayer.prototype.setTeam = function (team) {
+        this.player.team(team);
     };
     Object.defineProperty(FishPlayer.prototype, "con", {
         get: function () {

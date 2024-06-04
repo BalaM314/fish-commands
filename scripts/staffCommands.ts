@@ -89,7 +89,7 @@ export const commands = commandList({
 			args.player.stop(sender, time, args.message ?? undefined);
 			logAction('stopped', sender, args.player, args.message ?? undefined, time);
 			//TODO outputGlobal()
-			Call.sendMessage(`[orange]Player "${args.player.name}[orange]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
+			Call.sendMessage(`[orange]Player "${args.player.prefixedName}[orange]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
 		}
 	},
 
@@ -248,7 +248,7 @@ export const commands = commandList({
 				output(
 					`[yellow]_______________Player history_______________\n\n` +
 					(args.player as FishPlayer).history.map(e =>
-						`${e.by} [yellow]${e.action} ${args.player.name} [white]${formatTimeRelative(e.time)}`
+						`${e.by} [yellow]${e.action} ${args.player.prefixedName} [white]${formatTimeRelative(e.time)}`
 					).join("\n")
 				);
 			} else {
@@ -375,7 +375,7 @@ export const commands = commandList({
 						logAction("banned", sender, uuid);
 						outputSuccess(f`Banned player ${uuid}. [yellow]Unable to determine IP.[]`);
 					}
-					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
+					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
 				}, false);
 				return;
 			}
@@ -389,7 +389,7 @@ export const commands = commandList({
 					Log.info(`${option.ip()}/${option.uuid()} was banned.`);
 					logAction("banned", sender, option.getInfo());
 					outputSuccess(f`Banned player ${option}.`);
-					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.player.name}.`);
+					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
 				}, false);
 			}, true, opt => opt.name);
 		}
@@ -440,7 +440,7 @@ export const commands = commandList({
 		description: `Sends a message to muted players only.`,
 		perm: Perm.mod,
 		handler({sender, args}){
-			FishPlayer.messageMuted(sender.player.name, args.message);
+			FishPlayer.messageMuted(sender.prefixedName, args.message);
 		}
 	},
 
@@ -449,12 +449,12 @@ export const commands = commandList({
 		description: "Displays information about an online player. See also /infos",
 		perm: Perm.none,
 		handler({sender, args, output, f}){
-			const info = args.target.player.info as PlayerInfo;
+			const info = args.target.info();
 			const names = args.hideColors
 				? [...new Set(info.names.map(n => Strings.stripColors(n)).toArray())].join(", ")
 				: info.names.map(escapeStringColorsClient).toString(", ");
 			output(f`\
-[accent]Info for player ${args.target} [gray](${escapeStringColorsClient(args.target.name)}) (#${args.target.player.id.toString()})
+[accent]Info for player ${args.target} [gray](${escapeStringColorsClient(args.target.name)}) (#${args.target.player!.id.toString()})
 	[accent]Rank: ${args.target.rank}
 	[accent]Role flags: ${Array.from(args.target.flags).map(f => f.coloredName()).join(" ")}
 	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
@@ -467,7 +467,7 @@ export const commands = commandList({
 			if(sender.hasPerm("viewUUIDs"))
 				output(f`\
 	[#FFAAAA]UUID: ${args.target.uuid}
-	[#FFAAAA]IP: ${args.target.player.ip()}`
+	[#FFAAAA]IP: ${args.target.ip()}`
 				);
 		}
 	},
@@ -477,8 +477,8 @@ export const commands = commandList({
 		description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
 		perm: Perm.admin,
 		handler({sender, args, outputSuccess, f}){
-			const x = args.x ? (args.x * 8) : sender.player.x;
-			const y = args.y ? (args.y * 8) : sender.player.y;
+			const x = args.x ? (args.x * 8) : sender.player!.x;
+			const y = args.y ? (args.y * 8) : sender.player!.y;
 			const team = args.team ?? sender.team();
 			const unit = args.type.spawn(team, x, y);
 			spawnedUnits.push(unit);
@@ -524,7 +524,7 @@ export const commands = commandList({
 			
 			//Additional validation couldn't hurt...
 			const playerInfo_AdminUsid = sender.info().adminUsid;
-			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()){
+			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
 Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
@@ -562,7 +562,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 			
 			//Additional validation couldn't hurt...
 			const playerInfo_AdminUsid = sender.info().adminUsid;
-			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()){
+			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
 Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
@@ -621,8 +621,8 @@ ${getAntiBotInfo("client")}`
 			data: {unitMapping},
 			handler({sender, outputSuccess}){
 				if(!sender.connected() || !sender.unit().added || sender.unit().dead) fail("You cannot spawn an emanate because you are dead.");
-				const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
-				sender.player.unit(emanate);
+				const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player!.x, sender.player!.y);
+				sender.player!.unit(emanate);
 				unitMapping[sender.uuid] = emanate;
 				logAction("spawned an emanate", sender);
 				outputSuccess("Spawned an emanate.");

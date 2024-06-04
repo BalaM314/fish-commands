@@ -455,16 +455,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["player:player", "newname:string"],
         description: "Changes the name of a player.",
         handler: function (_a) {
-            var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
-            if (args.player.hasPerm("blockTrolling")) {
-                outputFail("Operation aborted: Player ".concat(args.player.name, " is insufficiently trollable."));
-            }
-            else {
-                var oldName = args.player.name;
-                args.player.player.name = args.newname;
-                args.player.shouldUpdateName = false;
-                outputSuccess("Renamed ".concat(oldName, " to ").concat(args.newname, "."));
-            }
+            var args = _a.args, f = _a.f, outputSuccess = _a.outputSuccess;
+            if (!args.player.hasPerm("blockTrolling"))
+                (0, commands_1.fail)(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Operation aborted: Player ", " is insufficiently trollable."], ["Operation aborted: Player ", " is insufficiently trollable."])), args.player));
+            var oldName = args.player.name;
+            args.player.player.name = args.player.prefixedName = args.newname;
+            args.player.shouldUpdateName = false;
+            outputSuccess("Renamed ".concat(oldName, " to ").concat(args.newname, "."));
         }
     },
     fjs: {
@@ -488,14 +485,14 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: 'Stops a player.',
         handler: function (_a) {
             var _b, _c, _d;
-            var args = _a.args, outputSuccess = _a.outputSuccess;
+            var args = _a.args, f = _a.f, outputSuccess = _a.outputSuccess;
             if (args.player.marked()) {
                 //overload: overwrite stoptime
                 if (!args.time)
-                    (0, commands_1.fail)("Player \"".concat(args.player.name, "\" is already marked."));
-                var previousTime = (0, utils_1.formatTimeRelative)(args.player.unmarkTime, true);
+                    (0, commands_1.fail)(f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Player ", " is already marked."], ["Player ", " is already marked."])), args.player));
+                var previousTime = (0, utils_1.formatTime)(args.player.unmarkTime - Date.now());
                 args.player.updateStopTime(args.time);
-                outputSuccess("Player \"".concat(args.player.cleanedName, "\"'s stop time has been updated to ").concat((0, utils_1.formatTime)(args.time), " (was ").concat(previousTime, ")."));
+                outputSuccess(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Player ", "'s stop time has been updated to ", " (was ", ")."], ["Player ", "'s stop time has been updated to ", " (was ", ")."])), args.player, (0, utils_1.formatTime)(args.time), previousTime));
                 return;
             }
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
@@ -503,7 +500,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 (0, commands_1.fail)("Error: time too high.");
             args.player.stop("console", time, (_c = args.message) !== null && _c !== void 0 ? _c : undefined);
             (0, utils_1.logAction)('stopped', "console", args.player, (_d = args.message) !== null && _d !== void 0 ? _d : undefined, time);
-            Call.sendMessage("[scarlet]Player \"".concat(args.player.name, "[scarlet]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
+            Call.sendMessage("[scarlet]Player \"".concat(args.player.prefixedName, "[scarlet]\" has been marked for ").concat((0, utils_1.formatTime)(time)).concat(args.message ? " with reason: [white]".concat(args.message, "[]") : "", "."));
         }
     },
     stopoffline: {
@@ -663,4 +660,4 @@ exports.commands = (0, commands_1.consoleCommandList)({
         }
     }
 });
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7;

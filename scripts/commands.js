@@ -336,7 +336,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
 }
 var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
     if (chunk instanceof players_1.FishPlayer) {
-        return "&c(".concat(chunk.cleanedName, ")&fr");
+        return "&c(".concat((0, utils_1.escapeStringColorsServer)(chunk.cleanedName), ")&fr");
     }
     else if (chunk instanceof ranks_1.Rank) {
         return "&p".concat(chunk.name, "&fr");
@@ -345,7 +345,7 @@ var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
         return "&p".concat(chunk.name, "&fr");
     }
     else if (chunk instanceof Error) {
-        return "&r".concat(chunk.toString(), "&fr");
+        return "&r".concat((0, utils_1.escapeStringColorsServer)(chunk.toString()), "&fr");
     }
     else if (chunk instanceof Player) {
         var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
@@ -368,8 +368,23 @@ var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
     else if (typeof chunk == "number") {
         return "&b".concat(chunk.toString(), "&fr");
     }
+    else if (chunk instanceof Administration.PlayerInfo) {
+        return "&c".concat((0, utils_1.escapeStringColorsServer)(chunk.plainLastName()), "&fr");
+    }
+    else if (chunk instanceof UnitType) {
+        return "&c".concat(chunk.localizedName, "&fr");
+    }
+    else if (chunk instanceof Block) {
+        return "&c".concat(chunk.localizedName, "&fr");
+    }
+    else if (chunk instanceof Team) {
+        return "&c".concat(chunk.name, "&fr");
+    }
     else {
-        return chunk;
+        chunk;
+        Log.err("Invalid format object!");
+        Log.info(chunk);
+        return chunk; //let it get stringified by the JS engine
     }
 });
 var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i, data, stringChunks) {
@@ -422,6 +437,9 @@ var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i
         return "[white]".concat(chunk.coloredName(), "[][]");
     }
     else {
+        chunk;
+        Log.err("Invalid format object!");
+        Log.info(chunk);
         return chunk; //allow it to get stringified by the engine
     }
 });

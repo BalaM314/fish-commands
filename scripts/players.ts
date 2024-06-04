@@ -53,6 +53,7 @@ export class FishPlayer {
 		color: Color;
 	} | null = null;
 	cleanedName:string;
+	prefixedName:string;
 	/** Used to freeze players when votekicking. */
 	frozen:boolean = false;
 	usageData: Record<string, {
@@ -114,6 +115,7 @@ export class FishPlayer {
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
 		this.uuid = uuid ?? player?.uuid() ?? crash(`Attempted to create FishPlayer with no UUID`);
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
+		this.prefixedName = this.name;
 		this.muted = muted;
 		this.unmarkTime = unmarked;
 		this.lastJoined = lastJoined ?? -1;
@@ -191,7 +193,7 @@ export class FishPlayer {
 
 		const filters:((p:FishPlayer) => boolean)[] = [
 			p => p.uuid === str,
-			p => p.player.id.toString() === str,
+			p => p.player!.id.toString() === str,
 			p => p.name.toLowerCase() === str.toLowerCase(),
 			// p => p.cleanedName === str,
 			p => p.cleanedName.toLowerCase() === str.toLowerCase(),
@@ -254,7 +256,7 @@ export class FishPlayer {
 
 		const filters:((p:FishPlayer) => boolean)[] = [
 			p => p.uuid === str,
-			p => p.connected() && p.player.id.toString() === str,
+			p => p.connected() && p.player!.id.toString() === str,
 			p => p.name.toLowerCase() === str.toLowerCase(),
 			// p => p.cleanedName === str,
 			p => p.cleanedName.toLowerCase() === str.toLowerCase(),
@@ -317,16 +319,17 @@ export class FishPlayer {
 		fishPlayer.activateHeuristics();
 	}
 	static updateAFKCheck(){
-		this.forEachPlayer(p => {
-			if(p.lastMousePosition[0] != p.player.mouseX || p.lastMousePosition[1] != p.player.mouseY){
-				p.lastActive = Date.now();
+		//TODO better AFK check
+		this.forEachPlayer((fishP, mp) => {
+			if(fishP.lastMousePosition[0] != mp.mouseX || fishP.lastMousePosition[1] != mp.mouseY){
+				fishP.lastActive = Date.now();
 			}
-			p.lastMousePosition = [p.player.mouseX, p.player.mouseY];
-			if(p.lastUnitPosition[0] != p.player.x || p.lastUnitPosition[1] != p.player.y){
-				p.lastActive = Date.now();
+			fishP.lastMousePosition = [mp.mouseX, mp.mouseY];
+			if(fishP.lastUnitPosition[0] != mp.x || fishP.lastUnitPosition[1] != mp.y){
+				fishP.lastActive = Date.now();
 			}
-			p.lastUnitPosition = [p.player.x, p.player.y];
-			p.updateName();
+			fishP.lastUnitPosition = [mp.x, mp.y];
+			fishP.updateName();
 		});
 	}
 	/**Must be run on PlayerLeaveEvent. */
@@ -347,7 +350,7 @@ export class FishPlayer {
 			const voted = Reflect.get(Vars.netServer.currentlyKicking, "voted") as ObjectIntMap<string>;
 			if(target.hasPerm("bypassVotekick")){
 				Call.sendMessage(
-`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.player.name}[lightgray].[accent] (-\u221E/${Vars.netServer.votesRequired()})
+`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.prefixedName}[lightgray].[accent] (-\u221E/${Vars.netServer.votesRequired()})
 [scarlet]Vote cancelled.`
 				);
 				Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
@@ -357,7 +360,7 @@ export class FishPlayer {
 				Reflect.set(Vars.netServer.currentlyKicking, "votes", Packages.java.lang.Integer(-1));
 				voted.put("__server__", -2);
 				Call.sendMessage(
-`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.player.name}[lightgray].[accent] (-1/${Vars.netServer.votesRequired()})
+`[scarlet]Server[lightgray] has voted on kicking[orange] ${target.prefixedName}[lightgray].[accent] (-1/${Vars.netServer.votesRequired()})
 [lightgray]Type[orange] /vote <y/n>[] to agree.`
 				);
 			}
@@ -371,7 +374,7 @@ export class FishPlayer {
 					//Sends /vote y within 5 seconds of joining
 					logHTrip(fishP, "votekick bot");
 					fishP.setPunishedIP(1000);//If there are any further joins within 1 second, its definitely a bot, just ban
-					fishP.player.kick(Packets.KickReason.kick, 30000);
+					fishP.kick(Packets.KickReason.kick, 30000);
 				}
 			}
 		}
@@ -412,14 +415,14 @@ export class FishPlayer {
 		const fishP = this.get(player);
 		if(fishP.stelled()) fishP.stopUnit();
 	}
-	static forEachPlayer(func:(player:FishPlayer) => unknown){
+	static forEachPlayer(func:(fishPlayer:FishPlayer, mindustryPlayer:mindustryPlayer) => unknown){
 		Groups.player.each(player => {
 			if(player == null){
 				Log.err(".FINDTAG. Groups.player.each() returned a null player???");
 				return;
 			}
 			const fishP = this.get(player);
-			func(fishP);
+			func(fishP, player);
 		});
 	}
 	static mapPlayers<T>(func:(player:FishPlayer) => T):T[]{
@@ -483,16 +486,15 @@ export class FishPlayer {
 				replacedName = "[brown]script kiddie";
 			}
 		} else replacedName = this.name;
-		this.player.name = prefix + replacedName;
-
+		this.player!.name = this.prefixedName = prefix + replacedName;
 	}
 	updateAdminStatus(){
 		if(this.hasPerm("admin")){
-			Vars.netServer.admins.adminPlayer(this.uuid, this.player.usid());
-			this.player.admin = true;
+			Vars.netServer.admins.adminPlayer(this.uuid, this.player!.usid());
+			this.player!.admin = true;
 		} else {
 			Vars.netServer.admins.unAdminPlayer(this.uuid);
-			this.player.admin = false;
+			this.player!.admin = false;
 		}
 	}
 	checkAntiEvasion(){
@@ -510,7 +512,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 				FishPlayer.messageStaff(`[yellow]Automatically banned player [cyan]${this.cleanedName}[] for suspected stop evasion.`);
 				Vars.netServer.admins.banPlayerIP(ip);
 				api.ban({ip, uuid});
-				this.player.kick(Packets.KickReason.banned);
+				this.kick(Packets.KickReason.banned);
 				return false;
 			}
 		}
@@ -524,8 +526,8 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 		}
 	}
 	checkVPNAndJoins(){
-		const ip = this.player.ip();
-		const info:PlayerInfo = this.info()!;
+		const ip = this.ip();
+		const info:PlayerInfo = this.info();
 		api.isVpn(ip, isVpn => {
 			if(isVpn){
 				Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${FishPlayer.stats.numIpsFlagged}/${FishPlayer.stats.numIpsChecked} (${100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked}%)`);
@@ -557,7 +559,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 				}
 			}
 			if(info.timesJoined == 1){
-				Log.info(`&lrNew player joined: &c${this.cleanedName}&lr (&c${this.uuid}&lr/&c${this.player.ip()}&lr)`);
+				Log.info(`&lrNew player joined: &c${this.cleanedName}&lr (&c${this.uuid}&lr/&c${ip}&lr)`);
 			}
 		}, err => {
 			Log.err(`Error while checking for VPN status of ip ${ip}!`);
@@ -570,13 +572,13 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 	/**Checks if this player's name is allowed. */
 	checkName(){
 		if(matchFilter(this.name, "name")){
-			this.player.kick(
+			this.kick(
 `[scarlet]"${this.name}[scarlet]" is not an allowed name because it contains a banned word.
 
 If you are unable to change it, please download Mindustry from Steam or itch.io.`
 			, 1);
 		} else if(Strings.stripColors(this.name).trim().length == 0){
-			this.player.kick(
+			this.kick(
 `[scarlet]"${escapeStringColorsClient(this.name)}[scarlet]" is not an allowed name because it is blank. Please change it.`
 			, 1);
 		} else {
@@ -586,10 +588,10 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	/**Checks if this player's USID is correct. */
 	checkUsid(){
-		if(this.usid != null && this.usid != "" && this.player.usid() != this.usid){
-			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player.usid()}&r`);
+		if(this.usid != null && this.usid != "" && this.player!.usid() != this.usid){
+			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player!.usid()}&r`);
 			if(this.hasPerm("usidCheck")){
-				this.player.kick(`Authorization failure!`, 1);
+				this.kick(`Authorization failure!`, 1);
 				FishPlayer.lastAuthKicked = this;
 			}
 			return false;
@@ -597,7 +599,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		return true;
 	}
 	displayTrail(){
-		if(this.trail) Call.effect(Fx[this.trail.type], this.player.x, this.player.y, 0, this.trail.color);
+		if(this.trail) Call.effect(Fx[this.trail.type], this.player!.x, this.player!.y, 0, this.trail.color);
 	}
 	sendWelcomeMessage(){
 		if(this.marked()) this.sendMessage(
@@ -836,7 +838,7 @@ We apologize for the inconvenience.`
 			if(p.autoflagged){
 				Vars.netServer.admins.blacklistDos(p.ip());
 				Log.info(`&yAntibot killed connection ${p.ip()} due to flagged while under attack`);
-				p.player.kick(Packets.KickReason.banned, 10000000);
+				p.player!.kick(Packets.KickReason.banned, 10000000);
 			}
 		});
 	}
@@ -850,7 +852,7 @@ We apologize for the inconvenience.`
 		this.whackFlaggedPlayers();
 	}
 	position():string {
-		return `(${Math.floor(this.player.x / 8)}, ${Math.floor(this.player.y / 8)})`
+		return `(${Math.floor(this.player!.x / 8)}, ${Math.floor(this.player!.y / 8)})`
 	}
 	connected():boolean {
 		return this.player != null && !this.con.hasDisconnected;
@@ -874,16 +876,19 @@ We apologize for the inconvenience.`
 		return Perm[perm].check(this);
 	}
 	unit():Unit {
-		return this.player.unit();
+		return this.player!.unit();
 	}
 	team():Team {
-		return this.player.team();
+		return this.player!.team();
+	}
+	setTeam(team:Team):void {
+		this.player!.team(team);
 	}
 	get con():NetConnection {
 		return this.player?.con;
 	}
 	ip():string {
-		if(this.connected()) return this.player.con.address;
+		if(this.connected()) return this.player!.con.address;
 		else return this.info().lastIP;
 	}
 	info():PlayerInfo {
@@ -926,8 +931,8 @@ We apologize for the inconvenience.`
 		else return false;
 	}
 	forceRespawn(){
-		this.player.clearUnit();
-		this.player.checkSpawn();
+		this.player!.clearUnit();
+		this.player!.checkSpawn();
 	}
 	getUsageData(command:string){
 		return this.usageData[command] ??= {
@@ -1054,7 +1059,7 @@ We apologize for the inconvenience.`
 	}
 	trollName(name:string){
 		this.shouldUpdateName = false;
-		this.player.name = name;
+		this.player!.name = name;
 	}
 	freeze(){
 		this.frozen = true;

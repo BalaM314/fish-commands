@@ -245,7 +245,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                         outputSuccess("Message sent to [orange]all online staff.");
                     }
                     else {
-                        var wasReceived = players_1.FishPlayer.messageStaff(sender.player.name, args.message);
+                        var wasReceived = players_1.FishPlayer.messageStaff(sender.prefixedName, args.message);
                         if (wasReceived)
                             outputSuccess("Message sent to staff.");
                         else
@@ -296,6 +296,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
         },
     }, spectate: (0, commands_1.command)(function () {
+        //TODO revise code
         var spectators = new Map();
         function spectate(target) {
             spectators.set(target, target.team());
@@ -311,7 +312,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             target.forceRespawn();
         }
         Events.on(EventType.GameOverEvent, function () { return spectators.clear(); });
-        Events.on(EventType.PlayerLeave, function (player) { return resume(player); });
+        Events.on(EventType.PlayerLeave, function (_a) {
+            var player = _a.player;
+            return resume(players_1.FishPlayer.get(player));
+        });
         return {
             args: ["target:player?"],
             description: "Toggles spectator mode in PVP games.",
@@ -400,7 +404,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, output = _a.output, f = _a.f;
             globals_1.recentWhispers[args.player.uuid] = sender.uuid;
-            args.player.sendMessage("".concat(sender.player.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
+            args.player.sendMessage("".concat(sender.prefixedName, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
             output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "."], ["[#BBBBBB]Message sent to ", "."])), args.player));
         },
     }, r: {
@@ -557,10 +561,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (target.hasPerm("blockTrolling"))
                     (0, commands_1.fail)(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             }
-            (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["I agree to abide by these rules", "No"], target, function (_a) {
+            (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["[green]I agree to abide by these rules[]", "No"], target, function (_a) {
                 var option = _a.option;
                 if (option == "No")
-                    target.player.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+                    target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
             }, false);
             if (target !== sender)
                 outputSuccess(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
@@ -604,7 +608,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
             if (!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore)))
                 args.target.forceRespawn();
-            args.target.player.team(args.team);
+            args.target.setTeam(args.team);
             if (args.target === sender)
                 outputSuccess(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
             else
