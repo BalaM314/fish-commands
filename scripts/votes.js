@@ -50,9 +50,7 @@ var VoteManager = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.voteTime = voteTime;
         _this.goal = goal;
-        _this.votes = new Map();
-        _this.timer = null;
-        _this.active = false;
+        _this.session = null;
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
             //Run once the player has been removed, but resolve the player first in case the connection gets nulled
@@ -62,27 +60,32 @@ var VoteManager = /** @class */ (function (_super) {
         Events.on(EventType.GameOverEvent, function () { return _this.resetVote(); });
         return _this;
     }
-    VoteManager.prototype.start = function (player, value) {
+    VoteManager.prototype.start = function (player, newVote, data) {
         var _this = this;
-        this.active = true;
-        this.timer = Timer.schedule(function () { return _this._checkVote(false); }, this.voteTime / 1000);
-        this.vote(player, value);
+        if (data === null)
+            (0, utils_js_1.crash)("Cannot start vote: data not provided");
+        this.session = {
+            timer: Timer.schedule(function () { return _this._checkVote(false); }, this.voteTime / 1000),
+            votes: new Map(),
+            data: data,
+        };
+        this.vote(player, newVote, data);
     };
-    VoteManager.prototype.vote = function (player, newVote) {
-        if (!this.active)
-            return this.start(player, newVote);
-        var oldVote = this.votes.get(player.uuid);
-        this.votes.set(player.uuid, newVote);
+    VoteManager.prototype.vote = function (player, newVote, data) {
+        if (!this.session)
+            return this.start(player, newVote, data);
+        var oldVote = this.session.votes.get(player.uuid);
+        this.session.votes.set(player.uuid, newVote);
         if (oldVote == null)
             this.fire("player vote", [player, newVote]);
         this.fire("player vote change", [player, oldVote !== null && oldVote !== void 0 ? oldVote : 0, newVote]);
         this._checkVote(false);
     };
     VoteManager.prototype.unvote = function (player) {
-        if (!this.active)
+        if (!this.session)
             return;
         var fishP = players_1.FishPlayer.resolve(player);
-        var vote = this.votes.get(fishP.uuid);
+        var vote = this.session.votes.get(fishP.uuid);
         if (vote) {
             this.fire("player vote removed", [player, vote]);
             this._checkVote(false);
@@ -101,24 +104,24 @@ var VoteManager = /** @class */ (function (_super) {
         }
     };
     VoteManager.prototype.resetVote = function () {
-        if (this.timer != null)
-            this.timer.cancel();
-        this.votes.clear();
-        this.active = false;
+        if (this.session == null)
+            return;
+        this.session.timer.cancel();
+        this.session = null;
     };
-    VoteManager.prototype.getGoal = function () {
+    VoteManager.prototype.requiredVotes = function () {
         //TODO discount AFK players
         return Math.ceil(this.goal * Groups.player.size());
     };
-    VoteManager.prototype.scoreVotes = function () {
-        return __spreadArray([], __read(this.votes), false).reduce(function (acc, _a) {
+    VoteManager.prototype.currentVotes = function () {
+        return this.session ? __spreadArray([], __read(this.session.votes), false).reduce(function (acc, _a) {
             var _b = __read(_a, 2), k = _b[0], v = _b[1];
             return acc + v;
-        }, 0);
+        }, 0) : 0;
     };
     VoteManager.prototype._checkVote = function (end) {
-        var votes = this.scoreVotes();
-        var required = this.getGoal();
+        var votes = this.currentVotes();
+        var required = this.requiredVotes();
         if (votes >= required) {
             this.fire("success", [false]);
             this.fire("vote passed", [votes, required]);

@@ -643,13 +643,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: "Vote to start the next wave.",
         perm: commands_1.Perm.play,
         init: function () { return ({
-            target: [0],
             manager: new votes_1.VoteManager(1.5 * 60000)
-                .on("success", function () { return (0, utils_1.skipWaves)(target - 1, false); })
+                .on("success", function (t) { return (0, utils_1.skipWaves)(t.session.data - 1, false); })
                 .on("vote passed", function () { return Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'); })
                 .on("vote failed", function () { return Call.sendMessage('VNW: [red]Vote failed.'); })
-                .on("player vote change", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(target, "[white] wave(s). [green]").concat(t.scoreVotes(), "[white] votes, [green]").concat(t.getGoal(), "[white] required.")); })
-                .on("player vote removed", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(t.scoreVotes(), "[white] votes, [green[").concat(t.getGoal(), "[white] required.")); })
+                .on("player vote change", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(t.session.data, "[white] wave(s). [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
+                .on("player vote removed", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(t.currentVotes(), "[white] votes, [green[").concat(t.requiredVotes(), "[white] required.")); })
         }); },
         handler: function (_a) {
             var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, manager = _a.data.manager;
@@ -659,15 +658,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 (0, commands_1.fail)("This game is already over."); //TODO command run states system
             if (Date.now() - lastUsedSuccessfullySender < 1000)
                 (0, commands_1.fail)("This command was run recently and is on cooldown.");
-            if (!manager.active) {
+            if (!manager.session) {
                 (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [1, 5, 10], sender, function (_a) {
                     var option = _a.option;
-                    target = option;
-                    manager.start(sender, sender.voteWeight());
+                    manager.start(sender, sender.voteWeight(), option);
                 }, true, function (n) { return "".concat(n, " waves"); });
             }
             else {
-                manager.vote(sender, sender.voteWeight());
+                manager.vote(sender, sender.voteWeight(), null);
             }
         }
     }), forcertv: {
@@ -689,28 +687,26 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 allCommands.rtv.data.manager.forceVote(force);
             }
         }
-    }, rtv: (0, commands_1.command)(function () {
-        return {
-            args: [],
-            description: 'Rock the vote to change map.',
-            perm: commands_1.Perm.play,
-            init: function () { return ({
-                manager: new votes_1.VoteManager(1.5 * 60000)
-                    .on("success", function () { return (0, utils_1.neutralGameover)(); })
-                    .on("vote passed", function () { return Call.sendMessage("RTV: [green]Vote has passed, changing map."); })
-                    .on("vote failed", function () { return Call.sendMessage("RTV: [red]Vote failed."); })
-                    .on("player vote change", function (t, player, oldVote, newVote) { return Call.sendMessage("RTV: ".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants to change the map. [green]").concat(t.scoreVotes(), "[white] votes, [green]").concat(t.getGoal(), "[white] required.")); })
-                    .on("player vote removed", function (t, player) { return Call.sendMessage("RTV: ".concat(player.name, "[white] has left the game. [green]").concat(t.scoreVotes(), "[white] votes, [green]").concat(t.getGoal(), "[white] required.")); })
-            }); },
-            handler: function (_a) {
-                var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, manager = _a.data.manager;
-                if (Vars.state.gameOver)
-                    (0, commands_1.fail)("This map is already finished, cannot RTV. Wait until the next map loads.");
-                if (Date.now() - lastUsedSuccessfullySender < 3000)
-                    (0, commands_1.fail)("This command was run recently and is on cooldown.");
-                manager.vote(sender, 1); //No weighting for RTV except for removing AFK players
-            }
-        };
+    }, rtv: (0, commands_1.command)({
+        args: [],
+        description: 'Rock the vote to change map.',
+        perm: commands_1.Perm.play,
+        init: function () { return ({
+            manager: new votes_1.VoteManager(1.5 * 60000)
+                .on("success", function () { return (0, utils_1.neutralGameover)(); })
+                .on("vote passed", function () { return Call.sendMessage("RTV: [green]Vote has passed, changing map."); })
+                .on("vote failed", function () { return Call.sendMessage("RTV: [red]Vote failed."); })
+                .on("player vote change", function (t, player, oldVote, newVote) { return Call.sendMessage("RTV: ".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants to change the map. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
+                .on("player vote removed", function (t, player) { return Call.sendMessage("RTV: ".concat(player.name, "[white] has left the game. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
+        }); },
+        handler: function (_a) {
+            var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, manager = _a.data.manager;
+            if (Vars.state.gameOver)
+                (0, commands_1.fail)("This map is already finished, cannot RTV. Wait until the next map loads.");
+            if (Date.now() - lastUsedSuccessfullySender < 3000)
+                (0, commands_1.fail)("This command was run recently and is on cooldown.");
+            manager.vote(sender, 1, 0); //No weighting for RTV except for removing AFK players
+        }
     }), 
     // votekick: {
     //	 args: ["target:player"],
