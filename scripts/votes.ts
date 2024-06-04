@@ -4,29 +4,21 @@ import { FishPlayer } from "./players";
 export class VoteManager {
  
 	votes = new Map<string, number>();
-	goal = 0;
 	timer:TimerTask | null = null;
 	active = false;
 
 	constructor(
+		public goal:number, //TODO:PR this won't work, negative votes don't work
 		public onSuccess: () => unknown,
 		public onFail: () => unknown,
-		//I hate that this is inconsistant, but its the best setup 
 		public onVote: (player:FishPlayer) => unknown,
-		public onUnVote: (player:mindustryPlayer) => unknown, //TODO:PR change param to FishPlayer
+		public onUnVote: (player:FishPlayer) => unknown,
 	){} //TODO:PR use builder pattern to clarify call site
 
-	start(player:FishPlayer, value:number, voteTime:number, threshold:number){
-		this.goal = threshold; //TODO:PR shouldn't this be a constant instance property?
+	start(player:FishPlayer, value:number, voteTime:number){
 		this.active = true;
-		this.timer = Timer.schedule(() => this.end(), voteTime / 1000);
+		this.timer = Timer.schedule(() => this.endVote(), voteTime / 1000);
 		this.vote(player, value);
-	}
-
-	end(){ 
-		if(!this.checkVote()){
-			this.failed();
-		}
 	}
 
 	vote(player:FishPlayer, value:number){
@@ -37,20 +29,11 @@ export class VoteManager {
 		this.checkVote();
 	}
 
-	//unused unvote taking a fish player, useful if we ever add an unvote command
-	unvoteFish(player:FishPlayer){
-		if(!this.active || player == null || player.uuid == null) return; 
-		if(!this.votes.delete(player.uuid)) Log.err(`Failed to Unvote Player uuid:${player.uuid}`);
-		this.onUnVote(player);
-		this.checkVote();
-	}
-
-	//unvote with a mindustry player, which occurs during a playerleave event.
-	//I hate this method with a passion
-	unvoteMindustry(player:mindustryPlayer){
-		if(!this.active || player == null) return; 
-		if(!this.votes.delete(player.uuid())) Log.err(`Failed to Unvote Player uuid:${player.uuid()}`);
-		this.onUnVote(player);
+	unvote(player:FishPlayer | mindustryPlayer){
+		if(!this.active) return;
+		const fishP = FishPlayer.get(player);
+		if(!this.votes.delete(fishP.uuid)) Log.err(`Cannot remove nonexistent vote for player with uuid ${fishP.uuid}`);
+		this.onUnVote(fishP);
 		this.checkVote();
 	}
 
@@ -61,13 +44,13 @@ export class VoteManager {
 	}
 
 	failed(){
-		this.resetVote(); //TODO:PR wrong order
 		this.onFail()
+		this.resetVote();
 	}
 
 	succeeded(){
-		this.resetVote(); //TODO:PR wrong order
 		this.onSuccess();
+		this.resetVote();
 	}
 	
 	resetVote(){
@@ -84,11 +67,16 @@ export class VoteManager {
 		return [...this.votes].reduce((acc, [k, v]) => acc + v, 0);
 	}
 
-	private checkVote():boolean {
-		if(this.scoreVotes() >= this.getGoal()){ //TODO:PR bad logic
+	checkVote(){
+		if(this.scoreVotes() >= this.getGoal()){
 			this.succeeded();
-			return true;
 		}
-		return false;
+	}
+	private endVote(){ 
+		if(this.scoreVotes() >= this.getGoal()){
+			this.succeeded();
+		} else {
+			this.failed();
+		}
 	}
 }

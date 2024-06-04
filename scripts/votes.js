@@ -26,30 +26,25 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteManager = void 0;
+//le overhaul
+var players_1 = require("./players");
 var VoteManager = /** @class */ (function () {
-    function VoteManager(onSuccess, onFail, 
-    //I hate that this is inconsistant, but its the best setup 
-    onVote, onUnVote) {
+    function VoteManager(goal, //TODO:PR this won't work, negative votes don't work
+    onSuccess, onFail, onVote, onUnVote) {
+        this.goal = goal;
         this.onSuccess = onSuccess;
         this.onFail = onFail;
         this.onVote = onVote;
         this.onUnVote = onUnVote;
         this.votes = new Map();
-        this.goal = 0;
         this.timer = null;
         this.active = false;
     } //TODO:PR use builder pattern to clarify call site
-    VoteManager.prototype.start = function (player, value, voteTime, threshold) {
+    VoteManager.prototype.start = function (player, value, voteTime) {
         var _this = this;
-        this.goal = threshold; //TODO:PR shouldn't this be a constant instance property?
         this.active = true;
-        this.timer = Timer.schedule(function () { return _this.end(); }, voteTime / 1000);
+        this.timer = Timer.schedule(function () { return _this.endVote(); }, voteTime / 1000);
         this.vote(player, value);
-    };
-    VoteManager.prototype.end = function () {
-        if (!this.checkVote()) {
-            this.failed();
-        }
     };
     VoteManager.prototype.vote = function (player, value) {
         if (!this.active || player == null || player.usid == null)
@@ -59,23 +54,13 @@ var VoteManager = /** @class */ (function () {
         this.onVote(player);
         this.checkVote();
     };
-    //unused unvote taking a fish player, useful if we ever add an unvote command
-    VoteManager.prototype.unvoteFish = function (player) {
-        if (!this.active || player == null || player.uuid == null)
+    VoteManager.prototype.unvote = function (player) {
+        if (!this.active)
             return;
-        if (!this.votes.delete(player.uuid))
-            Log.err("Failed to Unvote Player uuid:".concat(player.uuid));
-        this.onUnVote(player);
-        this.checkVote();
-    };
-    //unvote with a mindustry player, which occurs during a playerleave event.
-    //I hate this method with a passion
-    VoteManager.prototype.unvoteMindustry = function (player) {
-        if (!this.active || player == null)
-            return;
-        if (!this.votes.delete(player.uuid()))
-            Log.err("Failed to Unvote Player uuid:".concat(player.uuid()));
-        this.onUnVote(player);
+        var fishP = players_1.FishPlayer.get(player);
+        if (!this.votes.delete(fishP.uuid))
+            Log.err("Cannot remove nonexistent vote for player with uuid ".concat(fishP.uuid));
+        this.onUnVote(fishP);
         this.checkVote();
     };
     VoteManager.prototype.forceVote = function (force) {
@@ -87,12 +72,12 @@ var VoteManager = /** @class */ (function () {
             this.failed();
     };
     VoteManager.prototype.failed = function () {
-        this.resetVote(); //TODO:PR wrong order
         this.onFail();
+        this.resetVote();
     };
     VoteManager.prototype.succeeded = function () {
-        this.resetVote(); //TODO:PR wrong order
         this.onSuccess();
+        this.resetVote();
     };
     VoteManager.prototype.resetVote = function () {
         if (this.timer != null)
@@ -110,11 +95,17 @@ var VoteManager = /** @class */ (function () {
         }, 0);
     };
     VoteManager.prototype.checkVote = function () {
-        if (this.scoreVotes() >= this.getGoal()) { //TODO:PR bad logic
+        if (this.scoreVotes() >= this.getGoal()) {
             this.succeeded();
-            return true;
         }
-        return false;
+    };
+    VoteManager.prototype.endVote = function () {
+        if (this.scoreVotes() >= this.getGoal()) {
+            this.succeeded();
+        }
+        else {
+            this.failed();
+        }
     };
     return VoteManager;
 }());

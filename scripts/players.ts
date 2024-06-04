@@ -153,8 +153,12 @@ export class FishPlayer {
 	static getFromInfo(playerInfo:PlayerInfo){
 		return this.cachedPlayers[playerInfo.id] ??= this.createFromInfo(playerInfo);
 	}
-	static get(player:mindustryPlayer){
+	static get(player:mindustryPlayer):FishPlayer {
 		return this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
+	}
+	static resolve(player:mindustryPlayer | FishPlayer):FishPlayer {
+		if(player instanceof FishPlayer) return player;
+		else return this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
 	}
 	static getById(id:string):FishPlayer | null {
 		return this.cachedPlayers[id] ?? null;

@@ -127,6 +127,14 @@ var FishPlayer = /** @class */ (function () {
         var _b, _c;
         return (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
     };
+    FishPlayer.resolve = function (player) {
+        var _a;
+        var _b, _c;
+        if (player instanceof FishPlayer)
+            return player;
+        else
+            return (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
+    };
     FishPlayer.getById = function (id) {
         var _a;
         return (_a = this.cachedPlayers[id]) !== null && _a !== void 0 ? _a : null;

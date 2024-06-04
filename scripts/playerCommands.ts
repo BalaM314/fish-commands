@@ -609,7 +609,9 @@ Please stop attacking and [lime]build defenses[] first!`
 		const threshold = 5;
 		let target = 0; // the current amount of waves to skip
 		const manager = new VoteManager(
+			threshold,
 			() => {
+				//TODO:PR move to util function
 				//my got this is a abomination, but its reliable
 				const saveWaveTime = Vars.state.wavetime;
 				const saveWaveEnemies = Vars.state.rules.waitEnemies;
@@ -638,7 +640,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			},
 		);
 		
-		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvoteMindustry(player);});		
+		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvote(player);});		
 		Events.on(EventType.GameOverEvent, () => {manager.resetVote()});
 
 		return {
@@ -652,9 +654,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
 
 				args.vote ??= true;
-				let playerVote = args.vote ? 1 :-1;
-				//Vote weight
-				playerVote *= sender.ranksAtLeast('trusted') ? 2 : 1;
+				const playerVote = (args.vote ? 1 :-1) * (sender.ranksAtLeast('trusted') ? 2 : 1);
 
 				if(!manager.active){
 					menu(
@@ -664,7 +664,7 @@ Please stop attacking and [lime]build defenses[] first!`
 						sender,
 						({option}) => {
 							target = option;
-							manager.start(sender, playerVote, voteDuration, threshold);
+							manager.start(sender, playerVote, voteDuration);
 						},
 						true,
 						n => `${n} waves`
@@ -693,15 +693,16 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 
 	rtv: command(() => {
-		const voteDuration = 1.5 * 60000;
+		const voteDuration = 1.5 * 60_000;
 		const threshold = 5;
 		const manager = new VoteManager(
+			threshold,
 			() => {
-				Call.sendMessage(`RTV:[green] Vote has passed, changing map.`);
+				Call.sendMessage(`RTV: [green]Vote has passed, changing map.`);
 				neutralGameover();
 			},
 			() => {
-				Call.sendMessage(`RTV:[red] Vote failed.`)
+				Call.sendMessage(`RTV: [red]Vote failed.`)
 			},
 			(player) => {
 				Call.sendMessage(`RTV: ${player.name}[white] wants to change the map. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
@@ -710,7 +711,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()-1}[white] required.`);
 			},
 		);
-		Events.on(EventType.PlayerLeave, ({player}) => manager.unvoteMindustry(player))
+		Events.on(EventType.PlayerLeave, ({player}) => manager.unvote(player))
 		Events.on(EventType.GameOverEvent, () => manager.resetVote())
 		return {
 			args: ["vote:boolean?"],
@@ -722,10 +723,10 @@ Please stop attacking and [lime]build defenses[] first!`
 				if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
 
 				args.vote ??= true;
-				let playerVote = (args.vote ? 1 : -1) * (sender.ranksAtLeast('trusted') ? 2 : 1); //TODO:PR use perm instead
+				let playerVote = (args.vote ? 1 : -1) * (sender.hasPerm("trusted") ? 2 : 1);
 
 				if(!manager.active){
-					manager.start(sender, playerVote, voteDuration, threshold);
+					manager.start(sender, playerVote, voteDuration);
 				} else {
 					manager.vote(sender, playerVote);
 				}
