@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -26,66 +41,64 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteManager = void 0;
-//le overhaul
 var players_1 = require("./players");
-var VoteManager = /** @class */ (function () {
-    function VoteManager(onSuccess, onFail, onVote, onUnVote, voteTime, goal) {
+var utils_js_1 = require("./utils.js");
+var VoteManager = /** @class */ (function (_super) {
+    __extends(VoteManager, _super);
+    function VoteManager(voteTime, goal) {
         if (goal === void 0) { goal = 0.50001; }
-        var _this = this;
-        this.onSuccess = onSuccess;
-        this.onFail = onFail;
-        this.onVote = onVote;
-        this.onUnVote = onUnVote;
-        this.voteTime = voteTime;
-        this.goal = goal;
-        this.votes = new Map();
-        this.timer = null;
-        this.active = false;
+        var _this = _super.call(this) || this;
+        _this.voteTime = voteTime;
+        _this.goal = goal;
+        _this.votes = new Map();
+        _this.timer = null;
+        _this.active = false;
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
-            //Run once the player has been removed
-            return Core.app.post(function () { return _this.unvote(player); });
+            //Run once the player has been removed, but resolve the player first in case the connection gets nulled
+            var fishP = players_1.FishPlayer.get(player);
+            Core.app.post(function () { return _this.unvote(fishP); });
         });
         Events.on(EventType.GameOverEvent, function () { return _this.resetVote(); });
-    } //TODO:PR use builder pattern to clarify call site
+        return _this;
+    }
     VoteManager.prototype.start = function (player, value) {
         var _this = this;
         this.active = true;
-        this.timer = Timer.schedule(function () { return _this.endVote(); }, this.voteTime / 1000);
+        this.timer = Timer.schedule(function () { return _this._checkVote(false); }, this.voteTime / 1000);
         this.vote(player, value);
     };
-    VoteManager.prototype.vote = function (player, value) {
+    VoteManager.prototype.vote = function (player, newVote) {
         if (!this.active)
-            return this.start(player, value);
-        this.votes.set(player.uuid, value);
-        Log.info("Player voted, Name : ".concat(player.name, ",UUID : ").concat(player.uuid));
-        this.onVote(player);
-        this.checkVote();
+            return this.start(player, newVote);
+        var oldVote = this.votes.get(player.uuid);
+        this.votes.set(player.uuid, newVote);
+        if (oldVote == null)
+            this.fire("player vote", [player, newVote]);
+        this.fire("player vote change", [player, oldVote !== null && oldVote !== void 0 ? oldVote : 0, newVote]);
+        this._checkVote(false);
     };
     VoteManager.prototype.unvote = function (player) {
         if (!this.active)
             return;
         var fishP = players_1.FishPlayer.resolve(player);
-        if (!this.votes.delete(fishP.uuid))
+        var vote = this.votes.get(fishP.uuid);
+        if (vote) {
+            this.fire("player vote removed", [player, vote]);
+            this._checkVote(false);
+        }
+        else {
             Log.err("Cannot remove nonexistent vote for player with uuid ".concat(fishP.uuid));
-        this.onUnVote(fishP);
-        this.checkVote();
+        }
     };
+    /** Does not fire the events used to display messages, please print one before calling this */
     VoteManager.prototype.forceVote = function (force) {
-        if (!this.active)
-            return;
-        if (force)
-            this.succeeded();
-        else
-            this.failed();
-    };
-    VoteManager.prototype.failed = function () {
-        this.onFail();
-        this.resetVote();
-    };
-    VoteManager.prototype.succeeded = function () {
-        this.onSuccess();
-        this.resetVote();
+        if (force) {
+            this.fire("success", [true]);
+        }
+        else {
+            this.fire("fail", [true]);
+        }
     };
     VoteManager.prototype.resetVote = function () {
         if (this.timer != null)
@@ -103,19 +116,20 @@ var VoteManager = /** @class */ (function () {
             return acc + v;
         }, 0);
     };
-    VoteManager.prototype.checkVote = function () {
-        if (this.scoreVotes() >= this.getGoal()) {
-            this.succeeded();
+    VoteManager.prototype._checkVote = function (end) {
+        var votes = this.scoreVotes();
+        var required = this.getGoal();
+        if (votes >= required) {
+            this.fire("success", [false]);
+            this.fire("vote passed", [votes, required]);
+            this.resetVote();
         }
-    };
-    VoteManager.prototype.endVote = function () {
-        if (this.scoreVotes() >= this.getGoal()) {
-            this.succeeded();
-        }
-        else {
-            this.failed();
+        else if (end) {
+            this.fire("fail", [false]);
+            this.fire("vote failed", [votes, required]);
+            this.resetVote();
         }
     };
     return VoteManager;
-}());
+}(utils_js_1.EventEmitter));
 exports.VoteManager = VoteManager;

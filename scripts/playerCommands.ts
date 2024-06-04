@@ -592,39 +592,31 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["force:boolean?"],
 		description: 'Force skip to the next wave.',
 		perm: Perm.admin,
-		handler({allCommands, sender, args}){
+		handler({allCommands, sender, args:{force = true}}){
 			if(!allCommands.vnw.data.manager.active){
-				skipWaves(1, false);
-			}
-			if(args.force === false){
-				Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
-				allCommands.vnw.data.manager.forceVote(false);
-			}else{
-				Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], changing map.`);
+				if(!force) fail(`Cannot clear votes for VNW because no vote is currently ongoing.`);
 				allCommands.vnw.data.manager.forceVote(true);
+			} else {
+				if(force){
+					Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], skipping wave.`);
+				} else {
+					Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
+				}
+				allCommands.vnw.data.manager.forceVote(force);
 			}
 		},
 	},
 
 	vnw: command(() => {
 		let target = 0; // the current amount of waves to skip
-		const manager = new VoteManager(
-			() => {
-				Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.');
-				skipWaves(target - 1, false);
-			},
-			() => {
-				Call.sendMessage('VNW: [red]Vote failed.');
-				target = 0;
-			},
-			(player) => {
-				Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${target}[white] wave(s). [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`)
-			},
-			(player) => {
-				Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()}[white] required.`)
-			},
+		const manager:VoteManager = new VoteManager(
 			1.5 * 60_000,
-		);
+		)
+		.on("success", () => skipWaves(target - 1, false))
+		.on("vote passed", () => Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'))
+		.on("vote failed", () => Call.sendMessage('VNW: [red]Vote failed.'))
+		.on("player vote change", (player) => Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${target}[white] wave(s). [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`))
+		.on("player vote removed", (player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()}[white] required.`));
 
 		return {
 			args: [],
@@ -660,35 +652,27 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["force:boolean?"],
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
-		handler({args, sender, allCommands}){
-			if(!allCommands.rtv.data.manager.voting) fail(`No RTV vote is in session, start one with /RTV.`);
-			if(args.force === false){
-				Call.sendMessage(`RTV: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
-				allCommands.rtv.data.manager.forceVote(false);
-			} else {
-				Call.sendMessage(`RTV: [green]Vote was forced by admin [yellow]${sender.name}[green].`);
+		handler({args:{force = true}, sender, allCommands}){
+			if(!allCommands.vnw.data.manager.active){
+				if(!force) fail(`Cannot clear votes for RTV because no vote is currently ongoing.`);
 				allCommands.rtv.data.manager.forceVote(true);
+			} else {
+				if(force) Call.sendMessage(`RTV: [green]Vote was forced by admin [yellow]${sender.name}[green].`);
+				else Call.sendMessage(`RTV: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
+				allCommands.rtv.data.manager.forceVote(force);
 			}
 		}
 	},
 
-	rtv: command(() => {
-		const manager = new VoteManager(
-			() => {
-				Call.sendMessage(`RTV: [green]Vote has passed, changing map.`);
-				neutralGameover();
-			},
-			() => {
-				Call.sendMessage(`RTV: [red]Vote failed.`)
-			},
-			(player) => {
-				Call.sendMessage(`RTV: ${player.name}[white] wants to change the map. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
-			},
-			(player) => {
-				Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
-			},
+	rtv: command(() => { //TODO cleanup: use init() pattern
+		const manager:VoteManager = new VoteManager(
 			1.5 * 60_000,
-		);
+		)
+		.on("success", () => neutralGameover())
+		.on("vote passed", () => Call.sendMessage(`RTV: [green]Vote has passed, changing map.`))
+		.on("vote failed", () => Call.sendMessage(`RTV: [red]Vote failed.`))
+		.on("player vote change", (player, oldVote, newVote) => Call.sendMessage(`RTV: ${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to change the map. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`))
+		.on("player vote removed", (player) => Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`));
 
 		return {
 			args: [],
