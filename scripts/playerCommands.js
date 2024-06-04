@@ -570,7 +570,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Warns other players about power voids.',
         perm: commands_1.Perm.play,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, outputSuccess = _a.outputSuccess, f = _a.f;
+            var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, lastUsedSuccessfully = _a.lastUsedSuccessfully, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!config_1.Mode.attack())
                 (0, commands_1.fail)("This command can only be run in Attack.");
             if (args.player) {
@@ -578,12 +578,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
                 if (!sender.hasPerm("trusted"))
                     (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
+                if (args.player !== sender && args.player.hasPerm("blockTrolling"))
+                    (0, commands_1.fail)("Target player is insufficiently trollable.");
                 (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
                 outputSuccess(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["Warned ", " about power voids with a popup message."], ["Warned ", " about power voids with a popup message."])), args.player));
             }
             else {
-                if (Date.now() - lastUsedSuccessfullySender < 10000)
+                if (Date.now() - lastUsedSuccessfully < 10000)
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
                 Call.sendMessage("[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to. If you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!");
             }

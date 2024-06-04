@@ -535,11 +535,12 @@ Available types:[yellow]
 		args: ["player:player?"],
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
-		handler({args, sender, lastUsedSuccessfullySender, outputSuccess, f}){
+		handler({args, sender, lastUsedSuccessfullySender, lastUsedSuccessfully, outputSuccess, f}){
 			if(!Mode.attack()) fail(`This command can only be run in Attack.`);
 			if(args.player){
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
+				if(args.player !== sender && args.player.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
 				menu("\uf83f [scarlet]WARNING[] \uf83f",
 `[white]Don't break the Power Void (\uf83f), it's a trap!
 Power voids disable anything they are connected to.
@@ -550,7 +551,7 @@ Please stop attacking and [lime]build defenses[] first!`,
 				logAction("showed void warning", sender, args.player);
 				outputSuccess(f`Warned ${args.player} about power voids with a popup message.`);
 			} else {
-				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was used recently and is on cooldown.`);
+				if(Date.now() - lastUsedSuccessfully < 10000) fail(`This command was used recently and is on cooldown.`);
 				Call.sendMessage(
 `[white]Don't break the Power Void (\uf83f), it's a trap!
 Power voids disable anything they are connected to. If you break it, [scarlet]you will get attacked[] by enemy units.
