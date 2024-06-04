@@ -16,6 +16,9 @@ const Strings: {
 	stripColors(string:string): string;
 };
 const Vars: {
+	logic: {
+		skipWave():void;
+	}
 	netServer: {
 		admins: Administration;
 		clientCommands: CommandHandler;

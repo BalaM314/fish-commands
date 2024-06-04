@@ -585,6 +585,18 @@ export function neutralGameover(){
 	});
 }
 
+/** Please validate wavesToSkip to ensure it is not huge */
+export function skipWaves(wavesToSkip:number, runIntermediateWaves:boolean){
+	if(runIntermediateWaves){
+		for(let i = 0; i < wavesToSkip; i ++){
+			Vars.logic.skipWave();
+		}
+	} else {
+		Vars.state.wave += wavesToSkip - 1;
+		Vars.logic.skipWave();
+	}
+}
+
 /** Chooses a random number between 0 and max. */
 export function random(max:number):number;
 /** Chooses a random number between min and max. */

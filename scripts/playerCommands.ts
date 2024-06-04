@@ -5,7 +5,7 @@ import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globa
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
-import { capitalizeText, crash, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
+import { capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
 // import { votekickmanager } from './votes';
 import { VoteManager } from './votes';
 
@@ -593,7 +593,9 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Force skip to the next wave.',
 		perm: Perm.admin,
 		handler({allCommands, sender, args}){
-			if(!allCommands.vnw.data.manager.active) fail(`No VNW vote is in session, start one with /vnw.`); //TODO:PR start it here
+			if(!allCommands.vnw.data.manager.active){
+				skipWaves(1, false);
+			}
 			if(args.force === false){
 				Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.vnw.data.manager.forceVote(false);
@@ -611,22 +613,8 @@ Please stop attacking and [lime]build defenses[] first!`
 		const manager = new VoteManager(
 			threshold,
 			() => {
-				//TODO:PR move to util function
-				//my got this is a abomination, but its reliable
-				const saveWaveTime = Vars.state.wavetime;
-				const saveWaveEnemies = Vars.state.rules.waitEnemies;
-				Core.app.post(() => {
-					Vars.state.wave += target - 1;
-					Vars.state.wavetime = 1;
-					Vars.state.rules.waitEnemies = false;
-						Core.app.post(() => {
-							Core.app.post(() => {
-								Vars.state.wavetime = saveWaveTime;
-								Vars.state.rules.waitEnemies = saveWaveEnemies;
-							});
-					});
-				});
 				Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.');
+				skipWaves(target - 1, false);
 			},
 			() => {
 				Call.sendMessage('VNW: [red]Vote failed.');

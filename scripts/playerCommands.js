@@ -623,8 +623,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var allCommands = _a.allCommands, sender = _a.sender, args = _a.args;
-            if (!allCommands.vnw.data.manager.active)
-                (0, commands_1.fail)("No VNW vote is in session, start one with /vnw."); //TODO:PR start it here
+            if (!allCommands.vnw.data.manager.active) {
+                (0, utils_1.skipWaves)(1, false);
+            }
             if (args.force === false) {
                 Call.sendMessage("VNW: [red]Votes cleared by admin [yellow]".concat(sender.name, "[red]."));
                 allCommands.vnw.data.manager.forceVote(false);
@@ -639,22 +640,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         var threshold = 5;
         var target = 0; // the current amount of waves to skip
         var manager = new votes_1.VoteManager(threshold, function () {
-            //TODO:PR move to util function
-            //my got this is a abomination, but its reliable
-            var saveWaveTime = Vars.state.wavetime;
-            var saveWaveEnemies = Vars.state.rules.waitEnemies;
-            Core.app.post(function () {
-                Vars.state.wave += target - 1;
-                Vars.state.wavetime = 1;
-                Vars.state.rules.waitEnemies = false;
-                Core.app.post(function () {
-                    Core.app.post(function () {
-                        Vars.state.wavetime = saveWaveTime;
-                        Vars.state.rules.waitEnemies = saveWaveEnemies;
-                    });
-                });
-            });
             Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.');
+            (0, utils_1.skipWaves)(target - 1, false);
         }, function () {
             Call.sendMessage('VNW: [red]Vote failed.');
             target = 0;
