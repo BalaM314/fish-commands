@@ -192,6 +192,7 @@ class Player {
 	x:number; y:number;
 	con:NetConnection;
 	mouseX:number; mouseY:number;
+	shooting:boolean;
 	ip():string;
 	kick(kickReason?:KickReason | string, duration?:number):void;
 	uuid():string;

@@ -600,7 +600,7 @@ ${getAntiBotInfo("client")}`
 			if(!sender.canModerate(player, true)) fail(`You do not have permission to set the chat strictness level of this player.`);
 			if(!(value == "chat" || value == "strict")) fail(`Invalid chat strictness level: valid levels are "chat", "strict"`);
 			player.chatStrictness = value;
-			outputSuccess(`Set chat strictness for player ${player} to "${value}".`);
+			outputSuccess(f`Set chat strictness for player ${player} to "${value}".`);
 		}
 	},
 	emanate: command(() => {

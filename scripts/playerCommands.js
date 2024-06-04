@@ -412,21 +412,14 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Reply to the most recent message.',
         perm: commands_1.Perm.chat,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, output = _a.output, outputFail = _a.outputFail;
-            if (globals_1.recentWhispers[sender.uuid]) {
-                var recipient = players_1.FishPlayer.getById(globals_1.recentWhispers[sender.uuid]);
-                if (recipient === null || recipient === void 0 ? void 0 : recipient.connected()) {
-                    globals_1.recentWhispers[globals_1.recentWhispers[sender.uuid]] = sender.uuid;
-                    recipient.sendMessage("".concat(sender.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
-                    output("[#BBBBBB]Message sent to ".concat(recipient.name, "[#BBBBBB]."));
-                }
-                else {
-                    outputFail("The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]\"/msg <player> <message>\"");
-                }
-            }
-            else {
-                outputFail("It doesn't look like someone has messaged you recently. Try whispering to them with [white]\"/msg <player> <message>\"");
-            }
+            var _b;
+            var args = _a.args, sender = _a.sender, output = _a.output, f = _a.f;
+            var recipient = players_1.FishPlayer.getById((_b = globals_1.recentWhispers[sender.uuid]) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("It doesn't look like someone has messaged you recently. Try whispering to them with [white]\"/msg <player> <message>\""));
+            if (!(recipient === null || recipient === void 0 ? void 0 : recipient.connected()))
+                (0, commands_1.fail)("The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]\"/msg <player> <message>\"");
+            globals_1.recentWhispers[globals_1.recentWhispers[sender.uuid]] = sender.uuid;
+            recipient.sendMessage("".concat(sender.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
+            output(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "[#BBBBBB]."], ["[#BBBBBB]Message sent to ", "[#BBBBBB]."])), recipient));
         },
     }, trail: {
         args: ['type:string?', 'color:string?'],
@@ -559,7 +552,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (!sender.hasPerm("warn"))
                     (0, commands_1.fail)("You do not have permission to show rules to other players.");
                 if (target.hasPerm("blockTrolling"))
-                    (0, commands_1.fail)(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
+                    (0, commands_1.fail)(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             }
             (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["[green]I agree to abide by these rules[]", "No"], target, function (_a) {
                 var option = _a.option;
@@ -567,7 +560,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
             }, false);
             if (target !== sender)
-                outputSuccess(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
+                outputSuccess(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
         },
     }, void: {
         args: ["player:player?"],
@@ -586,7 +579,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("Target player is insufficiently trollable.");
                 (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
-                outputSuccess(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["Warned ", " about power voids with a popup message."], ["Warned ", " about power voids with a popup message."])), args.player));
+                outputSuccess(f(templateObject_11 || (templateObject_11 = __makeTemplateObject(["Warned ", " about power voids with a popup message."], ["Warned ", " about power voids with a popup message."])), args.player));
             }
             else {
                 if (Date.now() - lastUsedSuccessfully < 10000)
@@ -603,16 +596,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true))
-                (0, commands_1.fail)(f(templateObject_11 || (templateObject_11 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+                (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
             if (!sender.hasPerm("changeTeamExternal") && args.team.data().cores.size <= 0)
                 (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
             if (!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore)))
                 args.target.forceRespawn();
             args.target.setTeam(args.team);
             if (args.target === sender)
-                outputSuccess(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
+                outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
             else
-                outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
+                outputSuccess(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
         },
     }, rank: {
         args: ['player:player'],
@@ -620,7 +613,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, f = _a.f;
-            output(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
+            output(f(templateObject_15 || (templateObject_15 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
     }, forcertv: {
         args: ["force:boolean?"],
@@ -863,7 +856,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: "Views a player's stats.",
         handler: function (_a) {
             var target = _a.args.target, output = _a.output, f = _a.f;
-            output(f(templateObject_15 || (templateObject_15 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
+            output(f(templateObject_16 || (templateObject_16 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, target.stats.gamesWon / target.stats.gamesFinished));
         }
     } }));
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16;

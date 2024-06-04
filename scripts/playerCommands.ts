@@ -363,19 +363,12 @@ export const commands = commandList({
 		args: ['message:string'],
 		description: 'Reply to the most recent message.',
 		perm: Perm.chat,
-		handler({ args, sender, output, outputFail }) {
-			if (recentWhispers[sender.uuid]) {
-				const recipient = FishPlayer.getById(recentWhispers[sender.uuid]);
-				if (recipient?.connected()) {
-					recentWhispers[recentWhispers[sender.uuid]] = sender.uuid;
-					recipient.sendMessage(`${sender.name}[lightgray] whispered:[#BBBBBB] ${args.message}`);
-					output(`[#BBBBBB]Message sent to ${recipient.name}[#BBBBBB].`);
-				} else {
-					outputFail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
-				}
-			} else {
-				outputFail(`It doesn't look like someone has messaged you recently. Try whispering to them with [white]"/msg <player> <message>"`);
-			}
+		handler({ args, sender, output, f }) {
+			const recipient = FishPlayer.getById(recentWhispers[sender.uuid] ?? fail(`It doesn't look like someone has messaged you recently. Try whispering to them with [white]"/msg <player> <message>"`));
+			if(!(recipient?.connected())) fail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
+			recentWhispers[recentWhispers[sender.uuid]] = sender.uuid;
+			recipient.sendMessage(`${sender.name}[lightgray] whispered:[#BBBBBB] ${args.message}`);
+			output(f`[#BBBBBB]Message sent to ${recipient}[#BBBBBB].`);
 		},
 	},
 
