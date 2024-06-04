@@ -16,6 +16,9 @@ const Strings: {
 	stripColors(string:string): string;
 };
 const Vars: {
+	logic: {
+		skipWave():void;
+	}
 	netServer: {
 		admins: Administration;
 		clientCommands: CommandHandler;
@@ -37,6 +40,7 @@ const Vars: {
 			defaultTeam:Team;
 			waveTeam:Team;
 			waves:boolean;
+			waitEnemies:boolean;
 		}
 		set(state:State):void;
 		gameOver:boolean;

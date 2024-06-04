@@ -155,8 +155,12 @@ export class FishPlayer {
 	static getFromInfo(playerInfo:PlayerInfo){
 		return this.cachedPlayers[playerInfo.id] ??= this.createFromInfo(playerInfo);
 	}
-	static get(player:mindustryPlayer){
+	static get(player:mindustryPlayer):FishPlayer {
 		return this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
+	}
+	static resolve(player:mindustryPlayer | FishPlayer):FishPlayer {
+		if(player instanceof FishPlayer) return player;
+		else return this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
 	}
 	static getById(id:string):FishPlayer | null {
 		return this.cachedPlayers[id] ?? null;
@@ -857,6 +861,10 @@ We apologize for the inconvenience.`
 	connected():boolean {
 		return this.player != null && !this.con.hasDisconnected;
 	}
+	voteWeight():number {
+		//TODO vote weighting based on rank and joins
+		return 1;
+	}
 	/**
 	 * @returns whether a player can perform a moderation action on another player.
 	 * @param strict If false, then the action is also allowed on players of same rank.
@@ -1164,6 +1172,7 @@ We apologize for the inconvenience.`
 	}
 
 	//#endregion
+
 	//#region heuristics
 	activateHeuristics(){
 		//Blocks broken check

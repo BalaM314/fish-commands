@@ -262,6 +262,24 @@ export class StringIO {
 	}
 }
 
+export class EventEmitter<
+	/** Mapping between event name and arguments to the handler. */
+	EventMapping extends Record<string, unknown[]>,
+> {
+	private listeners: {
+		[K in keyof EventMapping]?: ((t:this, ...args:EventMapping[K]) => unknown)[];
+	} = {};
+	on<EventType extends keyof EventMapping>(event:EventType, callback:(t:this, ...args:EventMapping[EventType]) => unknown):this {
+		(this.listeners[event] ??= []).push(callback);
+		return this;
+	}
+	fire<EventType extends keyof EventMapping>(event:EventType, args:EventMapping[EventType]){
+		for(const listener of this.listeners[event] ?? []){
+			listener(this, ...args);
+		}
+	}
+}
+
 export function capitalizeText(text:string):string {
 	return text
 		.split(" ")
@@ -583,6 +601,18 @@ export function neutralGameover(){
 		if(Mode.hexed()) serverRestartLoop(15);
 		else Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
 	});
+}
+
+/** Please validate wavesToSkip to ensure it is not huge */
+export function skipWaves(wavesToSkip:number, runIntermediateWaves:boolean){
+	if(runIntermediateWaves){
+		for(let i = 0; i < wavesToSkip; i ++){
+			Vars.logic.skipWave();
+		}
+	} else {
+		Vars.state.wave += wavesToSkip - 1;
+		Vars.logic.skipWave();
+	}
 }
 
 /** Chooses a random number between 0 and max. */
