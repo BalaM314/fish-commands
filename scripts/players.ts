@@ -859,6 +859,10 @@ We apologize for the inconvenience.`
 	connected():boolean {
 		return this.player != null && !this.con.hasDisconnected;
 	}
+	voteWeight():number {
+		//TODO vote weighting based on rank and joins
+		return 1;
+	}
 	/**
 	 * @returns whether a player can perform a moderation action on another player.
 	 * @param strict If false, then the action is also allowed on players of same rank.
@@ -1163,6 +1167,7 @@ We apologize for the inconvenience.`
 	}
 
 	//#endregion
+
 	//#region heuristics
 	activateHeuristics(){
 		//Blocks broken check

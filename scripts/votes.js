@@ -29,26 +29,34 @@ exports.VoteManager = void 0;
 //le overhaul
 var players_1 = require("./players");
 var VoteManager = /** @class */ (function () {
-    function VoteManager(goal, //TODO:PR this won't work, negative votes don't work
-    onSuccess, onFail, onVote, onUnVote) {
-        this.goal = goal;
+    function VoteManager(onSuccess, onFail, onVote, onUnVote, voteTime, goal) {
+        if (goal === void 0) { goal = 0.50001; }
+        var _this = this;
         this.onSuccess = onSuccess;
         this.onFail = onFail;
         this.onVote = onVote;
         this.onUnVote = onUnVote;
+        this.voteTime = voteTime;
+        this.goal = goal;
         this.votes = new Map();
         this.timer = null;
         this.active = false;
+        Events.on(EventType.PlayerLeave, function (_a) {
+            var player = _a.player;
+            //Run once the player has been removed
+            return Core.app.post(function () { return _this.unvote(player); });
+        });
+        Events.on(EventType.GameOverEvent, function () { return _this.resetVote(); });
     } //TODO:PR use builder pattern to clarify call site
-    VoteManager.prototype.start = function (player, value, voteTime) {
+    VoteManager.prototype.start = function (player, value) {
         var _this = this;
         this.active = true;
-        this.timer = Timer.schedule(function () { return _this.endVote(); }, voteTime / 1000);
+        this.timer = Timer.schedule(function () { return _this.endVote(); }, this.voteTime / 1000);
         this.vote(player, value);
     };
     VoteManager.prototype.vote = function (player, value) {
-        if (!this.active || player == null || player.usid == null)
-            return; //no vote is going on
+        if (!this.active)
+            return this.start(player, value);
         this.votes.set(player.uuid, value);
         Log.info("Player voted, Name : ".concat(player.name, ",UUID : ").concat(player.uuid));
         this.onVote(player);
@@ -57,7 +65,7 @@ var VoteManager = /** @class */ (function () {
     VoteManager.prototype.unvote = function (player) {
         if (!this.active)
             return;
-        var fishP = players_1.FishPlayer.get(player);
+        var fishP = players_1.FishPlayer.resolve(player);
         if (!this.votes.delete(fishP.uuid))
             Log.err("Cannot remove nonexistent vote for player with uuid ".concat(fishP.uuid));
         this.onUnVote(fishP);
@@ -86,7 +94,8 @@ var VoteManager = /** @class */ (function () {
         this.active = false;
     };
     VoteManager.prototype.getGoal = function () {
-        return Math.min(this.goal, Groups.player.size());
+        //TODO discount AFK players
+        return Math.ceil(this.goal * Groups.player.size());
     };
     VoteManager.prototype.scoreVotes = function () {
         return __spreadArray([], __read(this.votes), false).reduce(function (acc, _a) {

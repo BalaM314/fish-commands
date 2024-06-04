@@ -8,21 +8,28 @@ export class VoteManager {
 	active = false;
 
 	constructor(
-		public goal:number, //TODO:PR this won't work, negative votes don't work
 		public onSuccess: () => unknown,
 		public onFail: () => unknown,
 		public onVote: (player:FishPlayer) => unknown,
 		public onUnVote: (player:FishPlayer) => unknown,
-	){} //TODO:PR use builder pattern to clarify call site
+		public voteTime:number,
+		public goal:number = 0.50001,
+	){
+		Events.on(EventType.PlayerLeave, ({player}) =>
+			//Run once the player has been removed
+			Core.app.post(() => this.unvote(player))
+		);
+		Events.on(EventType.GameOverEvent, () => this.resetVote());
+	} //TODO:PR use builder pattern to clarify call site
 
-	start(player:FishPlayer, value:number, voteTime:number){
+	start(player:FishPlayer, value:number){
 		this.active = true;
-		this.timer = Timer.schedule(() => this.endVote(), voteTime / 1000);
+		this.timer = Timer.schedule(() => this.endVote(), this.voteTime / 1000);
 		this.vote(player, value);
 	}
 
 	vote(player:FishPlayer, value:number){
-		if(!this.active || player == null || player.usid == null) return; //no vote is going on
+		if(!this.active) return this.start(player, value);
 		this.votes.set(player.uuid, value);
 		Log.info(`Player voted, Name : ${player.name},UUID : ${player.uuid}`);
 		this.onVote(player);
@@ -31,7 +38,7 @@ export class VoteManager {
 
 	unvote(player:FishPlayer | mindustryPlayer){
 		if(!this.active) return;
-		const fishP = FishPlayer.get(player);
+		const fishP = FishPlayer.resolve(player);
 		if(!this.votes.delete(fishP.uuid)) Log.err(`Cannot remove nonexistent vote for player with uuid ${fishP.uuid}`);
 		this.onUnVote(fishP);
 		this.checkVote();
@@ -60,7 +67,8 @@ export class VoteManager {
 	}
 	
 	getGoal():number {
-		return Math.min(this.goal, Groups.player.size());
+		//TODO discount AFK players
+		return Math.ceil(this.goal * Groups.player.size());
 	}
 
 	scoreVotes():number {

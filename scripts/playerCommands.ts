@@ -607,11 +607,8 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 
 	vnw: command(() => {
-		const voteDuration = 1.5 * 60000; 
-		const threshold = 5;
 		let target = 0; // the current amount of waves to skip
 		const manager = new VoteManager(
-			threshold,
 			() => {
 				Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.');
 				skipWaves(target - 1, false);
@@ -624,25 +621,20 @@ Please stop attacking and [lime]build defenses[] first!`
 				Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${target}[white] wave(s). [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`)
 			},
 			(player) => {
-				Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()-1}[white] required.`) //TODO:PR remove decrement
+				Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()}[white] required.`)
 			},
+			1.5 * 60_000,
 		);
-		
-		Events.on(EventType.PlayerLeave, ({player}) => {manager.unvote(player);});		
-		Events.on(EventType.GameOverEvent, () => {manager.resetVote()});
 
 		return {
-			args: ["vote:boolean?"],
+			args: [],
 			description: "Vote to start the next wave.",
 			perm: Perm.play,
 			data: {target, manager},
-			handler({args, sender, lastUsedSuccessfullySender}){
+			handler({sender, lastUsedSuccessfullySender}){
 				if(!Mode.survival()) fail(`This command is only enabled in survival.`);
 				if(Vars.state.gameOver) fail(`This game is already over.`); //TODO command run states system
 				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
-
-				args.vote ??= true;
-				const playerVote = (args.vote ? 1 :-1) * (sender.ranksAtLeast('trusted') ? 2 : 1);
 
 				if(!manager.active){
 					menu(
@@ -652,13 +644,13 @@ Please stop attacking and [lime]build defenses[] first!`
 						sender,
 						({option}) => {
 							target = option;
-							manager.start(sender, playerVote, voteDuration);
+							manager.start(sender, sender.voteWeight());
 						},
 						true,
 						n => `${n} waves`
 					);
 				} else {
-					manager.vote(sender, playerVote);
+					manager.vote(sender, sender.voteWeight());
 				}
 			}
 		}	
@@ -681,10 +673,7 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 
 	rtv: command(() => {
-		const voteDuration = 1.5 * 60_000;
-		const threshold = 5;
 		const manager = new VoteManager(
-			threshold,
 			() => {
 				Call.sendMessage(`RTV: [green]Vote has passed, changing map.`);
 				neutralGameover();
@@ -696,30 +685,23 @@ Please stop attacking and [lime]build defenses[] first!`
 				Call.sendMessage(`RTV: ${player.name}[white] wants to change the map. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
 			},
 			(player) => {
-				Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()-1}[white] required.`);
+				Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`);
 			},
+			1.5 * 60_000,
 		);
-		Events.on(EventType.PlayerLeave, ({player}) => manager.unvote(player))
-		Events.on(EventType.GameOverEvent, () => manager.resetVote())
+
 		return {
-			args: ["vote:boolean?"],
+			args: [],
 			description: 'Rock the vote to change map.',
 			perm: Perm.play,
 			data: {manager},
-			handler({args, sender, lastUsedSuccessfullySender}){
+			handler({sender, lastUsedSuccessfullySender}){
 				if(Vars.state.gameOver) fail(`This map is already finished, cannot RTV. Wait until the next map loads.`);
 				if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
 
-				args.vote ??= true;
-				let playerVote = (args.vote ? 1 : -1) * (sender.hasPerm("trusted") ? 2 : 1);
-
-				if(!manager.active){
-					manager.start(sender, playerVote, voteDuration);
-				} else {
-					manager.vote(sender, playerVote);
-				}
+				manager.vote(sender, 1); //No weighting for RTV except for removing AFK players
 			}
-		}	
+		}
 	}),
 
 	// votekick: {

@@ -965,6 +965,10 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.connected = function () {
         return this.player != null && !this.con.hasDisconnected;
     };
+    FishPlayer.prototype.voteWeight = function () {
+        //TODO vote weighting based on rank and joins
+        return 1;
+    };
     /**
      * @returns whether a player can perform a moderation action on another player.
      * @param strict If false, then the action is also allowed on players of same rank.
