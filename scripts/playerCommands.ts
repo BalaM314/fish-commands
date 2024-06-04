@@ -592,16 +592,14 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["force:boolean?"],
 		description: 'Force skip to the next wave.',
 		perm: Perm.admin,
-		handler({allCommands, sender, args:{force = true}}){
-			if(!allCommands.vnw.data.manager.active){
-				if(!force) fail(`Cannot clear votes for VNW because no vote is currently ongoing.`);
-				allCommands.vnw.data.manager.forceVote(true);
+		handler({allCommands, sender, args:{force}}){
+			force ??= true;
+			if(allCommands.vnw.data.manager.session == null){
+				if(force == false) fail(`Cannot clear votes for VNW because no vote is currently ongoing.`);
+				skipWaves(1, false);
 			} else {
-				if(force){
-					Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], skipping wave.`);
-				} else {
-					Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
-				}
+				if(force) Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], skipping wave.`);
+				else Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.vnw.data.manager.forceVote(force);
 			}
 		},
@@ -648,9 +646,10 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["force:boolean?"],
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
-		handler({args:{force = true}, sender, allCommands}){
-			if(!allCommands.vnw.data.manager.active){
-				if(!force) fail(`Cannot clear votes for RTV because no vote is currently ongoing.`);
+		handler({args:{force}, sender, allCommands}){
+			force ??= true;
+			if(allCommands.rtv.data.manager.session == null){
+				if(force == false) fail(`Cannot clear votes for RTV because no vote is currently ongoing.`);
 				allCommands.rtv.data.manager.forceVote(true);
 			} else {
 				if(force) Call.sendMessage(`RTV: [green]Vote was forced by admin [yellow]${sender.name}[green].`);

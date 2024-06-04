@@ -71,6 +71,7 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 		} else {
 			this.fire("fail", [true]);
 		}
+		this.resetVote();
 	}
 	
 	resetVote(){
@@ -81,7 +82,7 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	
 	requiredVotes():number {
 		//TODO discount AFK players
-		return Math.ceil(this.goal * Groups.player.size());
+		return Math.max(Math.ceil(this.goal * Groups.player.size()), 1);
 	}
 
 	currentVotes():number {

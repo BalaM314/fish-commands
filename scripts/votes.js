@@ -102,6 +102,7 @@ var VoteManager = /** @class */ (function (_super) {
         else {
             this.fire("fail", [true]);
         }
+        this.resetVote();
     };
     VoteManager.prototype.resetVote = function () {
         if (this.session == null)
@@ -111,7 +112,7 @@ var VoteManager = /** @class */ (function (_super) {
     };
     VoteManager.prototype.requiredVotes = function () {
         //TODO discount AFK players
-        return Math.ceil(this.goal * Groups.player.size());
+        return Math.max(Math.ceil(this.goal * Groups.player.size()), 1);
     };
     VoteManager.prototype.currentVotes = function () {
         return this.session ? __spreadArray([], __read(this.session.votes), false).reduce(function (acc, _a) {

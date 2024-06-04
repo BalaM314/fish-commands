@@ -622,19 +622,18 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Force skip to the next wave.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var allCommands = _a.allCommands, sender = _a.sender, _b = _a.args.force, force = _b === void 0 ? true : _b;
-            if (!allCommands.vnw.data.manager.active) {
-                if (!force)
+            var allCommands = _a.allCommands, sender = _a.sender, force = _a.args.force;
+            force !== null && force !== void 0 ? force : (force = true);
+            if (allCommands.vnw.data.manager.session == null) {
+                if (force == false)
                     (0, commands_1.fail)("Cannot clear votes for VNW because no vote is currently ongoing.");
-                allCommands.vnw.data.manager.forceVote(true);
+                (0, utils_1.skipWaves)(1, false);
             }
             else {
-                if (force) {
+                if (force)
                     Call.sendMessage("VNW: [green]Vote was forced by admin [yellow]".concat(sender.name, "[green], skipping wave."));
-                }
-                else {
+                else
                     Call.sendMessage("VNW: [red]Votes cleared by admin [yellow]".concat(sender.name, "[red]."));
-                }
                 allCommands.vnw.data.manager.forceVote(force);
             }
         },
@@ -673,9 +672,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Force skip to the next map.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var _b = _a.args.force, force = _b === void 0 ? true : _b, sender = _a.sender, allCommands = _a.allCommands;
-            if (!allCommands.vnw.data.manager.active) {
-                if (!force)
+            var force = _a.args.force, sender = _a.sender, allCommands = _a.allCommands;
+            force !== null && force !== void 0 ? force : (force = true);
+            if (allCommands.rtv.data.manager.session == null) {
+                if (force == false)
                     (0, commands_1.fail)("Cannot clear votes for RTV because no vote is currently ongoing.");
                 allCommands.rtv.data.manager.forceVote(true);
             }
