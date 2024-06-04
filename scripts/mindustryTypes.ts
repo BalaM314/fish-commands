@@ -185,8 +185,28 @@ class Vec2 {
 	set(x:number, y:number):Vec2;
 }
 /* mindustry.gen.Player */
-type mindustryPlayer = any;
-const Player: mindustryPlayer;
+class Player {
+	id:number;
+	name:string;
+	admin:boolean;
+	x:number; y:number;
+	con:NetConnection;
+	mouseX:number; mouseY:number;
+	ip():string;
+	kick(kickReason?:KickReason | string, duration?:number):void;
+	uuid():string;
+	usid():string;
+	sendMessage(message:string):void;
+	unit():Unit;
+	unit(unit:Unit):void;
+	team():Team;
+	team(team:Team):void;
+	dead():boolean;
+	clearUnit():void;
+	checkSpawn():void;
+	getInfo():PlayerInfo;
+}
+type mindustryPlayer = Player;
 class Color {
 	constructor();
 	constructor(rgba8888:number);
