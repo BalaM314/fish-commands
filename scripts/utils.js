@@ -36,8 +36,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
-exports.processChat = exports.updateBans = exports.outputConsole = void 0;
+exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.EventEmitter = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -335,6 +335,36 @@ var StringIO = /** @class */ (function () {
     return StringIO;
 }());
 exports.StringIO = StringIO;
+var EventEmitter = /** @class */ (function () {
+    function EventEmitter() {
+        this.listeners = {};
+    }
+    EventEmitter.prototype.on = function (event, callback) {
+        var _a;
+        var _b;
+        ((_a = (_b = this.listeners)[event]) !== null && _a !== void 0 ? _a : (_b[event] = [])).push(callback);
+        return this;
+    };
+    EventEmitter.prototype.fire = function (event, args) {
+        var e_1, _a;
+        var _b;
+        try {
+            for (var _c = __values((_b = this.listeners[event]) !== null && _b !== void 0 ? _b : []), _d = _c.next(); !_d.done; _d = _c.next()) {
+                var listener = _d.value;
+                listener.apply(this, args);
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+    };
+    return EventEmitter;
+}());
+exports.EventEmitter = EventEmitter;
 function capitalizeText(text) {
     return text
         .split(" ")
@@ -355,7 +385,7 @@ exports.escapeTextDiscord = escapeTextDiscord;
  * @returns
  */
 function matchFilter(input, strict) {
-    var e_1, _a, e_2, _b;
+    var e_2, _a, e_3, _b;
     if (strict === void 0) { strict = "chat"; }
     try {
         //Replace substitutions
@@ -370,28 +400,28 @@ function matchFilter(input, strict) {
                 }
             };
             try {
-                for (var _f = (e_2 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _g = _f.next(); !_g.done; _g = _f.next()) {
+                for (var _f = (e_3 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _g = _f.next(); !_g.done; _g = _f.next()) {
                     var text = _g.value;
                     var state_1 = _loop_1(text);
                     if (typeof state_1 === "object")
                         return state_1.value;
                 }
             }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
                     if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
                 }
-                finally { if (e_2) throw e_2.error; }
+                finally { if (e_3) throw e_3.error; }
             }
         }
     }
-    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    catch (e_2_1) { e_2 = { error: e_2_1 }; }
     finally {
         try {
             if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
         }
-        finally { if (e_1) throw e_1.error; }
+        finally { if (e_2) throw e_2.error; }
     }
     return false;
 }
@@ -417,7 +447,7 @@ function cleanText(text, applyAntiEvasion) {
 }
 exports.cleanText = cleanText;
 function isImpersonator(name, isAdmin) {
-    var e_3, _a;
+    var e_4, _a;
     var replacedText = cleanText(name);
     var antiEvasionText = cleanText(name, true);
     //very clean code i know
@@ -451,12 +481,12 @@ function isImpersonator(name, isAdmin) {
                 return message;
         }
     }
-    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+    catch (e_4_1) { e_4 = { error: e_4_1 }; }
     finally {
         try {
             if (filters_1_1 && !filters_1_1.done && (_a = filters_1.return)) _a.call(filters_1);
         }
-        finally { if (e_3) throw e_3.error; }
+        finally { if (e_4) throw e_4.error; }
     }
     return false;
 }
@@ -502,7 +532,7 @@ function logAction(action, by, to, reason, duration) {
 exports.logAction = logAction;
 /**@returns the number of milliseconds. */
 function parseTimeString(str) {
-    var e_4, _a;
+    var e_5, _a;
     var formats = [
         [/(\d+)s/, 1],
         [/(\d+)m/, 60],
@@ -527,12 +557,12 @@ function parseTimeString(str) {
             }
         }
     }
-    catch (e_4_1) { e_4 = { error: e_4_1 }; }
+    catch (e_5_1) { e_5 = { error: e_5_1 }; }
     finally {
         try {
             if (formats_1_1 && !formats_1_1.done && (_a = formats_1.return)) _a.call(formats_1);
         }
-        finally { if (e_4) throw e_4.error; }
+        finally { if (e_5) throw e_5.error; }
     }
     return null;
 }
@@ -586,7 +616,7 @@ function getUnitType(type) {
 exports.getUnitType = getUnitType;
 //TODO refactor this, lots of duped code across multiple select functions
 function getMap(name) {
-    var e_5, _a;
+    var e_6, _a;
     if (name == "")
         return "none";
     var mode = Vars.state.rules.mode();
@@ -618,12 +648,12 @@ function getMap(name) {
             //if empty, go to next filter
         }
     }
-    catch (e_5_1) { e_5 = { error: e_5_1 }; }
+    catch (e_6_1) { e_6 = { error: e_6_1 }; }
     finally {
         try {
             if (filters_2_1 && !filters_2_1.done && (_a = filters_2.return)) _a.call(filters_2);
         }
-        finally { if (e_5) throw e_5.error; }
+        finally { if (e_6) throw e_6.error; }
     }
     //no filters returned a result
     return "none";

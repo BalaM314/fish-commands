@@ -262,6 +262,24 @@ export class StringIO {
 	}
 }
 
+export class EventEmitter<
+	/** Mapping between event name and arguments to the handler. */
+	EventMapping extends Record<string, unknown[]>,
+> {
+	private listeners: {
+		[K in keyof EventMapping]?: ((...args:EventMapping[K]) => unknown)[];
+	} = {};
+	on<EventType extends keyof EventMapping>(event:EventType, callback:(this:this, ...args:EventMapping[EventType]) => unknown):this {
+		(this.listeners[event] ??= []).push(callback);
+		return this;
+	}
+	fire<EventType extends keyof EventMapping>(event:EventType, args:EventMapping[EventType]){
+		for(const listener of this.listeners[event] ?? []){
+			listener.apply(this, args);
+		}
+	}
+}
+
 export function capitalizeText(text:string):string {
 	return text
 		.split(" ")
