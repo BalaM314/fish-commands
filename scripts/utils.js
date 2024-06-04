@@ -351,7 +351,7 @@ var EventEmitter = /** @class */ (function () {
         try {
             for (var _c = __values((_b = this.listeners[event]) !== null && _b !== void 0 ? _b : []), _d = _c.next(); !_d.done; _d = _c.next()) {
                 var listener = _d.value;
-                listener.apply(this, args);
+                listener.apply(void 0, __spreadArray([this], __read(args), false));
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }

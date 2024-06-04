@@ -607,43 +607,41 @@ Please stop attacking and [lime]build defenses[] first!`
 		},
 	},
 
-	vnw: command(() => {
-		let target = 0; // the current amount of waves to skip
-		const manager:VoteManager = new VoteManager(
-			1.5 * 60_000,
-		)
-		.on("success", () => skipWaves(target - 1, false))
-		.on("vote passed", () => Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'))
-		.on("vote failed", () => Call.sendMessage('VNW: [red]Vote failed.'))
-		.on("player vote change", (player) => Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${target}[white] wave(s). [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`))
-		.on("player vote removed", (player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${manager.scoreVotes()}[white] votes, [green[${manager.getGoal()}[white] required.`));
+	vnw: command({
+		args: [],
+		description: "Vote to start the next wave.",
+		perm: Perm.play,
+		init: () => ({
+			target: [0] as [number],
+			manager: new VoteManager(
+				1.5 * 60_000,
+			)
+			.on("success", () => skipWaves(target - 1, false))
+			.on("vote passed", () => Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'))
+			.on("vote failed", () => Call.sendMessage('VNW: [red]Vote failed.'))
+			.on("player vote change", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${target}[white] wave(s). [green]${t.scoreVotes()}[white] votes, [green]${t.getGoal()}[white] required.`))
+			.on("player vote removed", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${t.scoreVotes()}[white] votes, [green[${t.getGoal()}[white] required.`))
+		}),
+		handler({sender, lastUsedSuccessfullySender, data:{manager}}){
+			if(!Mode.survival()) fail(`This command is only enabled in survival.`);
+			if(Vars.state.gameOver) fail(`This game is already over.`); //TODO command run states system
+			if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
 
-		return {
-			args: [],
-			description: "Vote to start the next wave.",
-			perm: Perm.play,
-			data: {target, manager},
-			handler({sender, lastUsedSuccessfullySender}){
-				if(!Mode.survival()) fail(`This command is only enabled in survival.`);
-				if(Vars.state.gameOver) fail(`This game is already over.`); //TODO command run states system
-				if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
-
-				if(!manager.active){
-					menu(
-						"Start a Next Wave Vote",
-						"Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",
-						[1, 5, 10],
-						sender,
-						({option}) => {
-							target = option;
-							manager.start(sender, sender.voteWeight());
-						},
-						true,
-						n => `${n} waves`
-					);
-				} else {
-					manager.vote(sender, sender.voteWeight());
-				}
+			if(!manager.active){
+				menu(
+					"Start a Next Wave Vote",
+					"Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",
+					[1, 5, 10],
+					sender,
+					({option}) => {
+						target = option;
+						manager.start(sender, sender.voteWeight());
+					},
+					true,
+					n => `${n} waves`
+				);
+			} else {
+				manager.vote(sender, sender.voteWeight());
 			}
 		}	
 	}),
@@ -665,21 +663,21 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 
 	rtv: command(() => { //TODO cleanup: use init() pattern
-		const manager:VoteManager = new VoteManager(
-			1.5 * 60_000,
-		)
-		.on("success", () => neutralGameover())
-		.on("vote passed", () => Call.sendMessage(`RTV: [green]Vote has passed, changing map.`))
-		.on("vote failed", () => Call.sendMessage(`RTV: [red]Vote failed.`))
-		.on("player vote change", (player, oldVote, newVote) => Call.sendMessage(`RTV: ${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to change the map. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`))
-		.on("player vote removed", (player) => Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${manager.scoreVotes()}[white] votes, [green]${manager.getGoal()}[white] required.`));
-
 		return {
 			args: [],
 			description: 'Rock the vote to change map.',
 			perm: Perm.play,
-			data: {manager},
-			handler({sender, lastUsedSuccessfullySender}){
+			init: () => ({
+				manager: new VoteManager(
+					1.5 * 60_000,
+				)
+				.on("success", () => neutralGameover())
+				.on("vote passed", () => Call.sendMessage(`RTV: [green]Vote has passed, changing map.`))
+				.on("vote failed", () => Call.sendMessage(`RTV: [red]Vote failed.`))
+				.on("player vote change", (t, player, oldVote, newVote) => Call.sendMessage(`RTV: ${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to change the map. [green]${t.scoreVotes()}[white] votes, [green]${t.getGoal()}[white] required.`))
+				.on("player vote removed", (t, player) => Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${t.scoreVotes()}[white] votes, [green]${t.getGoal()}[white] required.`))
+			}),
+			handler({sender, lastUsedSuccessfullySender, data:{manager}}){
 				if(Vars.state.gameOver) fail(`This map is already finished, cannot RTV. Wait until the next map loads.`);
 				if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
 

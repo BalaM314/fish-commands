@@ -267,15 +267,15 @@ export class EventEmitter<
 	EventMapping extends Record<string, unknown[]>,
 > {
 	private listeners: {
-		[K in keyof EventMapping]?: ((...args:EventMapping[K]) => unknown)[];
+		[K in keyof EventMapping]?: ((t:this, ...args:EventMapping[K]) => unknown)[];
 	} = {};
-	on<EventType extends keyof EventMapping>(event:EventType, callback:(this:this, ...args:EventMapping[EventType]) => unknown):this {
+	on<EventType extends keyof EventMapping>(event:EventType, callback:(t:this, ...args:EventMapping[EventType]) => unknown):this {
 		(this.listeners[event] ??= []).push(callback);
 		return this;
 	}
 	fire<EventType extends keyof EventMapping>(event:EventType, args:EventMapping[EventType]){
 		for(const listener of this.listeners[event] ?? []){
-			listener.apply(this, args);
+			listener(this, ...args);
 		}
 	}
 }
