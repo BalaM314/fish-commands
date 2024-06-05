@@ -1,5 +1,5 @@
 import * as api from "./api";
-import { Perm, command, commandList, fail } from "./commands";
+import { Perm, Req, command, commandList, fail } from "./commands";
 import { getGamemode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
@@ -30,9 +30,9 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Stops a player from chatting.',
 		perm: Perm.mod,
+		requirements: [Req.moderate("player")],
 		handler({args, sender, outputSuccess, f}){
 			if(args.player.muted) fail(f`Player ${args.player} is already muted.`);
-			if(!sender.canModerate(args.player)) fail(`You do not have permission to mute this player.`);
 			args.player.mute(sender);
 			logAction('muted', sender, args.player);
 			outputSuccess(f`Muted player ${args.player}.`);
@@ -56,8 +56,8 @@ export const commands = commandList({
 		args: ["player:player", "duration:time?", "reason:string?"],
 		description: 'Kick a player with optional reason.',
 		perm: Perm.mod,
+		requirements: [Req.moderate("player")],
 		handler({args, outputSuccess, f, sender}){
-			if(!sender.canModerate(args.player)) fail(`You do not have permission to kick this player.`);
 			if(!sender.hasPerm("admin") && args.duration && args.duration > 3600_000 * 6) fail(`Maximum kick duration is 6 hours.`);
 			const reason = args.reason ?? "A staff member did not like your actions.";
 			const duration = args.duration ?? 60_000;
@@ -72,6 +72,7 @@ export const commands = commandList({
 		args: ['player:player', "time:time?", "message:string?"],
 		description: 'Stops a player.',
 		perm: Perm.mod,
+		requirements: [Req.moderate("player", true)],
 		handler({args, sender, outputSuccess, f}){
 			if(args.player.marked()){
 				//overload: overwrite stoptime
@@ -80,16 +81,15 @@ export const commands = commandList({
 				args.player.updateStopTime(args.time);
 				outputSuccess(f`Player ${args.player}'s stop time has been updated to ${formatTime(args.time)} (was ${previousTime}).`);
 				logAction("updated stop time of", sender, args.player, args.message ?? undefined, args.time);
-				return;
+			} else {
+				const time = args.time ?? untilForever();
+				if(time + Date.now() > maxTime) fail(`Error: time too high.`);
+				args.player.stop(sender, time, args.message ?? undefined);
+				logAction('stopped', sender, args.player, args.message ?? undefined, time);
+				//TODO outputGlobal()
+				Call.sendMessage(`[orange]Player "${args.player.prefixedName}[orange]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
 			}
 
-			if(!sender.canModerate(args.player, false)) fail(`You do not have permission to stop this player.`);
-			const time = args.time ?? untilForever();
-			if(time + Date.now() > maxTime) fail(`Error: time too high.`);
-			args.player.stop(sender, time, args.message ?? undefined);
-			logAction('stopped', sender, args.player, args.message ?? undefined, time);
-			//TODO outputGlobal()
-			Call.sendMessage(`[orange]Player "${args.player.prefixedName}[orange]" has been marked for ${formatTime(time)}${args.message ? ` with reason: [white]${args.message}[]` : ""}.`);
 		}
 	},
 
@@ -118,11 +118,10 @@ export const commands = commandList({
 		args: ["player:player", "rank:rank"],
 		description: "Set a player's rank.",
 		perm: Perm.mod,
+		requirements: [Req.moderate("player")],
 		handler({args:{rank, player}, outputSuccess, f, sender}){
 			if(rank.level >= sender.rank.level)
 				fail(f`You do not have permission to promote players to rank ${rank}, because your current rank is ${sender.rank}`);
-			if(!sender.canModerate(player))
-				fail(`You do not have permission to modify the rank of player ${player}`);
 			if(rank == Rank.pi && !localDebug) fail(f`Rank ${rank} is immutable.`);
 			if(player.immutable() && !localDebug) fail(f`Player ${player} is immutable.`);
 
@@ -136,9 +135,8 @@ export const commands = commandList({
 		args: ["player:player", "flag:roleflag", "value:boolean"],
 		description: "Set a player's role flags.",
 		perm: Perm.mod,
+		requirements: [Req.moderate("player")],
 		handler({args:{flag, player, value}, sender, outputSuccess, f}){
-			if(!sender.canModerate(player))
-				fail(f`You do not have permission to modify the role flags of player ${player}`);
 			if(!sender.hasPerm("admin") && !flag.assignableByModerators)
 				fail(f`You do not have permission to change the value of role flag ${flag}`);
 
@@ -273,13 +271,11 @@ export const commands = commandList({
 		args: ["wave:number"],
 		description: "Sets the wave number.",
 		perm: Perm.admin,
-		handler({args, outputSuccess, outputFail, f}){
-			if(args.wave > 0 && Number.isInteger(args.wave)){
-				Vars.state.wave = args.wave;
-				outputSuccess(f`Set wave to ${Vars.state.wave}`);
-			} else {
-				outputFail(`Wave must be a positive integer.`);
-			}
+		handler({args, outputSuccess, f}){
+			if(args.wave < 0) fail(`Wave must be positive.`);
+			if(!Number.isSafeInteger(args.wave)) fail(`Wave must be an integer.`);
+			Vars.state.wave = args.wave;
+			outputSuccess(f`Set wave to ${Vars.state.wave}`);
 		}
 	},
 
@@ -353,9 +349,7 @@ export const commands = commandList({
 			if(args.uuid){
 				//Overload 1: ban by uuid
 				let data:PlayerInfo | null;
-				if((data = admins.getInfoOptional(args.uuid)) != null && data.admin){
-					fail(`Cannot ban an admin.`);
-				}
+				if((data = admins.getInfoOptional(args.uuid)) != null && data.admin) fail(`Cannot ban an admin.`);
 				const name = data ? `${escapeStringColorsClient(data.lastName)} (${args.uuid}/${data.lastIP})` : args.uuid;
 				menu("Confirm", `Are you sure you want to ban ${name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
 					if(confirm != "[red]Yes") fail("Cancelled.");
@@ -408,9 +402,8 @@ export const commands = commandList({
 		args: ["player:player"],
 		description: "Kills a player's unit.",
 		perm: Perm.mod,
-		handler({args, sender, outputFail, outputSuccess, f}){
-			if(!sender.canModerate(args.player, false))
-				fail(`You do not have permission to kill the unit of this player.`);
+		requirements: [Req.moderate("player", true)],
+		handler({args, outputFail, outputSuccess, f}){
 
 			const unit = args.player.unit();
 			if(unit){
@@ -426,9 +419,8 @@ export const commands = commandList({
 		args: ["player:player"],
 		description: "Forces a player to respawn.",
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, f}){
-			if(!sender.canModerate(args.player, false))
-				fail(`You do not have permission to respawn this player.`);
+		requirements: [Req.moderate("player", true)],
+		handler({args, outputSuccess, f}){
 			
 			args.player.forceRespawn();
 			outputSuccess(f`Respawned player ${args.player}.`);

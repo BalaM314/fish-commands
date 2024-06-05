@@ -322,6 +322,7 @@ export const commands = commandList({
 					admin: [],
 					member: [],
 				};
+				//TODO change this to category, not perm
 				Object.entries(allCommands).forEach(([name, data]) =>
 					(data.perm === Perm.admin ? commands.admin : data.perm === Perm.mod ? commands.mod : data.perm === Perm.member ? commands.member : commands.player).push(name)
 				);

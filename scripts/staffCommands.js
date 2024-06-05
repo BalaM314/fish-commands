@@ -56,6 +56,7 @@ exports.commands = (0, commands_1.commandList)({
         args: ['player:player', 'message:string?'],
         description: 'Sends the player a warning (menu popup).',
         perm: commands_1.Perm.warn,
+        requirements: [],
         handler: function (_a) {
             var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
@@ -73,12 +74,11 @@ exports.commands = (0, commands_1.commandList)({
         args: ['player:player'],
         description: 'Stops a player from chatting.',
         perm: commands_1.Perm.mod,
+        requirements: [commands_1.Req.moderate("player")],
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             if (args.player.muted)
                 (0, commands_1.fail)(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["Player ", " is already muted."], ["Player ", " is already muted."])), args.player));
-            if (!sender.canModerate(args.player))
-                (0, commands_1.fail)("You do not have permission to mute this player.");
             args.player.mute(sender);
             (0, utils_1.logAction)('muted', sender, args.player);
             outputSuccess(f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Muted player ", "."], ["Muted player ", "."])), args.player));
@@ -103,9 +103,12 @@ exports.commands = (0, commands_1.commandList)({
         args: ["player:player", "duration:time?", "reason:string?"],
         description: 'Kick a player with optional reason.',
         perm: commands_1.Perm.mod,
+        requirements: [commands_1.Req.moderate("player")],
         handler: function (_a) {
             var _b, _c, _d;
             var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f, sender = _a.sender;
+            args;
+            //^?
             if (!sender.canModerate(args.player))
                 (0, commands_1.fail)("You do not have permission to kick this player.");
             if (!sender.hasPerm("admin") && args.duration && args.duration > 3600000 * 6)

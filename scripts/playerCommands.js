@@ -372,6 +372,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     admin: [],
                     member: [],
                 };
+                //TODO change this to category, not perm
                 Object.entries(allCommands).forEach(function (_a) {
                     var _b = __read(_a, 2), name = _b[0], data = _b[1];
                     return (data.perm === commands_1.Perm.admin ? commands_2.admin : data.perm === commands_1.Perm.mod ? commands_2.mod : data.perm === commands_1.Perm.member ? commands_2.member : commands_2.player).push(name);
