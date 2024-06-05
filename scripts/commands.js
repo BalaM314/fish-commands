@@ -38,7 +38,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.CommandError = exports.formatArg = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
+exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.CommandError = exports.formatArg = exports.Req = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -118,6 +118,17 @@ var Perm = /** @class */ (function () {
     return Perm;
 }());
 exports.Perm = Perm;
+exports.Req = {
+    mode: function (mode) { return function () { return config_1.Mode[mode]() || fail("This command is only available in ".concat((0, utils_1.formatModeName)(mode))); }; },
+    modeNot: function (mode) { return function () { return !config_1.Mode[mode]() || fail("This command is disabled in ".concat((0, utils_1.formatModeName)(mode))); }; },
+    moderate: function (argName, allowSameRank) {
+        if (allowSameRank === void 0) { allowSameRank = false; }
+        return function (_a) {
+            var args = _a.args, sender = _a.sender;
+            return (sender.canModerate(args[argName], !allowSameRank) || fail("You do not have permission to perform moderation actions on this player."));
+        };
+    },
+};
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha
@@ -545,12 +556,12 @@ function register(commands, clientHandler, serverHandler) {
                 }
                 //Recursively resolve unresolved args (such as players that need to be determined through a menu)
                 resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
-                    var _a;
+                    var _a, _b;
                     //Run the command handler
                     var usageData = fishSender.getUsageData(name);
                     var failed = false;
                     try {
-                        data.handler({
+                        var args_1 = {
                             rawArgs: rawArgs,
                             args: output.processedArgs,
                             sender: fishSender,
@@ -578,7 +589,9 @@ function register(commands, clientHandler, serverHandler) {
                                 }
                                 fishSender.tapInfo.lastArgs = output.processedArgs;
                             },
-                        });
+                        };
+                        (_b = data.requirements) === null || _b === void 0 ? void 0 : _b.forEach(function (r) { return r(args_1); });
+                        data.handler(args_1);
                         //Update usage data
                         if (!failed) {
                             usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();

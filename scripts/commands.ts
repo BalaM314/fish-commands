@@ -1,10 +1,10 @@
-import { Mode } from "./config";
+import { Mode, ModeName } from "./config";
 import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
-import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
-import { crash, escapeStringColorsClient, escapeStringColorsServer, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
+import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishCommandRequirement, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
+import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeName, formatTime, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
 
 //Behold, the power of typescript!
 
@@ -86,6 +86,13 @@ export class Perm {
 }
 export type PermType = SelectEnumClassKeys<typeof Perm>;
 
+export const Req = {
+	mode: (mode:ModeName) => () => Mode[mode]() || fail(`This command is only available in ${formatModeName(mode)}`),
+	modeNot: (mode:ModeName) => () => !Mode[mode]() || fail(`This command is disabled in ${formatModeName(mode)}`),
+	moderate: <T extends string>(argName:T, allowSameRank:boolean = false) => ({args, sender}:{args:{[_ in T]: FishPlayer}, sender:FishPlayer}) =>
+		(sender.canModerate(args[argName], !allowSameRank) || fail(`You do not have permission to perform moderation actions on this player.`)),
+
+} satisfies Record<string, (...args:any[]) => FishCommandRequirement<any, any>>;
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str:string):CommandArg {
@@ -450,7 +457,7 @@ export function register(commands:Record<string, FishCommandData<any, any> | (()
 					const usageData = fishSender.getUsageData(name);
 					let failed = false;
 					try {
-						data.handler({
+						const args:FishCommandHandlerData<any, any> & FishCommandHandlerUtils = {
 							rawArgs,
 							args: output.processedArgs,
 							sender: fishSender,
@@ -476,7 +483,9 @@ export function register(commands:Record<string, FishCommandData<any, any> | (()
 								}
 								fishSender.tapInfo.lastArgs = output.processedArgs;
 							},
-						});
+						};
+						data.requirements?.forEach(r => r(args));
+						data.handler(args);
 						//Update usage data
 						if(!failed){
 							usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();

@@ -36,8 +36,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.EventEmitter = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
-exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = void 0;
+exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.EventEmitter = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatModeName = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
+exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -87,6 +87,16 @@ function formatTime(time) {
     ].filter(function (s) { return s; }).join(", ");
 }
 exports.formatTime = formatTime;
+function formatModeName(name) {
+    return {
+        "attack": "Attack",
+        "survival": "Survival",
+        "hexed": "Hexed",
+        "pvp": "PVP",
+        "sandbox": "Sandbox",
+    }[name];
+}
+exports.formatModeName = formatModeName;
 function formatTimestamp(time) {
     var date = new Date(time);
     return "".concat(date.toDateString(), ", ").concat(date.toTimeString());

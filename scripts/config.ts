@@ -119,6 +119,9 @@ export const FishServers = {
 };
 FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.hexed];
 export const getGamemode = () => Core.settings.get("mode", Vars.state.rules.mode().name());
+export type ModeName = keyof typeof Mode extends infer K extends keyof typeof Mode ? K extends unknown ?
+	(typeof Mode)[K] extends (() => boolean) ? K : never
+: never : never;
 export const Mode = {
 	attack: () => getGamemode() == "attack",
 	survival: () => getGamemode() == "survival",

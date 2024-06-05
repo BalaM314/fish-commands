@@ -1,5 +1,5 @@
 import * as api from './api';
-import { Mode, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
+import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
 import { fishState, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
@@ -50,6 +50,16 @@ export function formatTime(time:number){
 		minutes && `${minutes} minutes`,
 		seconds && `${seconds} seconds`,
 	].filter(s => s).join(", ")
+}
+
+export function formatModeName(name:ModeName){
+	return {
+		"attack": "Attack",
+		"survival": "Survival",
+		"hexed": "Hexed",
+		"pvp": "PVP",
+		"sandbox": "Sandbox",
+	}[name];
 }
 
 export function formatTimestamp(time:number){
