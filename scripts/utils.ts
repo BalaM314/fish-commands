@@ -1,6 +1,6 @@
 import * as api from './api';
 import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
-import { fishState, uuidPattern } from './globals';
+import { fishState, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
 
@@ -735,3 +735,109 @@ export function processChat(player:mindustryPlayer, message:string, effects = fa
 
 	return (highlight ?? "") + message;
 }
+
+export const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any) => {
+
+	let tile:Tile, uuid:string, action:string, type:string, time:number = Date.now();
+	if(e instanceof EventType.BlockBuildBeginEvent){
+		tile = e.tile;
+		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
+		if(e.breaking){
+			action = "broke";
+			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.previous.name : "unknown";
+			if(e.unit?.player?.uuid() && e.tile.build?.team != Team.derelict){
+				const fishP = FishPlayer.get(e.unit.player);
+				//TODO move this code
+				fishP.tstats.blocksBroken ++;
+				fishP.stats.blocksBroken ++;
+			}
+		} else {
+			action = "built";
+			type = (e.tile.build instanceof ConstructBlock.ConstructBuild) ? e.tile.build.current.name : "unknown";
+			if(e.unit?.player?.uuid()){
+				const fishP = FishPlayer.get(e.unit.player);
+				//TODO move this code
+				fishP.stats.blocksPlaced ++;
+			}
+		}
+	} else if(e instanceof EventType.ConfigEvent){
+		tile = e.tile.tile;
+		uuid = e.player?.uuid() ?? "unknown";
+		action = "configured";
+		type = e.tile.block.name;
+	} else if(e instanceof EventType.BuildRotateEvent){
+		tile = e.build.tile;
+		uuid = e.unit?.player?.uuid() ?? e.unit?.type.name ?? "unknown";
+		action = "rotated";
+		type = e.build.block.name;
+	} else if(e instanceof EventType.UnitDestroyEvent){
+		tile = e.unit.tileOn();
+		if(!tile) return;
+		uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : e.unit.lastCommanded ?? "unknown";
+		action = "killed";
+		type = e.unit.type.name;
+	} else if(e instanceof EventType.BlockDestroyEvent){
+		if(Mode.attack() && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
+		tile = e.tile;
+		uuid = "[[something]";
+		action = "killed";
+		type = e.tile.block()?.name ?? "air";
+	} else if(e instanceof EventType.PayloadDropEvent){
+		action = "pay-dropped";
+		const controller = e.carrier.controller();
+		uuid = e.carrier.player?.uuid() ?? (controller instanceof LogicAI ? `${e.carrier.type.name} controlled by ${controller.controller.block.name} at ${controller.controller.tileX()},${controller.controller.tileY()} last accessed by ${e.carrier.getControllerName()}` : null) ?? e.carrier.type.name;
+		if(e.build){
+			tile = e.build.tile;
+			type = e.build.block.name;
+		} else if(e.unit){
+			tile = e.unit.tileOn();
+			if(!tile) return;
+			type = e.unit.type.name;
+		} else return;
+	} else if(e instanceof EventType.PickupEvent){
+		action = "picked up";
+		if(e.carrier.isPlayer()) return; //This event would have been handled by actionfilter
+		const controller = e.carrier.controller();
+		if(!(controller instanceof LogicAI)) return;
+		uuid = `${e.carrier.type.name} controlled by ${controller.controller.block.name} at ${controller.controller.tileX()},${controller.controller.tileY()} last accessed by ${e.carrier.getControllerName()}`
+		if(e.build){
+			tile = e.build.tile;
+			type = e.build.block.name;
+		} else if(e.unit){
+			tile = e.unit.tileOn();
+			if(!tile) return;
+			type = e.unit.type.name;
+		} else return;
+	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
+		let pos;
+		({pos, uuid, action, type} = e);
+		tile = Vars.world.tile(pos.split(",")[0], pos.split(",")[1]) ?? crash(`Cannot log ${action} at ${pos}: Nonexistent tile`);
+	} else return;
+	if(tile == null) return;
+	[tile, uuid, action, type, time] satisfies [Tile, string, string, string, number];
+
+	tile.getLinkedTiles((t:Tile) => {
+		const pos = `${t.x},${t.y}`;
+		let existingData = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
+			action: d.readString(2),
+			uuid: d.readString(3),
+			time: d.readNumber(16),
+			type: d.readString(2),
+		}), 1)) : [];
+	
+		existingData.push({
+			action, uuid, time, type
+		});
+		if(existingData.length >= 9){
+			existingData = existingData.splice(0, 9);
+		}
+		//Write
+		tileHistory[t.x + ',' + t.y] = StringIO.write(existingData, (str, data) => str.writeArray(data, el => {
+			str.writeString(el.action, 2);
+			str.writeString(el.uuid, 3);
+			str.writeNumber(el.time, 16);
+			str.writeString(el.type, 2);
+		}, 1));
+	});
+	
+});

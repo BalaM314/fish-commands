@@ -6,7 +6,7 @@ import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
+import { addToTileHistory, colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
 
 const spawnedUnits:Unit[] = [];
 
@@ -489,6 +489,12 @@ export const commands = commandList({
 			if(tile == null)
 				fail(f`Position (${args.x}, ${args.y}) is out of bounds.`);
 			tile.setNet(args.block, team, args.rotation ?? 0);
+			addToTileHistory({
+				pos: `${args.x},${args.y}`,
+				uuid: sender.uuid,
+				action: `setblocked`,
+				type: args.block.localizedName
+			});
 			outputSuccess(f`Set block at ${args.x}, ${args.y} to ${args.block}`);
 		}
 	},

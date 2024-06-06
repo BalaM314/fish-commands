@@ -542,6 +542,12 @@ exports.commands = (0, commands_1.commandList)({
             if (tile == null)
                 (0, commands_1.fail)(f(templateObject_37 || (templateObject_37 = __makeTemplateObject(["Position (", ", ", ") is out of bounds."], ["Position (", ", ", ") is out of bounds."])), args.x, args.y));
             tile.setNet(args.block, team, (_c = args.rotation) !== null && _c !== void 0 ? _c : 0);
+            (0, utils_1.addToTileHistory)({
+                pos: "".concat(args.x, ",").concat(args.y),
+                uuid: sender.uuid,
+                action: "setblocked",
+                type: args.block.localizedName
+            });
             outputSuccess(f(templateObject_38 || (templateObject_38 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), args.x, args.y, args.block));
         }
     },
