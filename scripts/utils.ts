@@ -521,11 +521,17 @@ export function getMap(name:string):MMap | "none" | "multiple" {
 let buildableBlocks:Seq<Block> | null = null;
 let validUnits:Seq<UnitType> | null = null;
 
-export function getBlock(block:string):Block | string {
+export function getBlock(block:string, filter:"buildable" | "air" | "all"):Block | string {
 	buildableBlocks ??= Vars.content.blocks().select(isBuildable);
-	if(block in Blocks && Blocks[block] instanceof Block && isBuildable(Blocks[block])) return Blocks[block];
-	else if(buildableBlocks!.find((t:Block) => t.name.includes(block.toLowerCase()))) return buildableBlocks!.find((t:Block) => t.name.includes(block.toLowerCase()))!;
-	else if(buildableBlocks!.find((t:Block) => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")))) return buildableBlocks!.find((t:Block) => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")))!;
+	const check = ({
+		buildable: b => isBuildable(b),
+		air: b => b == Blocks.air || isBuildable(b),
+		all: b => true
+	} satisfies Record<string, (b:Block) => boolean>)[filter];
+	let out:Block;
+	if(block in Blocks && Blocks[block] instanceof Block && check(Blocks[block])) return Blocks[block];
+	else if(out = Vars.content.blocks().find((t:Block) => t.name.includes(block.toLowerCase()) && check(t))) return out;
+	else if(out = Vars.content.blocks().find((t:Block) => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")) && check(t))) return out;
 	else if(block.includes("airblast")) return Blocks.blastDrill;
 	return `"${block}" is not a valid block.`;
 }

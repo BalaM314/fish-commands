@@ -221,7 +221,7 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				}
 				break;
 			case "block":
-				const block = getBlock(args[i]);
+				const block = getBlock(args[i], "air");
 				if(typeof block == "string") return {error: block};
 				outputArgs[cmdArg.name] = block;
 				break;

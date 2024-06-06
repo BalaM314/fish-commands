@@ -671,14 +671,20 @@ function getMap(name) {
 exports.getMap = getMap;
 var buildableBlocks = null;
 var validUnits = null;
-function getBlock(block) {
+function getBlock(block, filter) {
     buildableBlocks !== null && buildableBlocks !== void 0 ? buildableBlocks : (buildableBlocks = Vars.content.blocks().select(isBuildable));
-    if (block in Blocks && Blocks[block] instanceof Block && isBuildable(Blocks[block]))
+    var check = ({
+        buildable: function (b) { return isBuildable(b); },
+        air: function (b) { return b == Blocks.air || isBuildable(b); },
+        all: function (b) { return true; }
+    })[filter];
+    var out;
+    if (block in Blocks && Blocks[block] instanceof Block && check(Blocks[block]))
         return Blocks[block];
-    else if (buildableBlocks.find(function (t) { return t.name.includes(block.toLowerCase()); }))
-        return buildableBlocks.find(function (t) { return t.name.includes(block.toLowerCase()); });
-    else if (buildableBlocks.find(function (t) { return t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")); }))
-        return buildableBlocks.find(function (t) { return t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")); });
+    else if (out = Vars.content.blocks().find(function (t) { return t.name.includes(block.toLowerCase()) && check(t); }))
+        return out;
+    else if (out = Vars.content.blocks().find(function (t) { return t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")) && check(t); }))
+        return out;
     else if (block.includes("airblast"))
         return Blocks.blastDrill;
     return "\"".concat(block, "\" is not a valid block.");

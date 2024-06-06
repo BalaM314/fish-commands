@@ -290,7 +290,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     }
                     break;
                 case "block":
-                    var block = (0, utils_1.getBlock)(args[i]);
+                    var block = (0, utils_1.getBlock)(args[i], "air");
                     if (typeof block == "string")
                         return { error: block };
                     outputArgs[cmdArg.name] = block;
