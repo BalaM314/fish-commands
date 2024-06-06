@@ -498,6 +498,35 @@ export const commands = commandList({
 			outputSuccess(f`Set block at ${args.x}, ${args.y} to ${args.block}`);
 		}
 	},
+	setblockr: {
+		args: ["block:block", "team:team?", "rotation:number?"],
+		description: "Sets the block at tapped locations, repeatedly.",
+		perm: Perm.admin,
+		tapped({args, sender, f, x, y, outputSuccess}){
+			const team = args.team ?? sender.team();
+			const tile = Vars.world.tile(x, y);
+			if(args.rotation != null && (args.rotation < 0 || args.rotation > 3)) fail(f`Invalid rotation ${args.rotation}`)
+			if(tile == null)
+				fail(f`Position (${x}, ${y}) is out of bounds.`);
+			tile.setNet(args.block, team, args.rotation ?? 0);
+			addToTileHistory({
+				pos: `${x},${y}`,
+				uuid: sender.uuid,
+				action: `setblocked`,
+				type: args.block.localizedName
+			});
+			outputSuccess(f`Set block at ${x}, ${y} to ${args.block}`);
+		},
+		handler({outputSuccess, handleTaps, currentTapMode}){
+			if(currentTapMode != "off"){
+				handleTaps("off");
+				outputSuccess("setblockr disabled.");
+			} else {
+				handleTaps("on");
+				outputSuccess("setblockr enabled.\n[scarlet]Be careful, you have the midas touch now![] Turn it off by running /setblockr again.");
+			}
+		}
+	},
 	exterminate: {
 		args: [],
 		description: "Removes all spawned units.",
