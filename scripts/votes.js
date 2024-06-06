@@ -90,9 +90,6 @@ var VoteManager = /** @class */ (function (_super) {
             this.fire("player vote removed", [player, vote]);
             this._checkVote(false);
         }
-        else {
-            Log.err("Cannot remove nonexistent vote for player with uuid ".concat(fishP.uuid));
-        }
     };
     /** Does not fire the events used to display messages, please print one before calling this */
     VoteManager.prototype.forceVote = function (force) {

@@ -668,6 +668,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                             manager.vote(sender, sender.voteWeight(), option);
                     }
                     else {
+                        //this is still a race condition technically... shouldn't be that bad right?
                         manager.start(sender, sender.voteWeight(), option);
                     }
                 }, true, function (n) { return "".concat(n, " waves"); });

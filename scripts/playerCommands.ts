@@ -632,6 +632,7 @@ Please stop attacking and [lime]build defenses[] first!`
 							if(manager.session.data != option) fail(`Someone else started a vote with a different number of waves to skip.`);
 							else manager.vote(sender, sender.voteWeight(), option);
 						} else {
+							//this is still a race condition technically... shouldn't be that bad right?
 							manager.start(sender, sender.voteWeight(), option);
 						}
 					},

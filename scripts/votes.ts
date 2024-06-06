@@ -59,8 +59,6 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 		if(vote){
 			this.fire("player vote removed", [player, vote]);
 			this._checkVote(false);
-		} else {
-			Log.err(`Cannot remove nonexistent vote for player with uuid ${fishP.uuid}`);
 		}
 	}
 
