@@ -682,7 +682,7 @@ ${color}Override: ${FishPlayer.antiBotModeOverride ? True : False}`
 }
 
 const failPrefix = "[scarlet]\u26A0 [yellow]";
-const successPrefix = "[#48e076]\u2714 ";
+const successPrefix = "[#48e076]\uE800 ";
 
 export function outputFail(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
 	sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message));

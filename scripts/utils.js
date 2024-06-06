@@ -842,7 +842,7 @@ function getAntiBotInfo(side) {
 }
 exports.getAntiBotInfo = getAntiBotInfo;
 var failPrefix = "[scarlet]\u26A0 [yellow]";
-var successPrefix = "[#48e076]\u2714 ";
+var successPrefix = "[#48e076]\uE800 ";
 function outputFail(message, sender) {
     sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message));
 }
