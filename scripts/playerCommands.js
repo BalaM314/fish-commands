@@ -660,7 +660,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (!manager.session) {
                 (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [1, 5, 10], sender, function (_a) {
                     var option = _a.option;
-                    manager.start(sender, sender.voteWeight(), option);
+                    if (manager.session) {
+                        //Someone else started a vote
+                        if (manager.session.data != option)
+                            (0, commands_1.fail)("Someone else started a vote with a different number of waves to skip.");
+                        else
+                            manager.vote(sender, sender.voteWeight(), option);
+                    }
+                    else {
+                        manager.start(sender, sender.voteWeight(), option);
+                    }
                 }, true, function (n) { return "".concat(n, " waves"); });
             }
             else {

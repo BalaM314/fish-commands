@@ -627,7 +627,13 @@ Please stop attacking and [lime]build defenses[] first!`
 					[1, 5, 10],
 					sender,
 					({option}) => {
-						manager.start(sender, sender.voteWeight(), option);
+						if(manager.session){
+							//Someone else started a vote
+							if(manager.session.data != option) fail(`Someone else started a vote with a different number of waves to skip.`);
+							else manager.vote(sender, sender.voteWeight(), option);
+						} else {
+							manager.start(sender, sender.voteWeight(), option);
+						}
 					},
 					true,
 					n => `${n} waves`
