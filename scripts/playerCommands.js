@@ -647,7 +647,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 .on("vote passed", function () { return Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'); })
                 .on("vote failed", function () { return Call.sendMessage('VNW: [red]Vote failed.'); })
                 .on("player vote change", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(t.session.data, "[white] wave(s). [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
-                .on("player vote removed", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(t.currentVotes(), "[white] votes, [green[").concat(t.requiredVotes(), "[white] required.")); })
+                .on("player vote removed", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
         }); },
         handler: function (_a) {
             var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, manager = _a.data.manager;
@@ -758,7 +758,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var output = _a.output;
             output("[yellow]Use [white]/nextmap [lightgray]<map name> [yellow]to vote on a map.\n\n[blue]Available maps:\n_________________________\n".concat(Vars.maps.customMaps().toArray().map(function (map, i) {
-                return "[white]".concat(i + 1, " - [yellow]").concat(map.name());
+                return "[yellow]".concat(map.name());
             }).join("\n")));
         }
     }, nextmap: (0, commands_1.command)(function () {
