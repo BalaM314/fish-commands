@@ -613,7 +613,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			.on("vote passed", () => Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'))
 			.on("vote failed", () => Call.sendMessage('VNW: [red]Vote failed.'))
 			.on("player vote change", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${t.session!.data}[white] wave(s). [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
-			.on("player vote removed", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${t.currentVotes()}[white] votes, [green[${t.requiredVotes()}[white] required.`))
+			.on("player vote removed", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 		}),
 		handler({sender, lastUsedSuccessfullySender, data:{manager}}){
 			if(!Mode.survival()) fail(`This command is only enabled in survival.`);
