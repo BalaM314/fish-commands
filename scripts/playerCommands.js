@@ -106,7 +106,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
-            Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+            Call.openURI(sender.con, config_1.discordURL);
         },
     }, tilelog: {
         args: ['persist:boolean?'],

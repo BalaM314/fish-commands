@@ -1,6 +1,6 @@
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm } from './commands';
-import { FishServers, Mode, rules } from './config';
+import { discordURL, FishServers, Mode, rules } from './config';
 import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
@@ -65,7 +65,7 @@ export const commands = commandList({
 		description: 'Takes you to our discord.',
 		perm: Perm.none,
 		handler({ sender }) {
-			Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+			Call.openURI(sender.con, discordURL);
 		},
 	},
 

@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
@@ -142,13 +142,15 @@ exports.Mode = {
 };
 exports.localDebug = new Fi("config/.debug").exists();
 exports.maxTime = 9999999999999;
+exports.discordURL = "https://discord.gg/VpzcYSQ33Y";
+//TODO unify colors, eg make [#7289da] and others stored in one place
 exports.tips = {
     ads: [
         "[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
         "[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
         "[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
         "Want to support the server and get some perks? Get a [pink]Fish Membership[] at[sky] https://patreon.com/FishServers []",
-        "Join our [#7289da]Discord server[]![#7289da] https://discord.gg/VpzcYSQ33Y",
+        "Join our [#7289da]Discord server[]! [#7289da]".concat(exports.discordURL, "[] or type [#7289da]/discord[]"),
     ],
     normal: [
         //commands
@@ -177,7 +179,7 @@ exports.tips = {
         "Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!",
         "Griefers will often be found with the text ".concat(exports.MARKED_PREFIX, " prepended to their name."),
         "Players marked as [yellow]\u26A0[orange]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.",
-        "Need to appeal a moderation action? Join the discord at [#7289da]https://discord.gg/VpzcYSQ33Y[] or type [#7289da]/discord[]",
+        "Need to appeal a moderation action? Join the discord at [#7289da]".concat(exports.discordURL, "[] or type [#7289da]/discord[]"),
         "Want to send the phrase [white]\"/command\"[] in chat? Type [white]\"./command\"[] and the [white].[] will be removed.",
         "All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.",
         "Players with a ".concat(ranks_1.Rank.trusted.prefix, " in front of their name aren't staff members, but they do have extra powers."),
