@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
@@ -143,7 +143,17 @@ exports.Mode = {
 exports.localDebug = new Fi("config/.debug").exists();
 exports.maxTime = 9999999999999;
 exports.discordURL = "https://discord.gg/VpzcYSQ33Y";
-//TODO unify colors, eg make [#7289da] and others stored in one place
+//is this even good?
+exports.FColor = (function (data) {
+    return Object.fromEntries(Object.entries(data).map(function (_a) {
+        var _b = __read(_a, 2), k = _b[0], c = _b[1];
+        return [k, function (str) { return str ? "".concat(c).concat(str, "[]") : c; }];
+    }));
+})({
+    discord: "[#7289DA]",
+    /** Used for tips and welcome messages. */
+    tip: "[gold]",
+});
 exports.tips = {
     ads: [
         "[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []",

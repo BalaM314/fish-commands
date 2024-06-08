@@ -133,7 +133,16 @@ export const Mode = {
 export const localDebug = new Fi("config/.debug").exists();
 export const maxTime = 9999999999999;
 export const discordURL = `https://discord.gg/VpzcYSQ33Y`;
-//TODO unify colors, eg make [#7289da] and others stored in one place
+//is this even good?
+export const FColor = (<T extends string>(data:Record<T, string>):Record<T, (str?:string) => string> =>
+	Object.fromEntries(Object.entries(data).map(([k, c]) =>
+		[k, (str?:string) => str ? `${c}${str}[]` : c]
+	)
+))({
+	discord: "[#7289DA]",
+	/** Used for tips and welcome messages. */
+	tip: "[gold]",
+});
 export const tips = {
 	ads: [
 		`[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []`,

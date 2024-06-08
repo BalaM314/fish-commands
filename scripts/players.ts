@@ -811,7 +811,7 @@ We apologize for the inconvenience.`
 		}
 	}
 	static loadAllLegacy(jsonString:string){
-		for(let [key, value] of Object.entries(JSON.parse(jsonString))){
+		for(let [key, value] of Object.entries(JSON.parse(jsonString) as Record<string, unknown>)){
 			if(value instanceof Object){
 				let rank = "player";
 				if("mod" in value && value.mod) rank = "mod";
