@@ -31,37 +31,19 @@ export type TypeOfArgType<T> =
 	T extends "roleflag" ? RoleFlag :
 	never;
 
-//source: stackoverflow (just this one type)
-//TLDR: Yeet U through a wormhole, then back through the same wormhole, and it comes out the other side as an intersection type
-export type UnionToIntersection<U> = (
-	(
-		//(U extends any) triggers the distributive conditional type behavior
-		//The conditional type is distributed across the members of the union
-		//so this makes `Cons<U1> | Cons<U2> | Cons<U3>`
-		U extends any ? (_: U) => void : never
-		//Then when infer is used to extract the parameter of Cons, it must be something that satisfies all the function types
-		//which is an intersection of the types
-	) extends (_: infer I) => void ? I : never
-) extends infer O ? {[K in keyof O] : O[K]} : never; //This doesn't change the actual type, but makes vscode display it nicely
-
 /**
  * Returns the type of args given a union of the arg string types.
  * Example: given `"player:player?" | "force:boolean"` returns `{player: FishPlayer | null; force: boolean;}`
  **/
-export type ArgsFromArgStringUnion<ArgStringUnion extends string> =
-	[ArgStringUnion] extends [never] ? Record<string, any> : //If any was passed, return Record<string, any>
-	'a' extends ('b' & ArgStringUnion) ? Record<string, any> : //If any was passed, return Record<string, any>... wait what? TODO cleanup
-	UnionToIntersection<ObjectTypeFor<ArgStringUnion>>;
-//Typescript distributes the generic across the union type, producing a union of all the objects types, then we convert the union to an intersection
+export type ArgsFromArgStringUnion<ArgStringUnion extends string> = {
+	[Arg in ArgStringUnion as KeyFor<Arg>]: ValueFor<Arg>;
+};
 
-export type ObjectTypeFor<ArgString> =
-	ArgString extends `${string}?` //Check if it's optional
-	//It is optional
-	? ArgString extends `${infer N}:${infer T}?` //Use inferred template literal types to extract the name into N and the type string into T
-		? {[_ in N]: TypeOfArgType<T> | null} : never //Make an object, using TypeOfArgType to turn "player" into FishPlayer
-	//It isn't optional
-	: ArgString extends `${infer N}:${infer T}` //Same as above, but without the `| null`
-		? {[_ in N]: TypeOfArgType<T>} : never;
+export type KeyFor<ArgString> = ArgString extends `${infer K}:${string}` ? K : never;
+export type ValueFor<ArgString> =
+	ArgString extends `${string}:${infer V}?` ? TypeOfArgType<V> | null : 
+	ArgString extends `${string}:${infer V}` ? TypeOfArgType<V> :
+	never;
 
 export type TapHandleMode = "off" | "once" | "on";
 
@@ -79,7 +61,7 @@ export type FishCommandHandlerData<ArgType extends string, StoredData> = {
 	/** Vars.netServer.admins */
 	admins: Administration;
 	/**List of every registered command, including this one. */
-	allCommands:Record<string, FishCommandData<any, any>>;
+	allCommands:Record<string, FishCommandData<string, any>>;
 	/**Timestamp of the last time this command was run successfully by any player. */
 	lastUsedSuccessfully:number;
 	/**Timestamp of the last time this command was run by the current sender. */
