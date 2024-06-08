@@ -1,12 +1,11 @@
 import * as api from './api';
-import { command, commandList, fail, formatArg, Perm } from './commands';
+import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { discordURL, FishServers, Mode, rules } from './config';
 import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import { capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
-// import { votekickmanager } from './votes';
 import { VoteManager } from './votes';
 
 export const commands = commandList({
@@ -23,9 +22,9 @@ export const commands = commandList({
 		args: ['player:player'],
 		description: 'Teleport to another player.',
 		perm: Perm.play,
+		requirements: [Req.modeNot("pvp")],
 		handler({ args, sender }) {
 			if(!sender.unit()?.spawnedByCore) fail(`Can only teleport while in a core unit.`);
-			if(Mode.pvp()) fail(`This command is disabled in PVP.`);
 			if(sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
 			if(sender.unit().hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
 			teleportPlayer(sender.player!, args.player.player!);
@@ -36,8 +35,8 @@ export const commands = commandList({
 		args: [],
 		description: 'Removes all boulders from the map.',
 		perm: Perm.play,
-		handler({sender, outputSuccess, lastUsedSuccessfully}){
-			if(Date.now() - lastUsedSuccessfully < 100000) fail(`This command was run recently and is on cooldown.`);
+		requirements: [Req.cooldownGlobal(100_000)],
+		handler({sender, outputSuccess}){
 			Timer.schedule(
 				() => Call.sound(sender.con, Sounds.rockBreak, 1, 1, 0),
 				0, 0.05, 10
@@ -74,10 +73,7 @@ export const commands = commandList({
 		description: 'Checks the history of a tile.',
 		perm: Perm.none,
 		handler({args, output, outputSuccess, currentTapMode, handleTaps}){
-			if(currentTapMode == "on"){
-				handleTaps("off");
-				outputSuccess(`Tilelog disabled.`);
-			} else {
+			if(currentTapMode == "off"){
 				if(args.persist){
 					handleTaps("on");
 					outputSuccess(`Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.`);
@@ -85,27 +81,26 @@ export const commands = commandList({
 					handleTaps("once");
 					output(`Click on a tile to check its recent history...`);
 				}
+			} else {
+				handleTaps("off");
+				outputSuccess(`Tilelog disabled.`);
 			}
 		},
 		tapped({tile, x, y, output, sender, admins}){
-			const pos = `${x},${y}`;
-			if(!tileHistory[pos]){
-				output(`[yellow]There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`);
-			} else {
-				const history = StringIO.read(tileHistory[pos]!, str => str.readArray(d => ({
-					action: d.readString(2),
-					uuid: d.readString(3)!,
-					time: d.readNumber(16),
-					type: d.readString(2),
-				}), 1));
-				output(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
-					uuidPattern.test(e.uuid)
-					? (sender.hasPerm("viewUUIDs")
-					? `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-					: `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
-					: `[yellow]${e.uuid}[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-				).join('\n'));
-			}
+			const historyData = tileHistory[`${x},${y}`] ?? fail(`There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`);
+			const history = StringIO.read(historyData, str => str.readArray(d => ({
+				action: d.readString(2),
+				uuid: d.readString(3)!,
+				time: d.readNumber(16),
+				type: d.readString(2),
+			}), 1));
+			output(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
+				uuidPattern.test(e.uuid)
+				? (sender.hasPerm("viewUUIDs")
+				? `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+				: `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
+				: `[yellow]${e.uuid}[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+			).join('\n'));
 		}
 	},
 
@@ -441,7 +436,6 @@ Available types:[yellow]
 			const Ohnos = {
 				enabled: true,
 				ohnos: new Array<Unit>(),
-				lastSpawned: 0,
 				makeOhno(team:Team, x:number, y:number){
 					const ohno = UnitTypes.atrax.create(team);
 					ohno.set(x, y);
@@ -450,17 +444,7 @@ Available types:[yellow]
 					ohno.resetController(); //does this work?
 					ohno.add();
 					this.ohnos.push(ohno);
-					this.lastSpawned = Date.now();
 					return ohno;
-				},
-				canSpawn(player:FishPlayer):true | string {
-					if(!this.enabled) return `Ohnos have been temporarily disabled.`;
-					if(!player.connected() || !player.unit().added || player.unit().dead) return `You cannot spawn ohnos while dead.`;
-					this.updateLength();
-					if(this.ohnos.length >= (Groups.player.size() + 1)) return `Sorry, the max number of ohno units has been reached.`;
-					if(nearbyEnemyTile(player.unit(), 6) != null) return `Too close to an enemy tile!`;
-					// if(Date.now() - this.lastSpawned < 3000) return `This command is currently on cooldown.`;
-					return true;
 				},
 				updateLength(){
 					this.ohnos = this.ohnos.filter(o => o && o.isAdded() && !o.dead);
@@ -478,13 +462,14 @@ Available types:[yellow]
 			});
 			return Ohnos;
 		},
-		handler({ sender, outputFail, data:Ohnos }) {
-			const canSpawn = Ohnos.canSpawn(sender);
-			if (canSpawn === true) {
-				Ohnos.makeOhno(sender.team(), sender.player!.x, sender.player!.y);
-			} else {
-				outputFail(canSpawn);
-			}
+		handler({sender, data:Ohnos}){
+			if(!Ohnos.enabled) fail(`Ohnos have been temporarily disabled.`);
+			if(!(sender.connected() && sender.unit().added && !sender.unit().dead)) fail(`You cannot spawn ohnos while dead.`);
+			Ohnos.updateLength();
+			if(Ohnos.ohnos.length >= (Groups.player.size() + 1)) fail(`Sorry, the max number of ohno units has been reached.`);
+			if(nearbyEnemyTile(sender.unit(), 6) != null) fail(`Too close to an enemy tile!`);
+	
+			Ohnos.makeOhno(sender.team(), sender.player!.x, sender.player!.y);
 		},
 	}),
 
@@ -615,10 +600,10 @@ Please stop attacking and [lime]build defenses[] first!`
 			.on("player vote change", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${t.session!.data}[white] wave(s). [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 			.on("player vote removed", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 		}),
-		handler({sender, lastUsedSuccessfullySender, data:{manager}}){
+		requirements: [Req.cooldown(3000)],
+		handler({sender, data:{manager}}){
 			if(!Mode.survival()) fail(`This command is only enabled in survival.`);
 			if(Vars.state.gameOver) fail(`This game is already over.`); //TODO command run states system
-			if(Date.now() - lastUsedSuccessfullySender < 1000) fail(`This command was run recently and is on cooldown.`);
 
 			if(!manager.session){
 				menu(
@@ -676,9 +661,9 @@ Please stop attacking and [lime]build defenses[] first!`
 			.on("player vote change", (t, player, oldVote, newVote) => Call.sendMessage(`RTV: ${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to change the map. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 			.on("player vote removed", (t, player) => Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 		}),
-		handler({sender, lastUsedSuccessfullySender, data:{manager}}){
+		requirements: [Req.cooldown(3000)],
+		handler({sender, data:{manager}}){
 			if(Vars.state.gameOver) fail(`This map is already finished, cannot RTV. Wait until the next map loads.`);
-			if(Date.now() - lastUsedSuccessfullySender < 3000) fail(`This command was run recently and is on cooldown.`);
 
 			manager.vote(sender, 1, 0); //No weighting for RTV except for removing AFK players
 		}
@@ -810,10 +795,10 @@ ${getMapData().map(({key:map, value:votes}) =>
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
 			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote, cancelVote},
-			handler({args:{map}, sender, lastUsedSuccessfullySender}){
+			requirements: [Req.cooldown(10000)],
+			handler({args:{map}, sender}){
 				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
 				if(votes.get(sender)) fail(`You have already voted.`);
-				if(Date.now() - lastUsedSuccessfullySender < 10000) fail(`This command was run recently and is on cooldown.`);
 	
 				votes.set(sender, map);
 				if(voteEndTime == -1){
