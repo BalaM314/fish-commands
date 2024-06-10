@@ -726,7 +726,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             Vars.maps.setNextMapOverride(args.map);
             if (allCommands.nextmap.data.voteEndTime() > -1) {
                 //Cancel /nextmap vote if it's ongoing
-                allCommands.nextmap.data.cancelVote();
+                allCommands.nextmap.data.resetVotes();
                 Call.sendMessage("[red]Admin ".concat(sender.name, "[red] has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
             }
         },
@@ -742,17 +742,17 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }
     }, nextmap: (0, commands_1.command)(function () {
         var votes = new Map();
+        var lastVoteTurnout = 0;
+        var lastVoteTime = 0;
         var voteEndTime = -1;
         var voteDuration = 1.5 * 60000; // 1.5 mins
         var task = null;
         function resetVotes() {
             votes.clear();
             voteEndTime = -1;
-        }
-        /** Must be called only if there is an ongoing vote. */
-        function cancelVote() {
-            resetVotes();
-            task.cancel();
+            task === null || task === void 0 ? void 0 : task.cancel();
+            lastVoteTurnout = 0;
+            lastVoteTime = 1;
         }
         function getMapData() {
             return __spreadArray([], __read(votes.values()), false).reduce(function (acc, map) { return (acc.increment(map), acc); }, new ObjectIntMap()).entries().toArray();
@@ -772,16 +772,25 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 return; //aborted somehow
             if (votes.size == 0)
                 return; //no votes?
+            if ((votes.size / Groups.player.size()) + 0.2 < lastVoteTurnout) {
+                Call.sendMessage("[cyan]Next Map Vote: [scarlet]Vote aborted because a previous vote had significantly higher turnout");
+                resetVotes();
+                return;
+            }
+            else {
+                lastVoteTime = Date.now();
+                lastVoteTurnout = Math.max(lastVoteTurnout, votes.size / Groups.player.size());
+            }
             var mapData = getMapData();
             var highestVoteCount = mapData.max(floatf(function (e) { return e.value; })).value;
             var highestVotedMaps = mapData.select(function (e) { return e.value == highestVoteCount; });
             var winner;
             if (highestVotedMaps.size > 1) {
                 winner = highestVotedMaps.random().key;
-                Call.sendMessage("[green]There was a tie between the following maps: \n\t\t".concat(highestVotedMaps.map(function (_a) {
+                Call.sendMessage("[green]There was a tie between the following maps: \n".concat(highestVotedMaps.map(function (_a) {
                     var map = _a.key, votes = _a.value;
                     return "[cyan]".concat(map.name(), "[yellow]: ").concat(votes);
-                }).toString("\n"), "\n\t\t[green]Picking random winner: [yellow]").concat(winner.name()));
+                }).toString("\n"), "\n[green]Picking random winner: [yellow]").concat(winner.name()));
             }
             else {
                 winner = highestVotedMaps.get(0).key;
@@ -796,7 +805,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             args: ['map:map'],
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
-            data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote, cancelVote: cancelVote },
+            data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
             requirements: [commands_1.Req.cooldown(10000)],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;
@@ -806,6 +815,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     (0, commands_1.fail)("You have already voted.");
                 votes.set(sender, map);
                 if (voteEndTime == -1) {
+                    if ((Date.now() - lastVoteTime) < 60000)
+                        (0, commands_1.fail)("Please wait 1 minute before starting a new map vote.");
                     startVote();
                     Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(map.name(), "[cyan]. Use /nextmap ").concat(map.plainName(), " to add your vote!"));
                 }

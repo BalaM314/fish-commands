@@ -699,7 +699,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			Vars.maps.setNextMapOverride(args.map);
 			if(allCommands.nextmap.data.voteEndTime() > -1){
 				//Cancel /nextmap vote if it's ongoing
-				allCommands.nextmap.data.cancelVote();
+				allCommands.nextmap.data.resetVotes();
 				Call.sendMessage(`[red]Admin ${sender.name}[red] has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
 			}
 		},
@@ -725,6 +725,8 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 
 	nextmap: command(() => {
 		const votes = new Map<FishPlayer, MMap>();
+		let lastVoteTurnout = 0;
+		let lastVoteTime = 0;
 		let voteEndTime = -1;
 		const voteDuration = 1.5 * 60000; // 1.5 mins
 		let task: TimerTask | null = null;
@@ -732,12 +734,9 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 		function resetVotes(){
 			votes.clear();
 			voteEndTime = -1;
-		}
-
-		/** Must be called only if there is an ongoing vote. */
-		function cancelVote(){
-			resetVotes();
-			task!.cancel();
+			task?.cancel();
+			lastVoteTurnout = 0;
+			lastVoteTime = 1;
 		}
 
 		function getMapData():Seq<ObjectIntMapEntry<MMap>> {
@@ -765,6 +764,15 @@ ${getMapData().map(({key:map, value:votes}) =>
 			if(voteEndTime == -1) return; //aborted somehow
 			if(votes.size == 0) return; //no votes?
 
+			if((votes.size / Groups.player.size()) + 0.2 < lastVoteTurnout){
+				Call.sendMessage("[cyan]Next Map Vote: [scarlet]Vote aborted because a previous vote had significantly higher turnout");
+				resetVotes();
+				return;
+			} else {
+				lastVoteTime = Date.now();
+				lastVoteTurnout = Math.max(lastVoteTurnout, votes.size / Groups.player.size());
+			}
+
 			const mapData = getMapData();
 			const highestVoteCount = mapData.max(floatf(e => e.value)).value;
 			const highestVotedMaps = mapData.select(e => e.value == highestVoteCount);
@@ -773,11 +781,11 @@ ${getMapData().map(({key:map, value:votes}) =>
 			if(highestVotedMaps.size > 1){
 				winner = highestVotedMaps.random()!.key;
 				Call.sendMessage(
-		`[green]There was a tie between the following maps: 
-		${highestVotedMaps.map(({key:map, value:votes}) => 
-		`[cyan]${map.name()}[yellow]: ${votes}`
-		).toString("\n")}
-		[green]Picking random winner: [yellow]${winner.name()}`
+`[green]There was a tie between the following maps: 
+${highestVotedMaps.map(({key:map, value:votes}) => 
+`[cyan]${map.name()}[yellow]: ${votes}`
+).toString("\n")}
+[green]Picking random winner: [yellow]${winner.name()}`
 				);
 			} else {
 				winner = highestVotedMaps.get(0)!.key;
@@ -794,14 +802,15 @@ ${getMapData().map(({key:map, value:votes}) =>
 			args: ['map:map'],
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
-			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote, cancelVote},
+			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
 			requirements: [Req.cooldown(10000)],
 			handler({args:{map}, sender}){
 				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
 				if(votes.get(sender)) fail(`You have already voted.`);
-	
+				
 				votes.set(sender, map);
 				if(voteEndTime == -1){
+					if((Date.now() - lastVoteTime) < 60_000) fail(`Please wait 1 minute before starting a new map vote.`);
 					startVote();
 					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${map.name()}[cyan]. Use /nextmap ${map.plainName()} to add your vote!`);
 				} else {
