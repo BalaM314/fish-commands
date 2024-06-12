@@ -49,7 +49,6 @@ var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
-// import { votekickmanager } from './votes';
 var votes_1 = require("./votes");
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
@@ -62,13 +61,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: ['player:player'],
         description: 'Teleport to another player.',
         perm: commands_1.Perm.play,
+        requirements: [commands_1.Req.modeNot("pvp")],
         handler: function (_a) {
             var _b, _c, _d;
             var args = _a.args, sender = _a.sender;
             if (!((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore))
                 (0, commands_1.fail)("Can only teleport while in a core unit.");
-            if (config_1.Mode.pvp())
-                (0, commands_1.fail)("This command is disabled in PVP.");
             if (sender.team() !== args.player.team())
                 (0, commands_1.fail)("Cannot teleport to players on another team.");
             if ((_d = (_c = sender.unit()).hasPayload) === null || _d === void 0 ? void 0 : _d.call(_c))
@@ -79,10 +77,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: [],
         description: 'Removes all boulders from the map.',
         perm: commands_1.Perm.play,
+        requirements: [commands_1.Req.cooldownGlobal(100000)],
         handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess, lastUsedSuccessfully = _a.lastUsedSuccessfully;
-            if (Date.now() - lastUsedSuccessfully < 100000)
-                (0, commands_1.fail)("This command was run recently and is on cooldown.");
+            var sender = _a.sender, outputSuccess = _a.outputSuccess;
             Timer.schedule(function () { return Call.sound(sender.con, Sounds.rockBreak, 1, 1, 0); }, 0, 0.05, 10);
             Vars.world.tiles.eachTile(function (t) {
                 if (t.breakable() && t.block() instanceof Prop) {
@@ -106,7 +103,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
-            Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+            Call.openURI(sender.con, config_1.discordURL);
         },
     }, tilelog: {
         args: ['persist:boolean?'],
@@ -114,11 +111,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputSuccess = _a.outputSuccess, currentTapMode = _a.currentTapMode, handleTaps = _a.handleTaps;
-            if (currentTapMode == "on") {
-                handleTaps("off");
-                outputSuccess("Tilelog disabled.");
-            }
-            else {
+            if (currentTapMode == "off") {
                 if (args.persist) {
                     handleTaps("on");
                     outputSuccess("Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.");
@@ -128,29 +121,29 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     output("Click on a tile to check its recent history...");
                 }
             }
+            else {
+                handleTaps("off");
+                outputSuccess("Tilelog disabled.");
+            }
         },
         tapped: function (_a) {
+            var _b;
             var tile = _a.tile, x = _a.x, y = _a.y, output = _a.output, sender = _a.sender, admins = _a.admins;
-            var pos = "".concat(x, ",").concat(y);
-            if (!globals_1.tileHistory[pos]) {
-                output("[yellow]There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
-            }
-            else {
-                var history = utils_1.StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
-                    action: d.readString(2),
-                    uuid: d.readString(3),
-                    time: d.readNumber(16),
-                    type: d.readString(2),
-                }); }, 1); });
-                output("[yellow]Tile history for tile (".concat(tile.x, ", ").concat(tile.y, "):\n") + history.map(function (e) {
-                    var _a, _b;
-                    return globals_1.uuidPattern.test(e.uuid)
-                        ? (sender.hasPerm("viewUUIDs")
-                            ? "[yellow]".concat((_a = admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[yellow] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
-                            : "[yellow]".concat((_b = admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time)))
-                        : "[yellow]".concat(e.uuid, "[yellow] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time));
-                }).join('\n'));
-            }
+            var historyData = (_b = globals_1.tileHistory["".concat(x, ",").concat(y)]) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
+            var history = utils_1.StringIO.read(historyData, function (str) { return str.readArray(function (d) { return ({
+                action: d.readString(2),
+                uuid: d.readString(3),
+                time: d.readNumber(16),
+                type: d.readString(2),
+            }); }, 1); });
+            output("[yellow]Tile history for tile (".concat(tile.x, ", ").concat(tile.y, "):\n") + history.map(function (e) {
+                var _a, _b;
+                return globals_1.uuidPattern.test(e.uuid)
+                    ? (sender.hasPerm("viewUUIDs")
+                        ? "[yellow]".concat((_a = admins.getInfoOptional(e.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(e.uuid, ")[yellow] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time))
+                        : "[yellow]".concat((_b = admins.getInfoOptional(e.uuid)) === null || _b === void 0 ? void 0 : _b.plainLastName(), " ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time)))
+                    : "[yellow]".concat(e.uuid, "[yellow] ").concat(e.action, " a [cyan]").concat(e.type, "[] ").concat((0, utils_1.formatTimeRelative)(e.time));
+            }).join('\n'));
         }
     }, afk: {
         args: [],
@@ -476,7 +469,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var Ohnos = {
                 enabled: true,
                 ohnos: new Array(),
-                lastSpawned: 0,
                 makeOhno: function (team, x, y) {
                     var ohno = UnitTypes.atrax.create(team);
                     ohno.set(x, y);
@@ -485,21 +477,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     ohno.resetController(); //does this work?
                     ohno.add();
                     this.ohnos.push(ohno);
-                    this.lastSpawned = Date.now();
                     return ohno;
-                },
-                canSpawn: function (player) {
-                    if (!this.enabled)
-                        return "Ohnos have been temporarily disabled.";
-                    if (!player.connected() || !player.unit().added || player.unit().dead)
-                        return "You cannot spawn ohnos while dead.";
-                    this.updateLength();
-                    if (this.ohnos.length >= (Groups.player.size() + 1))
-                        return "Sorry, the max number of ohno units has been reached.";
-                    if ((0, utils_1.nearbyEnemyTile)(player.unit(), 6) != null)
-                        return "Too close to an enemy tile!";
-                    // if(Date.now() - this.lastSpawned < 3000) return `This command is currently on cooldown.`;
-                    return true;
                 },
                 updateLength: function () {
                     this.ohnos = this.ohnos.filter(function (o) { return o && o.isAdded() && !o.dead; });
@@ -518,14 +496,17 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             return Ohnos;
         },
         handler: function (_a) {
-            var sender = _a.sender, outputFail = _a.outputFail, Ohnos = _a.data;
-            var canSpawn = Ohnos.canSpawn(sender);
-            if (canSpawn === true) {
-                Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
-            }
-            else {
-                outputFail(canSpawn);
-            }
+            var sender = _a.sender, Ohnos = _a.data;
+            if (!Ohnos.enabled)
+                (0, commands_1.fail)("Ohnos have been temporarily disabled.");
+            if (!(sender.connected() && sender.unit().added && !sender.unit().dead))
+                (0, commands_1.fail)("You cannot spawn ohnos while dead.");
+            Ohnos.updateLength();
+            if (Ohnos.ohnos.length >= (Groups.player.size() + 1))
+                (0, commands_1.fail)("Sorry, the max number of ohno units has been reached.");
+            if ((0, utils_1.nearbyEnemyTile)(sender.unit(), 6) != null)
+                (0, commands_1.fail)("Too close to an enemy tile!");
+            Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
         },
     }), ranks: {
         args: [],
@@ -649,14 +630,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 .on("player vote change", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(t.session.data, "[white] wave(s). [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
                 .on("player vote removed", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
         }); },
+        requirements: [commands_1.Req.cooldown(3000)],
         handler: function (_a) {
-            var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, manager = _a.data.manager;
+            var sender = _a.sender, manager = _a.data.manager;
             if (!config_1.Mode.survival())
                 (0, commands_1.fail)("This command is only enabled in survival.");
             if (Vars.state.gameOver)
                 (0, commands_1.fail)("This game is already over."); //TODO command run states system
-            if (Date.now() - lastUsedSuccessfullySender < 1000)
-                (0, commands_1.fail)("This command was run recently and is on cooldown.");
             if (!manager.session) {
                 (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [1, 5, 10], sender, function (_a) {
                     var option = _a.option;
@@ -709,12 +689,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 .on("player vote change", function (t, player, oldVote, newVote) { return Call.sendMessage("RTV: ".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants to change the map. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
                 .on("player vote removed", function (t, player) { return Call.sendMessage("RTV: ".concat(player.name, "[white] has left the game. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
         }); },
+        requirements: [commands_1.Req.cooldown(3000)],
         handler: function (_a) {
-            var sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, manager = _a.data.manager;
+            var sender = _a.sender, manager = _a.data.manager;
             if (Vars.state.gameOver)
                 (0, commands_1.fail)("This map is already finished, cannot RTV. Wait until the next map loads.");
-            if (Date.now() - lastUsedSuccessfullySender < 3000)
-                (0, commands_1.fail)("This command was run recently and is on cooldown.");
             manager.vote(sender, 1, 0); //No weighting for RTV except for removing AFK players
         }
     }), 
@@ -758,7 +737,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         handler: function (_a) {
             var output = _a.output;
             output("[yellow]Use [white]/nextmap [lightgray]<map name> [yellow]to vote on a map.\n\n[blue]Available maps:\n_________________________\n".concat(Vars.maps.customMaps().toArray().map(function (map, i) {
-                return "[white]".concat(i + 1, " - [yellow]").concat(map.name());
+                return "[yellow]".concat(map.name());
             }).join("\n")));
         }
     }, nextmap: (0, commands_1.command)(function () {
@@ -818,14 +797,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
             data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote, cancelVote: cancelVote },
+            requirements: [commands_1.Req.cooldown(10000)],
             handler: function (_a) {
-                var map = _a.args.map, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+                var map = _a.args.map, sender = _a.sender;
                 if (config_1.Mode.hexed())
                     (0, commands_1.fail)("This command is disabled in Hexed.");
                 if (votes.get(sender))
                     (0, commands_1.fail)("You have already voted.");
-                if (Date.now() - lastUsedSuccessfullySender < 10000)
-                    (0, commands_1.fail)("This command was run recently and is on cooldown.");
                 votes.set(sender, map);
                 if (voteEndTime == -1) {
                     startVote();

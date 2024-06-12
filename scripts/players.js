@@ -626,7 +626,7 @@ var FishPlayer = /** @class */ (function () {
                         (0, menus_1.menu)("[gold]Welcome to Fish Network!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "[#7289da]Discord"], _this, function (_a) {
                             var option = _a.option, sender = _a.sender;
                             if (option == "[#7289da]Discord") {
-                                Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+                                Call.openURI(sender.con, config.discordURL);
                             }
                         }, false);
                         _this.sendMessage("[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");

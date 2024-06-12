@@ -511,6 +511,11 @@ class VoteSession {
 interface Array<T> {
   filter(predicate: BooleanConstructor, thisArg?: any): (T extends (false | 0 | "" | null | undefined) ? never : T)[];
 }
+interface ObjectConstructor {
+	entries<const K extends PropertyKey, V>(input:Record<K, V>):[K, V][];
+	fromEntries<const K extends PropertyKey, V>(input:[K, V][]):Record<K, V>;
+}
+
 const Threads: {
 	daemon(callback:() => unknown):void;
 }

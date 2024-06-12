@@ -549,7 +549,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 						Log.warn(`Player ${this.name} (${this.uuid}) was autoflagged.`);
 						menu("[gold]Welcome to Fish Network!", `[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`, ["Close", "[#7289da]Discord"], this, ({option, sender}) => {
 							if(option == "[#7289da]Discord"){
-								Call.openURI(sender.con, 'https://discord.gg/VpzcYSQ33Y');
+								Call.openURI(sender.con, config.discordURL);
 							}
 						}, false);
 						this.sendMessage(`[gold]Welcome to Fish Network!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`);
@@ -811,7 +811,7 @@ We apologize for the inconvenience.`
 		}
 	}
 	static loadAllLegacy(jsonString:string){
-		for(let [key, value] of Object.entries(JSON.parse(jsonString))){
+		for(let [key, value] of Object.entries(JSON.parse(jsonString) as Record<string, unknown>)){
 			if(value instanceof Object){
 				let rank = "player";
 				if("mod" in value && value.mod) rank = "mod";

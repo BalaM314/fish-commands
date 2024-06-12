@@ -9,8 +9,8 @@ import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeNa
 //Behold, the power of typescript!
 
 let initialized = false;
-export const allCommands:Record<string, FishCommandData<any, any>> = {};
-export const allConsoleCommands:Record<string, FishConsoleCommandData<any, any>> = {};
+export const allCommands:Record<string, FishCommandData<string, any>> = {};
+export const allConsoleCommands:Record<string, FishConsoleCommandData<string, any>> = {};
 const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
@@ -24,12 +24,12 @@ export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer 
 export const commandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishCommandData<A[K], any>;
-}):Record<keyof A, FishCommandData<any, any> | (() => FishCommandData<any, any>)> => list;
+}):Record<keyof A, FishCommandData<string, any> | (() => FishCommandData<string, any>)> => list;
 /** Use this to get the correct type for command lists. */
 export const consoleCommandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishConsoleCommandData<A[K], any>;
-}):Record<keyof A, FishConsoleCommandData<any, any>> => list;
+}):Record<keyof A, FishConsoleCommandData<string, any>> => list;
 export function command<TParam extends string, TData>(cmd:FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;
 export function command<TParam extends string, TData>(cmd:() => FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;//not type safe, can't be bothered to find a solution that works with commandList
 export function command<TParam extends string, TData>(cmd:FishConsoleCommandData<TParam, TData>):FishConsoleCommandData<TParam, TData>;
@@ -87,12 +87,22 @@ export class Perm {
 export type PermType = SelectEnumClassKeys<typeof Perm>;
 
 export const Req = {
-	mode: (mode:ModeName) => () => Mode[mode]() || fail(`This command is only available in ${formatModeName(mode)}`),
-	modeNot: (mode:ModeName) => () => !Mode[mode]() || fail(`This command is disabled in ${formatModeName(mode)}`),
-	moderate: <T extends string>(argName:T, allowSameRank:boolean = false) => ({args, sender}:{args:{[_ in T]: FishPlayer}, sender:FishPlayer}) =>
-		(sender.canModerate(args[argName], !allowSameRank) || fail(`You do not have permission to perform moderation actions on this player.`)),
-
-} satisfies Record<string, (...args:any[]) => FishCommandRequirement<any, any>>;
+	mode: (mode:ModeName) => () =>
+		Mode[mode]()
+			|| fail(`This command is only available in ${formatModeName(mode)}`),
+	modeNot: (mode:ModeName) => () =>
+		!Mode[mode]()
+			|| fail(`This command is disabled in ${formatModeName(mode)}`),
+	moderate: <T extends string>(argName:T, allowSameRank:boolean = false) => ({args, sender}:{args:Record<T, FishPlayer>, sender:FishPlayer}) =>
+		(sender.canModerate(args[argName], !allowSameRank)
+			|| fail(`You do not have permission to perform moderation actions on this player.`)),
+	cooldown: (durationMS:number) => ({lastUsedSuccessfullySender}:FishCommandHandlerData<never, unknown>) =>
+		Date.now() - lastUsedSuccessfullySender >= durationMS
+			|| fail(`This command was run recently and is on cooldown.`),
+	cooldownGlobal: (durationMS:number) => ({lastUsedSuccessfullySender}:FishCommandHandlerData<never, unknown>) =>
+		Date.now() - lastUsedSuccessfullySender >= durationMS
+			|| fail(`This command was run recently and is on cooldown.`),
+};
 
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str:string):CommandArg {
@@ -415,7 +425,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 /**
  * Registers all commands in a list to a client command handler.
  **/
-export function register(commands:Record<string, FishCommandData<any, any> | (() => FishCommandData<any, any>)>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
+export function register(commands:Record<string, FishCommandData<string, any> | (() => FishCommandData<string, any>)>, clientHandler:ClientCommandHandler, serverHandler:ServerCommandHandler){
 
 	for(let [name, _data] of Object.entries(commands)){
 
@@ -457,7 +467,7 @@ export function register(commands:Record<string, FishCommandData<any, any> | (()
 					const usageData = fishSender.getUsageData(name);
 					let failed = false;
 					try {
-						const args:FishCommandHandlerData<any, any> & FishCommandHandlerUtils = {
+						const args:FishCommandHandlerData<string, any> & FishCommandHandlerUtils = {
 							rawArgs,
 							args: output.processedArgs,
 							sender: fishSender,
@@ -512,7 +522,7 @@ export function register(commands:Record<string, FishCommandData<any, any> | (()
 	}
 }
 
-export function registerConsole(commands:Record<string, FishConsoleCommandData<any, any>>, serverHandler:ServerCommandHandler){
+export function registerConsole(commands:Record<string, FishConsoleCommandData<string, any>>, serverHandler:ServerCommandHandler){
 
 	for(const [name, data] of Object.entries(commands)){
 		//Cursed for of loop due to lack of object.entries

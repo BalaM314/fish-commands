@@ -119,15 +119,32 @@ var Perm = /** @class */ (function () {
 }());
 exports.Perm = Perm;
 exports.Req = {
-    mode: function (mode) { return function () { return config_1.Mode[mode]() || fail("This command is only available in ".concat((0, utils_1.formatModeName)(mode))); }; },
-    modeNot: function (mode) { return function () { return !config_1.Mode[mode]() || fail("This command is disabled in ".concat((0, utils_1.formatModeName)(mode))); }; },
+    mode: function (mode) { return function () {
+        return config_1.Mode[mode]()
+            || fail("This command is only available in ".concat((0, utils_1.formatModeName)(mode)));
+    }; },
+    modeNot: function (mode) { return function () {
+        return !config_1.Mode[mode]()
+            || fail("This command is disabled in ".concat((0, utils_1.formatModeName)(mode)));
+    }; },
     moderate: function (argName, allowSameRank) {
         if (allowSameRank === void 0) { allowSameRank = false; }
         return function (_a) {
             var args = _a.args, sender = _a.sender;
-            return (sender.canModerate(args[argName], !allowSameRank) || fail("You do not have permission to perform moderation actions on this player."));
+            return (sender.canModerate(args[argName], !allowSameRank)
+                || fail("You do not have permission to perform moderation actions on this player."));
         };
     },
+    cooldown: function (durationMS) { return function (_a) {
+        var lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+        return Date.now() - lastUsedSuccessfullySender >= durationMS
+            || fail("This command was run recently and is on cooldown.");
+    }; },
+    cooldownGlobal: function (durationMS) { return function (_a) {
+        var lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender;
+        return Date.now() - lastUsedSuccessfullySender >= durationMS
+            || fail("This command was run recently and is on cooldown.");
+    }; },
 };
 /**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
