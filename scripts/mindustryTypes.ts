@@ -13,7 +13,8 @@ const Log: {
 	err(error:Error):void;
 };
 const Strings: {
-	stripColors(string:string): string;
+	stripColors(string:string):string;
+	sanitizeFilename(name:string):string;
 };
 const Vars: {
 	logic: {
@@ -55,6 +56,7 @@ const Vars: {
 	saveExtension: string;
 	saveDirectory: Fi;
 	modDirectory: Fi;
+	customMapDirectory: Fi;
 	content: Content;
 	tilesize: 8;
 	world: World;
@@ -278,6 +280,7 @@ class HttpRequest {
 }
 class HttpResponse {
 	getResultAsString():string;
+	getResult():number[];
 }
 const Http: {
 	post(url:string, content:string):HttpRequest;
@@ -383,6 +386,8 @@ class Fi {
 	child(path:string): Fi;
 	exists(): boolean;
 	absolutePath():string;
+	writeBytes(bytes:number[], append?:boolean):void;
+	static tempFile(prefix:string):Fi;
 }
 
 class Pattern {

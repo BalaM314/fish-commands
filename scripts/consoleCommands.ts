@@ -561,5 +561,25 @@ ${FishPlayer.mapPlayers(p =>
 				else outputFail(`Backup failed!`);
 			});
 		}
-	}
+	},
+	loadmap: {
+		args: ["filename:string", "map:string"],
+		description: "Downloads a map from URL.",
+		handler({args:{filename, map}, output, outputFail, outputSuccess}){
+			if(!/^https?:\/\//i.test(map)) fail(`Argument must be a URL starting with https:// or http://`);
+			if(!/\.msav$/.test(filename)) fail(`Filename must end with .msav`);
+			if(Strings.sanitizeFilename(filename) != filename) fail(`Filename contains special characters, please use "${Strings.sanitizeFilename(filename)}" instead`);
+			filename = filename.toLowerCase();
+			const file = Vars.customMapDirectory.child(filename);
+			if(file.exists()) output(`File ${filename} will be overwritten`);
+			output(`Downloading map...`);
+			Http.get(map, res => {
+				output(`Writing file...`);
+				file.writeBytes(res.getResult());
+				output(`Loading map...`);
+				Vars.maps.reload();
+				outputSuccess(`Successfully loaded the map. Please check for duplicates.`);
+			}, () => outputFail(`Download failed`));
+		},
+	},
 });
