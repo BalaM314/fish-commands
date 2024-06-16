@@ -43,6 +43,7 @@ var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
 var config_1 = require("./config");
+var globals_js_1 = require("./globals.js");
 var menus_1 = require("./menus");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -383,20 +384,38 @@ var FishPlayer = /** @class */ (function () {
             this.recentLeaves.pop();
     };
     FishPlayer.validateVotekickSession = function () {
-        if (Vars.netServer.currentlyKicking) {
-            var target = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
-            var voted = Reflect.get(Vars.netServer.currentlyKicking, "voted");
-            if (target.hasPerm("bypassVotekick")) {
-                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.prefixedName, "[lightgray].[accent] (-\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote cancelled."));
-                Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
-                Vars.netServer.currentlyKicking = null;
+        if (!Vars.netServer.currentlyKicking)
+            return;
+        var target = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
+        var voted = Reflect.get(Vars.netServer.currentlyKicking, "voted");
+        if (voted.size == 2) {
+            //Try to find the UUID of the initiator
+            var uuid_1 = null;
+            voted.entries().toArray().each(function (e) {
+                if (globals_js_1.uuidPattern.test(e.key))
+                    uuid_1 = e.key;
+            });
+            if (uuid_1) {
+                var initiator = this.getById(uuid_1);
+                if (initiator === null || initiator === void 0 ? void 0 : initiator.stelled()) {
+                    Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(initiator.prefixedName, "[lightgray].[accent] (\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote passed."));
+                    initiator.kick("You are not allowed to votekick other players while marked.", 2);
+                    Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
+                    Vars.netServer.currentlyKicking = null;
+                    return;
+                }
             }
-            else if (target.ranksAtLeast("trusted") && Groups.player.size() > 4 && voted.get("__server__") == 0) {
-                //decrease votes by two, goes from 1 to negative 1
-                Reflect.set(Vars.netServer.currentlyKicking, "votes", Packages.java.lang.Integer(-1));
-                voted.put("__server__", -2);
-                Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.prefixedName, "[lightgray].[accent] (-1/").concat(Vars.netServer.votesRequired(), ")\n[lightgray]Type[orange] /vote <y/n>[] to agree."));
-            }
+        }
+        if (target.hasPerm("bypassVotekick")) {
+            Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.prefixedName, "[lightgray].[accent] (-\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote cancelled."));
+            Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
+            Vars.netServer.currentlyKicking = null;
+        }
+        else if (target.ranksAtLeast("trusted") && Groups.player.size() > 4 && voted.get("__server__") == 0) {
+            //decrease votes by two, goes from 1 to negative 1
+            Reflect.set(Vars.netServer.currentlyKicking, "votes", Packages.java.lang.Integer(-1));
+            voted.put("__server__", -2);
+            Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(target.prefixedName, "[lightgray].[accent] (-1/").concat(Vars.netServer.votesRequired(), ")\n[lightgray]Type[orange] /vote <y/n>[] to agree."));
         }
     };
     FishPlayer.onPlayerChat = function (player, message) {

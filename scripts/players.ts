@@ -2,6 +2,7 @@ import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as config from "./config";
 import { Mode, heuristics } from "./config";
+import { uuidPattern } from "./globals.js";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
@@ -349,25 +350,44 @@ export class FishPlayer {
 		if(this.recentLeaves.length > 10) this.recentLeaves.pop();
 	}
 	static validateVotekickSession(){
-		if(Vars.netServer.currentlyKicking){
-			const target = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
-			const voted = Reflect.get(Vars.netServer.currentlyKicking, "voted") as ObjectIntMap<string>;
-			if(target.hasPerm("bypassVotekick")){
-				Call.sendMessage(
+		if(!Vars.netServer.currentlyKicking) return;
+		const target = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
+		const voted = Reflect.get(Vars.netServer.currentlyKicking, "voted") as ObjectIntMap<string>;
+		if(voted.size == 2){
+			//Try to find the UUID of the initiator
+			let uuid:string | null = null;
+			voted.entries().toArray().each(e => {
+				if(uuidPattern.test(e.key)) uuid = e.key;
+			});
+			if(uuid){
+				const initiator = this.getById(uuid);
+				if(initiator?.stelled()){
+					Call.sendMessage(
+`[scarlet]Server[lightgray] has voted on kicking[orange] ${initiator.prefixedName}[lightgray].[accent] (\u221E/${Vars.netServer.votesRequired()})
+[scarlet]Vote passed.`
+					);
+					initiator.kick("You are not allowed to votekick other players while marked.", 2);
+					Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
+					Vars.netServer.currentlyKicking = null;
+					return;
+				}
+			}
+		}
+		if(target.hasPerm("bypassVotekick")){
+			Call.sendMessage(
 `[scarlet]Server[lightgray] has voted on kicking[orange] ${target.prefixedName}[lightgray].[accent] (-\u221E/${Vars.netServer.votesRequired()})
 [scarlet]Vote cancelled.`
-				);
-				Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
-				Vars.netServer.currentlyKicking = null;
-			} else if(target.ranksAtLeast("trusted") && Groups.player.size() > 4 && voted.get("__server__") == 0){
-				//decrease votes by two, goes from 1 to negative 1
-				Reflect.set(Vars.netServer.currentlyKicking, "votes", Packages.java.lang.Integer(-1));
-				voted.put("__server__", -2);
-				Call.sendMessage(
+			);
+			Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
+			Vars.netServer.currentlyKicking = null;
+		} else if(target.ranksAtLeast("trusted") && Groups.player.size() > 4 && voted.get("__server__") == 0){
+			//decrease votes by two, goes from 1 to negative 1
+			Reflect.set(Vars.netServer.currentlyKicking, "votes", Packages.java.lang.Integer(-1));
+			voted.put("__server__", -2);
+			Call.sendMessage(
 `[scarlet]Server[lightgray] has voted on kicking[orange] ${target.prefixedName}[lightgray].[accent] (-1/${Vars.netServer.votesRequired()})
 [lightgray]Type[orange] /vote <y/n>[] to agree.`
-				);
-			}
+			);
 		}
 	}
 	static onPlayerChat(player:mindustryPlayer, message:string){
