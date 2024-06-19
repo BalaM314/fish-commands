@@ -549,6 +549,7 @@ export const commands = commandList({
 		args: ["javascript:string"],
 		description: "Run arbitrary javascript.",
 		perm: Perm.runJS,
+		customUnauthorizedMessage: "[scarlet]You are not in the jsers file. This incident will be reported.[]",
 		handler({args: {javascript}, output, outputFail, sender}){
 			
 			//Additional validation couldn't hurt...
@@ -587,6 +588,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 		args: ["javascript:string"],
 		description: "Run arbitrary javascript in the fish-commands context.",
 		perm: Perm.runJS,
+		customUnauthorizedMessage: "[scarlet]You are not in the jsers file. This incident will be reported.[]",
 		handler({args: {javascript}, output, outputFail, sender}){
 			
 			//Additional validation couldn't hurt...

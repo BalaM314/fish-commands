@@ -607,6 +607,7 @@ exports.commands = (0, commands_1.commandList)({
         args: ["javascript:string"],
         description: "Run arbitrary javascript.",
         perm: commands_1.Perm.runJS,
+        customUnauthorizedMessage: "[scarlet]You are not in the jsers file. This incident will be reported.[]",
         handler: function (_a) {
             var javascript = _a.args.javascript, output = _a.output, outputFail = _a.outputFail, sender = _a.sender;
             //Additional validation couldn't hurt...
@@ -646,6 +647,7 @@ exports.commands = (0, commands_1.commandList)({
         args: ["javascript:string"],
         description: "Run arbitrary javascript in the fish-commands context.",
         perm: commands_1.Perm.runJS,
+        customUnauthorizedMessage: "[scarlet]You are not in the jsers file. This incident will be reported.[]",
         handler: function (_a) {
             var javascript = _a.args.javascript, output = _a.output, outputFail = _a.outputFail, sender = _a.sender;
             //Additional validation couldn't hurt...
