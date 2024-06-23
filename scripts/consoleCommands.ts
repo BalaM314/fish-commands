@@ -355,7 +355,7 @@ export const commands = consoleCommandList({
 		args: ["player:player", "newname:string"],
 		description: "Changes the name of a player.",
 		handler({args, f, outputSuccess}){
-			if(!args.player.hasPerm("blockTrolling")) fail(f`Operation aborted: Player ${args.player} is insufficiently trollable.`);
+			if(args.player.hasPerm("blockTrolling")) fail(f`Operation aborted: Player ${args.player} is insufficiently trollable.`);
 			const oldName = args.player.name;
 			args.player.player!.name = args.player.prefixedName = args.newname;
 			args.player.shouldUpdateName = false;

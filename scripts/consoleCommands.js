@@ -456,7 +456,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Changes the name of a player.",
         handler: function (_a) {
             var args = _a.args, f = _a.f, outputSuccess = _a.outputSuccess;
-            if (!args.player.hasPerm("blockTrolling"))
+            if (args.player.hasPerm("blockTrolling"))
                 (0, commands_1.fail)(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Operation aborted: Player ", " is insufficiently trollable."], ["Operation aborted: Player ", " is insufficiently trollable."])), args.player));
             var oldName = args.player.name;
             args.player.player.name = args.player.prefixedName = args.newname;
