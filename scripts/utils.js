@@ -503,11 +503,11 @@ function isImpersonator(name, isAdmin) {
 exports.isImpersonator = isImpersonator;
 function logAction(action, by, to, reason, duration) {
     if (by === undefined) { //overload 1
-        api.sendModerationMessage("".concat(action, "\n**Server:** ").concat((0, config_1.getGamemode)()));
+        api.sendModerationMessage("".concat(action, "\n**Server:** ").concat(config_1.Mode.name()));
         return;
     }
     if (to === undefined) { //overload 2
-        api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, "\n**Server:** ").concat((0, config_1.getGamemode)()));
+        api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, "\n**Server:** ").concat(config_1.Mode.name()));
         return;
     }
     if (to) { //overload 3
@@ -535,7 +535,7 @@ function logAction(action, by, to, reason, duration) {
             uuid = to.id;
             ip = to.lastIP;
         }
-        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat((0, config_1.getGamemode)(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
+        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat(config_1.Mode.name(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
         return;
     }
 }

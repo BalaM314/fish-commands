@@ -100,8 +100,7 @@ exports.sendModerationMessage = sendModerationMessage;
 function getStaffMessages(callback) {
     if (config_1.localDebug)
         return;
-    var server = (0, config_1.getGamemode)();
-    var req = Http.post("http://".concat(config_1.ip, "/api/getStaffMessages"), JSON.stringify({ server: server }))
+    var req = Http.post("http://".concat(config_1.ip, "/api/getStaffMessages"), JSON.stringify({ server: config_1.Mode.name() }))
         .header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     req.error(function () { return Log.err("[API] Network error when trying to call api.getStaffMessages()"); });
@@ -118,10 +117,9 @@ exports.getStaffMessages = getStaffMessages;
 function sendStaffMessage(message, playerName, callback) {
     if (config_1.localDebug)
         return;
-    var server = (0, config_1.getGamemode)();
     var req = Http.post("http://".concat(config_1.ip, "/api/sendStaffMessage"), 
     // need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
-    JSON.stringify({ message: message, playerName: playerName, cleanedName: Strings.stripColors(playerName), server: server })).header('Content-Type', 'application/json').header('Accept', '*/*');
+    JSON.stringify({ message: message, playerName: playerName, cleanedName: Strings.stripColors(playerName), server: config_1.Mode.name() })).header('Content-Type', 'application/json').header('Accept', '*/*');
     req.timeout = 10000;
     req.error(function () {
         Log.err("[API] Network error when trying to call api.sendStaffMessage()");

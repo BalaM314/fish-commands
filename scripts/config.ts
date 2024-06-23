@@ -118,17 +118,16 @@ export const FishServers = {
 	all: [] as FishServer[]
 };
 FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.hexed];
-export const getGamemode = () => Core.settings.get("mode", Vars.state.rules.mode().name());
 export type ModeName = keyof typeof Mode extends infer K extends keyof typeof Mode ? K extends unknown ?
 	(typeof Mode)[K] extends (() => boolean) ? K : never
 : never : never;
 export const Mode = {
-	attack: () => getGamemode() == "attack",
-	survival: () => getGamemode() == "survival",
-	pvp: () => getGamemode() == "pvp" || getGamemode() == "hexed",
-	sandbox: () => getGamemode() == "sandbox",
-	hexed: () => getGamemode() == "hexed",
-	name: () => Vars.state.rules.mode().name()
+	attack: () => Mode.name() == "attack",
+	survival: () => Mode.name() == "survival",
+	pvp: () => Mode.name() == "pvp" || Mode.name() == "hexed",
+	sandbox: () => Mode.name() == "sandbox",
+	hexed: () => Mode.name() == "hexed",
+	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()),
 };
 export const localDebug = new Fi("config/.debug").exists();
 export const maxTime = 9999999999999;

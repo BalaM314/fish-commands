@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.getGamemode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
@@ -130,15 +130,13 @@ exports.FishServers = {
     all: []
 };
 exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.hexed];
-var getGamemode = function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); };
-exports.getGamemode = getGamemode;
 exports.Mode = {
-    attack: function () { return (0, exports.getGamemode)() == "attack"; },
-    survival: function () { return (0, exports.getGamemode)() == "survival"; },
-    pvp: function () { return (0, exports.getGamemode)() == "pvp" || (0, exports.getGamemode)() == "hexed"; },
-    sandbox: function () { return (0, exports.getGamemode)() == "sandbox"; },
-    hexed: function () { return (0, exports.getGamemode)() == "hexed"; },
-    name: function () { return Vars.state.rules.mode().name(); }
+    attack: function () { return exports.Mode.name() == "attack"; },
+    survival: function () { return exports.Mode.name() == "survival"; },
+    pvp: function () { return exports.Mode.name() == "pvp" || exports.Mode.name() == "hexed"; },
+    sandbox: function () { return exports.Mode.name() == "sandbox"; },
+    hexed: function () { return exports.Mode.name() == "hexed"; },
+    name: function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); },
 };
 exports.localDebug = new Fi("config/.debug").exists();
 exports.maxTime = 9999999999999;

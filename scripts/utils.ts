@@ -1,5 +1,5 @@
 import * as api from './api';
-import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, getGamemode, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
+import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
 import { fishState, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
@@ -383,14 +383,14 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 	if(by === undefined){ //overload 1
 		api.sendModerationMessage(
 `${action}
-**Server:** ${getGamemode()}`
+**Server:** ${Mode.name()}`
 		);
 		return;
 	}
 	if(to === undefined){ //overload 2
 		api.sendModerationMessage(
 `${(by as FishPlayer).cleanedName} ${action}
-**Server:** ${getGamemode()}`
+**Server:** ${Mode.name()}`
 		);
 		return;
 	}
@@ -418,7 +418,7 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 		}
 		api.sendModerationMessage(
 `${actor} ${action} ${name} ${duration ? `for ${formatTime(duration)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
-**Server:** ${getGamemode()}
+**Server:** ${Mode.name()}
 **uuid:** \`${uuid}\`
 **ip**: \`${ip}\``
 		);

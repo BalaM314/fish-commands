@@ -613,7 +613,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat((0, config_1.getGamemode)(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Mode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             try {
@@ -653,7 +653,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat((0, config_1.getGamemode)(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Mode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             fjsContext.runJS(javascript, output, outputFail);

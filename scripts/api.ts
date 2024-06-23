@@ -1,4 +1,4 @@
-import { getGamemode, ip, localDebug, maxTime } from './config';
+import { Mode, ip, localDebug, maxTime } from './config';
 import { FishPlayer } from './players';
 
 /** Mark a player as stopped until time */
@@ -95,8 +95,7 @@ export function sendModerationMessage(message: string) {
 /**Get staff messages from discord. */
 export function getStaffMessages(callback: (messages: string) => unknown) {
 	if(localDebug) return;
-	const server = getGamemode();
-	const req = Http.post(`http://${ip}/api/getStaffMessages`, JSON.stringify({ server }))
+	const req = Http.post(`http://${ip}/api/getStaffMessages`, JSON.stringify({ server: Mode.name() }))
 		.header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 	req.error(() => Log.err(`[API] Network error when trying to call api.getStaffMessages()`));
@@ -110,11 +109,10 @@ export function getStaffMessages(callback: (messages: string) => unknown) {
 /**Send staff messages from server. */
 export function sendStaffMessage(message:string, playerName:string, callback?: (sent:boolean) => unknown){
 	if(localDebug) return;
-	const server = getGamemode();
 	const req = Http.post(
 		`http://${ip}/api/sendStaffMessage`,
 		// need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
-		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server })
+		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server: Mode.name() })
 	).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 	req.error(() => {

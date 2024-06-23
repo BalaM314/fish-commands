@@ -1,6 +1,6 @@
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
-import { getGamemode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
+import { Mode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
@@ -557,7 +557,7 @@ export const commands = commandList({
 			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
-Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+Server: ${Mode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
 <@!709904412033810533>`
 				);
 				fail(`Authentication failure`);
@@ -596,7 +596,7 @@ Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${se
 			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
-Server: ${getGamemode()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+Server: ${Mode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
 <@!709904412033810533>`
 				);
 				fail(`Authentication failure`);
