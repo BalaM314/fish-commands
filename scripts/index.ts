@@ -62,7 +62,7 @@ Events.on(EventType.ConnectPacketEvent, (e) => {
 		Log.info(`&yAntibot killed connection ${e.connection.address} because ${veryLongModName ? "very long mod name" : longModName ? "long mod name" : "it had mods while under attack"}`);
 		return;
 	}
-	if(ipJoins.get(e.connection.address) >= ( underAttack ? 3 : newPlayer ? 7 : 15 )){
+	if(ipJoins.get(e.connection.address) >= ( (underAttack || veryLongModName) ? 3 : (newPlayer || longModName) ? 7 : 15 )){
 		Vars.netServer.admins.blacklistDos(e.connection.address);
 		e.connection.kicked = true;
 		FishPlayer.onBotWhack();
