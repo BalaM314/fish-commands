@@ -1154,7 +1154,8 @@ var FishPlayer = /** @class */ (function () {
             by: by instanceof FishPlayer ? by.name : by,
             time: Date.now(),
         });
-        this.setPunishedIP(config.stopAntiEvadeTime);
+        if (duration > 60000)
+            this.setPunishedIP(config.stopAntiEvadeTime);
         this.showRankPrefix = true;
         this.updateName();
         if (this.connected() && notify) {
