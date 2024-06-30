@@ -7,14 +7,20 @@ import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
 
 
 export function initializeTimers(){
-	//Autosave
 	Timer.schedule(() => {
+		//Autosave
 		const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
 		Core.app.post(() => {
 			SaveIO.save(file);
 			FishPlayer.saveAll();
 			Call.sendMessage('[#4fff8f9f]Game saved.');
 		});
+		//Unblacklist trusted players
+		for(const fishP of Object.values(FishPlayer.cachedPlayers)){
+			if(fishP.ranksAtLeast("trusted")){
+				Vars.netServer.admins.dosBlacklist.remove(fishP.info().lastIP);
+			}
+		}
 	}, 10, 300);
 	//Memory corruption prank
 	Timer.schedule(() => {

@@ -1,4 +1,15 @@
 "use strict";
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initializeTimers = void 0;
 var api_1 = require("./api");
@@ -8,14 +19,31 @@ var globals_1 = require("./globals");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
 function initializeTimers() {
-    //Autosave
     Timer.schedule(function () {
+        var e_1, _a;
+        //Autosave
         var file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
         Core.app.post(function () {
             SaveIO.save(file);
             players_1.FishPlayer.saveAll();
             Call.sendMessage('[#4fff8f9f]Game saved.');
         });
+        try {
+            //Unblacklist trusted players
+            for (var _b = __values(Object.values(players_1.FishPlayer.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var fishP = _c.value;
+                if (fishP.ranksAtLeast("trusted")) {
+                    Vars.netServer.admins.dosBlacklist.remove(fishP.info().lastIP);
+                }
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
     }, 10, 300);
     //Memory corruption prank
     Timer.schedule(function () {
