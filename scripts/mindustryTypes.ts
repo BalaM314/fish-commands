@@ -42,6 +42,7 @@ const Vars: {
 			waveTeam:Team;
 			waves:boolean;
 			waitEnemies:boolean;
+			env:number;
 		}
 		set(state:State):void;
 		gameOver:boolean;
@@ -454,6 +455,7 @@ class PlayerInfo {
 class UnitType {
 	spawn(team:Team, x:number, y:number):Unit;
 	create(team:Team):Unit;
+	supportsEnv(env:number):boolean;
 	health: number;
 	hidden: boolean;
 	internal: boolean;

@@ -291,6 +291,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         },
     }, spectate: (0, commands_1.command)(function () {
         //TODO revise code
+        /** Mapping between player and original team */
         var spectators = new Map();
         function spectate(target) {
             spectators.set(target, target.team());

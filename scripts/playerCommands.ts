@@ -244,6 +244,7 @@ export const commands = commandList({
 	},
 	spectate: command(() => {
 		//TODO revise code
+		/** Mapping between player and original team */
 		const spectators = new Map<FishPlayer, Team>();
 		function spectate(target:FishPlayer){
 			spectators.set(target, target.team());
@@ -468,6 +469,7 @@ Available types:[yellow]
 			Ohnos.updateLength();
 			if(Ohnos.ohnos.length >= (Groups.player.size() + 1)) fail(`Sorry, the max number of ohno units has been reached.`);
 			if(nearbyEnemyTile(sender.unit(), 6) != null) fail(`Too close to an enemy tile!`);
+			if(!UnitTypes.alpha.supportsEnv(Vars.state.rules.env)) fail(`Ohnos cannot survive in this map.`);
 	
 			Ohnos.makeOhno(sender.team(), sender.player!.x, sender.player!.y);
 		},
