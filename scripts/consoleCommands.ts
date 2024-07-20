@@ -1,4 +1,4 @@
-import { downloadfile, updatemaps } from "./files";
+import { deleteMap, downloadfile, updatemaps } from "./files";
 import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
@@ -587,5 +587,19 @@ ${FishPlayer.mapPlayers(p =>
 				}
 			});
 		},
+	},
+	updatemaps:{
+		args: [],
+		description: 'trigger a automated map update',
+		handler(){
+			updatemaps();
+		}
+	},
+	deletemap:{
+		args: ['map:map'],
+		description: 'eraticate a map from exsistance.',
+		handler({args}){
+			deleteMap(args.map)
+		}
 	},
 });

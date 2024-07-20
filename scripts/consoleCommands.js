@@ -692,5 +692,20 @@ exports.commands = (0, commands_1.consoleCommandList)({
             });
         },
     },
+    updatemaps: {
+        args: [],
+        description: 'trigger a automated map update',
+        handler: function () {
+            (0, files_1.updatemaps)();
+        }
+    },
+    deletemap: {
+        args: ['map:map'],
+        description: 'eraticate a map from exsistance.',
+        handler: function (_a) {
+            var args = _a.args;
+            (0, files_1.deleteMap)(args.map);
+        }
+    },
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7;
