@@ -95,6 +95,7 @@ function mapSubdiretory() {
     if (config_1.Mode.sandbox()) {
         return config_1.SANDBOX_SUBDIRECTORY;
     }
+    return "";
 }
 //slightly cursed
 function updatemap(file) {
@@ -131,7 +132,7 @@ function updatemap(file) {
 //slightly less cursed
 function updatemaps() {
     Log.info("fetching map list ...");
-    Http.get(config_1.MAP_SOURCE_DIRECTORY + config_1.SURVIVAL_SUBDIRECTORY, function (res) {
+    Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubdiretory(), function (res) {
         var responce = res.getResultAsString();
         var listing = JSON.parse(responce);
         var jsonListing = listing.filter(function (file) { return /\.json$/i.test(file.name); });

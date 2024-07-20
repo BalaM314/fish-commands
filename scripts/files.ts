@@ -103,7 +103,7 @@ interface GitHubFile {
     type: 'file' | 'dir';
 }
 //very cursed
-function mapSubdiretory(){
+function mapSubdiretory():string{
     if(Mode.attack()){
         return ATTACK_SUBDIRECTORY;
     }
@@ -119,6 +119,7 @@ function mapSubdiretory(){
     if(Mode.sandbox()){
         return SANDBOX_SUBDIRECTORY;
     }
+    return "";
 }
 
 //slightly cursed
@@ -156,7 +157,7 @@ function updatemap(file:GitHubFile){
 //slightly less cursed
 export function updatemaps(){
     Log.info(`fetching map list ...`)
-    Http.get(MAP_SOURCE_DIRECTORY + SURVIVAL_SUBDIRECTORY, (res) => {
+    Http.get(MAP_SOURCE_DIRECTORY + mapSubdiretory(), (res) => {
         let responce:string = res.getResultAsString();
         let listing:GitHubFile[] = JSON.parse(responce) as GitHubFile[];
         let jsonListing = listing.filter(file => /\.json$/i.test(file.name));
