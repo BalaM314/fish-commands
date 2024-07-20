@@ -1,3 +1,4 @@
+import { downloadfile, updatemaps } from "./files";
 import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
@@ -573,13 +574,18 @@ ${FishPlayer.mapPlayers(p =>
 			const file = Vars.customMapDirectory.child(filename);
 			if(file.exists()) output(`File ${filename} will be overwritten`);
 			output(`Downloading map...`);
-			Http.get(map, res => {
-				output(`Writing file...`);
-				file.writeBytes(res.getResult());
-				output(`Loading map...`);
-				Vars.maps.reload();
-				outputSuccess(`Successfully loaded the map. Please check for duplicates.`);
-			}, () => outputFail(`Download failed`));
+			downloadfile(filename, map, (success) => {
+				if(success){
+					try{
+						Vars.maps.reload();
+						outputSuccess(`Successfully loaded the map. Please check for duplicates.`);
+					}catch(error){
+						fail(`Unable to load map.`)
+					}
+				}else{
+					outputFail(`Map Load Failed.`)
+				}
+			});
 		},
 	},
 });

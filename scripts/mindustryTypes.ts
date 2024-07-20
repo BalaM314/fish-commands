@@ -383,13 +383,21 @@ class Command {
 class JavaFile {}
 class Fi {
 	constructor(path:string);
+	delete():boolean;
 	file(): JavaFile;
 	child(path:string): Fi;
 	exists(): boolean;
 	absolutePath():string;
+	mkdirs():boolean
+	moveTo(dest:Fi):void
+	name():string;
+	nameWithoutExtention():string;
+	readString():string;
 	writeBytes(bytes:number[], append?:boolean):void;
+	writeString(string:string):void
 	static tempFile(prefix:string):Fi;
 }
+
 
 class Pattern {
 	static matches(regex:string, target:string):boolean;

@@ -207,3 +207,13 @@ export const heuristics = {
 	blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };
 export const stopAntiEvadeTime = 1800000; //30 minutes
+
+export const ARCHIVE_FILE_PATH = 'archived/';
+
+export const MAP_SOURCE_DIRECTORY = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/";
+export var CURRENT_WORKING_SUBDIRECTORY = ""
+export const ATTACK_SUBDIRECTORY = "attack/";
+export const SURVIVAL_SUBDIRECTORY = "survival/";
+export const PVP_SUBDIRECTORY = "pvp/";
+export const HEXED_SUBDIRECTORY = "hexed/";
+export const SANDBOX_SUBDIRECTORY = "sandbox/"; // I have hope

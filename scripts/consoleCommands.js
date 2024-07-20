@@ -41,6 +41,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
+var files_1 = require("./files");
 var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
@@ -675,13 +676,20 @@ exports.commands = (0, commands_1.consoleCommandList)({
             if (file.exists())
                 output("File ".concat(filename, " will be overwritten"));
             output("Downloading map...");
-            Http.get(map, function (res) {
-                output("Writing file...");
-                file.writeBytes(res.getResult());
-                output("Loading map...");
-                Vars.maps.reload();
-                outputSuccess("Successfully loaded the map. Please check for duplicates.");
-            }, function () { return outputFail("Download failed"); });
+            (0, files_1.downloadfile)(filename, map, function (success) {
+                if (success) {
+                    try {
+                        Vars.maps.reload();
+                        outputSuccess("Successfully loaded the map. Please check for duplicates.");
+                    }
+                    catch (error) {
+                        (0, commands_1.fail)("Unable to load map.");
+                    }
+                }
+                else {
+                    outputFail("Map Load Failed.");
+                }
+            });
         },
     },
 });

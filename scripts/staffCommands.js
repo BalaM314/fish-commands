@@ -44,6 +44,7 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
+var files_1 = require("./files");
 var fjsContext = require("./fjsContext");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -747,6 +748,20 @@ exports.commands = (0, commands_1.commandList)({
                 outputSuccess("Removed ".concat(totalRemoved, " fires."));
                 Call.sendMessage("[scarlet][[Fire Department]:[yellow] We've extinguished ".concat(totalRemoved, " fires."));
             }, 6.1);
+        }
+    },
+    updatemaps: {
+        args: [],
+        description: 'Check the online repository for map updates',
+        perm: commands_1.Perm.admin,
+        requirements: [commands_1.Req.cooldownGlobal(10000)],
+        handler: function (_a) {
+            var sender = _a.sender, outputSuccess = _a.outputSuccess;
+            (0, utils_1.logAction)("".concat(sender.name, " has started a map update"));
+            Call.sendMessage("[orange]Starting map updates");
+            (0, files_1.updatemaps)();
+            Call.sendMessage("[orange]Map update complete");
+            outputSuccess("Updated maps, see console for errors.");
         }
     },
     search: {

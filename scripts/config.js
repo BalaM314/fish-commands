@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.SANDBOX_SUBDIRECTORY = exports.HEXED_SUBDIRECTORY = exports.PVP_SUBDIRECTORY = exports.SURVIVAL_SUBDIRECTORY = exports.ATTACK_SUBDIRECTORY = exports.CURRENT_WORKING_SUBDIRECTORY = exports.MAP_SOURCE_DIRECTORY = exports.ARCHIVE_FILE_PATH = exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
@@ -214,3 +214,11 @@ exports.heuristics = {
     blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };
 exports.stopAntiEvadeTime = 1800000; //30 minutes
+exports.ARCHIVE_FILE_PATH = 'archived/';
+exports.MAP_SOURCE_DIRECTORY = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/";
+exports.CURRENT_WORKING_SUBDIRECTORY = "";
+exports.ATTACK_SUBDIRECTORY = "attack/";
+exports.SURVIVAL_SUBDIRECTORY = "survival/";
+exports.PVP_SUBDIRECTORY = "pvp/";
+exports.HEXED_SUBDIRECTORY = "hexed/";
+exports.SANDBOX_SUBDIRECTORY = "sandbox/"; // I have hope

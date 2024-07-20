@@ -1,12 +1,13 @@
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
 import { Mode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
+import { updatemaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { addToTileHistory, colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
+import { addToTileHistory, colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, outputMessage, outputSuccess, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
 
 const spawnedUnits:Unit[] = [];
 
@@ -677,6 +678,19 @@ ${getAntiBotInfo("client")}`
 				outputSuccess(`Removed ${totalRemoved} fires.`);
 				Call.sendMessage(`[scarlet][[Fire Department]:[yellow] We've extinguished ${totalRemoved} fires.`);
 			}, 6.1);
+		}
+	},
+	updatemaps: {
+		args: [],
+		description: 'Check the online repository for map updates',
+		perm: Perm.admin,
+		requirements: [Req.cooldownGlobal(10_000)],
+		handler:({sender, outputSuccess}) => {
+			logAction(`${sender.name} has started a map update`);
+			Call.sendMessage(`[orange]Starting map updates`);
+			updatemaps();
+			Call.sendMessage(`[orange]Map update complete`);
+			outputSuccess(`Updated maps, see console for errors.`)
 		}
 	},
 	search: {
