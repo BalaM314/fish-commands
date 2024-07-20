@@ -552,7 +552,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     highscoreMsg = "NaN";
                     break;
             }
-            (0, menus_1.menu)("Information for ".concat(mapinfo.name), "\n\t\t\t\t[accent]Map Name : []".concat(mapinfo.name, "]\n\n\t\t\t\t[accent]Author(s) : []").concat(mapinfo.author, "\n\n\t\t\t\t[accent]Version : []").concat(mapinfo.version, "\n\n\t\t\t\t[accent]Highscore : []").concat(highscoreMsg, "\n\n\t\t\t\t[accent]Recommended Players : []").concat(mapinfo.recommendedPlayers, "\n\t\t\t\t\n\n\t\t\t\t[]").concat(mapinfo.description, "\n\n\t\t\t\t\n\n\t\t\t\t"), ['Vote for this map', 'Close'], sender, function (_a) {
+            (0, menus_1.menu)("Information for ".concat(mapinfo.name), "\n\t\t\t\t[accent]Map Name : []".concat(mapinfo.name, "]\n\n\t\t\t\t[accent]Author(s) : []").concat(mapinfo.author, "\n\n\t\t\t\t[accent]Version : []").concat(mapinfo.version, "\n\n\t\t\t\t[accent]Highscore : []").concat(highscoreMsg, "\n\n\t\t\t\t[accent]Recommended Players : []").concat(mapinfo.recommendedPlayers, "\n\t\t\t\t\n\n\t\t\t\t[]").concat(mapinfo.description, "\n\n\t\t\t\t"), ['Vote for this map', 'Close'], sender, function (_a) {
                 var option = _a.option;
                 if (option == 'Vote for this map') {
                     (0, commands_1.fail)("womp womp, I haven't made that yet");

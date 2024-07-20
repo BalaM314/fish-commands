@@ -525,7 +525,6 @@ Available types:[yellow]
 				[accent]Recommended Players : []${mapinfo.recommendedPlayers}
 				\n
 				[]${mapinfo.description}\n
-				\n
 				`,['Vote for this map', 'Close'], sender, ({option}) => {
 				if(option == 'Vote for this map'){
 					fail(`womp womp, I haven't made that yet`);
