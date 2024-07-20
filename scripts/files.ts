@@ -1,12 +1,8 @@
 /**
- * Swamps ToDo list
- * - download maps automaticlly - DONE
- * - read json info in /map
- * - write highscores to json
- * - delete map command
- * Swamps Maybe List
- * - allow voting with /map ui
- * - automaticlly timed updates
+ * Swamps Todo list
+ * - Highscore storage
+ * - Vote with /map
+ * - Test this implementation with all fish maps
  */
 
 
@@ -34,7 +30,6 @@ export function downloadfile(filename:string, url:string, callback:(success:bool
     Http.get(url, res => {
         try{
             file.writeBytes(res.getResult());
-            Log.info(`Download complete ${filename}`);
             callback(true);
          } catch(error){
             Log.err(`Failed to write file ${filename}, ${error}`);
@@ -64,7 +59,7 @@ export function getMapData(map:MMap):mapJSON | null{
     try{
         return readfile<mapJSON>(map.file.nameWithoutExtension() + '.json')
     }catch(error){
-        Log.err(`unable to fetch map data, ${error}.`)
+        Log.err(`Unable to fetch map data, ${error}.`)
         return null;
     }
 }
@@ -113,13 +108,13 @@ export function deleteMap(map:MMap){
         if(Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).exists()){
             if(Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.json').exists()) Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.json').delete();
             if(Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.msav').exists()) Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.msav').delete();
-            Log.info(`deleted archive copy of ${filename}.`)
+            Log.info(`Deleted archive copy of ${filename}.`)
 
         }else{
-            Log.warn(`no archive directory found.`);
+            Log.warn(`No archive directory found.`);
         }
     }else{
-        Log.err(`Failed to delete ${filename}, attempting rollback...`);
+        Log.err(`Failed to delete ${filename}, attempting rollback`);
         rollback(filename + '.json');
         rollback(filename + '.msav');
     }
@@ -182,17 +177,23 @@ function updatemap(file:GitHubFile){
         let newMapData:mapJSON = readfile<mapJSON>(file.name);
         if((oldMapData && newMapData.version == oldMapData.version)|| !file.download_url){
             Log.info(`Map ${mapName} is up to date`);
+            try{
+                Vars.maps.reload()
+                Log.info(`Map ${mapName} registered`);
+            }catch(error){
+                Log.info(`Failed to register map ${mapName}`);
+            }
             return;
         }
-        Log.info(`Downloading map update for ${mapName} ...`)
+        Log.info(`Downloading map update for ${mapName}`)
         //hidious line that just alters the json download to a .msav download
         downloadfile(mapName,file.download_url.substring(0, file.download_url.lastIndexOf('.')) + '.msav', (success)=> {
             if(!success){
-                Log.err(`Failed to download map update, attempting rollback...`);
+                Log.err(`Failed to download map update, attempting rollback`);
                 rollback(mapName);
                 return;
             }
-            Log.info(`Map Updated ${mapName}...`);
+            Log.info(`Map Updated ${mapName}`);
         });
     });
 }
@@ -202,21 +203,14 @@ export function updatemaps(){
         Log.err(`Cannot find map directory for gamemode.`);
     }
     Log.info(`Update repository : ${MAP_SOURCE_DIRECTORY}${mapSubDir()}`)
-    Log.info(`fetching map list ...`)
+    Log.info(`fetching map list`)
     Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
     //Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
         let responce:string = res.getResultAsString();
         let listing:GitHubFile[] = JSON.parse(responce) as GitHubFile[];
         let jsonListing = listing.filter(file => /\.json$/i.test(file.name));
-        jsonListing.forEach((file) => {
-            Log.info(`Found Map File: ${file.name}`)
+        for(const file of jsonListing){
             updatemap(file);
-        })
-        try {
-            Vars.maps.reload();
-            Log.info(`Map updating complete`);
-        } catch (error) {
-            Log.err(`failed to register maps`);
         }
     }, () => {
         Log.err(`failed to fetch map list`);

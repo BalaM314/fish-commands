@@ -1,14 +1,21 @@
 "use strict";
 /**
- * Swamps ToDo list
- * - download maps automaticlly - DONE
- * - read json info in /map
- * - write highscores to json
- * - delete map command
- * Swamps Maybe List
- * - allow voting with /map ui
- * - automaticlly timed updates
+ * Swamps Todo list
+ * - Highscore storage
+ * - Vote with /map
+ * - Test this implementation with all fish maps
  */
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatemaps = exports.deleteMap = exports.saveMapData = exports.getMapData = exports.downloadfile = exports.writefile = exports.readfile = void 0;
 var config_1 = require("./config");
@@ -32,7 +39,6 @@ function downloadfile(filename, url, callback) {
     Http.get(url, function (res) {
         try {
             file.writeBytes(res.getResult());
-            Log.info("Download complete ".concat(filename));
             callback(true);
         }
         catch (error) {
@@ -50,7 +56,7 @@ function getMapData(map) {
         return readfile(map.file.nameWithoutExtension() + '.json');
     }
     catch (error) {
-        Log.err("unable to fetch map data, ".concat(error, "."));
+        Log.err("Unable to fetch map data, ".concat(error, "."));
         return null;
     }
 }
@@ -104,14 +110,14 @@ function deleteMap(map) {
                 Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).child(filename + '.json').delete();
             if (Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).child(filename + '.msav').exists())
                 Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).child(filename + '.msav').delete();
-            Log.info("deleted archive copy of ".concat(filename, "."));
+            Log.info("Deleted archive copy of ".concat(filename, "."));
         }
         else {
-            Log.warn("no archive directory found.");
+            Log.warn("No archive directory found.");
         }
     }
     else {
-        Log.err("Failed to delete ".concat(filename, ", attempting rollback..."));
+        Log.err("Failed to delete ".concat(filename, ", attempting rollback"));
         rollback(filename + '.json');
         rollback(filename + '.msav');
     }
@@ -160,17 +166,24 @@ function updatemap(file) {
         var newMapData = readfile(file.name);
         if ((oldMapData && newMapData.version == oldMapData.version) || !file.download_url) {
             Log.info("Map ".concat(mapName, " is up to date"));
+            try {
+                Vars.maps.reload();
+                Log.info("Map ".concat(mapName, " registered"));
+            }
+            catch (error) {
+                Log.info("Failed to register map ".concat(mapName));
+            }
             return;
         }
-        Log.info("Downloading map update for ".concat(mapName, " ..."));
+        Log.info("Downloading map update for ".concat(mapName));
         //hidious line that just alters the json download to a .msav download
         downloadfile(mapName, file.download_url.substring(0, file.download_url.lastIndexOf('.')) + '.msav', function (success) {
             if (!success) {
-                Log.err("Failed to download map update, attempting rollback...");
+                Log.err("Failed to download map update, attempting rollback");
                 rollback(mapName);
                 return;
             }
-            Log.info("Map Updated ".concat(mapName, "..."));
+            Log.info("Map Updated ".concat(mapName));
         });
     });
 }
@@ -180,22 +193,25 @@ function updatemaps() {
         Log.err("Cannot find map directory for gamemode.");
     }
     Log.info("Update repository : ".concat(config_1.MAP_SOURCE_DIRECTORY).concat(mapSubDir()));
-    Log.info("fetching map list ...");
+    Log.info("fetching map list");
     Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubDir(), function (res) {
+        var e_1, _a;
         //Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
         var responce = res.getResultAsString();
         var listing = JSON.parse(responce);
         var jsonListing = listing.filter(function (file) { return /\.json$/i.test(file.name); });
-        jsonListing.forEach(function (file) {
-            Log.info("Found Map File: ".concat(file.name));
-            updatemap(file);
-        });
         try {
-            Vars.maps.reload();
-            Log.info("Map updating complete");
+            for (var jsonListing_1 = __values(jsonListing), jsonListing_1_1 = jsonListing_1.next(); !jsonListing_1_1.done; jsonListing_1_1 = jsonListing_1.next()) {
+                var file = jsonListing_1_1.value;
+                updatemap(file);
+            }
         }
-        catch (error) {
-            Log.err("failed to register maps");
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (jsonListing_1_1 && !jsonListing_1_1.done && (_a = jsonListing_1.return)) _a.call(jsonListing_1);
+            }
+            finally { if (e_1) throw e_1.error; }
         }
     }, function () {
         Log.err("failed to fetch map list");

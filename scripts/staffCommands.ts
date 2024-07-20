@@ -687,7 +687,7 @@ ${getAntiBotInfo("client")}`
 		requirements: [Req.cooldownGlobal(10_000)],
 		handler({sender}) {
 			logAction(`started a automatic map update`, sender);
-			Call.sendMessage(`[orange]${sender.name} has started a automatic map update.`);
+			Call.sendMessage(`${sender.name}[orange] has started a automatic map update.`);
 			updatemaps();
 		}
 	},
