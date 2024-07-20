@@ -138,12 +138,18 @@ function mapSubDir() {
 }
 //slightly cursed
 function updatemap(file) {
+    if (file.name == "example.json") {
+        return; //ignore example.json
+    }
     if (!/\.json$/i.test(file.name) || !file.download_url) {
         Log.err("".concat(file.name, " is not a valid map json file"));
         return;
     }
-    var oldMapData = readfile(file.name);
-    archive(file.name);
+    var oldMapData = null;
+    if (Vars.customMapDirectory.child(file.name).exists()) {
+        oldMapData = readfile(file.name);
+        archive(file.name);
+    }
     downloadfile(file.name, file.download_url, function (success) {
         if (!success) {
             Log.err("Download ".concat(file.name, " failed, attempting rollback."));
@@ -152,7 +158,7 @@ function updatemap(file) {
         }
         var mapName = file.name.split('.').slice(0, -1).join('.') + '.msav';
         var newMapData = readfile(file.name);
-        if (newMapData.version == oldMapData.version || !file.download_url) {
+        if ((oldMapData && newMapData.version == oldMapData.version) || !file.download_url) {
             Log.info("Map ".concat(mapName, " is up to date"));
             return;
         }
@@ -175,15 +181,22 @@ function updatemaps() {
     }
     Log.info("Update repository : ".concat(config_1.MAP_SOURCE_DIRECTORY).concat(mapSubDir()));
     Log.info("fetching map list ...");
-    Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubDir(), function (res) {
+    //Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
+    Http.get("https://api.github.com/repositories/831037490/contents/survival", function (res) {
+        Log.info("1");
         var responce = res.getResultAsString();
+        Log.info("1");
         var listing = JSON.parse(responce);
+        Log.info("1");
         var jsonListing = listing.filter(function (file) { return /\.json$/i.test(file.name); });
+        Log.info("1");
         jsonListing.forEach(function (file) {
+            Log.info("Found Map File: ".concat(file.name));
             updatemap(file);
         });
         try {
             Vars.maps.reload();
+            Log.info("Map updating complete");
         }
         catch (error) {
             Log.err("failed to register maps");

@@ -56,7 +56,7 @@ interface mapJSON {
     version: number;
     description: string;
     recommendedPlayers: string;
-    scoreMode: string;
+    scoreMode: 'Wave'| 'Time'| 'None';
     score: number;
 }
 
@@ -160,12 +160,18 @@ function mapSubDir():string{
 
 //slightly cursed
 function updatemap(file:GitHubFile){
+    if(file.name == "example.json"){
+        return; //ignore example.json
+    }
     if(!/\.json$/i.test(file.name) || !file.download_url){
         Log.err(`${file.name} is not a valid map json file`)
         return;
     }
-    let oldMapData:mapJSON = readfile<mapJSON>(file.name);
-    archive(file.name);
+    let oldMapData:mapJSON | null = null;
+    if(Vars.customMapDirectory.child(file.name).exists()){
+        oldMapData = readfile<mapJSON>(file.name);
+        archive(file.name);
+    }
     downloadfile(file.name,file.download_url,(success)=> {
         if(!success){
             Log.err(`Download ${file.name} failed, attempting rollback.`)
@@ -174,7 +180,7 @@ function updatemap(file:GitHubFile){
         }
         let mapName = file.name.split('.').slice(0, -1).join('.') + '.msav'
         let newMapData:mapJSON = readfile<mapJSON>(file.name);
-        if(newMapData.version == oldMapData.version || !file.download_url){
+        if((oldMapData && newMapData.version == oldMapData.version)|| !file.download_url){
             Log.info(`Map ${mapName} is up to date`);
             return;
         }
@@ -197,16 +203,22 @@ export function updatemaps(){
     }
     Log.info(`Update repository : ${MAP_SOURCE_DIRECTORY}${mapSubDir()}`)
     Log.info(`fetching map list ...`)
-    Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
+    //Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
+    Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
+        Log.info("1");
         let responce:string = res.getResultAsString();
+        Log.info("1");
         let listing:GitHubFile[] = JSON.parse(responce) as GitHubFile[];
+        Log.info("1");
         let jsonListing = listing.filter(file => /\.json$/i.test(file.name));
-
+        Log.info("1");
         jsonListing.forEach((file) => {
+            Log.info(`Found Map File: ${file.name}`)
             updatemap(file);
         })
         try {
             Vars.maps.reload();
+            Log.info(`Map updating complete`);
         } catch (error) {
             Log.err(`failed to register maps`);
         }
