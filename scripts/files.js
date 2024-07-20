@@ -131,6 +131,9 @@ function updatemap(file) {
 }
 //slightly less cursed
 function updatemaps() {
+    if (!mapSubdiretory()) {
+        Log.err("Cannot find map directory for gamemode.");
+    }
     Log.info("fetching map list ...");
     Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubdiretory(), function (res) {
         var responce = res.getResultAsString();

@@ -156,6 +156,9 @@ function updatemap(file:GitHubFile){
 }
 //slightly less cursed
 export function updatemaps(){
+    if(!mapSubdiretory()){
+        Log.err(`Cannot find map directory for gamemode.`);
+    }
     Log.info(`fetching map list ...`)
     Http.get(MAP_SOURCE_DIRECTORY + mapSubdiretory(), (res) => {
         let responce:string = res.getResultAsString();
