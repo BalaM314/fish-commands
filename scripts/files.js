@@ -164,6 +164,11 @@ function updatemap(file) {
         }
         var mapName = file.name.split('.').slice(0, -1).join('.') + '.msav';
         var newMapData = readfile(file.name);
+        //save persistant data between updates
+        if (oldMapData) {
+            newMapData.score = oldMapData.score;
+            writefile(file.name, newMapData);
+        }
         if ((oldMapData && newMapData.version == oldMapData.version) || !file.download_url) {
             Log.info("Map ".concat(mapName, " is up to date"));
             try {
