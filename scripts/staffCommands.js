@@ -763,12 +763,12 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     deleteMap: {
-        args: ['sure?:boolean', 'map:map'],
+        args: ['sure:boolean?', 'map:map'],
         description: 'Eradicate a map from exsistance (not reversible)',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args;
-            if (!args["sure?"])
+            if (!args.sure)
                 (0, commands_1.fail)("Please type /deletemap yes <mapname> to confirm");
             (0, utils_1.logAction)("map deletion", sender);
             (0, files_1.deleteMap)(args.map);

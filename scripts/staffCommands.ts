@@ -692,11 +692,11 @@ ${getAntiBotInfo("client")}`
 		}
 	},
 	deleteMap:{
-		args: ['sure?:boolean','map:map'],
+		args: ['sure:boolean?','map:map'],
 		description: 'Eradicate a map from exsistance (not reversible)',
 		perm: Perm.admin,
 		handler({sender, args}){
-			if(!args["sure?"]) fail(`Please type /deletemap yes <mapname> to confirm`);
+			if(!args.sure) fail(`Please type /deletemap yes <mapname> to confirm`);
 			logAction(`map deletion`,sender);
 			deleteMap(args.map);		
 		},
