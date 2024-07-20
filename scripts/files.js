@@ -1,4 +1,14 @@
 "use strict";
+/**
+ * Swamps ToDo list
+ * - download maps automaticlly - DONE
+ * - read json info in /map
+ * - write highscores to json
+ * - delete map command
+ * Swamps Maybe List
+ * - allow voting with /map ui
+ * - automaticlly timed updates
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatemaps = exports.saveMapData = exports.getMapData = exports.downloadfile = exports.writefile = exports.readfile = void 0;
 var config_1 = require("./config");
@@ -36,7 +46,13 @@ function downloadfile(filename, url, callback) {
 }
 exports.downloadfile = downloadfile;
 function getMapData(map) {
-    return (readfile(map.file.nameWithoutExtention() + '.json'));
+    try {
+        return readfile(map.file.nameWithoutExtention() + '.json');
+    }
+    catch (error) {
+        Log.err("unable to fetch map data, ".concat(error, "."));
+        return null;
+    }
 }
 exports.getMapData = getMapData;
 function saveMapData(map, mapData) {
@@ -156,6 +172,7 @@ function updatemaps() {
     if (!mapSubdiretory()) {
         Log.err("Cannot find map directory for gamemode.");
     }
+    Log.info("Update repository : ".concat(config_1.MAP_SOURCE_DIRECTORY + mapSubdiretory()));
     Log.info("fetching map list ...");
     Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubdiretory(), function (res) {
         var responce = res.getResultAsString();

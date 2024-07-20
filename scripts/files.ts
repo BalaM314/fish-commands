@@ -1,3 +1,14 @@
+/**
+ * Swamps ToDo list
+ * - download maps automaticlly - DONE
+ * - read json info in /map
+ * - write highscores to json
+ * - delete map command
+ * Swamps Maybe List
+ * - allow voting with /map ui
+ * - automaticlly timed updates
+ */
+
 
 
 import { ARCHIVE_FILE_PATH, ATTACK_SUBDIRECTORY, HEXED_SUBDIRECTORY, MAP_SOURCE_DIRECTORY, Mode, PVP_SUBDIRECTORY, SANDBOX_SUBDIRECTORY, SURVIVAL_SUBDIRECTORY } from "./config";
@@ -46,11 +57,16 @@ interface mapJSON {
     description: string;
     recommendedPlayers: string;
     scoreMode: string;
-    score: string;
+    score: number;
 }
 
-export function getMapData(map:MMap){
-    return(readfile<mapJSON>(map.file.nameWithoutExtention() + '.json'))
+export function getMapData(map:MMap):mapJSON | null{
+    try{
+        return readfile<mapJSON>(map.file.nameWithoutExtention() + '.json')
+    }catch(error){
+        Log.err(`unable to fetch map data, ${error}.`)
+        return null;
+    }
 }
 export function saveMapData(map:MMap, mapData:mapJSON){
     writefile(map.file.nameWithoutExtention() + '.json', mapData);
@@ -179,6 +195,7 @@ export function updatemaps(){
     if(!mapSubdiretory()){
         Log.err(`Cannot find map directory for gamemode.`);
     }
+    Log.info(`Update repository : ${MAP_SOURCE_DIRECTORY+mapSubdiretory()}`)
     Log.info(`fetching map list ...`)
     Http.get(MAP_SOURCE_DIRECTORY + mapSubdiretory(), (res) => {
         let responce:string = res.getResultAsString();

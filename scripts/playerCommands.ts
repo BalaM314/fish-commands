@@ -1,6 +1,7 @@
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { discordURL, FishServers, Mode, rules } from './config';
+import { getMapData } from './files';
 import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
@@ -492,7 +493,46 @@ Available types:[yellow]
 			);
 		},
 	},
-
+	map: {
+		args: ['map:map'],
+		description: 'Displays general information about one of fish\'s maps',
+		perm: Perm.none,
+		handler({args, sender}){
+			if(!args.map.custom){
+				fail(`Custom map not found.`)
+			}
+			let mapinfo = getMapData(args.map);
+			if(!mapinfo){
+				fail(`Cannot fetch map data file. Please report this error.`);
+			}
+			let highscoreMsg;
+			switch(mapinfo.scoreMode){
+				case('Wave'):
+					highscoreMsg = `Wave ${mapinfo.score}`
+					break;
+				case('Time'):
+					highscoreMsg = formatTimeRelative(mapinfo.score);
+					break;
+				default:
+					highscoreMsg = `NaN`;
+					break;
+			}
+			menu(`Information for ${mapinfo.name}`,`
+				[accent]Map Name : []${mapinfo.name}]\n
+				[accent]Author(s) : []${mapinfo.author}\n
+				[accent]Version : []${mapinfo.version}\n
+				[accent]Highscore : []${highscoreMsg}\n
+				[accent]Recommended Players : []${mapinfo.recommendedPlayers}
+				\n
+				[]${mapinfo.description}\n
+				\n
+				`,['Vote for this map', 'Close'], sender, ({option}) => {
+				if(option == 'Vote for this map'){
+					fail(`womp womp, I haven't made that yet`);
+				}
+			})
+		}
+	},
 	rules: {
 		args: ['player:player?'],
 		description: 'Displays the server rules.',

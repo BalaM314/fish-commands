@@ -44,6 +44,7 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
+var files_1 = require("./files");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
@@ -526,6 +527,38 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     .map(function (flag) { return "".concat(flag.prefix, " ").concat(flag.color).concat((0, utils_1.capitalizeText)(flag.name), "[]: ").concat(flag.color).concat(flag.description, "[]\n"); })
                     .join(""));
         },
+    }, map: {
+        args: ['map:map'],
+        description: 'Displays general information about one of fish\'s maps',
+        perm: commands_1.Perm.none,
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender;
+            if (!args.map.custom) {
+                (0, commands_1.fail)("Custom map not found.");
+            }
+            var mapinfo = (0, files_1.getMapData)(args.map);
+            if (!mapinfo) {
+                (0, commands_1.fail)("Cannot fetch map data file. Please report this error.");
+            }
+            var highscoreMsg;
+            switch (mapinfo.scoreMode) {
+                case ('Wave'):
+                    highscoreMsg = "Wave ".concat(mapinfo.score);
+                    break;
+                case ('Time'):
+                    highscoreMsg = (0, utils_1.formatTimeRelative)(mapinfo.score);
+                    break;
+                default:
+                    highscoreMsg = "NaN";
+                    break;
+            }
+            (0, menus_1.menu)("Information for ".concat(mapinfo.name), "\n\t\t\t\t[accent]Map Name : []".concat(mapinfo.name, "]\n\n\t\t\t\t[accent]Author(s) : []").concat(mapinfo.author, "\n\n\t\t\t\t[accent]Version : []").concat(mapinfo.version, "\n\n\t\t\t\t[accent]Highscore : []").concat(highscoreMsg, "\n\n\t\t\t\t[accent]Recommended Players : []").concat(mapinfo.recommendedPlayers, "\n\t\t\t\t\n\n\t\t\t\t[]").concat(mapinfo.description, "\n\n\t\t\t\t\n\n\t\t\t\t"), ['Vote for this map', 'Close'], sender, function (_a) {
+                var option = _a.option;
+                if (option == 'Vote for this map') {
+                    (0, commands_1.fail)("womp womp, I haven't made that yet");
+                }
+            });
+        }
     }, rules: {
         args: ['player:player?'],
         description: 'Displays the server rules.',

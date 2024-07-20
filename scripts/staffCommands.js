@@ -758,9 +758,8 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var sender = _a.sender, outputSuccess = _a.outputSuccess;
             (0, utils_1.logAction)("".concat(sender.name, " has started a map update"));
-            Call.sendMessage("[orange]Starting map updates");
+            Call.sendMessage("[orange]Starting automatic map updates");
             (0, files_1.updatemaps)();
-            Call.sendMessage("[orange]Map update complete");
             outputSuccess("Updated maps, see console for errors.");
         }
     },
