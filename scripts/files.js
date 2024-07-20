@@ -13,6 +13,7 @@ function writefile(filename, data) {
     var file = Vars.customMapDirectory.child(filename);
     var jsonStr = JSON.stringify(data, null, 2);
     file.writeString(jsonStr);
+    //use a fi for move and delete
 }
 exports.writefile = writefile;
 function downloadfile(filename, url, callback) {
@@ -65,7 +66,7 @@ function archive(file) {
     }
 }
 function rollback(file) {
-    var archives = Vars.customMapDirectory.child("/archives");
+    var archives = Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH);
     if (!archives.exists()) {
         Log.err("Cannot find archive directory ".concat(file, "."));
     }
@@ -76,6 +77,27 @@ function rollback(file) {
     }
     catch (error) {
         Log.err("Failed to rollback file ".concat(file, ", ").concat(error));
+    }
+}
+function deleteMap(map) {
+    var filename = map.file.nameWithoutExtention();
+    if (Vars.customMapDirectory.child(filename + '.json').delete() && Vars.customMapDirectory.child(filename + '.msav').delete()) {
+        Log.info("Deleted active copy of ".concat(filename, "."));
+        if (Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).exists()) {
+            if (Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).child(filename + '.json').exists())
+                Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).child(filename + '.json').delete();
+            if (Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).child(filename + '.msav').exists())
+                Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).child(filename + '.msav').delete();
+            Log.info("deleted archive copy of ".concat(filename, "."));
+        }
+        else {
+            Log.warn("no archive directory found.");
+        }
+    }
+    else {
+        Log.err("Failed to delete ".concat(filename, ", attempting rollback..."));
+        rollback(filename + '.json');
+        rollback(filename + '.msav');
     }
 }
 //very cursed

@@ -1,6 +1,6 @@
 
 
-import { ATTACK_SUBDIRECTORY, HEXED_SUBDIRECTORY, MAP_SOURCE_DIRECTORY, Mode, PVP_SUBDIRECTORY, SANDBOX_SUBDIRECTORY, SURVIVAL_SUBDIRECTORY } from "./config";
+import { ARCHIVE_FILE_PATH, ATTACK_SUBDIRECTORY, HEXED_SUBDIRECTORY, MAP_SOURCE_DIRECTORY, Mode, PVP_SUBDIRECTORY, SANDBOX_SUBDIRECTORY, SURVIVAL_SUBDIRECTORY } from "./config";
 
 //#region General I/O
 
@@ -13,6 +13,8 @@ export function writefile(filename:string, data:any){
     let file = Vars.customMapDirectory.child(filename);
     let jsonStr = JSON.stringify(data, null, 2);
     file.writeString(jsonStr);
+
+    //use a fi for move and delete
 }
 
 export function downloadfile(filename:string, url:string, callback:(success:boolean)=>(void)){
@@ -76,7 +78,7 @@ function archive(file:string){
 
 }
 function rollback(file:string){
-    const archives = Vars.customMapDirectory.child("/archives");
+    const archives = Vars.customMapDirectory.child(ARCHIVE_FILE_PATH);
     if(!archives.exists()){
         Log.err(`Cannot find archive directory ${file}.`)
     }
@@ -88,7 +90,25 @@ function rollback(file:string){
         Log.err(`Failed to rollback file ${file}, ${error}`)
     }
 }
+function deleteMap(map:MMap){
+    const filename = map.file.nameWithoutExtention();
+    if(Vars.customMapDirectory.child(filename + '.json').delete() && Vars.customMapDirectory.child(filename + '.msav').delete()){
+        Log.info(`Deleted active copy of ${filename}.`);
+        if(Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).exists()){
+            if(Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.json').exists()) Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.json').delete();
+            if(Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.msav').exists()) Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).child(filename + '.msav').delete();
+            Log.info(`deleted archive copy of ${filename}.`)
 
+        }else{
+            Log.warn(`no archive directory found.`);
+        }
+    }else{
+        Log.err(`Failed to delete ${filename}, attempting rollback...`);
+        rollback(filename + '.json');
+        rollback(filename + '.msav');
+    }
+    
+}
 //#endregion
 //#region Auto-Update
 interface GitHubFile {
