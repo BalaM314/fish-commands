@@ -10,7 +10,7 @@
  * - automaticlly timed updates
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatemaps = exports.saveMapData = exports.getMapData = exports.downloadfile = exports.writefile = exports.readfile = void 0;
+exports.updatemaps = exports.deleteMap = exports.saveMapData = exports.getMapData = exports.downloadfile = exports.writefile = exports.readfile = void 0;
 var config_1 = require("./config");
 //#region General I/O
 function readfile(filename) {
@@ -116,8 +116,9 @@ function deleteMap(map) {
         rollback(filename + '.msav');
     }
 }
+exports.deleteMap = deleteMap;
 //very cursed
-function mapSubdiretory() {
+function mapSubDir() {
     if (config_1.Mode.attack()) {
         return config_1.ATTACK_SUBDIRECTORY;
     }
@@ -169,12 +170,12 @@ function updatemap(file) {
 }
 //slightly less cursed
 function updatemaps() {
-    if (!mapSubdiretory()) {
+    if (!mapSubDir()) {
         Log.err("Cannot find map directory for gamemode.");
     }
-    Log.info("Update repository : ".concat(config_1.MAP_SOURCE_DIRECTORY + mapSubdiretory()));
+    Log.info("Update repository : ".concat(config_1.MAP_SOURCE_DIRECTORY).concat(mapSubDir()));
     Log.info("fetching map list ...");
-    Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubdiretory(), function (res) {
+    Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubDir(), function (res) {
         var responce = res.getResultAsString();
         var listing = JSON.parse(responce);
         var jsonListing = listing.filter(function (file) { return /\.json$/i.test(file.name); });

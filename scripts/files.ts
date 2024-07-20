@@ -106,7 +106,7 @@ function rollback(file:string){
         Log.err(`Failed to rollback file ${file}, ${error}`)
     }
 }
-function deleteMap(map:MMap){
+export function deleteMap(map:MMap){
     const filename = map.file.nameWithoutExtention();
     if(Vars.customMapDirectory.child(filename + '.json').delete() && Vars.customMapDirectory.child(filename + '.msav').delete()){
         Log.info(`Deleted active copy of ${filename}.`);
@@ -139,7 +139,7 @@ interface GitHubFile {
     type: 'file' | 'dir';
 }
 //very cursed
-function mapSubdiretory():string{
+function mapSubDir():string{
     if(Mode.attack()){
         return ATTACK_SUBDIRECTORY;
     }
@@ -192,12 +192,12 @@ function updatemap(file:GitHubFile){
 }
 //slightly less cursed
 export function updatemaps(){
-    if(!mapSubdiretory()){
+    if(!mapSubDir()){
         Log.err(`Cannot find map directory for gamemode.`);
     }
-    Log.info(`Update repository : ${MAP_SOURCE_DIRECTORY+mapSubdiretory()}`)
+    Log.info(`Update repository : ${MAP_SOURCE_DIRECTORY}${mapSubDir()}`)
     Log.info(`fetching map list ...`)
-    Http.get(MAP_SOURCE_DIRECTORY + mapSubdiretory(), (res) => {
+    Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
         let responce:string = res.getResultAsString();
         let listing:GitHubFile[] = JSON.parse(responce) as GitHubFile[];
         let jsonListing = listing.filter(file => /\.json$/i.test(file.name));

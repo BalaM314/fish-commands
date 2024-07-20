@@ -756,12 +756,23 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.admin,
         requirements: [commands_1.Req.cooldownGlobal(10000)],
         handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess;
-            (0, utils_1.logAction)("".concat(sender.name, " has started a map update"));
+            var sender = _a.sender;
+            (0, utils_1.logAction)("started a automatic map update", sender);
             Call.sendMessage("[orange]Starting automatic map updates");
             (0, files_1.updatemaps)();
-            outputSuccess("Updated maps, see console for errors.");
         }
+    },
+    deleteMap: {
+        args: ['sure?:boolean', 'map:map'],
+        description: 'Eradicate a map from exsistance (not reversible)',
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var sender = _a.sender, args = _a.args;
+            if (!args["sure?"])
+                (0, commands_1.fail)("Please type /deletemap yes <mapname> to confirm");
+            (0, utils_1.logAction)("map deletion", sender);
+            (0, files_1.deleteMap)(args.map);
+        },
     },
     search: {
         args: ["input:string"],

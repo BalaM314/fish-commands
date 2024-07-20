@@ -1,7 +1,7 @@
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
 import { Mode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
-import { updatemaps } from "./files";
+import { deleteMap, updatemaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
@@ -685,12 +685,21 @@ ${getAntiBotInfo("client")}`
 		description: 'Check the online repository for map updates',
 		perm: Perm.admin,
 		requirements: [Req.cooldownGlobal(10_000)],
-		handler:({sender, outputSuccess}) => {
-			logAction(`${sender.name} has started a map update`);
+		handler({sender}) {
+			logAction(`started a automatic map update`, sender);
 			Call.sendMessage(`[orange]Starting automatic map updates`);
 			updatemaps();
-			outputSuccess(`Updated maps, see console for errors.`)
 		}
+	},
+	deleteMap:{
+		args: ['sure?:boolean','map:map'],
+		description: 'Eradicate a map from exsistance (not reversible)',
+		perm: Perm.admin,
+		handler({sender, args}){
+			if(!args["sure?"]) fail(`Please type /deletemap yes <mapname> to confirm`);
+			logAction(`map deletion`,sender);
+			deleteMap(args.map);		
+		},
 	},
 	search: {
 		args: ["input:string"],
