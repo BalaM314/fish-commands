@@ -62,14 +62,14 @@ interface mapJSON {
 
 export function getMapData(map:MMap):mapJSON | null{
     try{
-        return readfile<mapJSON>(map.file.nameWithoutExtention() + '.json')
+        return readfile<mapJSON>(map.file.nameWithoutExtension() + '.json')
     }catch(error){
         Log.err(`unable to fetch map data, ${error}.`)
         return null;
     }
 }
 export function saveMapData(map:MMap, mapData:mapJSON){
-    writefile(map.file.nameWithoutExtention() + '.json', mapData);
+    writefile(map.file.nameWithoutExtension() + '.json', mapData);
 }
 
 function archive(file:string){
@@ -107,7 +107,7 @@ function rollback(file:string){
     }
 }
 export function deleteMap(map:MMap){
-    const filename = map.file.nameWithoutExtention();
+    const filename = map.file.nameWithoutExtension();
     if(Vars.customMapDirectory.child(filename + '.json').delete() && Vars.customMapDirectory.child(filename + '.msav').delete()){
         Log.info(`Deleted active copy of ${filename}.`);
         if(Vars.customMapDirectory.child(ARCHIVE_FILE_PATH).exists()){
@@ -203,15 +203,11 @@ export function updatemaps(){
     }
     Log.info(`Update repository : ${MAP_SOURCE_DIRECTORY}${mapSubDir()}`)
     Log.info(`fetching map list ...`)
-    //Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
-    Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
-        Log.info("1");
+    Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
+    //Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
         let responce:string = res.getResultAsString();
-        Log.info("1");
         let listing:GitHubFile[] = JSON.parse(responce) as GitHubFile[];
-        Log.info("1");
         let jsonListing = listing.filter(file => /\.json$/i.test(file.name));
-        Log.info("1");
         jsonListing.forEach((file) => {
             Log.info(`Found Map File: ${file.name}`)
             updatemap(file);

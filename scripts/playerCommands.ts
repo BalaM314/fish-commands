@@ -530,7 +530,7 @@ Available types:[yellow]
 				if(option == 'Vote for this map'){
 					fail(`womp womp, I haven't made that yet`);
 				}
-			})
+			}, false);
 		}
 	},
 	rules: {

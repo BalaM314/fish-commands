@@ -47,7 +47,7 @@ function downloadfile(filename, url, callback) {
 exports.downloadfile = downloadfile;
 function getMapData(map) {
     try {
-        return readfile(map.file.nameWithoutExtention() + '.json');
+        return readfile(map.file.nameWithoutExtension() + '.json');
     }
     catch (error) {
         Log.err("unable to fetch map data, ".concat(error, "."));
@@ -56,7 +56,7 @@ function getMapData(map) {
 }
 exports.getMapData = getMapData;
 function saveMapData(map, mapData) {
-    writefile(map.file.nameWithoutExtention() + '.json', mapData);
+    writefile(map.file.nameWithoutExtension() + '.json', mapData);
 }
 exports.saveMapData = saveMapData;
 function archive(file) {
@@ -96,7 +96,7 @@ function rollback(file) {
     }
 }
 function deleteMap(map) {
-    var filename = map.file.nameWithoutExtention();
+    var filename = map.file.nameWithoutExtension();
     if (Vars.customMapDirectory.child(filename + '.json').delete() && Vars.customMapDirectory.child(filename + '.msav').delete()) {
         Log.info("Deleted active copy of ".concat(filename, "."));
         if (Vars.customMapDirectory.child(config_1.ARCHIVE_FILE_PATH).exists()) {
@@ -181,15 +181,11 @@ function updatemaps() {
     }
     Log.info("Update repository : ".concat(config_1.MAP_SOURCE_DIRECTORY).concat(mapSubDir()));
     Log.info("fetching map list ...");
-    //Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
-    Http.get("https://api.github.com/repositories/831037490/contents/survival", function (res) {
-        Log.info("1");
+    Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubDir(), function (res) {
+        //Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
         var responce = res.getResultAsString();
-        Log.info("1");
         var listing = JSON.parse(responce);
-        Log.info("1");
         var jsonListing = listing.filter(function (file) { return /\.json$/i.test(file.name); });
-        Log.info("1");
         jsonListing.forEach(function (file) {
             Log.info("Found Map File: ".concat(file.name));
             updatemap(file);

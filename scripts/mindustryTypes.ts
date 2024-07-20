@@ -391,7 +391,7 @@ class Fi {
 	mkdirs():boolean
 	moveTo(dest:Fi):void
 	name():string;
-	nameWithoutExtention():string;
+	nameWithoutExtension():string;
 	readString():string;
 	writeBytes(bytes:number[], append?:boolean):void;
 	writeString(string:string):void

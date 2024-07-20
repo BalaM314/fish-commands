@@ -557,7 +557,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 if (option == 'Vote for this map') {
                     (0, commands_1.fail)("womp womp, I haven't made that yet");
                 }
-            });
+            }, false);
         }
     }, rules: {
         args: ['player:player?'],
