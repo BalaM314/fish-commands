@@ -1,9 +1,7 @@
 "use strict";
 /**
  * Swamps Todo list
- * - Highscore storage
  * - Vote with /map
- * - Test this implementation with all fish maps
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatemaps = exports.deleteMap = exports.saveMapData = exports.getMapData = exports.downloadfile = exports.writefile = exports.readfile = void 0;

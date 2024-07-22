@@ -1,8 +1,6 @@
 /**
  * Swamps Todo list
- * - Highscore storage
  * - Vote with /map
- * - Test this implementation with all fish maps
  */
 
 

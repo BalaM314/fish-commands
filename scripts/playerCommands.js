@@ -555,7 +555,23 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             (0, menus_1.menu)("Information for ".concat(mapinfo.name), "\n\t\t\t\t[accent]Map Name : []".concat(mapinfo.name, "]\n\n\t\t\t\t[accent]Author(s) : []").concat(mapinfo.author, "\n\n\t\t\t\t[accent]Version : []").concat(mapinfo.version, "\n\n\t\t\t\t[accent]Highscore : []").concat(highscoreMsg, "\n\n\t\t\t\t[accent]Recommended Players : []").concat(mapinfo.recommendedPlayers, "\n\t\t\t\t\n\n\t\t\t\t[]").concat(mapinfo.description, "\n\n\t\t\t\t"), ['Vote for this map', 'Close'], sender, function (_a) {
                 var option = _a.option;
                 if (option == 'Vote for this map') {
-                    (0, commands_1.fail)("womp womp, I haven't made that yet");
+                    var votes = commands_1.allCommands.nextmap.data.votes;
+                    //bootleg /nextmap
+                    if (config_1.Mode.hexed())
+                        (0, commands_1.fail)("This command is disabled in Hexed.");
+                    if (votes.get(sender))
+                        (0, commands_1.fail)("You have already voted.");
+                    votes.set(sender, args.map);
+                    if (commands_1.allCommands.nextmap.data.voteEndTime() == -1) {
+                        if ((Date.now() - commands_1.allCommands.nextmap.data.lastVoteTime) < 60000)
+                            (0, commands_1.fail)("Please wait 1 minute before starting a new map vote.");
+                        commands_1.allCommands.nextmap.data.startVote();
+                        Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(args.map.name(), "[cyan]. Use /nextmap ").concat(args.map.plainName(), " to add your vote!"));
+                    }
+                    else {
+                        Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(args.map.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(commands_1.allCommands.nextmap.data.voteEndTime(), true)));
+                        commands_1.allCommands.nextmap.data.showVotes();
+                    }
                 }
             }, false);
         }
@@ -841,7 +857,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             args: ['map:map'],
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
-            data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
+            data: { votes: votes, voteEndTime: function () { return voteEndTime; }, startVote: startVote, resetVotes: resetVotes, endVote: endVote, showVotes: showVotes, lastVoteTime: lastVoteTime },
             requirements: [commands_1.Req.cooldown(10000)],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;

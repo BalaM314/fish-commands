@@ -1,5 +1,5 @@
 import * as api from './api';
-import { command, commandList, fail, formatArg, Perm, Req } from './commands';
+import { allCommands, command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { discordURL, FishServers, Mode, rules } from './config';
 import { getMapData } from './files';
 import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
@@ -527,7 +527,19 @@ Available types:[yellow]
 				[]${mapinfo.description}\n
 				`,['Vote for this map', 'Close'], sender, ({option}) => {
 				if(option == 'Vote for this map'){
-					fail(`womp womp, I haven't made that yet`);
+				let votes = allCommands.nextmap.data.votes;
+				//bootleg /nextmap
+				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
+				if(votes.get(sender)) fail(`You have already voted.`);
+				votes.set(sender, args.map);
+				if(allCommands.nextmap.data.voteEndTime() == -1){
+					if((Date.now() - allCommands.nextmap.data.lastVoteTime) < 60_000) fail(`Please wait 1 minute before starting a new map vote.`);
+					allCommands.nextmap.data.startVote();
+					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${args.map.name()}[cyan]. Use /nextmap ${args.map.plainName()} to add your vote!`);
+				} else {
+					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${args.map.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(allCommands.nextmap.data.voteEndTime(), true)}`);
+					allCommands.nextmap.data.showVotes();
+				}
 				}
 			}, false);
 		}
@@ -843,7 +855,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			args: ['map:map'],
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
-			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
+			data: {votes, voteEndTime: () => voteEndTime,startVote, resetVotes, endVote, showVotes, lastVoteTime},
 			requirements: [Req.cooldown(10000)],
 			handler({args:{map}, sender}){
 				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
