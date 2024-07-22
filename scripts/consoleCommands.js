@@ -707,5 +707,12 @@ exports.commands = (0, commands_1.consoleCommandList)({
             (0, files_1.deleteMap)(args.map);
         }
     },
+    scanmaps: {
+        args: [],
+        description: 'scan for newly added maps',
+        handler: function () {
+            Vars.maps.reload();
+        }
+    }
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7;

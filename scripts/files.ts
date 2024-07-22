@@ -183,7 +183,6 @@ function updatemap(file:GitHubFile){
         if((oldMapData && newMapData.version == oldMapData.version)|| !file.download_url){
             Log.info(`Map ${mapName} is up to date`);
             try{
-                Vars.maps.reload()
                 Log.info(`Map ${mapName} registered`);
             }catch(error){
                 Log.info(`Failed to register map ${mapName}`);
@@ -195,6 +194,8 @@ function updatemap(file:GitHubFile){
         downloadfile(mapName,file.download_url.substring(0, file.download_url.lastIndexOf('.')) + '.msav', (success)=> {
             if(!success){
                 Log.err(`Failed to download map update, attempting rollback`);
+                newMapData.version = 0;//
+                writefile(file.name, newMapData);
                 rollback(mapName);
                 return;
             }
@@ -222,4 +223,23 @@ export function updatemaps(){
     })
     return;
 }
+//#endregion
+//#region Save Map Highscores
+Events.on(EventType.GameOverEvent, () => {
+    let mdata = getMapData(Vars.state.map);
+    if(!mdata) return;
+    switch(mdata.scoreMode){
+        case "Wave":
+            let newScore = Vars.state.wave;
+            if(newScore > mdata.score) mdata.score = newScore;
+            saveMapData(Vars.state.map, mdata);
+            break;
+        case "Time":
+            mdata.score = Vars.state.map.getHightScore()
+            saveMapData(Vars.state.map, mdata);
+            break;
+        default:
+            break;
+    }
+});
 //#endregion

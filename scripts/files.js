@@ -172,7 +172,6 @@ function updatemap(file) {
         if ((oldMapData && newMapData.version == oldMapData.version) || !file.download_url) {
             Log.info("Map ".concat(mapName, " is up to date"));
             try {
-                Vars.maps.reload();
                 Log.info("Map ".concat(mapName, " registered"));
             }
             catch (error) {
@@ -185,6 +184,8 @@ function updatemap(file) {
         downloadfile(mapName, file.download_url.substring(0, file.download_url.lastIndexOf('.')) + '.msav', function (success) {
             if (!success) {
                 Log.err("Failed to download map update, attempting rollback");
+                newMapData.version = 0; //
+                writefile(file.name, newMapData);
                 rollback(mapName);
                 return;
             }
@@ -224,4 +225,25 @@ function updatemaps() {
     return;
 }
 exports.updatemaps = updatemaps;
+//#endregion
+//#region Save Map Highscores
+Events.on(EventType.GameOverEvent, function () {
+    var mdata = getMapData(Vars.state.map);
+    if (!mdata)
+        return;
+    switch (mdata.scoreMode) {
+        case "Wave":
+            var newScore = Vars.state.wave;
+            if (newScore > mdata.score)
+                mdata.score = newScore;
+            saveMapData(Vars.state.map, mdata);
+            break;
+        case "Time":
+            mdata.score = Vars.state.map.getHightScore();
+            saveMapData(Vars.state.map, mdata);
+            break;
+        default:
+            break;
+    }
+});
 //#endregion

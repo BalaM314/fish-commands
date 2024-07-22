@@ -602,4 +602,11 @@ ${FishPlayer.mapPlayers(p =>
 			deleteMap(args.map)
 		}
 	},
+	scanmaps:{
+		args: [],
+		description: 'scan for newly added maps',
+		handler(){
+			Vars.maps.reload();
+		}
+	}
 });

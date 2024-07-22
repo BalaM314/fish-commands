@@ -504,6 +504,7 @@ class MMap {
 	plainName():string;
 	plainAuthor():string;
 	plainDescription():string;
+	getHightScore():number;
 }
 
 class Sort {
