@@ -104,6 +104,7 @@ function deleteMap(map) {
         else {
             Log.warn("No archive directory found.");
         }
+        Vars.maps.reload();
     }
     else {
         Log.err("Failed to delete ".concat(filename, ", attempting rollback"));

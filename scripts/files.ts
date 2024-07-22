@@ -113,6 +113,7 @@ export function deleteMap(map:MMap){
         }else{
             Log.warn(`No archive directory found.`);
         }
+        Vars.maps.reload();
     }else{
         Log.err(`Failed to delete ${filename}, attempting rollback`);
         rollback(filename + '.json');
