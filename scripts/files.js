@@ -5,17 +5,6 @@
  * - Vote with /map
  * - Test this implementation with all fish maps
  */
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatemaps = exports.deleteMap = exports.saveMapData = exports.getMapData = exports.downloadfile = exports.writefile = exports.readfile = void 0;
 var config_1 = require("./config");
@@ -140,15 +129,29 @@ function mapSubDir() {
     if (config_1.Mode.sandbox()) {
         return config_1.SANDBOX_SUBDIRECTORY;
     }
-    return "";
+    return null;
+}
+//recursive to avoid async hell 
+function mapUpdater(jsonListings, index, callback) {
+    if (index >= jsonListings.length) {
+        callback();
+        return;
+    }
+    else {
+        updatemap(jsonListings[index], function (success) {
+            mapUpdater(jsonListings, index + 1, callback);
+        });
+    }
 }
 //slightly cursed
-function updatemap(file) {
+function updatemap(file, callback) {
     if (file.name == "example.json") {
+        callback(true);
         return; //ignore example.json
     }
     if (!/\.json$/i.test(file.name) || !file.download_url) {
         Log.err("".concat(file.name, " is not a valid map json file"));
+        callback(true);
         return;
     }
     var oldMapData = null;
@@ -160,6 +163,7 @@ function updatemap(file) {
         if (!success) {
             Log.err("Download ".concat(file.name, " failed, attempting rollback."));
             rollback(file.name);
+            callback(false);
             return;
         }
         var mapName = file.name.split('.').slice(0, -1).join('.') + '.msav';
@@ -169,14 +173,14 @@ function updatemap(file) {
             newMapData.score = oldMapData.score;
             writefile(file.name, newMapData);
         }
-        if ((oldMapData && newMapData.version == oldMapData.version) || !file.download_url) {
+        if (oldMapData && newMapData.version == oldMapData.version && oldMapData.version != 0) {
             Log.info("Map ".concat(mapName, " is up to date"));
-            try {
-                Log.info("Map ".concat(mapName, " registered"));
-            }
-            catch (error) {
-                Log.info("Failed to register map ".concat(mapName));
-            }
+            callback(true);
+            return;
+        }
+        if (!file.download_url) {
+            Log.err("Map ".concat(mapName, " download url not found"));
+            callback(false);
             return;
         }
         Log.info("Downloading map update for ".concat(mapName));
@@ -187,38 +191,39 @@ function updatemap(file) {
                 newMapData.version = 0; //
                 writefile(file.name, newMapData);
                 rollback(mapName);
+                callback(false);
                 return;
             }
             Log.info("Map Updated ".concat(mapName));
+            callback(true);
+            return;
         });
     });
 }
 //slightly less cursed
 function updatemaps() {
+    Call.sendMessage("[orange]Automated map updating has started.");
     if (!mapSubDir()) {
         Log.err("Cannot find map directory for gamemode.");
     }
     Log.info("Update repository : ".concat(config_1.MAP_SOURCE_DIRECTORY).concat(mapSubDir()));
     Log.info("fetching map list");
     Http.get(config_1.MAP_SOURCE_DIRECTORY + mapSubDir(), function (res) {
-        var e_1, _a;
         //Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
         var responce = res.getResultAsString();
         var listing = JSON.parse(responce);
         var jsonListing = listing.filter(function (file) { return /\.json$/i.test(file.name); });
-        try {
-            for (var jsonListing_1 = __values(jsonListing), jsonListing_1_1 = jsonListing_1.next(); !jsonListing_1_1.done; jsonListing_1_1 = jsonListing_1.next()) {
-                var file = jsonListing_1_1.value;
-                updatemap(file);
-            }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
+        mapUpdater(jsonListing, 0, function () {
+            Log.info("Map downloading complete");
             try {
-                if (jsonListing_1_1 && !jsonListing_1_1.done && (_a = jsonListing_1.return)) _a.call(jsonListing_1);
+                Vars.maps.reload();
+                Log.info("Map updating complete");
+                Call.sendMessage("[orange]Automatic map updates completed");
             }
-            finally { if (e_1) throw e_1.error; }
-        }
+            catch (error) {
+                Log.err("Failed to register 1 or more maps, \n ".concat(error));
+            }
+        });
     }, function () {
         Log.err("failed to fetch map list");
     });

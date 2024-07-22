@@ -134,7 +134,7 @@ interface GitHubFile {
     type: 'file' | 'dir';
 }
 //very cursed
-function mapSubDir():string{
+function mapSubDir():string | null{
     if(Mode.attack()){
         return ATTACK_SUBDIRECTORY;
     }
@@ -150,16 +150,30 @@ function mapSubDir():string{
     if(Mode.sandbox()){
         return SANDBOX_SUBDIRECTORY;
     }
-    return "";
+    return null;
+}
+
+//recursive to avoid async hell 
+function mapUpdater(jsonListings: GitHubFile[], index: number, callback: () => void) {
+    if (index >= jsonListings.length) {
+        callback();
+        return;
+    } else {
+        updatemap(jsonListings[index], (success) => {
+            mapUpdater(jsonListings, index + 1, callback);
+        });
+    }
 }
 
 //slightly cursed
-function updatemap(file:GitHubFile){
+function updatemap(file:GitHubFile, callback:(success:boolean) => (void)){
     if(file.name == "example.json"){
+        callback(true);
         return; //ignore example.json
     }
     if(!/\.json$/i.test(file.name) || !file.download_url){
         Log.err(`${file.name} is not a valid map json file`)
+        callback(true);
         return;
     }
     let oldMapData:mapJSON | null = null;
@@ -171,6 +185,7 @@ function updatemap(file:GitHubFile){
         if(!success){
             Log.err(`Download ${file.name} failed, attempting rollback.`)
             rollback(file.name);
+            callback(false);
             return;
         }
         let mapName = file.name.split('.').slice(0, -1).join('.') + '.msav'
@@ -180,13 +195,14 @@ function updatemap(file:GitHubFile){
             newMapData.score = oldMapData.score;
             writefile(file.name, newMapData);
         }
-        if((oldMapData && newMapData.version == oldMapData.version)|| !file.download_url){
+        if(oldMapData && newMapData.version == oldMapData.version && oldMapData.version != 0){
             Log.info(`Map ${mapName} is up to date`);
-            try{
-                Log.info(`Map ${mapName} registered`);
-            }catch(error){
-                Log.info(`Failed to register map ${mapName}`);
-            }
+            callback(true);
+            return;
+        }
+        if(!file.download_url){
+            Log.err(`Map ${mapName} download url not found`);
+            callback(false);
             return;
         }
         Log.info(`Downloading map update for ${mapName}`)
@@ -197,14 +213,18 @@ function updatemap(file:GitHubFile){
                 newMapData.version = 0;//
                 writefile(file.name, newMapData);
                 rollback(mapName);
+                callback(false);
                 return;
             }
             Log.info(`Map Updated ${mapName}`);
+            callback(true);
+            return;
         });
     });
 }
 //slightly less cursed
 export function updatemaps(){
+    Call.sendMessage(`[orange]Automated map updating has started.`);
     if(!mapSubDir()){
         Log.err(`Cannot find map directory for gamemode.`);
     }
@@ -215,9 +235,16 @@ export function updatemaps(){
         let responce:string = res.getResultAsString();
         let listing:GitHubFile[] = JSON.parse(responce) as GitHubFile[];
         let jsonListing = listing.filter(file => /\.json$/i.test(file.name));
-        for(const file of jsonListing){
-            updatemap(file);
+        mapUpdater(jsonListing,0, () => {
+            Log.info(`Map downloading complete`)
+        try{
+            Vars.maps.reload();
+            Log.info(`Map updating complete`);
+            Call.sendMessage(`[orange]Automatic map updates completed`);
+        }catch(error){
+            Log.err(`Failed to register 1 or more maps, \n ${error}`);
         }
+        });
     }, () => {
         Log.err(`failed to fetch map list`);
     })
