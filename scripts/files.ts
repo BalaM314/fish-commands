@@ -1,9 +1,3 @@
-/**
- * Swamps Todo list
- * - Vote with /map
- */
-
-
 
 import { ARCHIVE_FILE_PATH, ATTACK_SUBDIRECTORY, HEXED_SUBDIRECTORY, MAP_SOURCE_DIRECTORY, Mode, PVP_SUBDIRECTORY, SANDBOX_SUBDIRECTORY, SURVIVAL_SUBDIRECTORY } from "./config";
 
@@ -18,8 +12,6 @@ export function writefile(filename:string, data:any){
     let file = Vars.customMapDirectory.child(filename);
     let jsonStr = JSON.stringify(data, null, 2);
     file.writeString(jsonStr);
-
-    //use a fi for move and delete
 }
 
 export function downloadfile(filename:string, url:string, callback:(success:boolean)=>(void)){
@@ -132,7 +124,7 @@ interface GitHubFile {
     download_url: string | null;
     type: 'file' | 'dir';
 }
-//very cursed
+
 function mapSubDir():string | null{
     if(Mode.attack()){
         return ATTACK_SUBDIRECTORY;
@@ -151,8 +143,7 @@ function mapSubDir():string | null{
     }
     return null;
 }
-
-//recursive to avoid async hell 
+ 
 function mapUpdater(jsonListings: GitHubFile[], index: number, callback: () => void) {
     if (index >= jsonListings.length) {
         callback();
@@ -164,7 +155,6 @@ function mapUpdater(jsonListings: GitHubFile[], index: number, callback: () => v
     }
 }
 
-//slightly cursed
 function updatemap(file:GitHubFile, callback:(success:boolean) => (void)){
     if(file.name == "example.json"){
         callback(true);
@@ -194,6 +184,7 @@ function updatemap(file:GitHubFile, callback:(success:boolean) => (void)){
             newMapData.score = oldMapData.score;
             writefile(file.name, newMapData);
         }
+        //check if update is needed
         if(oldMapData && newMapData.version == oldMapData.version && oldMapData.version != 0){
             Log.info(`Map ${mapName} is up to date`);
             callback(true);
@@ -221,7 +212,7 @@ function updatemap(file:GitHubFile, callback:(success:boolean) => (void)){
         });
     });
 }
-//slightly less cursed
+
 export function updatemaps(){
     Call.sendMessage(`[orange]Automated map updating has started.`);
     if(!mapSubDir()){
@@ -230,7 +221,6 @@ export function updatemaps(){
     Log.info(`Update repository : ${MAP_SOURCE_DIRECTORY}${mapSubDir()}`)
     Log.info(`fetching map list`)
     Http.get(MAP_SOURCE_DIRECTORY + mapSubDir(), (res) => {
-    //Http.get("https://api.github.com/repositories/831037490/contents/survival", (res) => {
         let responce:string = res.getResultAsString();
         let listing:GitHubFile[] = JSON.parse(responce) as GitHubFile[];
         let jsonListing = listing.filter(file => /\.json$/i.test(file.name));

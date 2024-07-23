@@ -1,8 +1,4 @@
 "use strict";
-/**
- * Swamps Todo list
- * - Vote with /map
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatemaps = exports.deleteMap = exports.saveMapData = exports.getMapData = exports.downloadfile = exports.writefile = exports.readfile = void 0;
 var config_1 = require("./config");
