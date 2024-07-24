@@ -2,11 +2,12 @@ import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
 import { Mode, maxTime } from "./config";
+import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
+import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getColor, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
 
 
 export const commands = consoleCommandList({
@@ -580,6 +581,22 @@ ${FishPlayer.mapPlayers(p =>
 				Vars.maps.reload();
 				outputSuccess(`Successfully loaded the map. Please check for duplicates.`);
 			}, () => outputFail(`Download failed`));
+		},
+	},
+	updateMaps: {
+		args: [],
+		description: 'Attempt to fetch and update all map files',
+		handler(){
+			Call.sendMessage(`[orange]Map updates have started.`)
+			updateMaps((success) => {
+				if(success) {
+					Vars.maps.reload();
+					Log.info(`Map updates complete.`);
+				}
+				else {
+					Log.err(`Map update fail, check logs.`);
+				}
+			});
 		},
 	},
 });

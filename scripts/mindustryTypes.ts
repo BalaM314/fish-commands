@@ -281,7 +281,16 @@ class HttpRequest {
 }
 class HttpResponse {
 	getResultAsString():string;
+	getResultAsStream():InputStream
 	getResult():number[];
+}
+class InputStream {
+	close():void;
+	transferTo(outputsteam:OutputStream):number;
+
+}
+class OutputStream {
+	close():void;
 }
 const Http: {
 	post(url:string, content:string):HttpRequest;
@@ -389,6 +398,11 @@ class Fi {
 	absolutePath():string;
 	writeBytes(bytes:number[], append?:boolean):void;
 	static tempFile(prefix:string):Fi;
+	delete():boolean;
+	length():number;
+	write():OutputStream;
+	list():Fi[];
+	name():string;
 }
 
 class Pattern {

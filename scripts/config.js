@@ -16,7 +16,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.sandboxMapURL = exports.hexedMapURL = exports.pvpMapURL = exports.survivalMapURL = exports.attackMapURL = exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
@@ -214,3 +214,9 @@ exports.heuristics = {
     blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };
 exports.stopAntiEvadeTime = 1800000; //30 minutes
+//seperated repository urls so we could (if we wanted to) split the repository by map type
+exports.attackMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/attack";
+exports.survivalMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/survival";
+exports.pvpMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/pvp";
+exports.hexedMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hexed";
+exports.sandboxMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/sandbox";

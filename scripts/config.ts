@@ -207,3 +207,10 @@ export const heuristics = {
 	blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
 };
 export const stopAntiEvadeTime = 1800000; //30 minutes
+
+//seperated repository urls so we could (if we wanted to) split the repository by map type
+export const attackMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/attack";
+export const survivalMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/survival";
+export const pvpMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/pvp";
+export const hexedMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hexed";
+export const sandboxMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/sandbox";

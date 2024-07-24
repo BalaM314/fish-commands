@@ -1,6 +1,7 @@
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
 import { Mode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
+import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
@@ -660,6 +661,26 @@ ${getAntiBotInfo("client")}`
 			}
 		};
 	}),
+	updatemaps:{
+		args: [],
+		description: 'Attempt to fetch and update all map files',
+		perm: Perm.admin,
+		handler({sender}){
+			logAction(`Started map update`, sender);
+			Call.sendMessage(`${sender.name}[orange] has triggered a automatic map update.`);
+			updateMaps((success) => {
+				if(success) {
+					Call.sendMessage(`[orange]Map update completed.`);
+					Vars.maps.reload();
+					Log.info(`Map updates complete.`);
+				}
+				else {
+					Call.sendMessage(`[#FF]Map update failed. Please report this to staff.`);
+					Log.err(`Map update fail, check logs.`);
+				}
+			});
+		}
+	},
 	clearfire: {
 		args: [],
 		description: "Clears all the fires.",

@@ -44,6 +44,7 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
+var files_1 = require("./files");
 var fjsContext = require("./fjsContext");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -729,6 +730,27 @@ exports.commands = (0, commands_1.commandList)({
             }
         };
     }),
+    updatemaps: {
+        args: [],
+        description: 'Attempt to fetch and update all map files',
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var sender = _a.sender;
+            (0, utils_1.logAction)("Started map update", sender);
+            Call.sendMessage("".concat(sender.name, "[orange] has triggered a automatic map update."));
+            (0, files_1.updateMaps)(function (success) {
+                if (success) {
+                    Call.sendMessage("[orange]Map update completed.");
+                    Vars.maps.reload();
+                    Log.info("Map updates complete.");
+                }
+                else {
+                    Call.sendMessage("[#FF]Map update failed. Please report this to staff.");
+                    Log.err("Map update fail, check logs.");
+                }
+            });
+        }
+    },
     clearfire: {
         args: [],
         description: "Clears all the fires.",
