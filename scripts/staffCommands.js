@@ -745,7 +745,6 @@ exports.commands = (0, commands_1.commandList)({
                     Log.info("Map updates complete.");
                 }
                 else {
-                    Call.sendMessage("[#FF]Map update failed. Please report this to staff.");
                     Log.err("Map update fail, check logs.");
                 }
             });

@@ -675,7 +675,6 @@ ${getAntiBotInfo("client")}`
 					Log.info(`Map updates complete.`);
 				}
 				else {
-					Call.sendMessage(`[#FF]Map update failed. Please report this to staff.`);
 					Log.err(`Map update fail, check logs.`);
 				}
 			});

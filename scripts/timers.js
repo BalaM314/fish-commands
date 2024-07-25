@@ -15,6 +15,7 @@ exports.initializeTimers = void 0;
 var api_1 = require("./api");
 var config = require("./config");
 var config_1 = require("./config");
+var files_1 = require("./files");
 var globals_1 = require("./globals");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
@@ -107,3 +108,17 @@ function initializeTimers() {
     }, 0, 0.5);
 }
 exports.initializeTimers = initializeTimers;
+Timer.schedule(function () {
+    Call.sendMessage("[orange]Automated map updates have started.");
+    (0, files_1.updateMaps)(function (success) {
+        if (success) {
+            Vars.maps.reload();
+            Log.info("Automated map updates complete.");
+            Call.sendMessage("[orange]Automated map updates have completed.");
+        }
+        else {
+            Log.err("Automated map update fail, check logs.");
+            Call.sendMessage("[orange]Automated map updates have failed. Please report this to staff.");
+        }
+    });
+}, 60, 1800, 0);
