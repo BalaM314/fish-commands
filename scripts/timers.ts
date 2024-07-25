@@ -94,4 +94,4 @@ Timer.schedule(() => {
 					Call.sendMessage(`[orange]Automated map updates have failed. Please report this to staff.`)
 				}
 			});
-}, 60, 1800, 0)
+}, 60, 1800)
