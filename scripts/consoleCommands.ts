@@ -276,10 +276,12 @@ export const commands = consoleCommandList({
 		}
 	},
 	"subnet-ban": {
-		args: ["any:string?", "any:string?"],
+		args: ["any:string?", "anyb:string?"],
 		description: "Please use the whack and unwhack commands instead.",
-		handler(){
-			fail(`Use the whack and unwhack commands instead.`);
+		handler({args, output, admins}){
+			if(args.any) fail(`Use the whack and unwhack commands instead.`);
+			output(`List of all subnet bans:`);
+			output(admins.subnetBans.toString("\n"));
 		}
 	},
 	loadfishplayerdata: {

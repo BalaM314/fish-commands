@@ -357,10 +357,14 @@ exports.commands = (0, commands_1.consoleCommandList)({
         }
     },
     "subnet-ban": {
-        args: ["any:string?", "any:string?"],
+        args: ["any:string?", "anyb:string?"],
         description: "Please use the whack and unwhack commands instead.",
-        handler: function () {
-            (0, commands_1.fail)("Use the whack and unwhack commands instead.");
+        handler: function (_a) {
+            var args = _a.args, output = _a.output, admins = _a.admins;
+            if (args.any)
+                (0, commands_1.fail)("Use the whack and unwhack commands instead.");
+            output("List of all subnet bans:");
+            output(admins.subnetBans.toString("\n"));
         }
     },
     loadfishplayerdata: {
