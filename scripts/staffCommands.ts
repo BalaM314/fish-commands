@@ -665,14 +665,17 @@ ${getAntiBotInfo("client")}`
 		args: [],
 		description: 'Attempt to fetch and update all map files',
 		perm: Perm.admin,
-		handler({output, outputSuccess}){
+		handler({output, outputSuccess, outputFail}){
 			output(`Updating maps... (this may take a while)`);
-			updateMaps((success) => {
-				if(!success) fail(`Map update failed, check console logs.`);
-				outputSuccess(`Map update completed.`);
-				Vars.maps.reload();
-				Log.info(`Map updates complete.`);
-			});
+			updateMaps()
+				.then(() => {
+					outputSuccess(`Map update completed.`);
+					Log.info(`Map updates complete.`);
+				})
+				.catch((message) => {
+					outputFail(`Map update failed: ${message}`);
+					Log.err(`Map updates failed: ${message}`);
+				});
 		}
 	},
 	clearfire: {

@@ -722,14 +722,11 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: [],
         description: 'Attempt to fetch and update all map files',
         handler: function (_a) {
-            var output = _a.output, outputSuccess = _a.outputSuccess;
+            var output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             output("Updating maps... (this may take a while)");
-            (0, files_1.updateMaps)(function (success) {
-                if (!success)
-                    (0, commands_1.fail)("Map update fail, check logs.");
-                Vars.maps.reload();
-                outputSuccess("Map updates complete.");
-            });
+            (0, files_1.updateMaps)()
+                .then(function () { return outputSuccess("Map update completed."); })
+                .catch(function (message) { return outputFail("Map update failed: ".concat(message)); });
         },
     },
 });

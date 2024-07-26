@@ -1,4 +1,6 @@
 import { mapRepoURLs, Mode } from "./config";
+import { Promise } from "./promise.js";
+import { crash } from "./utils.js";
 
 
 
@@ -16,127 +18,98 @@ type GitHubFile = {
 }
 
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
-function fetchGithubContents(callback:(listing:GitHubFile[] | null) => unknown){
-	const url = mapRepoURLs[Mode.name()];
-	if(!url){ 
-		Log.err(`no recognized gamemode detected. please enter "host <map> <gamemode>" and try again`);
-		callback(null);
-		return;
-	}
-	Log.info(`Requesting github repository contents at ${url}.`)
-	Http.get(url, (res:HttpResponse) => {
-		try {
-			let jsonStr = res.getResultAsString();
-			const parsed = JSON.parse(jsonStr) as GitHubFile[];
-			Log.info(`Request success, checking maps`)
-			callback(parsed);
-		} catch (e){
-			Log.err(`Failed to parse GitHub repository contents: ${e}`);
-			callback(null);
-		}
-	}, () =>{
-		Log.err(`Failed to fetch github repository contents`)
-		callback(null);
-		return;
-	})
-
+function fetchGithubContents(){
+	return new Promise<GitHubFile[], string>((resolve, reject) => {
+		const url = mapRepoURLs[Mode.name()];
+		if(!url) return reject(`no recognized gamemode detected. please enter "host <map> <gamemode>" and try again`);
+		Log.info(`Requesting github repository contents at ${url}.`);
+		Http.get(url, (res) => {
+			try {
+				//Trust github to return valid JSON data
+				resolve(JSON.parse(res.getResultAsString()));
+			} catch(e){
+				reject(`Failed to parse GitHub repository contents: ${e}`);
+			}
+		}, () => reject(`Network error while fetching github repository contents`));
+	});
 }
 
 //clean? no. functional? yeah.
-function getFile(address:string, callback:(success:boolean) => (void), filename:string){
+function getFile(address:string, filename:string):Promise<void, string> {
 	if(!/^https?:\/\//i.test(address)){
-		Log.err(`Invalid address, please start with 'http://' or 'https://'`);
-		callback(false);
-		return;
+		crash(`Invalid address, please start with 'http://' or 'https://'`);
 	}
 
-	let instream: InputStream | null = null;
-	let outstream: OutputStream | null = null;
-	Log.info(`Downloading ${filename} from ${address}`)
-	Http.get(address, (res) => {
-		instream = res.getResultAsStream();
-		outstream = Vars.customMapDirectory.child(filename).write();
-		instream.transferTo(outstream);
-		instream.close();
-		outstream.close();
-		callback(true);
-		return;
-	}, 
-	() => {
-		if(instream) instream.close();
-		if(outstream) outstream.close();
-		Log.err(`Download failed.`);
-		callback(false);
-		return;
+	return new Promise((resolve, reject) => {
+		let instream:InputStream | null = null;
+		let outstream:OutputStream | null = null;
+		Log.info(`Downloading ${filename}...`);
+		Http.get(address, (res) => {
+			try {
+				instream = res.getResultAsStream();
+				outstream = Vars.customMapDirectory.child(filename).write();
+				instream.transferTo(outstream);
+				resolve();
+			} finally {
+				instream?.close();
+				outstream?.close();
+			}
+		}, 
+		() => {
+			Log.err(`Download failed.`);
+			reject(`Network error while o`);
+		});
 	});
 }
 
 
-function sequentialMapDownload(githubListing:GitHubFile[], index:number, callback:() => void){
+function sequentialMapDownload(githubListing:GitHubFile[], index:number):Promise<void, string> {
 	if(index >= githubListing.length){
 		Log.info(`All maps downloaded.`);
-		callback();
-		return;
+		return Promise.resolve(null! as void);
 	}
 	let fileEntry = githubListing[index];
 	if(!fileEntry.download_url){
-		Log.warn(`Map ${fileEntry.name} has no valid download link, skipped.`)
-		sequentialMapDownload(githubListing, index + 1, callback);
-		return;
+		Log.warn(`Map ${fileEntry.name} has no valid download link, skipped.`);
+		return sequentialMapDownload(githubListing, index + 1);
 	}
-	getFile(fileEntry.download_url, () => {
-		sequentialMapDownload(githubListing, index + 1, callback)
-	}, Vars.customMapDirectory.child(fileEntry.name).name());
+	return getFile(fileEntry.download_url, Vars.customMapDirectory.child(fileEntry.name).name())
+		.then(() => sequentialMapDownload(githubListing, index + 1));
 }
 
-export function updateMaps(callback:(success:boolean) => (void)):void{
+export function updateMaps():Promise<void, string> {
 	//get github map listing
-	fetchGithubContents((listing) => {
-		if(listing == null){
-			callback(false);
-			return;
-		}
+	return fetchGithubContents().then((listing) => {
 		//filter only valid mindustry maps
-		let mapList = listing
+		const mapList = listing
 			.filter(entry => entry.type == 'file')
-			.filter(entry => /\.msav$/.test(entry.name))
+			.filter(entry => /\.msav$/.test(entry.name));
 
-		//delete unfound maps
-		let mapFiles:Fi[] = Vars.customMapDirectory.list();
-		let unfoundMaps = mapFiles.filter(function(localFile) {
-			return !mapList.some(function(onlineFile) {
-				return onlineFile.name === localFile.name();
-			});
-		});
-		unfoundMaps.forEach( (map) => {
-			Log.info(`Deleting map ${map.name()} - Not found in github repository.`);
+		const mapFiles:Fi[] = Vars.customMapDirectory.list();
+		const removedMaps = mapFiles.filter(localFile =>
+			!mapList.some(remoteFile =>
+				remoteFile.name === localFile.name()
+			)
+		);
+		removedMaps.forEach((map) => {
+			Log.info(`Deleting map ${map.name()}`);
 			map.delete();
 		});
 
-		//eliminate up to date maps
-		let outDatedMapsList = mapList
-			.filter(entry => !(Vars.customMapDirectory.child(entry.name).exists() && Vars.customMapDirectory.child(entry.name).length() > 0));
+		let newMaps = mapList
+			.filter(entry => {
+				const file = Vars.customMapDirectory.child(entry.name);
+				return !(file.exists() && file.length() > 0);
+			});
 
 		
-		if(outDatedMapsList.length == 0){
+		if(newMaps.length == 0){
 			Log.info(`No map updates found.`);
-			callback(true);
 			return;
-		 } else {
-			
-			sequentialMapDownload(outDatedMapsList, 0, () => {
-				Log.info(`Downloads complete, registering maps.`);
-				try {
-					Vars.maps.reload;
-					Log.info(`Map update complete`);
-					callback(true);
-					return;
-				} catch (e){
-					Log.info(`failed to register 1 or more maps, ${e}`); 
-					callback(false);
-					return;
-				}
-			});
 		}
+		return sequentialMapDownload(newMaps, 0).then(() => {
+			Log.info(`Downloads complete, registering maps.`);
+			Vars.maps.reload();
+		});
 	});
 }

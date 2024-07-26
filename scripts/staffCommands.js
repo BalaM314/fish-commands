@@ -735,14 +735,16 @@ exports.commands = (0, commands_1.commandList)({
         description: 'Attempt to fetch and update all map files',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var output = _a.output, outputSuccess = _a.outputSuccess;
+            var output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             output("Updating maps... (this may take a while)");
-            (0, files_1.updateMaps)(function (success) {
-                if (!success)
-                    (0, commands_1.fail)("Map update failed, check console logs.");
+            (0, files_1.updateMaps)()
+                .then(function () {
                 outputSuccess("Map update completed.");
-                Vars.maps.reload();
                 Log.info("Map updates complete.");
+            })
+                .catch(function (message) {
+                outputFail("Map update failed: ".concat(message));
+                Log.err("Map updates failed: ".concat(message));
             });
         }
     },

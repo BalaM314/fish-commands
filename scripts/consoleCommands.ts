@@ -613,13 +613,11 @@ ${FishPlayer.mapPlayers(p =>
 	updateMaps: {
 		args: [],
 		description: 'Attempt to fetch and update all map files',
-		handler({output, outputSuccess}){
+		handler({output, outputSuccess, outputFail}){
 			output(`Updating maps... (this may take a while)`);
-			updateMaps((success) => {
-				if(!success) fail(`Map update fail, check logs.`);
-				Vars.maps.reload();
-				outputSuccess(`Map updates complete.`);
-			});
+			updateMaps()
+				.then(() => outputSuccess(`Map update completed.`))
+				.catch((message) => outputFail(`Map update failed: ${message}`));
 		},
 	},
 });

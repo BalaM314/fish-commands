@@ -83,15 +83,11 @@ export function initializeTimers(){
 }
 Timer.schedule(() => {
 	Call.sendMessage(`[orange]Automated map updates have started.`)
-			updateMaps((success) => {
-				if(success) {
-					Vars.maps.reload();
-					Log.info(`Automated map updates complete.`);
-					Call.sendMessage(`[orange]Automated map updates have completed.`)
-				}
-				else {
-					Log.err(`Automated map update fail, check logs.`);
-					Call.sendMessage(`[orange]Automated map updates have failed. Please report this to staff.`)
-				}
-			});
+	updateMaps()
+		.then(() => {
+			Log.info(`Automated map updates complete.`);
+		})
+		.catch((message) => {
+			Log.err(`Automated map update failed: ${message}`);
+		});
 }, 60, 1800)
