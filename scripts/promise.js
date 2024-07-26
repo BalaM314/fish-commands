@@ -51,19 +51,7 @@ var Promise = /** @class */ (function () {
         });
         return promise;
     };
-    Promise.prototype.catch = function (callback) {
-        var _a = Promise.withResolvers(), promise = _a.promise, resolve = _a.resolve, reject = _a.reject;
-        this.rejectHandlers.push(function (value) {
-            var result = callback(value);
-            if (result instanceof Promise) {
-                result.then(function (nextResult) { return resolve(nextResult); });
-            }
-            else {
-                resolve(result);
-            }
-        });
-        return promise;
-    };
+
     Promise.withResolvers = function () {
         var resolve;
         var reject;
