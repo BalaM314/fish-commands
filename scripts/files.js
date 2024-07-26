@@ -23,7 +23,7 @@ function fetchGithubContents() {
     });
 }
 //clean? no. functional? yeah.
-function getFile(address, filename) {
+function downloadFile(address, filename) {
     if (!/^https?:\/\//i.test(address)) {
         (0, utils_js_1.crash)("Invalid address, please start with 'http://' or 'https://'");
     }
@@ -34,7 +34,7 @@ function getFile(address, filename) {
         Http.get(address, function (res) {
             try {
                 instream = res.getResultAsStream();
-                outstream = Vars.customMapDirectory.child(filename).write();
+                outstream = new Fi(filename).write();
                 instream.transferTo(outstream);
                 resolve();
             }
@@ -48,18 +48,14 @@ function getFile(address, filename) {
         });
     });
 }
-function sequentialMapDownload(githubListing, index) {
-    if (index >= githubListing.length) {
-        Log.info("All maps downloaded.");
-        return promise_js_1.Promise.resolve(null);
-    }
-    var fileEntry = githubListing[index];
-    if (!fileEntry.download_url) {
-        Log.warn("Map ".concat(fileEntry.name, " has no valid download link, skipped."));
-        return sequentialMapDownload(githubListing, index + 1);
-    }
-    return getFile(fileEntry.download_url, Vars.customMapDirectory.child(fileEntry.name).name())
-        .then(function () { return sequentialMapDownload(githubListing, index + 1); });
+function downloadMaps(githubListing) {
+    return promise_js_1.Promise.all(githubListing.map(function (fileEntry) {
+        if (!(typeof fileEntry.download_url == "string")) {
+            Log.warn("Map ".concat(fileEntry.name, " has no valid download link, skipped."));
+            return promise_js_1.Promise.resolve(null);
+        }
+        return downloadFile(fileEntry.download_url, Vars.customMapDirectory.child(fileEntry.name).absolutePath());
+    })).then(function (v) { });
 }
 function updateMaps() {
     //get github map listing
@@ -87,7 +83,7 @@ function updateMaps() {
             Log.info("No map updates found.");
             return;
         }
-        return sequentialMapDownload(newMaps, 0).then(function () {
+        return downloadMaps(newMaps).then(function () {
             Log.info("Downloads complete, registering maps.");
             Vars.maps.reload();
         });

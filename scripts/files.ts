@@ -35,7 +35,7 @@ function fetchGithubContents(){
 }
 
 //clean? no. functional? yeah.
-function getFile(address:string, filename:string):Promise<void, string> {
+function downloadFile(address:string, filename:string):Promise<void, string> {
 	if(!/^https?:\/\//i.test(address)){
 		crash(`Invalid address, please start with 'http://' or 'https://'`);
 	}
@@ -47,7 +47,7 @@ function getFile(address:string, filename:string):Promise<void, string> {
 		Http.get(address, (res) => {
 			try {
 				instream = res.getResultAsStream();
-				outstream = Vars.customMapDirectory.child(filename).write();
+				outstream = new Fi(filename).write();
 				instream.transferTo(outstream);
 				resolve();
 			} finally {
@@ -63,18 +63,14 @@ function getFile(address:string, filename:string):Promise<void, string> {
 }
 
 
-function sequentialMapDownload(githubListing:GitHubFile[], index:number):Promise<void, string> {
-	if(index >= githubListing.length){
-		Log.info(`All maps downloaded.`);
-		return Promise.resolve(null! as void);
-	}
-	let fileEntry = githubListing[index];
-	if(!fileEntry.download_url){
-		Log.warn(`Map ${fileEntry.name} has no valid download link, skipped.`);
-		return sequentialMapDownload(githubListing, index + 1);
-	}
-	return getFile(fileEntry.download_url, Vars.customMapDirectory.child(fileEntry.name).name())
-		.then(() => sequentialMapDownload(githubListing, index + 1));
+function downloadMaps(githubListing:GitHubFile[]):Promise<void, string> {
+	return Promise.all<void[], string>(githubListing.map(fileEntry => {
+		if(!(typeof fileEntry.download_url == "string")){
+			Log.warn(`Map ${fileEntry.name} has no valid download link, skipped.`);
+			return Promise.resolve(null! as void);
+		}
+		return downloadFile(fileEntry.download_url, Vars.customMapDirectory.child(fileEntry.name).absolutePath());
+	})).then(v => {});
 }
 
 export function updateMaps():Promise<void, string> {
@@ -107,7 +103,7 @@ export function updateMaps():Promise<void, string> {
 			Log.info(`No map updates found.`);
 			return;
 		}
-		return sequentialMapDownload(newMaps, 0).then(() => {
+		return downloadMaps(newMaps).then(() => {
 			Log.info(`Downloads complete, registering maps.`);
 			Vars.maps.reload();
 		});
