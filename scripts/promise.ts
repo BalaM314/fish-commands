@@ -53,6 +53,20 @@ export class Promise<TResolve, TReject> {
 		);
 		return promise;
 	}
+	catch<UResolve, UReject>(callback:(error:TReject) => (UResolve | Promise<UResolve, UReject>)){
+		const {promise, resolve, reject} = Promise.withResolvers<UResolve, UReject>();
+		this.rejectHandlers.push(
+			value => {
+				const result = callback(value);
+				if(result instanceof Promise){
+					result.then(nextResult => resolve(nextResult));
+				} else {
+					resolve(result);
+				}
+			}
+		);
+		return promise;
+	}
 	static withResolvers<TResolve, TReject>(){
 		let resolve!:(value:TResolve) => void;
 		let reject!:(error:TReject) => void;
@@ -81,9 +95,7 @@ export class Promise<TResolve, TReject> {
 		);
 		return promise;
 	}
-
-	static resolve<TResolve>(value:TResolve):Promise<TResolve, never> {
-
+	static resolve<TResolve>(value:TResolve):Promise<TResolve, any> {
 		return new Promise((resolve) => resolve(value));
 	}
 }
