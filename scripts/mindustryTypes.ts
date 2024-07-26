@@ -10,7 +10,7 @@ const Log: {
 	info(message:string):void;
 	warn(message:string):void;
 	err(message:string):void;
-	err(error:Error):void;
+	err(error:unknown):void;
 };
 const Strings: {
 	stripColors(string:string):string;

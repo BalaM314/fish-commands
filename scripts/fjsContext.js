@@ -12,6 +12,7 @@ const ranks = require("./ranks");
 const { commands: staffCommands } = require("./staffCommands");
 const timers = require("./timers");
 const utils = require("./utils");
+const { Promise } = require("./promise");
 
 const { Perm, allCommands } = commands;
 const { FishPlayer } = players;
