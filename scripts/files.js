@@ -2,27 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateMaps = void 0;
 var config_1 = require("./config");
-function getURLfromGamemode() {
-    if (config_1.Mode.attack()) {
-        return (config_1.attackMapURL);
-    }
-    if (config_1.Mode.survival()) {
-        return (config_1.survivalMapURL);
-    }
-    if (config_1.Mode.pvp()) {
-        return (config_1.pvpMapURL);
-    }
-    if (config_1.Mode.sandbox()) {
-        return (config_1.sandboxMapURL);
-    }
-    if (config_1.Mode.hexed()) {
-        return (config_1.hexedMapURL);
-    }
-    return null;
-}
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
 function fetchGithubContents(callback) {
-    var url = getURLfromGamemode();
+    var url = config_1.mapRepoURLs[config_1.Mode.name()];
     if (!url) {
         Log.err("no recognized gamemode detected. please enter \"host <map> <gamemode>\" and try again");
         callback(null);

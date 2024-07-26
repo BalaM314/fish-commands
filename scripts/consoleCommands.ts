@@ -7,7 +7,7 @@ import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getColor, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
+import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
 
 
 export const commands = consoleCommandList({
@@ -133,6 +133,7 @@ export const commands = consoleCommandList({
 		args: ["target:string"],
 		description: "Whacks (ipbans) a player.",
 		handler({args, output, outputFail, admins}){
+			let range:string | null;
 			if(ipPattern.test(args.target)){
 				//target is an ip
 				api.ban({ip: args.target});
@@ -145,6 +146,13 @@ export const commands = consoleCommandList({
 				} else {
 					admins.banPlayerIP(args.target);
 					output(`&lrIP &c"${args.target}"&lr was banned. Ban was synced to other servers.`);
+				}
+			} else if((range = getIPRange(args.target)) != null){
+				if(admins.subnetBans.contains(ip => ip.replace(/\.$/, "") == range)){
+					output(`Subnet &c"${range}"&fr is already banned.`);
+				} else {
+					admins.subnetBans.add(range);
+					output(`&lrIP range &c"${range}"&lr was banned. Subnet bans are not synced.`);
 				}
 			} else if(uuidPattern.test(args.target)){
 				const info = admins.getInfoOptional(args.target);
@@ -193,6 +201,7 @@ export const commands = consoleCommandList({
 		args: ["target:string"],
 		description: "Unbans a player.",
 		handler({args, output, admins}){
+			let range:string | null;
 			if(ipPattern.test(args.target)){
 				//target is an ip
 				if(FishPlayer.removePunishedIP(args.target)){
@@ -213,7 +222,16 @@ export const commands = consoleCommandList({
 					} else {
 						output(`IP &c"${args.target}"&fr was not locally banned.`);
 					}
+					if(admins.subnetBans.removeAll(r => args.target.startsWith(r))){
+						output(`Unbanned IP ranges affecting this IP.`);
+					}
 				});
+			} else if((range = getIPRange(args.target)) != null){
+				if(admins.subnetBans.remove(b => b.replace(/\.$/, ".") == range!.replace(/\.$/, "."))){
+					output(`IP range &c"${range}"&fr was unbanned.`);
+				} else {
+					output(`IP range &c"${range}"&fr was not banned.`);
+				}
 			} else if(uuidPattern.test(args.target)){
 				if(FishPlayer.removePunishedUUID(args.target)){
 					output(`Removed UUID &c"${args.target}"&fr from the anti-evasion list.`);
@@ -256,6 +274,15 @@ export const commands = consoleCommandList({
 		description: "Please use the unwhack command instead.",
 		handler(){
 			fail(`Use the unwhack command instead.`);
+		}
+	},
+	"subnet-ban": {
+		args: ["any:string?", "anyb:string?"],
+		description: "Please use the whack and unwhack commands instead.",
+		handler({args, output, admins}){
+			if(args.any) fail(`Use the whack and unwhack commands instead.`);
+			output(`List of all subnet bans:`);
+			output(admins.subnetBans.toString("\n"));
 		}
 	},
 	loadfishplayerdata: {

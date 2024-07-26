@@ -507,6 +507,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 (0, commands_1.fail)("Sorry, the max number of ohno units has been reached.");
             if ((0, utils_1.nearbyEnemyTile)(sender.unit(), 6) != null)
                 (0, commands_1.fail)("Too close to an enemy tile!");
+            if (!UnitTypes.alpha.supportsEnv(Vars.state.rules.env))
+                (0, commands_1.fail)("Ohnos cannot survive in this map.");
             Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
         },
     }), ranks: {

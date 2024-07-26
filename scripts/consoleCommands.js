@@ -196,6 +196,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Whacks (ipbans) a player.",
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputFail = _a.outputFail, admins = _a.admins;
+            var range;
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
                 api.ban({ ip: args.target });
@@ -210,6 +211,15 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 else {
                     admins.banPlayerIP(args.target);
                     output("&lrIP &c\"".concat(args.target, "\"&lr was banned. Ban was synced to other servers."));
+                }
+            }
+            else if ((range = (0, utils_1.getIPRange)(args.target)) != null) {
+                if (admins.subnetBans.contains(function (ip) { return ip.replace(/\.$/, "") == range; })) {
+                    output("Subnet &c\"".concat(range, "\"&fr is already banned."));
+                }
+                else {
+                    admins.subnetBans.add(range);
+                    output("&lrIP range &c\"".concat(range, "\"&lr was banned. Subnet bans are not synced."));
                 }
             }
             else if (globals_1.uuidPattern.test(args.target)) {
@@ -265,6 +275,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Unbans a player.",
         handler: function (_a) {
             var args = _a.args, output = _a.output, admins = _a.admins;
+            var range;
             if (globals_1.ipPattern.test(args.target)) {
                 //target is an ip
                 if (players_1.FishPlayer.removePunishedIP(args.target)) {
@@ -287,7 +298,18 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     else {
                         output("IP &c\"".concat(args.target, "\"&fr was not locally banned."));
                     }
+                    if (admins.subnetBans.removeAll(function (r) { return args.target.startsWith(r); })) {
+                        output("Unbanned IP ranges affecting this IP.");
+                    }
                 });
+            }
+            else if ((range = (0, utils_1.getIPRange)(args.target)) != null) {
+                if (admins.subnetBans.remove(function (b) { return b.replace(/\.$/, ".") == range.replace(/\.$/, "."); })) {
+                    output("IP range &c\"".concat(range, "\"&fr was unbanned."));
+                }
+                else {
+                    output("IP range &c\"".concat(range, "\"&fr was not banned."));
+                }
             }
             else if (globals_1.uuidPattern.test(args.target)) {
                 if (players_1.FishPlayer.removePunishedUUID(args.target)) {
@@ -333,6 +355,17 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Please use the unwhack command instead.",
         handler: function () {
             (0, commands_1.fail)("Use the unwhack command instead.");
+        }
+    },
+    "subnet-ban": {
+        args: ["any:string?", "anyb:string?"],
+        description: "Please use the whack and unwhack commands instead.",
+        handler: function (_a) {
+            var args = _a.args, output = _a.output, admins = _a.admins;
+            if (args.any)
+                (0, commands_1.fail)("Use the whack and unwhack commands instead.");
+            output("List of all subnet bans:");
+            output(admins.subnetBans.toString("\n"));
         }
     },
     loadfishplayerdata: {
@@ -688,16 +721,14 @@ exports.commands = (0, commands_1.consoleCommandList)({
     updateMaps: {
         args: [],
         description: 'Attempt to fetch and update all map files',
-        handler: function () {
-            Call.sendMessage("[orange]Map updates have started.");
+        handler: function (_a) {
+            var output = _a.output, outputSuccess = _a.outputSuccess;
+            output("Updating maps... (this may take a while)");
             (0, files_1.updateMaps)(function (success) {
-                if (success) {
-                    Vars.maps.reload();
-                    Log.info("Map updates complete.");
-                }
-                else {
-                    Log.err("Map update fail, check logs.");
-                }
+                if (!success)
+                    (0, commands_1.fail)("Map update fail, check logs.");
+                Vars.maps.reload();
+                outputSuccess("Map updates complete.");
             });
         },
     },
