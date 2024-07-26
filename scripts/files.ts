@@ -1,4 +1,4 @@
-import { attackMapURL, hexedMapURL, Mode, pvpMapURL, sandboxMapURL, survivalMapURL } from "./config";
+import { mapRepoURLs, Mode } from "./config";
 
 
 
@@ -15,28 +15,9 @@ type GitHubFile = {
 	type: 'file' | 'dir';
 }
 
-function getURLfromGamemode():string | null{
-	if(Mode.attack()){
-		return(attackMapURL);
-	}
-	if(Mode.survival()){
-		return(survivalMapURL);
-	}
-	if(Mode.pvp()){
-		return(pvpMapURL);
-	}
-	if(Mode.sandbox()){
-		return(sandboxMapURL);
-	}
-	if(Mode.hexed()){
-		return(hexedMapURL);
-	}
-	return null;
-}
-
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
-function fetchGithubContents(callback:(listing:GitHubFile[] | null) => (void)):void{
-	let url = getURLfromGamemode();
+function fetchGithubContents(callback:(listing:GitHubFile[] | null) => unknown){
+	const url = mapRepoURLs[Mode.name()];
 	if(!url){ 
 		Log.err(`no recognized gamemode detected. please enter "host <map> <gamemode>" and try again`);
 		callback(null);

@@ -586,16 +586,12 @@ ${FishPlayer.mapPlayers(p =>
 	updateMaps: {
 		args: [],
 		description: 'Attempt to fetch and update all map files',
-		handler(){
-			Call.sendMessage(`[orange]Map updates have started.`)
+		handler({output, outputSuccess}){
+			output(`Updating maps... (this may take a while)`);
 			updateMaps((success) => {
-				if(success) {
-					Vars.maps.reload();
-					Log.info(`Map updates complete.`);
-				}
-				else {
-					Log.err(`Map update fail, check logs.`);
-				}
+				if(!success) fail(`Map update fail, check logs.`);
+				Vars.maps.reload();
+				outputSuccess(`Map updates complete.`);
 			});
 		},
 	},

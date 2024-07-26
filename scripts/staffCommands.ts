@@ -661,22 +661,17 @@ ${getAntiBotInfo("client")}`
 			}
 		};
 	}),
-	updatemaps:{
+	updatemaps: {
 		args: [],
 		description: 'Attempt to fetch and update all map files',
 		perm: Perm.admin,
-		handler({sender}){
-			logAction(`Started map update`, sender);
-			Call.sendMessage(`${sender.name}[orange] has triggered a automatic map update.`);
+		handler({output, outputSuccess}){
+			output(`Updating maps... (this may take a while)`);
 			updateMaps((success) => {
-				if(success) {
-					Call.sendMessage(`[orange]Map update completed.`);
-					Vars.maps.reload();
-					Log.info(`Map updates complete.`);
-				}
-				else {
-					Log.err(`Map update fail, check logs.`);
-				}
+				if(!success) fail(`Map update failed, check console logs.`);
+				outputSuccess(`Map update completed.`);
+				Vars.maps.reload();
+				Log.info(`Map updates complete.`);
 			});
 		}
 	},

@@ -127,7 +127,7 @@ export const Mode = {
 	pvp: () => Mode.name() == "pvp" || Mode.name() == "hexed",
 	sandbox: () => Mode.name() == "sandbox",
 	hexed: () => Mode.name() == "hexed",
-	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()),
+	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed",
 };
 export const localDebug = new Fi("config/.debug").exists();
 export const maxTime = 9999999999999;
@@ -209,8 +209,10 @@ export const heuristics = {
 export const stopAntiEvadeTime = 1800000; //30 minutes
 
 //seperated repository urls so we could (if we wanted to) split the repository by map type
-export const attackMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/attack";
-export const survivalMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/survival";
-export const pvpMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/pvp";
-export const hexedMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hexed";
-export const sandboxMapURL = "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/sandbox";
+export const mapRepoURLs:Record<ModeName, string> = {
+	attack: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/attack",
+	survival: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/survival",
+	pvp: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/pvp",
+	hexed: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hexed",
+	sandbox: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/sandbox",
+};
