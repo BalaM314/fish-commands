@@ -37,7 +37,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.EventEmitter = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatModeName = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
-exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = void 0;
+exports.getIPRange = exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -1030,3 +1030,27 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
         }, 1); });
     });
 });
+function getIPRange(input, error) {
+    var out;
+    if (globals_1.ipRangeCIDRPattern.test(input)) {
+        var _a = __read(input.split("/"), 2), ip = _a[0], maskLength = _a[1];
+        switch (maskLength) {
+            case "24":
+                return ip.split(".").slice(0, 3).join(".") + ".";
+            case "16":
+                return ip.split(".").slice(0, 2).join(".") + ".";
+            default:
+                error === null || error === void 0 ? void 0 : error("Mindustry does not currently support netmasks other than /16 and /24");
+                return null;
+        }
+    }
+    else if ((out = globals_1.ipRangeWildcardPattern.exec(input)) != null) {
+        var _b = __read(out, 3), _ = _b[0], ab = _b[1], c = _b[2];
+        if (c !== undefined)
+            return "".concat(ab, ".").concat(c, ".");
+        return "".concat(ab, ".");
+    }
+    else
+        return null;
+}
+exports.getIPRange = getIPRange;

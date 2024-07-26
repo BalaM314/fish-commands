@@ -1,6 +1,6 @@
 import * as api from './api';
 import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
-import { fishState, tileHistory, uuidPattern } from './globals';
+import { fishState, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
 
@@ -847,3 +847,23 @@ export const addToTileHistory = logErrors("Error while saving a tilelog entry", 
 	});
 	
 });
+
+export function getIPRange(input:string, error?:(message:string) => never):string | null {
+	let out:RegExpExecArray | null;
+	if(ipRangeCIDRPattern.test(input)){
+		const [ip, maskLength] = input.split("/");
+		switch(maskLength){
+			case "24":
+				return ip.split(".").slice(0, 3).join(".") + ".";
+			case "16":
+				return ip.split(".").slice(0, 2).join(".") + ".";
+			default:
+				error?.(`Mindustry does not currently support netmasks other than /16 and /24`);
+				return null;
+		}
+	} else if((out = ipRangeWildcardPattern.exec(input)) != null){
+		const [_, ab, c] = out;
+		if(c !== undefined) return `${ab}.${c}.`;
+		return `${ab}.`;
+	} else return null;
+}

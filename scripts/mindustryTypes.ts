@@ -91,6 +91,7 @@ type Throwable = any;
 class Administration {
 	dosBlacklist: ObjectSet<string>;
 	kickedIPs: ObjectMap<string, number>;
+	subnetBans: Seq<string>;
 	findByName(info:string):ObjectSet<PlayerInfo>;
 	searchNames(name:string):ObjectSet<PlayerInfo>;
 	getInfo(uuid:string):PlayerInfo;
@@ -295,12 +296,17 @@ class Seq<T> {
 	constructor(capacity:number);
 	static with<T>(...items:T[]):Seq<T>;
 	static with<T>(items:Iterable<T>):Seq<T>;
+	add(item:T):this;
 	contains(item:T):boolean;
 	contains(pred:(item:T) => boolean):boolean;
 	count(pred:(item:T) => boolean):number;
 	/** @deprecated Use select() or retainAll() */
 	filter(pred:(item:T) => boolean):Seq<T>;
 	retainAll(pred:(item:T) => boolean):Seq<T>;
+	/** @returns whether an item was removed */
+	remove(pred:(item:T) => boolean):boolean;
+	/** @returns whether any item was removed */
+	removeAll(pred:(item:T) => boolean):boolean;
 	select(pred:(item:T) => boolean):Seq<T>;
 	find(pred:(item:T) => boolean):T;
 	each(func:(item:T) => unknown):void;
