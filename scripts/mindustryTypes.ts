@@ -406,6 +406,7 @@ class Fi {
 	static tempFile(prefix:string):Fi;
 	delete():boolean;
 	length():number;
+	lastModified():number;
 	write():OutputStream;
 	list():Fi[];
 	name():string;

@@ -95,7 +95,8 @@ export function updateMaps():Promise<void, string> {
 		let newMaps = mapList
 			.filter(entry => {
 				const file = Vars.customMapDirectory.child(entry.name);
-				return !(file.exists() && file.length() > 0);
+				//TODO compare sha
+				return !file.exists() || file.length() == 0;
 			});
 
 		

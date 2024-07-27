@@ -77,7 +77,8 @@ function updateMaps() {
         var newMaps = mapList
             .filter(function (entry) {
             var file = Vars.customMapDirectory.child(entry.name);
-            return !(file.exists() && file.length() > 0);
+            //TODO compare sha
+            return !file.exists() || file.length() == 0;
         });
         if (newMaps.length == 0) {
             Log.info("No map updates found.");
