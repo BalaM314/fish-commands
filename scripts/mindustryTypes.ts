@@ -282,7 +282,16 @@ class HttpRequest {
 }
 class HttpResponse {
 	getResultAsString():string;
+	getResultAsStream():InputStream
 	getResult():number[];
+}
+class InputStream {
+	close():void;
+	transferTo(outputsteam:OutputStream):number;
+
+}
+class OutputStream {
+	close():void;
 }
 const Http: {
 	post(url:string, content:string):HttpRequest;
@@ -395,6 +404,12 @@ class Fi {
 	absolutePath():string;
 	writeBytes(bytes:number[], append?:boolean):void;
 	static tempFile(prefix:string):Fi;
+	delete():boolean;
+	length():number;
+	lastModified():number;
+	write():OutputStream;
+	list():Fi[];
+	name():string;
 }
 
 class Pattern {
@@ -522,7 +537,7 @@ class VoteSession {
 }
 
 interface Array<T> {
-  filter(predicate: BooleanConstructor, thisArg?: any): (T extends (false | 0 | "" | null | undefined) ? never : T)[];
+	filter(predicate: BooleanConstructor, thisArg?: any): (T extends (false | 0 | "" | null | undefined) ? never : T)[];
 }
 interface ObjectConstructor {
 	entries<const K extends PropertyKey, V>(input:Record<K, V>):[K, V][];

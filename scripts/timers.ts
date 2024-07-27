@@ -1,6 +1,7 @@
 import { getStaffMessages } from './api';
 import * as config from "./config";
 import { Mode } from "./config";
+import { updateMaps } from './files';
 import { ipJoins } from "./globals";
 import { FishPlayer } from "./players";
 import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
@@ -80,3 +81,13 @@ export function initializeTimers(){
 		FishPlayer.validateVotekickSession();
 	}, 0, 0.5);
 }
+Timer.schedule(() => {
+	Call.sendMessage(`[orange]Automated map updates have started.`)
+	updateMaps()
+		.then(() => {
+			Log.info(`Automated map updates complete.`);
+		})
+		.catch((message) => {
+			Log.err(`Automated map update failed: ${message}`);
+		});
+}, 60, 1800)

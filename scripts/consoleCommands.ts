@@ -2,6 +2,7 @@ import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
 import { Mode, maxTime } from "./config";
+import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
@@ -607,6 +608,16 @@ ${FishPlayer.mapPlayers(p =>
 				Vars.maps.reload();
 				outputSuccess(`Successfully loaded the map. Please check for duplicates.`);
 			}, () => outputFail(`Download failed`));
+		},
+	},
+	updateMaps: {
+		args: [],
+		description: 'Attempt to fetch and update all map files',
+		handler({output, outputSuccess, outputFail}){
+			output(`Updating maps... (this may take a while)`);
+			updateMaps()
+				.then(() => outputSuccess(`Map update completed.`))
+				.catch((message) => outputFail(`Map update failed: ${message}`));
 		},
 	},
 });

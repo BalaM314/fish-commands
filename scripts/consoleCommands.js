@@ -45,6 +45,7 @@ var api = require("./api");
 var commands_1 = require("./commands");
 var config = require("./config");
 var config_1 = require("./config");
+var files_1 = require("./files");
 var fjsContext = require("./fjsContext");
 var globals_1 = require("./globals");
 var players_1 = require("./players");
@@ -715,6 +716,17 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 Vars.maps.reload();
                 outputSuccess("Successfully loaded the map. Please check for duplicates.");
             }, function () { return outputFail("Download failed"); });
+        },
+    },
+    updateMaps: {
+        args: [],
+        description: 'Attempt to fetch and update all map files',
+        handler: function (_a) {
+            var output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
+            output("Updating maps... (this may take a while)");
+            (0, files_1.updateMaps)()
+                .then(function () { return outputSuccess("Map update completed."); })
+                .catch(function (message) { return outputFail("Map update failed: ".concat(message)); });
         },
     },
 });
