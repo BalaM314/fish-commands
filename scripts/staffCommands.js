@@ -553,12 +553,14 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     setblockr: {
-        args: ["block:block", "team:team?", "rotation:number?"],
+        args: ["block:block?", "team:team?", "rotation:number?"],
         description: "Sets the block at tapped locations, repeatedly.",
         perm: commands_1.Perm.admin,
         tapped: function (_a) {
             var _b, _c;
             var args = _a.args, sender = _a.sender, f = _a.f, x = _a.x, y = _a.y, outputSuccess = _a.outputSuccess;
+            if (!args.block)
+                return;
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var tile = Vars.world.tile(x, y);
             if (args.rotation != null && (args.rotation < 0 || args.rotation > 3))

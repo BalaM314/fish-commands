@@ -119,7 +119,7 @@ export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 
 export interface TapHandler<ArgType extends string, StoredData> {
 	(_:{
-		/**Last args used to call the parent command. **/
+		/**Last args used to call the parent command. */
 		args:ArgsFromArgStringUnion<ArgType>;
 		sender:FishPlayer;
 		x:number;

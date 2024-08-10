@@ -501,10 +501,11 @@ export const commands = commandList({
 		}
 	},
 	setblockr: {
-		args: ["block:block", "team:team?", "rotation:number?"],
+		args: ["block:block?", "team:team?", "rotation:number?"],
 		description: "Sets the block at tapped locations, repeatedly.",
 		perm: Perm.admin,
 		tapped({args, sender, f, x, y, outputSuccess}){
+			if(!args.block) return;
 			const team = args.team ?? sender.team();
 			const tile = Vars.world.tile(x, y);
 			if(args.rotation != null && (args.rotation < 0 || args.rotation > 3)) fail(f`Invalid rotation ${args.rotation}`)
