@@ -849,7 +849,6 @@ export const addToTileHistory = logErrors("Error while saving a tilelog entry", 
 });
 
 export function getIPRange(input:string, error?:(message:string) => never):string | null {
-	let out:RegExpExecArray | null;
 	if(ipRangeCIDRPattern.test(input)){
 		const [ip, maskLength] = input.split("/");
 		switch(maskLength){
@@ -861,9 +860,11 @@ export function getIPRange(input:string, error?:(message:string) => never):strin
 				error?.(`Mindustry does not currently support netmasks other than /16 and /24`);
 				return null;
 		}
-	} else if((out = ipRangeWildcardPattern.exec(input)) != null){
-		const [_, ab, c] = out;
-		if(c !== undefined) return `${ab}.${c}.`;
-		return `${ab}.`;
+	} else if(ipRangeWildcardPattern.test(input)){
+		//1.2.3.*
+		//1.2.*
+		const [a, b, c, d] = input.split(".");
+		if(c !== "*") return `${a}.${b}.${c}.`;
+		return `${a}.${b}.`;
 	} else return null;
 }
