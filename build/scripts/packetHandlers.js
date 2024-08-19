@@ -153,16 +153,16 @@ exports.commands = (0, commands_1.commandList)({
             var output = _a.output;
             var outputLines = [];
             if (lastAccessedLabel && lastLabel) {
-                outputLines.push("".concat(lastAccessedLabel.name, " created label \"").concat(lastLabel, "\"."));
+                outputLines.push("".concat(lastAccessedLabel.name, "[] created label \"").concat(lastLabel, "\"."));
             }
             if (lastAccessedBulkLabel) {
-                outputLines.push("".concat(lastAccessedBulkLabel.name, " last used the bulk label effect."));
+                outputLines.push("".concat(lastAccessedBulkLabel.name, "[] last used the bulk label effect."));
             }
             if (lastAccessedLine) {
-                outputLines.push("".concat(lastAccessedLine.name, " last used the line effect."));
+                outputLines.push("".concat(lastAccessedLine.name, "[] last used the line effect."));
             }
             if (lastAccessedBulkLine) {
-                outputLines.push("".concat(lastAccessedBulkLine.name, " last used the bulk line effect."));
+                outputLines.push("".concat(lastAccessedBulkLine.name, "[] last used the bulk line effect."));
             }
             output(outputLines.length > 0 ? outputLines.join('\n') : 'No packet handlers have been accessed yet.');
         }
