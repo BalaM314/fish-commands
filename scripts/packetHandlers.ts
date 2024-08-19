@@ -167,16 +167,16 @@ export const commands = commandList({
 			const outputLines:string[] = [];
 
 			if (lastAccessedLabel && lastLabel) {
-				outputLines.push(`${lastAccessedLabel.name} created label "${lastLabel}".`);
+				outputLines.push(`${lastAccessedLabel.name}[] created label "${lastLabel}".`);
 			}
 			if (lastAccessedBulkLabel) {
-				outputLines.push(`${lastAccessedBulkLabel.name} last used the bulk label effect.`);
+				outputLines.push(`${lastAccessedBulkLabel.name}[] last used the bulk label effect.`);
 			}
 			if (lastAccessedLine) {
-				outputLines.push(`${lastAccessedLine.name} last used the line effect.`);
+				outputLines.push(`${lastAccessedLine.name}[] last used the line effect.`);
 			}
 			if (lastAccessedBulkLine) {
-				outputLines.push(`${lastAccessedBulkLine.name} last used the bulk line effect.`);
+				outputLines.push(`${lastAccessedBulkLine.name}[] last used the bulk line effect.`);
 			}
 
 			output(outputLines.length > 0 ? outputLines.join('\n') : 'No packet handlers have been accessed yet.');
