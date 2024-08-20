@@ -1031,7 +1031,6 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
     });
 });
 function getIPRange(input, error) {
-    var out;
     if (globals_1.ipRangeCIDRPattern.test(input)) {
         var _a = __read(input.split("/"), 2), ip = _a[0], maskLength = _a[1];
         switch (maskLength) {
@@ -1044,11 +1043,13 @@ function getIPRange(input, error) {
                 return null;
         }
     }
-    else if ((out = globals_1.ipRangeWildcardPattern.exec(input)) != null) {
-        var _b = __read(out, 3), _ = _b[0], ab = _b[1], c = _b[2];
-        if (c !== undefined)
-            return "".concat(ab, ".").concat(c, ".");
-        return "".concat(ab, ".");
+    else if (globals_1.ipRangeWildcardPattern.test(input)) {
+        //1.2.3.*
+        //1.2.*
+        var _b = __read(input.split("."), 4), a = _b[0], b = _b[1], c = _b[2], d = _b[3];
+        if (c !== "*")
+            return "".concat(a, ".").concat(b, ".").concat(c, ".");
+        return "".concat(a, ".").concat(b, ".");
     }
     else
         return null;
