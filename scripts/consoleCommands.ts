@@ -1,7 +1,7 @@
 import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";
-import { Mode, maxTime } from "./config";
+import { Mode, mapRepoURLs, maxTime } from "./config";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
@@ -594,6 +594,7 @@ ${FishPlayer.mapPlayers(p =>
 		args: ["filename:string", "map:string"],
 		description: "Downloads a map from URL.",
 		handler({args:{filename, map}, output, outputFail, outputSuccess}){
+			fail(`This command was removed, please add it to the github repo: ${mapRepoURLs[Mode.name()]}`);
 			if(!/^https?:\/\//i.test(map)) fail(`Argument must be a URL starting with https:// or http://`);
 			if(!/\.msav$/.test(filename)) fail(`Filename must end with .msav`);
 			if(Strings.sanitizeFilename(filename) != filename) fail(`Filename contains special characters, please use "${Strings.sanitizeFilename(filename)}" instead`);

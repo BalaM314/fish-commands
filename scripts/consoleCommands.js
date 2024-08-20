@@ -698,6 +698,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Downloads a map from URL.",
         handler: function (_a) {
             var _b = _a.args, filename = _b.filename, map = _b.map, output = _a.output, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
+            (0, commands_1.fail)("This command was removed, please add it to the github repo: ".concat(config_1.mapRepoURLs[config_1.Mode.name()]));
             if (!/^https?:\/\//i.test(map))
                 (0, commands_1.fail)("Argument must be a URL starting with https:// or http://");
             if (!/\.msav$/.test(filename))
