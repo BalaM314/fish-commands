@@ -109,12 +109,14 @@ function initializeTimers() {
 }
 exports.initializeTimers = initializeTimers;
 Timer.schedule(function () {
-    Call.sendMessage("[orange]Automated map updates have started.");
+    Call.sendMessage("[orange]Updating maps...");
     (0, files_1.updateMaps)()
         .then(function () {
+        Call.sendMessage("[orange]Maps updated.");
         Log.info("Automated map updates complete.");
     })
         .catch(function (message) {
+        Call.sendMessage("[orange]Maps update failed.");
         Log.err("Automated map update failed: ".concat(message));
     });
 }, 60, 1800);
