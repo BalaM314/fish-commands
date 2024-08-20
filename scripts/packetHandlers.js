@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = exports.loadPacketHandlers = void 0;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
+//some much needed restrictions
+var MIN_EFFECT_TPS = 10; // point in which effects will refuse to render
+var MAX_LABEL_TIME = 30; // maximum duration for user-created labels (seconds)
 //info tracker
 var lastLabel = '';
 var lastAccessedBulkLabel = null;
@@ -16,6 +19,7 @@ var tooLongText = '[red]Bulk content length exceeded, please use fewer effects.'
 var bulkSeparator = '|';
 var procError = '[red]An error occured while processing your request.';
 var invalidReq = '[red]Invalid request. Please consult the documentation.';
+var lowTPSError = '[red]Low server TPS, skipping request.';
 var tmpLinePacket = new EffectCallPacket2();
 var tmpLabelPacket = new LabelReliableCallPacket();
 function loadPacketHandlers() {
@@ -27,6 +31,10 @@ function loadPacketHandlers() {
     //labels
     //fmt: "content,duration,x,y"
     Vars.netServer.addPacketHandler('label', function (player, content) {
+        if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
+            player.sendMessage(lowTPSError);
+            return;
+        }
         try {
             var p = players_1.FishPlayer.get(player);
             if (!p.hasPerm("visualEffects")) {
@@ -43,6 +51,10 @@ function loadPacketHandlers() {
         }
     });
     Vars.netServer.addPacketHandler('bulkLabel', function (player, content) {
+        if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
+            player.sendMessage(lowTPSError);
+            return;
+        }
         var p = players_1.FishPlayer.get(player);
         try {
             if (!p.hasPerm('bulkLabelPacket')) {
@@ -97,6 +109,10 @@ function loadPacketHandlers() {
     });
     //lines
     Vars.netServer.addPacketHandler('lineEffect', function (player, content) {
+        if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
+            player.sendMessage(lowTPSError);
+            return;
+        }
         var p = players_1.FishPlayer.get(player);
         try {
             if (!p.hasPerm("visualEffects")) {
@@ -115,6 +131,10 @@ function loadPacketHandlers() {
     });
     //this is the silas effect but it's way too real
     Vars.netServer.addPacketHandler('bulkLineEffect', function (player, content) {
+        if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
+            player.sendMessage(lowTPSError);
+            return;
+        }
         var p = players_1.FishPlayer.get(player);
         try {
             if (!p.hasPerm('bulkLabelPacket')) {
@@ -153,16 +173,16 @@ exports.commands = (0, commands_1.commandList)({
             var output = _a.output;
             var outputLines = [];
             if (lastAccessedLabel && lastLabel) {
-                outputLines.push("".concat(lastAccessedLabel.name, " created label \"").concat(lastLabel, "\"."));
+                outputLines.push("".concat(lastAccessedLabel.name, "[] created label \"").concat(lastLabel, "\"."));
             }
             if (lastAccessedBulkLabel) {
-                outputLines.push("".concat(lastAccessedBulkLabel.name, " last used the bulk label effect."));
+                outputLines.push("".concat(lastAccessedBulkLabel.name, "[] last used the bulk label effect."));
             }
             if (lastAccessedLine) {
-                outputLines.push("".concat(lastAccessedLine.name, " last used the line effect."));
+                outputLines.push("".concat(lastAccessedLine.name, "[] last used the line effect."));
             }
             if (lastAccessedBulkLine) {
-                outputLines.push("".concat(lastAccessedBulkLine.name, " last used the bulk line effect."));
+                outputLines.push("".concat(lastAccessedBulkLine.name, "[] last used the bulk line effect."));
             }
             output(outputLines.length > 0 ? outputLines.join('\n') : 'No packet handlers have been accessed yet.');
         }
@@ -173,25 +193,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, output = _a.output;
-            var responseLines = [];
-            var canBulk = sender.hasPerm('bulkLabelPacket');
-            responseLines.push('Line effect: "lineEffect", "x0,y0,x1,y1,hexColor" (for example "20.7,19.3,50.4,28.9,#FF0000")\n');
-            if (canBulk)
-                responseLines.push('Bulk line effect: "bulkLineEffect", equivalent to multiple lineEffect packets, with every line separated by a \'|\' symbol.\n');
-            responseLines.push('Label effect: "label", "content,duration,x,y" (for example ""Hi!",10,20,28")\n');
-            if (canBulk)
-                responseLines.push('Bulk label effect: "bulkLabel", equivalent to multiple label packets, with every label separated by a \'|\' symbol.\n');
-            responseLines.push('Use "Call.serverPacketReliable" to send these.');
-            responseLines.push('You need to multiply world coordinates by Vars.tilesize (8) for things to work properly. This is a relic from the v3 days where every tile was 8 pixels.');
-            responseLines.push('Keep in mind there\'s a packet spam limit. Use at your own risk.');
-            responseLines.push(''); //empty line
-            //credit
-            responseLines.push('These packet handlers and everything related to them were made by [green]frog[white].');
-            responseLines.push('"The code style when submitted was beyond drunk... but it worked... barely"\n    -BalaM314');
-            responseLines.push('"worst error handling i have ever seen, why kick the player???"\n    -ASimpleBeginner');
-            responseLines.push('Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[white].');
-            //bulkInfoMsg(responseLines, sender.player.con as NetConnection);
-            output(responseLines.join('\n'));
+            output("\t\t\t\t\t        [blue]FISH[white] Packet Handler Docs\n[white]Usage:[accent]\n\t- Run the javascript function \"Call.serverPacketReliable()\" to send these. (!js in foos)\n\t- You need to multiply world coordinates by Vars.tilesize (8) for things to work properly. This is a relic from the v3 days where every tile was 8 pixels.\n\n[white]Packet types[accent]:\n\t- Line effect: \"lineEffect\", \"x0,y0,x1,y1,hexColor\" (for example \"20.7,19.3,50.4,28.9,#FF0000\")\n\t- Bulk line effect: \"bulkLineEffect\", equivalent to multiple lineEffect packets, with every line separated by a '|' symbol.\n\t- Label effect: \"label\", \"content,duration,x,y\" (for example \"\"Hi!\",10,20,28\")\n\t- Bulk label effect: \"bulkLabel\", equivalent to multiple label packets, with every label separated by a '|' symbol.\n\n[white]Limitations[accent]:\n\t- You ".concat((sender.hasPerm('bulkLabelPacket') ? ("[green]have been granted[accent]") : ("[red]do not[accent]")), " have access to bulk effects.\n\t- Effects will no longer be drawn at ").concat(MIN_EFFECT_TPS, " for server preformance.\n\t- Labels cannot last longer than ").concat(MAX_LABEL_TIME, " seconds.\n\t- There is a set ratelimit for sending packets, be careful ...\n\n[white]Starter Example[accent]:\n\n\tTo place a label saying \"hello\" at (0,0);\n\tFoos users : [lightgray]!js Call.serverPacketReliable(\"label\", [\"\\\"hello\\\"\", 10, 0, 0].join(\",\"))[accent]\n\tnewConsole users :  [lightgrey]Call.serverPacketReliable(\"label\", [\"hello\", 10, 0, 10].join(\",\"))[accent]\n\n[white]Comments and Credits[accent]:\n\t- 'These packet handlers and everything related to them were made by [green]frog[accent].\n\t- 'The code style when submitted was beyond drunk... but it worked... barely' -BalaM314\n\t- \"worst error handling i have ever seen, why kick the player???\" -ASimpleBeginner'\n\t- Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[accent].'\n\t- Small tweaks by [#00cf]s[#00bf]w[#009f]a[#007f]m[#005f]p[accent]"));
         }
     }
 });
@@ -224,6 +226,12 @@ function handleLabel(player, content, isSingle) {
     }
     if (isSingle) {
         lastLabel = message;
+    }
+    //do not mind me, just dropping this quick check in here
+    var duration = Number(parts[0]);
+    if (Number.isNaN(duration) || duration > MAX_LABEL_TIME) {
+        player.sendMessage(invalidReq);
+        return false;
     }
     /*Call.labelReliable(
         message,          //message
