@@ -112,4 +112,3 @@ var Promise = /** @class */ (function () {
     return Promise;
 }());
 exports.Promise = Promise;
-our;

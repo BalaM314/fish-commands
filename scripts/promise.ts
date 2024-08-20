@@ -125,5 +125,3 @@ export class Promise<TResolve, TReject> {
 		return new Promise((resolve) => resolve(value));
 	}
 }
-declare const our: Promise<number, string>;
-our satisfies PromiseLike<number>;
