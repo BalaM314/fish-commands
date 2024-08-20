@@ -39,11 +39,47 @@ export class Promise<TResolve, TReject> {
 		const state = this.state as ["rejected", TReject];
 		this.rejectHandlers.forEach(h => h(state[1]));
 	}
-	then<UResolve, UReject>(callback:(value:TResolve) => (UResolve | Promise<UResolve, UReject>)){
-		const {promise, resolve, reject} = Promise.withResolvers<UResolve, UReject>();
-		this.resolveHandlers.push(
+	then<UResolve, UReject>(
+		onFulfilled:((value:TResolve) => (UResolve | Promise<UResolve, UReject>)),
+	):Promise<UResolve, TReject | UReject>;
+	then<UResolve1, UResolve2, UReject1, UReject2>(
+		onFulfilled?:((value:TResolve) => (UResolve1 | Promise<UResolve1, UReject1>)) | null | undefined,
+		onRejected?:((error:TReject) => (UResolve2 | Promise<UResolve2, UReject2>)) | null | undefined,
+	):Promise<TResolve | UResolve1 | UResolve2, TReject | UReject1 | UReject2>;
+	then<UResolve1, UResolve2, UReject1, UReject2>(
+		onFulfilled?:((value:TResolve) => (UResolve1 | Promise<UResolve1, UReject1>)) | null | undefined,
+		onRejected?:((error:TReject) => (UResolve2 | Promise<UResolve2, UReject2>)) | null | undefined
+	){
+		const {promise, resolve, reject} = Promise.withResolvers<TResolve | UResolve1 | UResolve2, TReject | UReject1 | UReject2>();
+		if(onFulfilled){
+			this.resolveHandlers.push(value => {
+				const result = onFulfilled(value);
+				if(result instanceof Promise){
+					result.then(nextResult => resolve(nextResult));
+				} else {
+					resolve(result);
+				}
+			});
+		}
+		if(onRejected){
+			this.rejectHandlers.push(
+				value => {
+					const result = onRejected(value);
+					if(result instanceof Promise){
+						result.then(nextResult => resolve(nextResult));
+					} else {
+						resolve(result);
+					}
+				}
+			);
+		}
+		return promise;
+	}
+	catch<UResolve, UReject>(onRejected:(error:TReject) => (UResolve | Promise<UResolve, UReject>)){
+		const {promise, resolve, reject} = Promise.withResolvers<TResolve | UResolve, UReject>();
+		this.rejectHandlers.push(
 			value => {
-				const result = callback(value);
+				const result = onRejected(value);
 				if(result instanceof Promise){
 					result.then(nextResult => resolve(nextResult));
 				} else {
@@ -51,19 +87,9 @@ export class Promise<TResolve, TReject> {
 				}
 			}
 		);
-		return promise;
-	}
-	catch<UResolve, UReject>(callback:(error:TReject) => (UResolve | Promise<UResolve, UReject>)){
-		const {promise, resolve, reject} = Promise.withResolvers<UResolve, UReject>();
-		this.rejectHandlers.push(
-			value => {
-				const result = callback(value);
-				if(result instanceof Promise){
-					result.then(nextResult => resolve(nextResult));
-				} else {
-					resolve(result);
-				}
-			}
+		//If the original promise resolves successfully, the new one also needs to resolve
+		this.resolveHandlers.push(
+			value => resolve(value)
 		);
 		return promise;
 	}
@@ -99,3 +125,5 @@ export class Promise<TResolve, TReject> {
 		return new Promise((resolve) => resolve(value));
 	}
 }
+declare const our: Promise<number, string>;
+our satisfies PromiseLike<number>;

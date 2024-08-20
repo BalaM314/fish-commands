@@ -38,23 +38,36 @@ var Promise = /** @class */ (function () {
         var state = this.state;
         this.rejectHandlers.forEach(function (h) { return h(state[1]); });
     };
-    Promise.prototype.then = function (callback) {
+    Promise.prototype.then = function (onFulfilled, onRejected) {
         var _a = Promise.withResolvers(), promise = _a.promise, resolve = _a.resolve, reject = _a.reject;
-        this.resolveHandlers.push(function (value) {
-            var result = callback(value);
-            if (result instanceof Promise) {
-                result.then(function (nextResult) { return resolve(nextResult); });
-            }
-            else {
-                resolve(result);
-            }
-        });
+        if (onFulfilled) {
+            this.resolveHandlers.push(function (value) {
+                var result = onFulfilled(value);
+                if (result instanceof Promise) {
+                    result.then(function (nextResult) { return resolve(nextResult); });
+                }
+                else {
+                    resolve(result);
+                }
+            });
+        }
+        if (onRejected) {
+            this.rejectHandlers.push(function (value) {
+                var result = onRejected(value);
+                if (result instanceof Promise) {
+                    result.then(function (nextResult) { return resolve(nextResult); });
+                }
+                else {
+                    resolve(result);
+                }
+            });
+        }
         return promise;
     };
-    Promise.prototype.catch = function (callback) {
+    Promise.prototype.catch = function (onRejected) {
         var _a = Promise.withResolvers(), promise = _a.promise, resolve = _a.resolve, reject = _a.reject;
         this.rejectHandlers.push(function (value) {
-            var result = callback(value);
+            var result = onRejected(value);
             if (result instanceof Promise) {
                 result.then(function (nextResult) { return resolve(nextResult); });
             }
@@ -62,6 +75,8 @@ var Promise = /** @class */ (function () {
                 resolve(result);
             }
         });
+        //If the original promise resolves successfully, the new one also needs to resolve
+        this.resolveHandlers.push(function (value) { return resolve(value); });
         return promise;
     };
     Promise.withResolvers = function () {
@@ -97,3 +112,4 @@ var Promise = /** @class */ (function () {
     return Promise;
 }());
 exports.Promise = Promise;
+our;

@@ -22,7 +22,6 @@ function fetchGithubContents() {
         }, function () { return reject("Network error while fetching github repository contents"); });
     });
 }
-//clean? no. functional? yeah.
 function downloadFile(address, filename) {
     if (!/^https?:\/\//i.test(address)) {
         (0, utils_js_1.crash)("Invalid address, please start with 'http://' or 'https://'");
@@ -44,7 +43,7 @@ function downloadFile(address, filename) {
             }
         }, function () {
             Log.err("Download failed.");
-            reject("Network error while o");
+            reject("Network error while downloading a map file: ".concat(address));
         });
     });
 }

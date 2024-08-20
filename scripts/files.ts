@@ -34,7 +34,6 @@ function fetchGithubContents(){
 	});
 }
 
-//clean? no. functional? yeah.
 function downloadFile(address:string, filename:string):Promise<void, string> {
 	if(!/^https?:\/\//i.test(address)){
 		crash(`Invalid address, please start with 'http://' or 'https://'`);
@@ -57,7 +56,7 @@ function downloadFile(address:string, filename:string):Promise<void, string> {
 		}, 
 		() => {
 			Log.err(`Download failed.`);
-			reject(`Network error while o`);
+			reject(`Network error while downloading a map file: ${address}`);
 		});
 	});
 }
