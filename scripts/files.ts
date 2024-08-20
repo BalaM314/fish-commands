@@ -85,6 +85,7 @@ export function updateMaps():Promise<void, string> {
 			!mapList.some(remoteFile =>
 				remoteFile.name === localFile.name()
 			)
+			&& !localFile.name().startsWith("$$")
 		);
 		removedMaps.forEach((map) => {
 			Log.info(`Deleting map ${map.name()}`);

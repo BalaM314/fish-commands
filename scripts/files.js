@@ -67,7 +67,8 @@ function updateMaps() {
         var removedMaps = mapFiles.filter(function (localFile) {
             return !mapList.some(function (remoteFile) {
                 return remoteFile.name === localFile.name();
-            });
+            })
+                && !localFile.name().startsWith("$$");
         });
         removedMaps.forEach(function (map) {
             Log.info("Deleting map ".concat(map.name()));
