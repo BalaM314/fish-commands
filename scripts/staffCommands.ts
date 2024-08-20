@@ -7,7 +7,7 @@ import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { addToTileHistory, colorBadBoolean, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
+import { addToTileHistory, colorBadBoolean, crash, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
 
 const spawnedUnits:Unit[] = [];
 
@@ -505,7 +505,9 @@ export const commands = commandList({
 		description: "Sets the block at tapped locations, repeatedly.",
 		perm: Perm.admin,
 		tapped({args, sender, f, x, y, outputSuccess}){
-			if(!args.block) return;
+
+			if(!args.block) crash(`uh oh`);
+
 			const team = args.team ?? sender.team();
 			const tile = Vars.world.tile(x, y);
 			if(args.rotation != null && (args.rotation < 0 || args.rotation > 3)) fail(f`Invalid rotation ${args.rotation}`)
@@ -521,13 +523,20 @@ export const commands = commandList({
 			logAction(`set block to ${args.block.localizedName} at ${x},${y}`, sender);
 			outputSuccess(f`Set block at ${x}, ${y} to ${args.block}`);
 		},
-		handler({outputSuccess, handleTaps, currentTapMode}){
-			if(currentTapMode != "off"){
-				handleTaps("off");
-				outputSuccess("setblockr disabled.");
+		handler({args, outputSuccess, handleTaps, currentTapMode, f}){
+			if(args.block){
+				if(currentTapMode == "off"){
+					outputSuccess("setblockr enabled.\n[scarlet]Be careful, you have the midas touch now![] Turn it off by running /setblockr again.");
+				} else {
+					outputSuccess(f`Changed setblockr's block to ${args.block}`);
+				}
 			} else {
-				handleTaps("on");
-				outputSuccess("setblockr enabled.\n[scarlet]Be careful, you have the midas touch now![] Turn it off by running /setblockr again.");
+				if(currentTapMode == "off"){
+					fail(`Please specify the block to place.`);
+				} else {
+					handleTaps("off");
+					outputSuccess("setblockr disabled.");
+				}
 			}
 		}
 	},
