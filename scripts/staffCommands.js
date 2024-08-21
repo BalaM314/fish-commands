@@ -581,6 +581,7 @@ exports.commands = (0, commands_1.commandList)({
             var args = _a.args, outputSuccess = _a.outputSuccess, handleTaps = _a.handleTaps, currentTapMode = _a.currentTapMode, f = _a.f;
             if (args.block) {
                 if (currentTapMode == "off") {
+                    handleTaps("on");
                     outputSuccess("setblockr enabled.\n[scarlet]Be careful, you have the midas touch now![] Turn it off by running /setblockr again.");
                 }
                 else {
