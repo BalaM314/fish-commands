@@ -944,6 +944,8 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
         tile = e.unit.tileOn();
         if (!tile)
             return;
+        if (!e.unit.type.playerControllable)
+            return;
         uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : (_t = e.unit.lastCommanded) !== null && _t !== void 0 ? _t : "unknown";
         action = "killed";
         type = e.unit.type.name;
