@@ -192,16 +192,16 @@ export const commands = commandList({
 			const outputLines:string[] = [];
 
 			if (lastAccessedLabel && lastLabel) {
-				outputLines.push(`${lastAccessedLabel.name}[] created label "${lastLabel}".`);
+				outputLines.push(`${lastAccessedLabel.name}[white] created label "${lastLabel}".`);
 			}
 			if (lastAccessedBulkLabel) {
-				outputLines.push(`${lastAccessedBulkLabel.name}[] last used the bulk label effect.`);
+				outputLines.push(`${lastAccessedBulkLabel.name}[white] last used the bulk label effect.`);
 			}
 			if (lastAccessedLine) {
-				outputLines.push(`${lastAccessedLine.name}[] last used the line effect.`);
+				outputLines.push(`${lastAccessedLine.name}[white] last used the line effect.`);
 			}
 			if (lastAccessedBulkLine) {
-				outputLines.push(`${lastAccessedBulkLine.name}[] last used the bulk line effect.`);
+				outputLines.push(`${lastAccessedBulkLine.name}[white] last used the bulk line effect.`);
 			}
 
 			output(outputLines.length > 0 ? outputLines.join('\n') : 'No packet handlers have been accessed yet.');
@@ -225,7 +225,7 @@ export const commands = commandList({
 	- Bulk label effect: "bulkLabel", equivalent to multiple label packets, with every label separated by a \'|\' symbol.
 
 [white]Limitations[accent]:
-	- You ${(sender.hasPerm('bulkLabelPacket')?(`[green]have been granted[accent]`):(`[red]do not[accent]`))} have access to bulk effects.
+	- You ${(sender.hasPerm('bulkLabelPacket')?(`[green]have been granted[accent]`):(`[red]do not have[accent]`))} access to bulk effects.
 	- Effects will no longer be drawn at ${MIN_EFFECT_TPS} for server preformance.
 	- Labels cannot last longer than ${MAX_LABEL_TIME} seconds.
 	- There is a set ratelimit for sending packets, be careful ...

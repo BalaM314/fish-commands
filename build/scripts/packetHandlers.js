@@ -173,16 +173,16 @@ exports.commands = (0, commands_1.commandList)({
             var output = _a.output;
             var outputLines = [];
             if (lastAccessedLabel && lastLabel) {
-                outputLines.push("".concat(lastAccessedLabel.name, "[] created label \"").concat(lastLabel, "\"."));
+                outputLines.push("".concat(lastAccessedLabel.name, "[white] created label \"").concat(lastLabel, "\"."));
             }
             if (lastAccessedBulkLabel) {
-                outputLines.push("".concat(lastAccessedBulkLabel.name, "[] last used the bulk label effect."));
+                outputLines.push("".concat(lastAccessedBulkLabel.name, "[white] last used the bulk label effect."));
             }
             if (lastAccessedLine) {
-                outputLines.push("".concat(lastAccessedLine.name, "[] last used the line effect."));
+                outputLines.push("".concat(lastAccessedLine.name, "[white] last used the line effect."));
             }
             if (lastAccessedBulkLine) {
-                outputLines.push("".concat(lastAccessedBulkLine.name, "[] last used the bulk line effect."));
+                outputLines.push("".concat(lastAccessedBulkLine.name, "[white] last used the bulk line effect."));
             }
             output(outputLines.length > 0 ? outputLines.join('\n') : 'No packet handlers have been accessed yet.');
         }
@@ -193,7 +193,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, output = _a.output;
-            output("\t\t\t\t\t        [blue]FISH[white] Packet Handler Docs\n[white]Usage:[accent]\n\t- Run the javascript function \"Call.serverPacketReliable()\" to send these. (!js in foos)\n\t- You need to multiply world coordinates by Vars.tilesize (8) for things to work properly. This is a relic from the v3 days where every tile was 8 pixels.\n\n[white]Packet types[accent]:\n\t- Line effect: \"lineEffect\", \"x0,y0,x1,y1,hexColor\" (for example \"20.7,19.3,50.4,28.9,#FF0000\")\n\t- Bulk line effect: \"bulkLineEffect\", equivalent to multiple lineEffect packets, with every line separated by a '|' symbol.\n\t- Label effect: \"label\", \"content,duration,x,y\" (for example \"\"Hi!\",10,20,28\")\n\t- Bulk label effect: \"bulkLabel\", equivalent to multiple label packets, with every label separated by a '|' symbol.\n\n[white]Limitations[accent]:\n\t- You ".concat((sender.hasPerm('bulkLabelPacket') ? ("[green]have been granted[accent]") : ("[red]do not[accent]")), " have access to bulk effects.\n\t- Effects will no longer be drawn at ").concat(MIN_EFFECT_TPS, " for server preformance.\n\t- Labels cannot last longer than ").concat(MAX_LABEL_TIME, " seconds.\n\t- There is a set ratelimit for sending packets, be careful ...\n\n[white]Starter Example[accent]:\n\n\tTo place a label saying \"hello\" at (0,0);\n\tFoos users : [lightgray]!js Call.serverPacketReliable(\"label\", [\"\\\"hello\\\"\", 10, 0, 0].join(\",\"))[accent]\n\tnewConsole users :  [lightgrey]Call.serverPacketReliable(\"label\", [\"hello\", 10, 0, 10].join(\",\"))[accent]\n\n[white]Comments and Credits[accent]:\n\t- 'These packet handlers and everything related to them were made by [green]frog[accent].\n\t- 'The code style when submitted was beyond drunk... but it worked... barely' -BalaM314\n\t- \"worst error handling i have ever seen, why kick the player???\" -ASimpleBeginner'\n\t- Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[accent].'\n\t- Small tweaks by [#00cf]s[#00bf]w[#009f]a[#007f]m[#005f]p[accent]"));
+            output("\t\t\t\t\t        [blue]FISH[white] Packet Handler Docs\n[white]Usage:[accent]\n\t- Run the javascript function \"Call.serverPacketReliable()\" to send these. (!js in foos)\n\t- You need to multiply world coordinates by Vars.tilesize (8) for things to work properly. This is a relic from the v3 days where every tile was 8 pixels.\n\n[white]Packet types[accent]:\n\t- Line effect: \"lineEffect\", \"x0,y0,x1,y1,hexColor\" (for example \"20.7,19.3,50.4,28.9,#FF0000\")\n\t- Bulk line effect: \"bulkLineEffect\", equivalent to multiple lineEffect packets, with every line separated by a '|' symbol.\n\t- Label effect: \"label\", \"content,duration,x,y\" (for example \"\"Hi!\",10,20,28\")\n\t- Bulk label effect: \"bulkLabel\", equivalent to multiple label packets, with every label separated by a '|' symbol.\n\n[white]Limitations[accent]:\n\t- You ".concat((sender.hasPerm('bulkLabelPacket') ? ("[green]have been granted[accent]") : ("[red]do not have[accent]")), " access to bulk effects.\n\t- Effects will no longer be drawn at ").concat(MIN_EFFECT_TPS, " for server preformance.\n\t- Labels cannot last longer than ").concat(MAX_LABEL_TIME, " seconds.\n\t- There is a set ratelimit for sending packets, be careful ...\n\n[white]Starter Example[accent]:\n\n\tTo place a label saying \"hello\" at (0,0);\n\tFoos users : [lightgray]!js Call.serverPacketReliable(\"label\", [\"\\\"hello\\\"\", 10, 0, 0].join(\",\"))[accent]\n\tnewConsole users :  [lightgrey]Call.serverPacketReliable(\"label\", [\"hello\", 10, 0, 10].join(\",\"))[accent]\n\n[white]Comments and Credits[accent]:\n\t- 'These packet handlers and everything related to them were made by [green]frog[accent].\n\t- 'The code style when submitted was beyond drunk... but it worked... barely' -BalaM314\n\t- \"worst error handling i have ever seen, why kick the player???\" -ASimpleBeginner'\n\t- Most of the code was rewritten in 2024 by [#6e00fb]D[#9e15de]a[#cd29c2]r[#fd3ea5]t[accent].'\n\t- Small tweaks by [#00cf]s[#00bf]w[#009f]a[#007f]m[#005f]p[accent]"));
         }
     }
 });
