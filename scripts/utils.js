@@ -37,7 +37,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.crash = exports.untilForever = exports.setType = exports.logHTrip = exports.random = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.repeatAlternate = exports.matchFilter = exports.escapeTextDiscord = exports.capitalizeText = exports.EventEmitter = exports.StringIO = exports.StringBuilder = exports.getTeam = exports.setToArray = exports.nearbyEnemyTile = exports.getColor = exports.to2DArray = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatModeName = exports.formatTime = exports.memoize = exports.keys = exports.list = exports.logg = void 0;
-exports.getIPRange = exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = void 0;
+exports.getHash = exports.getIPRange = exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = void 0;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -1055,3 +1055,35 @@ function getIPRange(input, error) {
         return null;
 }
 exports.getIPRange = getIPRange;
+//this brings me physical pain
+function getHash(file, algorithm) {
+    if (algorithm === void 0) { algorithm = "SHA-1"; }
+    try {
+        var header = "blob ".concat(file.length(), "\0");
+        var fileSHAHeader = Packages.java.nio.charset.StandardCharsets.UTF_8.encode(header);
+        var contents = file.readBytes();
+        var buffer = Packages.java.nio.ByteBuffer.allocate(fileSHAHeader.remaining() + contents.length);
+        buffer.put(fileSHAHeader);
+        buffer.put(contents);
+        buffer.flip();
+        var digest = Packages.java.security.MessageDigest.getInstance(algorithm);
+        digest.update(buffer);
+        var hashed = digest.digest();
+        var hexed = "";
+        for (var i = 0; i < hashed.length; i++) {
+            var hex = Packages.java.lang.Integer.toHexString(hashed[i] & 0xFF);
+            if (hex.length === 1) {
+                hexed += "0" + hex;
+            }
+            else {
+                hexed += hex;
+            }
+        }
+        return hexed.toLowerCase();
+    }
+    catch (e) {
+        Log.err("Cannot generate ".concat(algorithm, ", ").concat(e));
+        return undefined;
+    }
+}
+exports.getHash = getHash;

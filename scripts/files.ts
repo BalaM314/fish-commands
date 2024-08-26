@@ -1,6 +1,6 @@
 import { mapRepoURLs, Mode } from "./config";
 import { Promise } from "./promise.js";
-import { crash } from "./utils.js";
+import { crash, getHash } from "./utils.js";
 
 
 
@@ -95,10 +95,8 @@ export function updateMaps():Promise<void, string> {
 		let newMaps = mapList
 			.filter(entry => {
 				const file = Vars.customMapDirectory.child(entry.name);
-				//TODO compare sha
-				return !file.exists() || file.length() == 0;
+				return !file.exists() || entry.sha !== getHash(file); //sha'd
 			});
-
 		
 		if(newMaps.length == 0){
 			Log.info(`No map updates found.`);

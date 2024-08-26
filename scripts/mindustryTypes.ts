@@ -410,6 +410,7 @@ class Fi {
 	write():OutputStream;
 	list():Fi[];
 	name():string;
+	readBytes():any[];
 }
 
 class Pattern {
