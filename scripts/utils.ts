@@ -779,6 +779,7 @@ export const addToTileHistory = logErrors("Error while saving a tilelog entry", 
 	} else if(e instanceof EventType.UnitDestroyEvent){
 		tile = e.unit.tileOn();
 		if(!tile) return;
+		if(!e.unit.type.playerControllable) return;
 		uuid = e.unit.isPlayer() ? e.unit.getPlayer().uuid() : e.unit.lastCommanded ?? "unknown";
 		action = "killed";
 		type = e.unit.type.name;
