@@ -869,3 +869,24 @@ export function getIPRange(input:string, error?:(message:string) => never):strin
 		return `${a}.${b}.`;
 	} else return null;
 }
+
+//this brings me physical pain
+export function getHash(file: Fi, algorithm: string = "SHA-1"): string | undefined {
+	try {
+		const header = `blob ${file.length()}\0`;
+		const fileSHAHeader = Packages.java.nio.charset.StandardCharsets.UTF_8.encode(header);
+		const contents = file.readBytes();
+		const buffer = Packages.java.nio.ByteBuffer.allocate(fileSHAHeader.remaining() + contents.length) as ByteBuffer;
+		buffer.put(fileSHAHeader);
+		buffer.put(contents);
+		buffer.flip();
+		const digest = Packages.java.security.MessageDigest.getInstance(algorithm) as MessageDigest;
+		digest.update(buffer);
+		return digest.digest().map(byte =>
+			(byte & 0xFF).toString(16).padStart(2, "0")
+		).join("");
+	} catch (e) {
+		Log.err(`Cannot generate ${algorithm}, ${e}`);
+		return undefined;
+	}
+}

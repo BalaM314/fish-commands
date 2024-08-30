@@ -27,7 +27,9 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.menu = exports.listeners = exports.registerListeners = void 0;
+exports.listeners = void 0;
+exports.registerListeners = registerListeners;
+exports.menu = menu;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
@@ -70,7 +72,6 @@ function registerListeners() {
         finally { if (e_1) throw e_1.error; }
     }
 }
-exports.registerListeners = registerListeners;
 //this is a minor abomination but theres no good way to do overloads in typescript
 function menu(title, description, options, target, callback, includeCancel, optionStringifier, //this is dubious
 columns) {
@@ -127,4 +128,3 @@ columns) {
         Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
     }
 }
-exports.menu = menu;

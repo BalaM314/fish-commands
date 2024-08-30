@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateMaps = void 0;
+exports.updateMaps = updateMaps;
 var config_1 = require("./config");
 var promise_js_1 = require("./promise.js");
 var utils_js_1 = require("./utils.js");
@@ -77,8 +77,7 @@ function updateMaps() {
         var newMaps = mapList
             .filter(function (entry) {
             var file = Vars.customMapDirectory.child(entry.name);
-            //TODO compare sha
-            return !file.exists() || file.length() == 0;
+            return !file.exists() || entry.sha !== (0, utils_js_1.getHash)(file); //sha'd
         });
         if (newMaps.length == 0) {
             Log.info("No map updates found.");
@@ -90,4 +89,3 @@ function updateMaps() {
         });
     });
 }
-exports.updateMaps = updateMaps;

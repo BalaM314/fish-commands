@@ -410,6 +410,7 @@ class Fi {
 	write():OutputStream;
 	list():Fi[];
 	name():string;
+	readBytes():number[];
 }
 
 class Pattern {
@@ -580,5 +581,14 @@ class LabelReliableCallPacket {
 	worldx:number;
 	worldy:number;
 }
+
+type ByteBuffer = {
+	put(bytes:number[]):void;
+	flip():void;
+};
+type MessageDigest = {
+	update(buffer:ByteBuffer):void;
+	digest():number[];
+};
 
 }

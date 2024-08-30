@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Promise = exports.queueMicrotask = void 0;
+exports.Promise = void 0;
+exports.queueMicrotask = queueMicrotask;
 function queueMicrotask(callback, errorHandler) {
     if (errorHandler === void 0) { errorHandler = function (err) {
         Log.err("Uncaught (in promise)");
@@ -15,7 +16,6 @@ function queueMicrotask(callback, errorHandler) {
         }
     });
 }
-exports.queueMicrotask = queueMicrotask;
 var Promise = /** @class */ (function () {
     function Promise(initializer) {
         var _this = this;
