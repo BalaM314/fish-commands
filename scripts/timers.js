@@ -119,4 +119,4 @@ Timer.schedule(function () {
         Call.sendMessage("[orange]Maps update failed.");
         Log.err("Automated map update failed: ".concat(message));
     });
-}, 60, 1800);
+}, 60, 600);
