@@ -599,7 +599,6 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 
 }
 
-/** @deprecated */
 export function initialize(){
 	if(initialized){
 		crash("Already initialized commands.");

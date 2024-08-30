@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commands = exports.loadPacketHandlers = void 0;
+exports.commands = void 0;
+exports.loadPacketHandlers = loadPacketHandlers;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 //info tracker
@@ -142,7 +143,6 @@ function loadPacketHandlers() {
         }
     });
 }
-exports.loadPacketHandlers = loadPacketHandlers;
 //commands
 exports.commands = (0, commands_1.commandList)({
     pklast: {

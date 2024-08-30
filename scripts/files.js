@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateMaps = void 0;
+exports.updateMaps = updateMaps;
 var config_1 = require("./config");
 var promise_js_1 = require("./promise.js");
 var utils_js_1 = require("./utils.js");
@@ -89,4 +89,3 @@ function updateMaps() {
         });
     });
 }
-exports.updateMaps = updateMaps;

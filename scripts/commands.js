@@ -38,7 +38,14 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.CommandError = exports.formatArg = exports.Req = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
+exports.CommandError = exports.Req = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
+exports.command = command;
+exports.formatArg = formatArg;
+exports.fail = fail;
+exports.handleTapEvent = handleTapEvent;
+exports.register = register;
+exports.registerConsole = registerConsole;
+exports.initialize = initialize;
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -64,7 +71,6 @@ exports.consoleCommandList = consoleCommandList;
 function command(input) {
     return input;
 }
-exports.command = command;
 /** Represents a permission that is required to do something. */
 var Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
@@ -166,7 +172,6 @@ function formatArg(a) {
     var brackets = isOptional ? ["[", "]"] : ["<", ">"];
     return brackets[0] + a.split(":")[0] + brackets[1];
 }
-exports.formatArg = formatArg;
 /** Joins multi-word arguments that have been groups with quotes. Ex: turns [`"a`, `b"`] into [`a b`]*/
 function joinArgs(rawArgs) {
     var e_1, _a;
@@ -480,7 +485,6 @@ function fail(message) {
     Object.setPrototypeOf(err, exports.CommandError.prototype);
     throw err;
 }
-exports.fail = fail;
 /**Converts the CommandArg[] to the format accepted by Arc CommandHandler */
 function convertArgs(processedCmdArgs, allowMenus) {
     return processedCmdArgs.map(function (arg, index, array) {
@@ -539,7 +543,6 @@ function handleTapEvent(event) {
         usageData.tapLastUsed = Date.now();
     }
 }
-exports.handleTapEvent = handleTapEvent;
 /**
  * Registers all commands in a list to a client command handler.
  **/
@@ -649,7 +652,6 @@ function register(commands, clientHandler, serverHandler) {
         finally { if (e_3) throw e_3.error; }
     }
 }
-exports.register = register;
 function registerConsole(commands, serverHandler) {
     var e_4, _a;
     var _loop_2 = function (name, data) {
@@ -705,7 +707,6 @@ function registerConsole(commands, serverHandler) {
         finally { if (e_4) throw e_4.error; }
     }
 }
-exports.registerConsole = registerConsole;
 /**Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
 function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
     if (unresolvedArgs.length == 0) {
@@ -728,7 +729,6 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
         }, true, function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, utils_1.escapeStringColorsClient)(player.name); });
     }
 }
-/** @deprecated */
 function initialize() {
     var e_5, _a, e_6, _b;
     if (initialized) {
@@ -764,4 +764,3 @@ function initialize() {
     }
     initialized = true;
 }
-exports.initialize = initialize;
