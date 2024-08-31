@@ -11,7 +11,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeTimers = void 0;
+exports.initializeTimers = initializeTimers;
 var api_1 = require("./api");
 var config = require("./config");
 var config_1 = require("./config");
@@ -107,16 +107,15 @@ function initializeTimers() {
         players_1.FishPlayer.validateVotekickSession();
     }, 0, 0.5);
 }
-exports.initializeTimers = initializeTimers;
 Timer.schedule(function () {
-    Call.sendMessage("[orange]Updating maps...");
     (0, files_1.updateMaps)()
-        .then(function () {
-        Call.sendMessage("[orange]Maps updated.");
+        .then(function (result) {
+        if (result)
+            Call.sendMessage("[orange]Maps have been updated.");
         Log.info("Automated map updates complete.");
     })
         .catch(function (message) {
-        Call.sendMessage("[orange]Maps update failed.");
+        Call.sendMessage("[scarlet]Automated maps update failed, please report this to a staff member.");
         Log.err("Automated map update failed: ".concat(message));
     });
 }, 60, 600);

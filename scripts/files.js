@@ -81,11 +81,12 @@ function updateMaps() {
         });
         if (newMaps.length == 0) {
             Log.info("No map updates found.");
-            return;
+            return false;
         }
         return downloadMaps(newMaps).then(function () {
             Log.info("Downloads complete, registering maps.");
             Vars.maps.reload();
+            return true;
         });
     });
 }

@@ -72,7 +72,7 @@ function downloadMaps(githubListing:GitHubFile[]):Promise<void, string> {
 	})).then(v => {});
 }
 
-export function updateMaps():Promise<void, string> {
+export function updateMaps():Promise<boolean, string> {
 	//get github map listing
 	return fetchGithubContents().then((listing) => {
 		//filter only valid mindustry maps
@@ -100,11 +100,12 @@ export function updateMaps():Promise<void, string> {
 		
 		if(newMaps.length == 0){
 			Log.info(`No map updates found.`);
-			return;
+			return false;
 		}
 		return downloadMaps(newMaps).then(() => {
 			Log.info(`Downloads complete, registering maps.`);
 			Vars.maps.reload();
+			return true;
 		});
 	});
 }
