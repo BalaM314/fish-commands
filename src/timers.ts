@@ -84,8 +84,10 @@ export function initializeTimers(){
 Timer.schedule(() => {
 	updateMaps()
 		.then((result) => {
-			if(result) Call.sendMessage(`[orange]Maps have been updated.`);
-			Log.info(`Automated map updates complete.`);
+			if(result){
+				Call.sendMessage(`[orange]Maps have been updated.`);
+				Log.info(`Updated maps.`);
+			}
 		})
 		.catch((message) => {
 			Call.sendMessage(`[scarlet]Automated maps update failed, please report this to a staff member.`);

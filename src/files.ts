@@ -21,8 +21,7 @@ type GitHubFile = {
 function fetchGithubContents(){
 	return new Promise<GitHubFile[], string>((resolve, reject) => {
 		const url = mapRepoURLs[Mode.name()];
-		if(!url) return reject(`no recognized gamemode detected. please enter "host <map> <gamemode>" and try again`);
-		Log.info(`Requesting github repository contents at ${url}.`);
+		if(!url) return reject(`No recognized gamemode detected. please enter "host <map> <gamemode>" and try again`);
 		Http.get(url, (res) => {
 			try {
 				//Trust github to return valid JSON data
@@ -81,29 +80,24 @@ export function updateMaps():Promise<boolean, string> {
 			.filter(entry => /\.msav$/.test(entry.name));
 
 		const mapFiles:Fi[] = Vars.customMapDirectory.list();
-		const removedMaps = mapFiles.filter(localFile =>
+		const mapsToDelete = mapFiles.filter(localFile =>
 			!mapList.some(remoteFile =>
 				remoteFile.name === localFile.name()
 			)
 			&& !localFile.name().startsWith("$$")
 		);
-		removedMaps.forEach((map) => {
-			Log.info(`Deleting map ${map.name()}`);
-			map.delete();
-		});
+		mapsToDelete.forEach((map) => map.delete());
 
-		let newMaps = mapList
+		const mapsToDownload = mapList
 			.filter(entry => {
 				const file = Vars.customMapDirectory.child(entry.name);
 				return !file.exists() || entry.sha !== getHash(file); //sha'd
 			});
 		
-		if(newMaps.length == 0){
-			Log.info(`No map updates found.`);
-			return false;
+		if(mapsToDownload.length == 0){
+			return mapsToDelete.length > 0 ? true : false;
 		}
-		return downloadMaps(newMaps).then(() => {
-			Log.info(`Downloads complete, registering maps.`);
+		return downloadMaps(mapsToDownload).then(() => {
 			Vars.maps.reload();
 			return true;
 		});

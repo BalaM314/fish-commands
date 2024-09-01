@@ -110,9 +110,10 @@ function initializeTimers() {
 Timer.schedule(function () {
     (0, files_1.updateMaps)()
         .then(function (result) {
-        if (result)
+        if (result) {
             Call.sendMessage("[orange]Maps have been updated.");
-        Log.info("Automated map updates complete.");
+            Log.info("Updated maps.");
+        }
     })
         .catch(function (message) {
         Call.sendMessage("[scarlet]Automated maps update failed, please report this to a staff member.");

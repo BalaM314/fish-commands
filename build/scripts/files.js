@@ -9,8 +9,7 @@ function fetchGithubContents() {
     return new promise_js_1.Promise(function (resolve, reject) {
         var url = config_js_1.mapRepoURLs[config_js_1.Mode.name()];
         if (!url)
-            return reject("no recognized gamemode detected. please enter \"host <map> <gamemode>\" and try again");
-        Log.info("Requesting github repository contents at ".concat(url, "."));
+            return reject("No recognized gamemode detected. please enter \"host <map> <gamemode>\" and try again");
         Http.get(url, function (res) {
             try {
                 //Trust github to return valid JSON data
@@ -64,27 +63,22 @@ function updateMaps() {
             .filter(function (entry) { return entry.type == 'file'; })
             .filter(function (entry) { return /\.msav$/.test(entry.name); });
         var mapFiles = Vars.customMapDirectory.list();
-        var removedMaps = mapFiles.filter(function (localFile) {
+        var mapsToDelete = mapFiles.filter(function (localFile) {
             return !mapList.some(function (remoteFile) {
                 return remoteFile.name === localFile.name();
             })
                 && !localFile.name().startsWith("$$");
         });
-        removedMaps.forEach(function (map) {
-            Log.info("Deleting map ".concat(map.name()));
-            map.delete();
-        });
-        var newMaps = mapList
+        mapsToDelete.forEach(function (map) { return map.delete(); });
+        var mapsToDownload = mapList
             .filter(function (entry) {
             var file = Vars.customMapDirectory.child(entry.name);
             return !file.exists() || entry.sha !== (0, utils_js_1.getHash)(file); //sha'd
         });
-        if (newMaps.length == 0) {
-            Log.info("No map updates found.");
-            return false;
+        if (mapsToDownload.length == 0) {
+            return mapsToDelete.length > 0 ? true : false;
         }
-        return downloadMaps(newMaps).then(function () {
-            Log.info("Downloads complete, registering maps.");
+        return downloadMaps(mapsToDownload).then(function () {
             Vars.maps.reload();
             return true;
         });
