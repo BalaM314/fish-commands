@@ -11,6 +11,7 @@ importClass(Packages.mindustry.server.ServerControl);
 importPackage(Packages.java.util.regex);
 importClass(Packages.java.lang.Runtime);
 importClass(Packages.java.lang.ProcessBuilder);
+importClass(Packages.java.nio.file.Paths);
 
 //Polyfills
 Object.entries = o => Object.keys(o).map(k => [k, o[k]]);
