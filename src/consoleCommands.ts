@@ -333,13 +333,20 @@ export const commands = consoleCommandList({
 		args: ["branch:string?"],
 		description: "Updates the plugin.",
 		handler({args, output, outputSuccess, outputFail}){
+			//this is disgusting
 			const commandsDir = Vars.modDirectory.child("fish-commands");
 			if(!commandsDir.exists())
 				fail(`Fish commands directory at path ${commandsDir.absolutePath()} does not exist!`);
 			if(config.localDebug) fail(`Cannot update in local debug mode.`);
+			let fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
+			if(Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)){
+				//fish-commands is linked to the build directory of somewhere else
+				//resolve and get the parent directory of the build directory
+				fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
+			}
 			output("Updating...");
 			const gitProcess = new ProcessBuilder("git", "pull", "origin", args.branch ?? "master")
-				.directory(commandsDir.file())
+				.directory(new Packages.java.io.File(fishCommandsRootDirPath))
 				.redirectErrorStream(true)
 				.redirectOutput(ProcessBuilder.Redirect.INHERIT)
 				.start();

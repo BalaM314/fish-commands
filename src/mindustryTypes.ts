@@ -395,7 +395,10 @@ class Command {
 	params:any[];
 }
 
-class JavaFile {}
+/** java.io.File */
+class JavaFile {
+	path: string;
+}
 class Fi {
 	constructor(path:string);
 	file(): JavaFile;
@@ -590,5 +593,15 @@ type MessageDigest = {
 	update(buffer:ByteBuffer):void;
 	digest():number[];
 };
+
+/** java.nio.file.Paths */
+const Paths: {
+	get(path:string):Path;
+};
+/** java.nio.file.Path */
+type Path = {
+	toRealPath():Path;
+	getParent():Path;
+}
 
 }
