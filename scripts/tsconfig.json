@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"lib": ["ES2023"],
+		"lib": ["ES2023", "DOM"], //for fetch()
 		"target": "ES2023",
 		"skipLibCheck": true,
 		"module": "CommonJS"
