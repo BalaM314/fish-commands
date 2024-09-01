@@ -1,0 +1,103 @@
+declare let me:mindustryPlayer;
+declare let cancel:() => unknown;
+
+Object.entries = (o:any):any => Object.keys(o).map(k => [k, o[k]]);
+if(typeof cancel == "function"){cancel()}
+function startEffectLoop(){
+	let bufferedLines:string[] = [];
+	function line(x1:number, y1:number, x2:number, y2:number, color:string){
+		bufferedLines.push(`${x1},${y1},${x2},${y2},${color}`);
+	}
+	function flushBuffer(){
+		if(bufferedLines.length > 1000){
+			Log.warn(`Too many lines!`);
+		}
+		Call.serverPacketReliable("bulkLineEffect", bufferedLines.slice(0, 1000).join("|"));
+		bufferedLines = [];
+	}
+
+	let i = 0;
+	function main(){
+		i ++;
+		const x = i / 360 * 2 * Math.PI;
+		let scale = 10;
+		function lineOffset(x1:number, y1:number, x2:number, y2:number, color:string){
+			let mag1 = Mathf.len(x1, y1) * scale;
+			let theta1 = Mathf.atan2(x1, y1);
+			let mag2 = Mathf.len(x2, y2) * scale;
+			let theta2 = Mathf.atan2(x2, y2);
+			bufferedLines.push(`\
+${Math.round(mag1 * Math.cos(x + theta1) + me.x)},\
+${Math.round(mag1 * Math.sin(x + theta1) + me.y)},\
+${Math.round(mag2 * Math.cos(x + theta2) + me.x)},\
+${Math.round(mag2 * Math.sin(x + theta2) + me.y)},\
+${color}`
+			);
+		}
+		function lineOffsetSym(x1:number, y1:number, x2:number, y2:number, color:string, num = 4){
+			let mag1 = Mathf.len(x1, y1) * scale;
+			let theta1 = Mathf.atan2(x1, y1);
+			let mag2 = Mathf.len(x2, y2) * scale;
+			let theta2 = Mathf.atan2(x2, y2);
+			for(let offset = 0; offset < Mathf.PI2; offset += (Mathf.PI2 / num)){
+				bufferedLines.push(`\
+${mag1 * Math.cos(x + theta1 + offset) + me.x},\
+${mag1 * Math.sin(x + theta1 + offset) + me.y},\
+${mag2 * Math.cos(x + theta2 + offset) + me.x},\
+${mag2 * Math.sin(x + theta2 + offset) + me.y},\
+${color}`
+				);
+			}
+		}
+		function lineOffset1Sym(x1:number, y1:number, x2:number, y2:number, color:string, num = 4){
+			let mag1 = Mathf.len(x1, y1) * scale;
+			let theta1 = Mathf.atan2(x1, y1);
+			for(let offset = 0; offset < Mathf.PI2; offset += (Mathf.PI2 / num)){
+				bufferedLines.push(`\
+${mag1 * Math.cos(x + theta1 + offset) + me.x},\
+${mag1 * Math.sin(x + theta1 + offset) + me.y},\
+${x2},\
+${y2},\
+${color}`
+				);
+			}
+		}
+		let smallSquareRad = 1.5;
+		let starInRad = 1.5;
+		let starOutRad = 10;
+		let outSquareDist = 3;
+		let outSquareSize = 2;
+		let outSquareMax = outSquareDist + outSquareSize;
+		let outSquareMid = outSquareDist + outSquareSize / 2;
+		let squareColor = "#3141FF";
+		let starColor = "#FFD37F";
+		let outSquareColor = "#33FF55";
+		let rainbowColor = "#"+Color.HSVtoRGB((i * 2) % 360, 100, 100).toString().slice(0, 6);
+		lineOffsetSym(0, smallSquareRad, smallSquareRad, 0, squareColor);
+		lineOffsetSym(starOutRad, 0, starInRad, starInRad, starColor);
+		lineOffsetSym(starInRad, starInRad, 0, starOutRad, starColor);
+		lineOffsetSym(outSquareDist, outSquareDist, outSquareDist, outSquareMax, outSquareColor);
+		lineOffsetSym(outSquareDist, outSquareMax, outSquareMax, outSquareMax, outSquareColor);
+		lineOffsetSym(outSquareMax, outSquareMax, outSquareMax, outSquareDist, outSquareColor);
+		lineOffsetSym(outSquareMax, outSquareDist, outSquareDist, outSquareDist, outSquareColor);
+		if(me.shooting){
+			lineOffset1Sym(outSquareMid, outSquareMid, me.mouseX, me.mouseY, rainbowColor);
+			lineOffsetSym(outSquareDist, outSquareDist, outSquareMid, outSquareMid, rainbowColor);
+			lineOffsetSym(outSquareDist, outSquareMax, outSquareMid, outSquareMid, rainbowColor);
+			lineOffsetSym(outSquareMax, outSquareMax, outSquareMid, outSquareMid, rainbowColor);
+			lineOffsetSym(outSquareMax, outSquareDist, outSquareMid, outSquareMid, rainbowColor);
+		}
+		/*for(let i = 0; i < 500; i ++){
+			lineOffset(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5, "#" + new Color().rand().toString().slice(0, 6));
+		}*/
+	}
+
+	const task = Timer.schedule(() => {
+		if(!me.dead()){
+			main();
+			flushBuffer();
+		}
+	}, 0, 1/30);
+	return () => task.cancel();
+}
+cancel = startEffectLoop();

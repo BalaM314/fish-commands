@@ -19,10 +19,10 @@ const { FishPlayer } = players;
 const { Rank, RoleFlag } = ranks;
 const { menu } = menus;
 
-Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
+Object.assign(this as never, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 
 const $ = Object.assign(
-	function $(input){
+	function $(input:unknown){
 		if(typeof input == "string"){
 			if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
 				return FishPlayer.getById(input);
@@ -32,7 +32,7 @@ const $ = Object.assign(
 	},
 	{
 		sussy: true,
-		info: function(input){
+		info: function(input:unknown){
 			if(typeof input == "string"){
 				if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
 					return Vars.netServer.admins.getInfo(input);
@@ -40,7 +40,7 @@ const $ = Object.assign(
 			}
 			return null;
 		},
-		create: function(input){
+		create: function(input:unknown){
 			if(typeof input == "string"){
 				if(Pattern.matches("[a-zA-Z0-9+/]{22}==", input)){
 					return FishPlayer.getFromInfo(Vars.netServer.admins.getInfo(input));
@@ -51,7 +51,10 @@ const $ = Object.assign(
 	}
 );
 
-exports.runJS = function(input, outputFunction, errorFunction){
+/** Used to persist variables. */
+const vars = {};
+
+export function runJS(input:string, outputFunction?:(data:any) => unknown, errorFunction?:(data:any) => unknown){
 	if(outputFunction == undefined) outputFunction = Log.info;
 	if(errorFunction == undefined) errorFunction = Log.err;
 	try {

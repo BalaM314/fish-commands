@@ -1,4 +1,4 @@
-import { FishPlayer } from "./players";
+import { FishPlayer } from "./players.js";
 import { EventEmitter, crash } from "./utils.js";
 
 export type VoteEventMapping = {

@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateMaps = updateMaps;
-var config_1 = require("./config");
+var config_js_1 = require("./config.js");
 var promise_js_1 = require("./promise.js");
 var utils_js_1 = require("./utils.js");
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
 function fetchGithubContents() {
     return new promise_js_1.Promise(function (resolve, reject) {
-        var url = config_1.mapRepoURLs[config_1.Mode.name()];
+        var url = config_js_1.mapRepoURLs[config_js_1.Mode.name()];
         if (!url)
             return reject("no recognized gamemode detected. please enter \"host <map> <gamemode>\" and try again");
         Log.info("Requesting github repository contents at ".concat(url, "."));

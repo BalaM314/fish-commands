@@ -2,6 +2,7 @@
  * Main file for Fish Commands.
  * Does not do anything other than requiring index.js.
  */
+//WARNING: changes to this file must be manually copied to /build/main.js
 
 importPackage(Packages.arc);
 importClass(Packages.arc.util.CommandHandler);

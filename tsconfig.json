@@ -8,6 +8,10 @@
 		"skipLibCheck": true,
 		"lib": ["ES2022"],
 		"downlevelIteration": true, //we are targeting rhino and it supports array iterators
-		"newLine": "crlf"
-	}
+		"newLine": "crlf",
+		"outDir": "build/scripts",
+	},
+	"include": [
+		"./src/**.ts",
+	]
 }

@@ -6,6 +6,6 @@ require('child_process')
 		.replace(`"use strict";\r\n`, "")
 		.replace(/ +/g, " ")
 		.replace(/\r\n/g, "")
-		.replace(/\/\*.+\*\//)
+		.replace(/\/\*.+\*\//, "")
 		.replace(`Object.defineProperty(exports, "__esModule", { value: true });`, "")
 	);

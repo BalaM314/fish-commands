@@ -41,7 +41,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteManager = void 0;
-var players_1 = require("./players");
+var players_js_1 = require("./players.js");
 var utils_js_1 = require("./utils.js");
 var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
@@ -54,7 +54,7 @@ var VoteManager = /** @class */ (function (_super) {
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
             //Run once the player has been removed, but resolve the player first in case the connection gets nulled
-            var fishP = players_1.FishPlayer.get(player);
+            var fishP = players_js_1.FishPlayer.get(player);
             Core.app.post(function () { return _this.unvote(fishP); });
         });
         Events.on(EventType.GameOverEvent, function () { return _this.resetVote(); });
@@ -84,7 +84,7 @@ var VoteManager = /** @class */ (function (_super) {
     VoteManager.prototype.unvote = function (player) {
         if (!this.session)
             return;
-        var fishP = players_1.FishPlayer.resolve(player);
+        var fishP = players_js_1.FishPlayer.resolve(player);
         var vote = this.session.votes.get(fishP.uuid);
         if (vote) {
             this.fire("player vote removed", [player, vote]);

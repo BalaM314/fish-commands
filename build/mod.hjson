@@ -1,0 +1,7 @@
+name: fish
+displayName: Fish Plugins
+author: >;;;>Fish
+description: "Adds sudo commands to the server."
+version: 1.0
+minGameVersion: 137
+hidden: true
