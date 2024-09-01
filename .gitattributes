@@ -1,0 +1,2 @@
+# js is definitely typescript
+*.js linguist-language=Typescript
