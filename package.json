@@ -6,16 +6,15 @@
   "private": "true",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc --watch",
-    "watch": "tsc --watch"
+    "attach": "node scripts/attach.js",
+    "watch": "tsc --watch",
+    "dev": "node scripts/dev.js"
   },
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@types/node": "^20.5.8"
-  },
-  "dependencies": {
+    "@types/node": "^20.5.8",
     "typescript": "^5.4.5"
   }
 }

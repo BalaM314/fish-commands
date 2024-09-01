@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"lib": ["ES2023"],
+		"target": "ES2023",
+		"skipLibCheck": true,
+		"module": "CommonJS"
+	},
+	"include": [
+		"./**.ts"
+	]
+}
