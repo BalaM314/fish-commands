@@ -121,6 +121,7 @@ exports.FishServers = {
     survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
     pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
     hexed: { name: "hexed", ip: "162.248.101.53", port: "6567", aliases: ["hexed", "hex", "h", "he"] },
+    hardcore: { name: "hardcore", ip: "162.248.102.101", port: "6567", aliases: ["hardcore", "hs"], requiredTrusted: true },
     // sandbox: { ip: "162.248.102.204", port: "6567" },
     byName: function (input) {
         var _a;
@@ -129,13 +130,14 @@ exports.FishServers = {
     },
     all: []
 };
-exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.hexed];
+exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.hexed, exports.FishServers.hardcore];
 exports.Mode = {
     attack: function () { return exports.Mode.name() == "attack"; },
     survival: function () { return exports.Mode.name() == "survival"; },
     pvp: function () { return exports.Mode.name() == "pvp" || exports.Mode.name() == "hexed"; },
     sandbox: function () { return exports.Mode.name() == "sandbox"; },
     hexed: function () { return exports.Mode.name() == "hexed"; },
+    hardcore: function () { return exports.Mode.name() == "hardcore"; },
     name: function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); },
 };
 exports.localDebug = new Fi("config/.debug").exists();
@@ -221,4 +223,5 @@ exports.mapRepoURLs = {
     pvp: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/pvp",
     hexed: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hexed",
     sandbox: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/sandbox",
+    hardcore: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hardcore"
 };

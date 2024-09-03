@@ -195,7 +195,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     {
         args: [],
         description: "Switches to the ".concat(server.name, " server."),
-        perm: commands_1.Perm.none,
+        perm: server.requiredTrusted ? commands_1.Perm.trusted : commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
             Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));

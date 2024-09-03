@@ -104,12 +104,14 @@ type FishServer = {
 	port:string;
 	aliases:string[];
 	name:string;
+  requiredTrusted?:boolean;
 };
 export const FishServers = {
 	attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
 	survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
 	pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
 	hexed: { name: "hexed", ip: "162.248.101.53", port: "6567", aliases: ["hexed", "hex", "h", "he"] },
+  hardcore: { name: "hardcore", ip: "162.248.102.101", port: "6567", aliases: ["hardcore", "hs"], requiredTrusted: true },
 	// sandbox: { ip: "162.248.102.204", port: "6567" },
 	byName(input:string):FishServer | null {
 		input = input.toLowerCase();
@@ -117,7 +119,7 @@ export const FishServers = {
 	},
 	all: [] as FishServer[]
 };
-FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.hexed];
+FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.hexed, FishServers.hardcore];
 export type ModeName = keyof typeof Mode extends infer K extends keyof typeof Mode ? K extends unknown ?
 	(typeof Mode)[K] extends (() => boolean) ? K : never
 : never : never;
@@ -127,7 +129,8 @@ export const Mode = {
 	pvp: () => Mode.name() == "pvp" || Mode.name() == "hexed",
 	sandbox: () => Mode.name() == "sandbox",
 	hexed: () => Mode.name() == "hexed",
-	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed",
+  hardcore: () => Mode.name() == "hardcore",
+	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore",
 };
 export const localDebug = new Fi("config/.debug").exists();
 export const maxTime = 9999999999999;
@@ -215,4 +218,5 @@ export const mapRepoURLs:Record<ModeName, string> = {
 	pvp: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/pvp",
 	hexed: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hexed",
 	sandbox: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/sandbox",
+  hardcore: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hardcore"
 };

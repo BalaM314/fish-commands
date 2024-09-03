@@ -152,7 +152,7 @@ export const commands = commandList({
 			{
 				args: [],
 				description: `Switches to the ${server.name} server.`,
-				perm: Perm.none,
+				perm: server.requiredTrusted ? Perm.trusted : Perm.none,
 				handler({ sender }) {
 					Call.sendMessage(`${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
 					Call.connect(sender.con, server.ip, server.port);

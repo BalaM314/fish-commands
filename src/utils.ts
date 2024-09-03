@@ -59,6 +59,7 @@ export function formatModeName(name:ModeName){
 		"hexed": "Hexed",
 		"pvp": "PVP",
 		"sandbox": "Sandbox",
+    "hardcore": "Hardcore"
 	}[name];
 }
 
@@ -895,3 +896,4 @@ export function getHash(file: Fi, algorithm: string = "SHA-1"): string | undefin
 export function instanceof_<T extends new (...args:any[]) => {}>(thing:unknown, clazz:T):thing is InstanceType<T> {
 	return typeof thing === "object" && thing != null && thing.constructor?.name == clazz.name;
 }
+

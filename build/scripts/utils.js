@@ -143,6 +143,7 @@ function formatModeName(name) {
         "hexed": "Hexed",
         "pvp": "PVP",
         "sandbox": "Sandbox",
+        "hardcore": "Hardcore"
     }[name];
 }
 function formatTimestamp(time) {
