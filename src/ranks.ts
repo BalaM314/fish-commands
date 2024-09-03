@@ -13,7 +13,7 @@ export class Rank {
 	static admin = new Rank("admin", 4, "Administrators with the power to ban players.", "[black]<[#C30202]\uE82C[]>[]", "&lr[A]&fr", "[#C30202]");
 	static manager = new Rank("manager", 10, "Managers have file and console access.", "[black]<[scarlet]\uE88E[]>[]", "&c[E]&fr", "[scarlet]");
 	static pi = new Rank("pi", 11, "3.14159265358979323846264338327950288419716 (manager)", "[black]<[#FF8000]\u03C0[]>[]", "&b[+]&fr", "[blue]");//i want pi rank
-	static fish = new Rank("fish", 999, "Owner.", "[blue]>|||>[] ", "&b[F]&fr", "[blue]");//Might want to change this to like owner or something
+	static fish = new Rank("fish", 999, "Owner.", "[blue]>|||>[] ", "&b[F]&fr", "[blue]");
 
 	autoRankData?: {
 		joins: number;

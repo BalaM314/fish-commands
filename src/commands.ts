@@ -4,7 +4,7 @@ import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishCommandRequirement, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
-import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeName, formatTime, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
+import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeName, formatTime, getBlock, getMap, getTeam, getUnitType, instanceof_, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
 
 //Behold, the power of typescript!
 
@@ -270,11 +270,11 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 
 
 const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((chunk) => {
-	if(chunk instanceof FishPlayer){
+	if(instanceof_(chunk, FishPlayer)){
 		return `&c(${escapeStringColorsServer(chunk.cleanedName)})&fr`;
-	} else if(chunk instanceof Rank){
+	} else if(instanceof_(chunk, Rank)){
 		return `&p${chunk.name}&fr`;
-	} else if(chunk instanceof RoleFlag){
+	} else if(instanceof_(chunk, RoleFlag)){
 		return `&p${chunk.name}&fr`;
 	} else if(chunk instanceof Error){
 		return `&r${escapeStringColorsServer(chunk.toString())}&fr`;
@@ -310,12 +310,12 @@ const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((
 });
 const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((chunk, i, data, stringChunks) => {
 	const reset = data ?? stringChunks[0].match(/^\[.+?\]/)?.[0] ?? "";
-	if(chunk instanceof FishPlayer){
+	if(instanceof_(chunk, FishPlayer)){
 		return `[cyan](${chunk.name}[cyan])` + reset;
-	} else if(chunk instanceof Rank){
-		return `${chunk.color}"${chunk.name}"[]` + reset;
-	} else if(chunk instanceof RoleFlag){
-		return `${chunk.color}"${chunk.name}"[]` + reset;
+	} else if(instanceof_(chunk, Rank)){
+		return `${chunk.color}${chunk.name}[]` + reset;
+	} else if(instanceof_(chunk, RoleFlag)){
+		return `${chunk.color}${chunk.name}[]` + reset;
 	} else if(chunk instanceof Error){
 		return `[red]${chunk.toString()}` + reset;
 	} else if(chunk instanceof Player){

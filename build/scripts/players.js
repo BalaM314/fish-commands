@@ -1058,20 +1058,19 @@ var FishPlayer = /** @class */ (function () {
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.setFlag = function (flag_, value) {
-        Log.info(flag_);
-        var flag = (flag_ instanceof ranks_js_1.RoleFlag) ? flag_ : ranks_js_1.RoleFlag.getByName(flag_);
-        Log.info(flag);
-        if (flag) {
-            if (value) {
-                this.flags.add(flag);
-            }
-            else {
-                this.flags.delete(flag);
-            }
-            this.updateMemberExclusiveState();
-            this.updateName();
-            FishPlayer.saveAll();
+        var _a;
+        var flag = typeof flag_ == "string" ?
+            ((_a = ranks_js_1.RoleFlag.getByName(flag_)) !== null && _a !== void 0 ? _a : (0, utils_js_1.crash)("Type error in FishPlayer.setFlag(): flag ".concat(flag_, " is invalid")))
+            : flag_;
+        if (value) {
+            this.flags.add(flag);
         }
+        else {
+            this.flags.delete(flag);
+        }
+        this.updateMemberExclusiveState();
+        this.updateName();
+        FishPlayer.saveAll();
     };
     FishPlayer.prototype.hasFlag = function (flagName) {
         var flag = ranks_js_1.RoleFlag.getByName(flagName);
