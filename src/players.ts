@@ -941,17 +941,18 @@ We apologize for the inconvenience.`
 		FishPlayer.saveAll();
 	}
 	setFlag(flag_:RoleFlag | RoleFlagName, value:boolean){
-		const flag = flag_ instanceof RoleFlag ? flag_ : RoleFlag.getByName(flag_);
-		if(flag){
-			if(value){
-				this.flags.add(flag);
-			} else {
-				this.flags.delete(flag);
-			}
-			this.updateMemberExclusiveState();
-			this.updateName();
-			FishPlayer.saveAll();
+		const flag = typeof flag_ == "string" ?
+			(RoleFlag.getByName(flag_) ?? crash(`Type error in FishPlayer.setFlag(): flag ${flag_} is invalid`))
+			: flag_;
+		
+		if(value){
+			this.flags.add(flag);
+		} else {
+			this.flags.delete(flag);
 		}
+		this.updateMemberExclusiveState();
+		this.updateName();
+		FishPlayer.saveAll();
 	}
 	hasFlag(flagName:RoleFlagName){
 		const flag = RoleFlag.getByName(flagName);

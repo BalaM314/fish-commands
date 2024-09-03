@@ -1058,7 +1058,9 @@ var FishPlayer = /** @class */ (function () {
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.setFlag = function (flag_, value) {
-        var flag = flag_ instanceof ranks_js_1.RoleFlag ? flag_ : ranks_js_1.RoleFlag.getByName(flag_);
+        Log.info(flag_);
+        var flag = (flag_ instanceof ranks_js_1.RoleFlag) ? flag_ : ranks_js_1.RoleFlag.getByName(flag_);
+        Log.info(flag);
         if (flag) {
             if (value) {
                 this.flags.add(flag);
