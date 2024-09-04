@@ -523,8 +523,8 @@ export const commands = commandList({
 		},
 		handler({args, outputSuccess, handleTaps, currentTapMode, f}){
 			if(args.block){
+				handleTaps("on");
 				if(currentTapMode == "off"){
-					handleTaps("on");
 					outputSuccess("setblockr enabled.\n[scarlet]Be careful, you have the midas touch now![] Turn it off by running /setblockr again.");
 				} else {
 					outputSuccess(f`Changed setblockr's block to ${args.block}`);
