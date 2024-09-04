@@ -87,9 +87,14 @@ var Perm = /** @class */ (function () {
         else {
             this.check = check;
         }
+        Perm.perms[name] = this;
     }
     Perm.fromRank = function (rank) {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
+    };
+    Perm.getByName = function (name) {
+        var _a;
+        return (_a = Perm.perms[name]) !== null && _a !== void 0 ? _a : null;
     };
     Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
     Perm.trusted = Perm.fromRank(ranks_1.Rank.trusted);
@@ -121,6 +126,8 @@ var Perm = /** @class */ (function () {
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");
     Perm.bypassNameCheck = new Perm("bypassNameCheck", "fish");
+    Perm.hardcore = new Perm("hardcore", "trusted");
+    Perm.perms = {};
     return Perm;
 }());
 exports.Perm = Perm;

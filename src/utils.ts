@@ -52,6 +52,7 @@ export function formatTime(time:number){
 	].filter(s => s).join(", ")
 }
 
+//TODO move this data to be right next to Mode
 export function formatModeName(name:ModeName){
 	return {
 		"attack": "Attack",

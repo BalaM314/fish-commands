@@ -70,6 +70,9 @@ export class Perm {
 	static usidCheck = new Perm("usidCheck", "trusted");
 	static runJS = new Perm("runJS", "manager");
 	static bypassNameCheck = new Perm("bypassNameCheck", "fish");
+	static hardcore = new Perm("hardcore", "trusted");
+
+	static perms:Partial<Record<string, Perm>> = {};
 
 	check:(fishP:FishPlayer) => boolean;
 	constructor(public name:string, check:RankName | ((fishP:FishPlayer) => boolean), public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){
@@ -79,9 +82,13 @@ export class Perm {
 		} else {
 			this.check = check;
 		}
+		Perm.perms[name] = this;
 	}
 	static fromRank(rank:Rank){
 		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);
+	}
+	static getByName(name:PermType):Perm {
+		return Perm.perms[name] ?? crash(`Invalid requiredPerm`);
 	}
 }
 export type PermType = SelectEnumClassKeys<typeof Perm>;
