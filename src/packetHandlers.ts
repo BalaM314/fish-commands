@@ -2,8 +2,10 @@ import { Perm, commandList } from './commands';
 import { FishPlayer } from './players';
 
 //some much needed restrictions
-const MIN_EFFECT_TPS = 10; // point in which effects will refuse to render
-const MAX_LABEL_TIME = 30; // maximum duration for user-created labels (seconds)
+/** point in which effects will refuse to render */
+const MIN_EFFECT_TPS = 10;
+/** maximum duration for user-created labels (seconds) */
+const MAX_LABEL_TIME = 30;
 
 //info tracker
 let lastLabel = '';
@@ -36,12 +38,12 @@ export function loadPacketHandlers() {
 
 	//fmt: "content,duration,x,y"
 	Vars.netServer.addPacketHandler('label', (player:mindustryPlayer, content:string) => {
-		if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
-			player.sendMessage(lowTPSError);
-			return;
-		}
+		const p:FishPlayer = FishPlayer.get(player);
 		try {
-			const p:FishPlayer = FishPlayer.get(player);
+			if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
+				p.sendMessage(lowTPSError, 1000);
+				return;
+			}
 			if (!p.hasPerm("visualEffects")) {
 				p.sendMessage(noPermissionText, 1000);
 				return;
@@ -50,21 +52,18 @@ export function loadPacketHandlers() {
 			lastAccessedLabel = p;
 	
 			handleLabel(player, content, true);
-		} catch (e) {
-			//TEMP FOR DEBUGGING: REMOVE L8R
-			//Log.err(e as Error);
-
-			player.sendMessage(procError);			
+		} catch {
+			p.sendMessage(procError, 1000);			
 		}
 	});
 
 	Vars.netServer.addPacketHandler('bulkLabel', (player:mindustryPlayer, content:string) => {
-		if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
-			player.sendMessage(lowTPSError);
-			return;
-		}
 		const p:FishPlayer = FishPlayer.get(player);
 		try {
+			if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
+				p.sendMessage(lowTPSError, 1000);
+				return;
+			}
 			if (!p.hasPerm('bulkLabelPacket')) {
 				p.sendMessage(noPermissionText, 1000);
 				return;
@@ -111,24 +110,19 @@ export function loadPacketHandlers() {
 				if (label.trim().length <= 0) continue;
 				if (!handleLabel(player, label, false)) return;
 			}
-		} catch (e) {
-			//TEMP FOR DEBUGGING: REMOVE L8R
-			//Log.err(e as Error);
-
+		} catch {
 			p.sendMessage(procError, 1000);
 		}
 	});
 
 	//lines
 	Vars.netServer.addPacketHandler('lineEffect', (player:mindustryPlayer, content:string) => {
-
-		if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
-			player.sendMessage(lowTPSError);
-			return;
-		}
-
 		const p:FishPlayer = FishPlayer.get(player);
 		try {
+			if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
+				p.sendMessage(lowTPSError, 1000);
+				return;
+			}
 			if (!p.hasPerm("visualEffects")) {
 				p.sendMessage(noPermissionText, 1000);
 				return;
@@ -136,28 +130,23 @@ export function loadPacketHandlers() {
 
 			if (!handleLine(content, player)) return;
 			lastAccessedLine = p;
-		} catch (e) {
-			//TEMP FOR DEBUGGING: REMOVE L8R
-			//Log.err(e as Error);
-
+		} catch {
 			p.sendMessage(procError, 1000);
 		}
 	});
 
 	//this is the silas effect but it's way too real
 	Vars.netServer.addPacketHandler('bulkLineEffect', (player:mindustryPlayer, content:string) => {
-
+		const p:FishPlayer = FishPlayer.get(player);
 		if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
-			player.sendMessage(lowTPSError);
+			p.sendMessage(lowTPSError, 1000);
 			return;
 		}
-
-		const p:FishPlayer = FishPlayer.get(player);
+		if (!p.hasPerm('bulkLabelPacket')) {
+			p.sendMessage(noPermissionText, 1000);
+			return;
+		}
 		try {
-			if (!p.hasPerm('bulkLabelPacket')) {
-				p.sendMessage(noPermissionText, 1000);
-				return;
-			}
 
 			const lines:string[] = content.split(bulkSeparator);
 
@@ -173,10 +162,7 @@ export function loadPacketHandlers() {
 			}
 
 			lastAccessedBulkLine = p;
-		} catch (e) {
-			//TEMP FOR DEBUGGING: REMOVE L8R
-			//Log.err(e as Error);
-
+		} catch {
 			p.sendMessage(procError, 1000);
 		}
 	});
@@ -284,7 +270,6 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 		lastLabel = message;
 	}
 
-	//do not mind me, just dropping this quick check in here
 	let duration = Number(parts[0]);
 	if(Number.isNaN(duration) || duration > MAX_LABEL_TIME){
 		player.sendMessage(invalidReq);
@@ -301,7 +286,7 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 	tmpLabelPacket.duration = Number(parts[0]);
 	tmpLabelPacket.worldx = Number(parts[1]);
 	tmpLabelPacket.worldy = Number(parts[2]);
-	Vars.net.send(tmpLabelPacket, true); //maybe do false
+	Vars.net.send(tmpLabelPacket, false);
 	return true;
 }
 
@@ -324,7 +309,7 @@ function handleLine(content:string, player:mindustryPlayer):boolean {
 	);*/
 	tmpLinePacket.x = Number(parts[0]);
 	tmpLinePacket.y = Number(parts[1]);
-	Vars.net.send(tmpLinePacket, false); //could do true for reliable but prob too laggy (?)
+	Vars.net.send(tmpLinePacket, false);
 
 	return true;
 }

@@ -5,8 +5,10 @@ exports.loadPacketHandlers = loadPacketHandlers;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 //some much needed restrictions
-var MIN_EFFECT_TPS = 10; // point in which effects will refuse to render
-var MAX_LABEL_TIME = 30; // maximum duration for user-created labels (seconds)
+/** point in which effects will refuse to render */
+var MIN_EFFECT_TPS = 10;
+/** maximum duration for user-created labels (seconds) */
+var MAX_LABEL_TIME = 30;
 //info tracker
 var lastLabel = '';
 var lastAccessedBulkLabel = null;
@@ -32,12 +34,12 @@ function loadPacketHandlers() {
     //labels
     //fmt: "content,duration,x,y"
     Vars.netServer.addPacketHandler('label', function (player, content) {
-        if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
-            player.sendMessage(lowTPSError);
-            return;
-        }
+        var p = players_1.FishPlayer.get(player);
         try {
-            var p = players_1.FishPlayer.get(player);
+            if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
+                p.sendMessage(lowTPSError, 1000);
+                return;
+            }
             if (!p.hasPerm("visualEffects")) {
                 p.sendMessage(noPermissionText, 1000);
                 return;
@@ -45,19 +47,17 @@ function loadPacketHandlers() {
             lastAccessedLabel = p;
             handleLabel(player, content, true);
         }
-        catch (e) {
-            //TEMP FOR DEBUGGING: REMOVE L8R
-            //Log.err(e as Error);
-            player.sendMessage(procError);
+        catch (_a) {
+            p.sendMessage(procError, 1000);
         }
     });
     Vars.netServer.addPacketHandler('bulkLabel', function (player, content) {
-        if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
-            player.sendMessage(lowTPSError);
-            return;
-        }
         var p = players_1.FishPlayer.get(player);
         try {
+            if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
+                p.sendMessage(lowTPSError, 1000);
+                return;
+            }
             if (!p.hasPerm('bulkLabelPacket')) {
                 p.sendMessage(noPermissionText, 1000);
                 return;
@@ -102,20 +102,18 @@ function loadPacketHandlers() {
                     return;
             }
         }
-        catch (e) {
-            //TEMP FOR DEBUGGING: REMOVE L8R
-            //Log.err(e as Error);
+        catch (_a) {
             p.sendMessage(procError, 1000);
         }
     });
     //lines
     Vars.netServer.addPacketHandler('lineEffect', function (player, content) {
-        if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
-            player.sendMessage(lowTPSError);
-            return;
-        }
         var p = players_1.FishPlayer.get(player);
         try {
+            if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
+                p.sendMessage(lowTPSError, 1000);
+                return;
+            }
             if (!p.hasPerm("visualEffects")) {
                 p.sendMessage(noPermissionText, 1000);
                 return;
@@ -124,24 +122,22 @@ function loadPacketHandlers() {
                 return;
             lastAccessedLine = p;
         }
-        catch (e) {
-            //TEMP FOR DEBUGGING: REMOVE L8R
-            //Log.err(e as Error);
+        catch (_a) {
             p.sendMessage(procError, 1000);
         }
     });
     //this is the silas effect but it's way too real
     Vars.netServer.addPacketHandler('bulkLineEffect', function (player, content) {
+        var p = players_1.FishPlayer.get(player);
         if (Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS) {
-            player.sendMessage(lowTPSError);
+            p.sendMessage(lowTPSError, 1000);
             return;
         }
-        var p = players_1.FishPlayer.get(player);
+        if (!p.hasPerm('bulkLabelPacket')) {
+            p.sendMessage(noPermissionText, 1000);
+            return;
+        }
         try {
-            if (!p.hasPerm('bulkLabelPacket')) {
-                p.sendMessage(noPermissionText, 1000);
-                return;
-            }
             var lines = content.split(bulkSeparator);
             if (lines.length > bulkLimit) {
                 p.sendMessage(tooLongText, 1000);
@@ -156,9 +152,7 @@ function loadPacketHandlers() {
             }
             lastAccessedBulkLine = p;
         }
-        catch (e) {
-            //TEMP FOR DEBUGGING: REMOVE L8R
-            //Log.err(e as Error);
+        catch (_a) {
             p.sendMessage(procError, 1000);
         }
     });
@@ -227,7 +221,6 @@ function handleLabel(player, content, isSingle) {
     if (isSingle) {
         lastLabel = message;
     }
-    //do not mind me, just dropping this quick check in here
     var duration = Number(parts[0]);
     if (Number.isNaN(duration) || duration > MAX_LABEL_TIME) {
         player.sendMessage(invalidReq);
@@ -243,7 +236,7 @@ function handleLabel(player, content, isSingle) {
     tmpLabelPacket.duration = Number(parts[0]);
     tmpLabelPacket.worldx = Number(parts[1]);
     tmpLabelPacket.worldy = Number(parts[2]);
-    Vars.net.send(tmpLabelPacket, true); //maybe do false
+    Vars.net.send(tmpLabelPacket, false);
     return true;
 }
 function handleLine(content, player) {
@@ -262,7 +255,7 @@ function handleLine(content, player) {
     );*/
     tmpLinePacket.x = Number(parts[0]);
     tmpLinePacket.y = Number(parts[1]);
-    Vars.net.send(tmpLinePacket, false); //could do true for reliable but prob too laggy (?)
+    Vars.net.send(tmpLinePacket, false);
     return true;
 }
 function bulkInfoMsg(messages, conn) {

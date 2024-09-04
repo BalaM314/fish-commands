@@ -52,7 +52,8 @@ export class Perm {
 	static seeErrorMessages = new Perm("seeErrorMessages", "admin");
 	static viewUUIDs = new Perm("viewUUIDs", "admin");
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
-	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => ((fishP.hasFlag("developer") || fishP.hasFlag("effects")|| fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"));static visualEffects = new Perm("visualEffects", fishP => !fishP.stelled() || fishP.ranksAtLeast("mod"));
+	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => ((fishP.hasFlag("developer") || fishP.hasFlag("effects")|| fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"));
+	static visualEffects = new Perm("visualEffects", fishP => !fishP.stelled() || fishP.ranksAtLeast("mod"));
 	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
 	static bypassVotekick = new Perm("bypassVotekick", "mod");
 	static warn = new Perm("warn", "mod");
