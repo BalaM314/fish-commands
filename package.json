@@ -15,6 +15,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@types/node": "^22.5.1",
+    "esbuild": "^0.23.1",
     "typescript": "^5.4.5"
   }
 }
