@@ -110,7 +110,7 @@ export const FishServers = {
 	survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
 	pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
 	hexed: { name: "hexed", ip: "162.248.101.53", port: "6567", aliases: ["hexed", "hex", "h", "he"] },
-	// sandbox: { ip: "162.248.102.204", port: "6567" },
+	sandbox: { ip: "162.248.102.204", port: "6567" },
 	byName(input:string):FishServer | null {
 		input = input.toLowerCase();
 		return FishServers.all.find(s => s.aliases.includes(input)) ?? null;
