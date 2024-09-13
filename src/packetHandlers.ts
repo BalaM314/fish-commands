@@ -3,7 +3,7 @@ import { FishPlayer } from './players';
 
 //some much needed restrictions
 /** point in which effects will refuse to render */
-const MIN_EFFECT_TPS = 10;
+const MIN_EFFECT_TPS = 20;
 /** maximum duration for user-created labels (seconds) */
 const MAX_LABEL_TIME = 30;
 

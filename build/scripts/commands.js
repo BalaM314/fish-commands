@@ -103,7 +103,7 @@ var Perm = /** @class */ (function () {
     Perm.seeErrorMessages = new Perm("seeErrorMessages", "admin");
     Perm.viewUUIDs = new Perm("viewUUIDs", "admin");
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
-    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return ((fishP.hasFlag("developer") || fishP.hasFlag("effects") || fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"); });
+    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return ((fishP.hasFlag("developer") || fishP.hasFlag("illusionist") || fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"); });
     Perm.visualEffects = new Perm("visualEffects", function (fishP) { return !fishP.stelled() || fishP.ranksAtLeast("mod"); });
     Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
     Perm.bypassVotekick = new Perm("bypassVotekick", "mod");

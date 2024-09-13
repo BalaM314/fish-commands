@@ -73,7 +73,7 @@ var RoleFlag = /** @class */ (function () {
     RoleFlag.flags = {};
     RoleFlag.developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]", true, false);
     RoleFlag.member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]", true, false);
-    RoleFlag.effects = new RoleFlag("effects user", "[black]<[lightgrey]\uE87D,[]>[]", "Assigned to to individuals who have earned access to enhanced visual effect features.", "[lightgrey]", true, true);
+    RoleFlag.illusionist = new RoleFlag("illusionist", "[black]<[lightgrey]\uE87D,[]>[]", "Assigned to to individuals who have earned access to enhanced visual effect features.", "[lightgrey]", true, true);
     return RoleFlag;
 }());
 exports.RoleFlag = RoleFlag;

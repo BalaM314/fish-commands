@@ -6,7 +6,7 @@ var commands_1 = require("./commands");
 var players_1 = require("./players");
 //some much needed restrictions
 /** point in which effects will refuse to render */
-var MIN_EFFECT_TPS = 10;
+var MIN_EFFECT_TPS = 20;
 /** maximum duration for user-created labels (seconds) */
 var MAX_LABEL_TIME = 30;
 //info tracker
