@@ -8,6 +8,8 @@ import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeNa
 
 //Behold, the power of typescript!
 
+const hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
+
 let initialized = false;
 export const allCommands:Record<string, FishCommandData<string, any>> = {};
 export const allConsoleCommands:Record<string, FishConsoleCommandData<string, any>> = {};
@@ -40,6 +42,8 @@ export function command(input:unknown){
 
 /** Represents a permission that is required to do something. */
 export class Perm {
+	static perms:Partial<Record<string, Perm>> = {};
+
 	static none = new Perm("all", fishP => true, "[sky]");
 	static trusted = Perm.fromRank(Rank.trusted);
 	static mod = Perm.fromRank(Rank.mod);
@@ -72,10 +76,12 @@ export class Perm {
 	static bypassNameCheck = new Perm("bypassNameCheck", "fish");
 	static hardcore = new Perm("hardcore", "trusted");
 
-	static perms:Partial<Record<string, Perm>> = {};
-
 	check:(fishP:FishPlayer) => boolean;
-	constructor(public name:string, check:RankName | ((fishP:FishPlayer) => boolean), public color:string = "", public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`){
+	constructor(
+		public name:string, check:RankName | ((fishP:FishPlayer) => boolean),
+		public color:string = "",
+		public unauthorizedMessage:string = `You do not have the required permission (${name}) to execute this command`
+	){
 		if(typeof check == "string"){
 			if(Rank.getByName(check) == null) crash(`Invalid perm ${name}: invalid rank name ${check}`);
 			this.check = fishP => fishP.ranksAtLeast(check as RankName);
@@ -454,7 +460,12 @@ export function register(commands:Record<string, FishCommandData<string, any> | 
 				//Verify authorization
 				//as a bonus, this crashes if data.perm is undefined
 				if(!data.perm.check(fishSender)){
-					outputFail(data.customUnauthorizedMessage ?? data.perm.unauthorizedMessage, sender);
+					if(data.customUnauthorizedMessage)
+						outputFail(data.customUnauthorizedMessage, sender);
+					else if(data.isHidden)
+						outputMessage(hiddenUnauthorizedMessage, sender);
+					else
+						outputFail(data.perm.unauthorizedMessage, sender);
 					return;
 				}
 

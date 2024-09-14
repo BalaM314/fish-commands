@@ -190,36 +190,27 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var output = _a.output, f = _a.f, tile = _a.tile;
             output(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["ID is ", ""], ["ID is ", ""])), tile.block().id));
         }
-    } }, Object.fromEntries(config_1.FishServers.all.map(function (server) {
-    var _a;
-    return [
-        server.name,
-        {
-            args: [],
-            description: "Switches to the ".concat(server.name, " server."),
-            perm: server.requiredPerm ? (_a = commands_1.Perm.getByName(server.requiredPerm)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("Invalid requiredPerm") : commands_1.Perm.none,
-            isHidden: true,
-            handler: function (_a) {
-                var sender = _a.sender;
-                var message = "".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!");
-                if (server.requiredPerm) {
-                    players_1.FishPlayer.messageAllWithPerm(server.requiredPerm, message);
-                }
-                else {
-                    Call.sendMessage(message);
-                }
-                Call.connect(sender.con, server.ip, server.port);
-            },
+    } }, Object.fromEntries(config_1.FishServers.all.map(function (server) { return [
+    server.name,
+    {
+        args: [],
+        description: "Switches to the ".concat(server.name, " server."),
+        perm: server.requiredPerm ? commands_1.Perm.getByName(server.requiredPerm) : commands_1.Perm.none,
+        isHidden: true,
+        handler: function (_a) {
+            var sender = _a.sender;
+            players_1.FishPlayer.messageAllWithPerm(server.requiredPerm, "".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
+            Call.connect(sender.con, server.ip, server.port);
         },
-    ];
-}))), { switch: {
+    },
+]; }))), { switch: {
         args: ["server:string", "target:player?"],
         description: "Switches to another server.",
-        perm: commands_1.Perm.none,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var _b, _c;
             var args = _a.args, sender = _a.sender, f = _a.f;
-            if (args.target != null && args.target != sender && !sender.canModerate(args.target, true, "admin"))
+            if (args.target != null && args.target != sender && !sender.canModerate(args.target, true, "admin", true))
                 (0, commands_1.fail)(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["You do not have permission to switch player ", "."], ["You do not have permission to switch player ", "."])), args.target));
             var target = (_b = args.target) !== null && _b !== void 0 ? _b : sender;
             if (globals_1.ipPortPattern.test(args.server) && sender.hasPerm("admin")) {
@@ -231,8 +222,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 //Pretend the server doesn't exist
                 if (server.requiredPerm && !sender.hasPerm(server.requiredPerm))
                     (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServers.all.map(function (s) { return s.name; }).join(", ")));
-                if (target == sender && !server.requiredPerm)
-                    Call.sendMessage("".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
+                if (target == sender)
+                    players_1.FishPlayer.messageAllWithPerm(server.requiredPerm, "".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
                 Call.connect(target.con, server.ip, server.port);
             }
         }

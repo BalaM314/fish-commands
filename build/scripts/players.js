@@ -998,7 +998,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.canModerate = function (player, strict, minimumLevel, allowSelfIfUnauthorized) {
         if (strict === void 0) { strict = true; }
         if (minimumLevel === void 0) { minimumLevel = "mod"; }
-        if (allowSelfIfUnauthorized === void 0) { allowSelfIfUnauthorized = true; }
+        if (allowSelfIfUnauthorized === void 0) { allowSelfIfUnauthorized = false; }
         if (player == this && allowSelfIfUnauthorized)
             return true;
         if (!this.hasPerm(minimumLevel))
@@ -1321,10 +1321,15 @@ var FishPlayer = /** @class */ (function () {
         });
     };
     FishPlayer.messageAllWithPerm = function (perm, message) {
-        FishPlayer.forEachPlayer(function (fishP) {
-            if (fishP.hasPerm(perm))
-                fishP.sendMessage(message);
-        });
+        if (perm) {
+            FishPlayer.forEachPlayer(function (fishP) {
+                if (fishP.hasPerm(perm))
+                    fishP.sendMessage(message);
+            });
+        }
+        else {
+            Call.sendMessage(message);
+        }
     };
     //#endregion
     //#region heuristics
