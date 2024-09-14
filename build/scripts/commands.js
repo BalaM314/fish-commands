@@ -53,6 +53,7 @@ var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 //Behold, the power of typescript!
+var hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
 var initialized = false;
 exports.allCommands = {};
 exports.allConsoleCommands = {};
@@ -87,10 +88,16 @@ var Perm = /** @class */ (function () {
         else {
             this.check = check;
         }
+        Perm.perms[name] = this;
     }
     Perm.fromRank = function (rank) {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
     };
+    Perm.getByName = function (name) {
+        var _a;
+        return (_a = Perm.perms[name]) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("Invalid requiredPerm");
+    };
+    Perm.perms = {};
     Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
     Perm.trusted = Perm.fromRank(ranks_1.Rank.trusted);
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
@@ -121,6 +128,7 @@ var Perm = /** @class */ (function () {
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");
     Perm.bypassNameCheck = new Perm("bypassNameCheck", "fish");
+    Perm.hardcore = new Perm("hardcore", "trusted");
     return Perm;
 }());
 exports.Perm = Perm;
@@ -554,7 +562,6 @@ function register(commands, clientHandler, serverHandler) {
         var processedCmdArgs = data.args.map(processArgString);
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
         clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
-                var _a;
                 if (!initialized)
                     (0, utils_1.crash)("Commands not initialized!");
                 var fishSender = players_1.FishPlayer.get(sender);
@@ -562,7 +569,12 @@ function register(commands, clientHandler, serverHandler) {
                 //Verify authorization
                 //as a bonus, this crashes if data.perm is undefined
                 if (!data.perm.check(fishSender)) {
-                    (0, utils_1.outputFail)((_a = data.customUnauthorizedMessage) !== null && _a !== void 0 ? _a : data.perm.unauthorizedMessage, sender);
+                    if (data.customUnauthorizedMessage)
+                        (0, utils_1.outputFail)(data.customUnauthorizedMessage, sender);
+                    else if (data.isHidden)
+                        (0, utils_1.outputMessage)(hiddenUnauthorizedMessage, sender);
+                    else
+                        (0, utils_1.outputFail)(data.perm.unauthorizedMessage, sender);
                     return;
                 }
                 //closure over processedCmdArgs, should be fine

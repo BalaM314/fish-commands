@@ -52,6 +52,7 @@ export function formatTime(time:number){
 	].filter(s => s).join(", ")
 }
 
+//TODO move this data to be right next to Mode
 export function formatModeName(name:ModeName){
 	return {
 		"attack": "Attack",
@@ -59,6 +60,7 @@ export function formatModeName(name:ModeName){
 		"hexed": "Hexed",
 		"pvp": "PVP",
 		"sandbox": "Sandbox",
+    "hardcore": "Hardcore"
 	}[name];
 }
 

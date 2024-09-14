@@ -135,6 +135,7 @@ function formatTime(time) {
         seconds && "".concat(seconds, " seconds"),
     ].filter(function (s) { return s; }).join(", ");
 }
+//TODO move this data to be right next to Mode
 function formatModeName(name) {
     return {
         "attack": "Attack",
@@ -142,6 +143,7 @@ function formatModeName(name) {
         "hexed": "Hexed",
         "pvp": "PVP",
         "sandbox": "Sandbox",
+        "hardcore": "Hardcore"
     }[name];
 }
 function formatTimestamp(time) {

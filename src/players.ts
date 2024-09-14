@@ -888,13 +888,16 @@ We apologize for the inconvenience.`
 	/**
 	 * @returns whether a player can perform a moderation action on another player.
 	 * @param strict If false, then the action is also allowed on players of same rank.
+	 * @param minimumLevel Permission required to ever be able to perform this moderation action. Default: mod.
 	 */
-	canModerate(player:FishPlayer, strict:boolean = true){
-		if(!this.hasPerm("mod") && player !== this) return; //players below mod rank have no moderation permissions and cannot moderate anybody, except themselves
+	canModerate(player:FishPlayer, strict:boolean = true, minimumLevel:PermType = "mod", allowSelfIfUnauthorized = false){
+		if(player == this && allowSelfIfUnauthorized) return true;
+		if(!this.hasPerm(minimumLevel)) return; //players below mod rank have no moderation permissions and cannot moderate anybody, except themselves
+		if(player == this) return true;
 		if(strict)
-			return this.rank.level > player.rank.level || player == this;
+			return this.rank.level > player.rank.level;
 		else
-			return this.rank.level >= player.rank.level || player == this;
+			return this.rank.level >= player.rank.level;
 	}
 	ranksAtLeast(rank:Rank | RankName){
 		if(typeof rank == "string") rank = Rank.getByName(rank)!;
@@ -1190,6 +1193,15 @@ We apologize for the inconvenience.`
 		FishPlayer.forEachPlayer(fishP => {
 			if(fishP !== exclude) fishP.sendMessage(message);
 		});
+	}
+	static messageAllWithPerm(perm:PermType | undefined, message:string){
+		if(perm){
+			FishPlayer.forEachPlayer(fishP => {
+				if(fishP.hasPerm(perm)) fishP.sendMessage(message);
+			});
+		} else {
+			Call.sendMessage(message);
+		}
 	}
 
 	//#endregion

@@ -5,7 +5,8 @@ import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globa
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
-import { capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
+import type { FishCommandData } from './types';
+import { capitalizeText, crash, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
 import { VoteManager } from './votes';
 
 export const commands = commandList({
@@ -152,21 +153,22 @@ export const commands = commandList({
 			{
 				args: [],
 				description: `Switches to the ${server.name} server.`,
-				perm: Perm.none,
+				perm: server.requiredPerm ? Perm.getByName(server.requiredPerm) : Perm.none,
+				isHidden: true,
 				handler({ sender }) {
-					Call.sendMessage(`${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
+					FishPlayer.messageAllWithPerm(server.requiredPerm, `${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
 					Call.connect(sender.con, server.ip, server.port);
 				},
-			},
+			} satisfies FishCommandData<string, any>,
 		])
 	),
 
 	switch: {
 		args: ["server:string", "target:player?"],
 		description: "Switches to another server.",
-		perm: Perm.none,
+		perm: Perm.play,
 		handler({args, sender, f}){
-			if(args.target != null && args.target != sender && (!sender.hasPerm("admin") || !sender.canModerate(args.target)))
+			if(args.target != null && args.target != sender && !sender.canModerate(args.target, true, "admin", true))
 				fail(f`You do not have permission to switch player ${args.target}.`);
 			const target = args.target ?? sender;
 			if(ipPortPattern.test(args.server) && sender.hasPerm("admin")){
@@ -175,8 +177,14 @@ export const commands = commandList({
 			} else {
 				const server = FishServers.byName(args.server)
 					?? fail(`Unknown server ${args.server}. Valid options: ${FishServers.all.map(s => s.name).join(", ")}`);
+
+				//Pretend the server doesn't exist
+				if(server.requiredPerm && !sender.hasPerm(server.requiredPerm))
+					fail(`Unknown server ${args.server}. Valid options: ${FishServers.all.map(s => s.name).join(", ")}`);
+
 				if(target == sender)
-					Call.sendMessage(`${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
+					FishPlayer.messageAllWithPerm(server.requiredPerm, `${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
+
 				Call.connect(target.con, server.ip, server.port);
 			}
 		}

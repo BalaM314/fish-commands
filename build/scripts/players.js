@@ -993,15 +993,22 @@ var FishPlayer = /** @class */ (function () {
     /**
      * @returns whether a player can perform a moderation action on another player.
      * @param strict If false, then the action is also allowed on players of same rank.
+     * @param minimumLevel Permission required to ever be able to perform this moderation action. Default: mod.
      */
-    FishPlayer.prototype.canModerate = function (player, strict) {
+    FishPlayer.prototype.canModerate = function (player, strict, minimumLevel, allowSelfIfUnauthorized) {
         if (strict === void 0) { strict = true; }
-        if (!this.hasPerm("mod") && player !== this)
+        if (minimumLevel === void 0) { minimumLevel = "mod"; }
+        if (allowSelfIfUnauthorized === void 0) { allowSelfIfUnauthorized = false; }
+        if (player == this && allowSelfIfUnauthorized)
+            return true;
+        if (!this.hasPerm(minimumLevel))
             return; //players below mod rank have no moderation permissions and cannot moderate anybody, except themselves
+        if (player == this)
+            return true;
         if (strict)
-            return this.rank.level > player.rank.level || player == this;
+            return this.rank.level > player.rank.level;
         else
-            return this.rank.level >= player.rank.level || player == this;
+            return this.rank.level >= player.rank.level;
     };
     FishPlayer.prototype.ranksAtLeast = function (rank) {
         if (typeof rank == "string")
@@ -1312,6 +1319,17 @@ var FishPlayer = /** @class */ (function () {
             if (fishP !== exclude)
                 fishP.sendMessage(message);
         });
+    };
+    FishPlayer.messageAllWithPerm = function (perm, message) {
+        if (perm) {
+            FishPlayer.forEachPlayer(function (fishP) {
+                if (fishP.hasPerm(perm))
+                    fishP.sendMessage(message);
+            });
+        }
+        else {
+            Call.sendMessage(message);
+        }
     };
     //#endregion
     //#region heuristics
