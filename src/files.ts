@@ -1,6 +1,6 @@
-import { mapRepoURLs, Mode } from "./config.js";
-import { Promise } from "./promise.js";
-import { crash, getHash } from "./utils.js";
+import { mapRepoURLs, Mode } from "./config";
+import { Promise } from "./promise";
+import { crash, getHash } from "./utils";
 
 
 

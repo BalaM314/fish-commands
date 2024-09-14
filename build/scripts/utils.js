@@ -91,7 +91,6 @@ exports.updateBans = updateBans;
 exports.processChat = processChat;
 exports.getIPRange = getIPRange;
 exports.getHash = getHash;
-exports.instanceof_ = instanceof_;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
@@ -1079,9 +1078,4 @@ function getHash(file, algorithm) {
         Log.err("Cannot generate ".concat(algorithm, ", ").concat(e));
         return undefined;
     }
-}
-/** `instanceof`, but doesn't get broken by rhino badness */
-function instanceof_(thing, clazz) {
-    var _a;
-    return typeof thing === "object" && thing != null && ((_a = thing.constructor) === null || _a === void 0 ? void 0 : _a.name) == clazz.name;
 }

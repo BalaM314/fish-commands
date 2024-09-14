@@ -1,12 +1,12 @@
-import * as api from "./api.js";
-import { Perm, PermType } from "./commands.js";
-import * as config from "./config.js";
-import { Mode, heuristics } from "./config.js";
-import { uuidPattern } from "./globals.js";
-import { menu } from "./menus.js";
-import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks.js";
-import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types.js";
-import { StringIO, cleanText, crash, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, matchFilter, parseError, setToArray } from "./utils.js";
+import * as api from "./api";
+import { Perm, PermType } from "./commands";
+import * as config from "./config";
+import { Mode, heuristics } from "./config";
+import { uuidPattern } from "./globals";
+import { menu } from "./menus";
+import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
+import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
+import { StringIO, cleanText, crash, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, matchFilter, parseError, setToArray } from "./utils";
 
 
 export class FishPlayer {

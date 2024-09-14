@@ -368,13 +368,13 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
 var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
-    if ((0, utils_1.instanceof_)(chunk, players_1.FishPlayer)) {
+    if (chunk instanceof players_1.FishPlayer) {
         return "&c(".concat((0, utils_1.escapeStringColorsServer)(chunk.cleanedName), ")&fr");
     }
-    else if ((0, utils_1.instanceof_)(chunk, ranks_1.Rank)) {
+    else if (chunk instanceof ranks_1.Rank) {
         return "&p".concat(chunk.name, "&fr");
     }
-    else if ((0, utils_1.instanceof_)(chunk, ranks_1.RoleFlag)) {
+    else if (chunk instanceof ranks_1.RoleFlag) {
         return "&p".concat(chunk.name, "&fr");
     }
     else if (chunk instanceof Error) {
@@ -423,13 +423,13 @@ var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
 var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i, data, stringChunks) {
     var _a, _b;
     var reset = (_b = data !== null && data !== void 0 ? data : (_a = stringChunks[0].match(/^\[.+?\]/)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : "";
-    if ((0, utils_1.instanceof_)(chunk, players_1.FishPlayer)) {
+    if (chunk instanceof players_1.FishPlayer) {
         return "[cyan](".concat(chunk.name, "[cyan])") + reset;
     }
-    else if ((0, utils_1.instanceof_)(chunk, ranks_1.Rank)) {
+    else if (chunk instanceof ranks_1.Rank) {
         return "".concat(chunk.color).concat(chunk.name, "[]") + reset;
     }
-    else if ((0, utils_1.instanceof_)(chunk, ranks_1.RoleFlag)) {
+    else if (chunk instanceof ranks_1.RoleFlag) {
         return "".concat(chunk.color).concat(chunk.name, "[]") + reset;
     }
     else if (chunk instanceof Error) {

@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateMaps = updateMaps;
-var config_js_1 = require("./config.js");
-var promise_js_1 = require("./promise.js");
-var utils_js_1 = require("./utils.js");
+var config_1 = require("./config");
+var promise_1 = require("./promise");
+var utils_1 = require("./utils");
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
 function fetchGithubContents() {
-    return new promise_js_1.Promise(function (resolve, reject) {
-        var url = config_js_1.mapRepoURLs[config_js_1.Mode.name()];
+    return new promise_1.Promise(function (resolve, reject) {
+        var url = config_1.mapRepoURLs[config_1.Mode.name()];
         if (!url)
             return reject("No recognized gamemode detected. please enter \"host <map> <gamemode>\" and try again");
         Http.get(url, function (res) {
@@ -23,9 +23,9 @@ function fetchGithubContents() {
 }
 function downloadFile(address, filename) {
     if (!/^https?:\/\//i.test(address)) {
-        (0, utils_js_1.crash)("Invalid address, please start with 'http://' or 'https://'");
+        (0, utils_1.crash)("Invalid address, please start with 'http://' or 'https://'");
     }
-    return new promise_js_1.Promise(function (resolve, reject) {
+    return new promise_1.Promise(function (resolve, reject) {
         var instream = null;
         var outstream = null;
         Log.info("Downloading ".concat(filename, "..."));
@@ -47,10 +47,10 @@ function downloadFile(address, filename) {
     });
 }
 function downloadMaps(githubListing) {
-    return promise_js_1.Promise.all(githubListing.map(function (fileEntry) {
+    return promise_1.Promise.all(githubListing.map(function (fileEntry) {
         if (!(typeof fileEntry.download_url == "string")) {
             Log.warn("Map ".concat(fileEntry.name, " has no valid download link, skipped."));
-            return promise_js_1.Promise.resolve(null);
+            return promise_1.Promise.resolve(null);
         }
         return downloadFile(fileEntry.download_url, Vars.customMapDirectory.child(fileEntry.name).absolutePath());
     })).then(function (v) { });
@@ -73,7 +73,7 @@ function updateMaps() {
         var mapsToDownload = mapList
             .filter(function (entry) {
             var file = Vars.customMapDirectory.child(entry.name);
-            return !file.exists() || entry.sha !== (0, utils_js_1.getHash)(file); //sha'd
+            return !file.exists() || entry.sha !== (0, utils_1.getHash)(file); //sha'd
         });
         if (mapsToDownload.length == 0) {
             return mapsToDelete.length > 0 ? true : false;

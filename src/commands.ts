@@ -3,8 +3,8 @@ import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
-import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishCommandRequirement, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
-import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeName, formatTime, getBlock, getMap, getTeam, getUnitType, instanceof_, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
+import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
+import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeName, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
 
 //Behold, the power of typescript!
 
@@ -270,11 +270,11 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 
 
 const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((chunk) => {
-	if(instanceof_(chunk, FishPlayer)){
+	if(chunk instanceof FishPlayer){
 		return `&c(${escapeStringColorsServer(chunk.cleanedName)})&fr`;
-	} else if(instanceof_(chunk, Rank)){
+	} else if(chunk instanceof Rank){
 		return `&p${chunk.name}&fr`;
-	} else if(instanceof_(chunk, RoleFlag)){
+	} else if(chunk instanceof RoleFlag){
 		return `&p${chunk.name}&fr`;
 	} else if(chunk instanceof Error){
 		return `&r${escapeStringColorsServer(chunk.toString())}&fr`;
@@ -310,11 +310,11 @@ const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((
 });
 const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((chunk, i, data, stringChunks) => {
 	const reset = data ?? stringChunks[0].match(/^\[.+?\]/)?.[0] ?? "";
-	if(instanceof_(chunk, FishPlayer)){
+	if(chunk instanceof FishPlayer){
 		return `[cyan](${chunk.name}[cyan])` + reset;
-	} else if(instanceof_(chunk, Rank)){
+	} else if(chunk instanceof Rank){
 		return `${chunk.color}${chunk.name}[]` + reset;
-	} else if(instanceof_(chunk, RoleFlag)){
+	} else if(chunk instanceof RoleFlag){
 		return `${chunk.color}${chunk.name}[]` + reset;
 	} else if(chunk instanceof Error){
 		return `[red]${chunk.toString()}` + reset;

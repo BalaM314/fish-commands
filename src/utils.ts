@@ -890,8 +890,3 @@ export function getHash(file: Fi, algorithm: string = "SHA-1"): string | undefin
 		return undefined;
 	}
 }
-
-/** `instanceof`, but doesn't get broken by rhino badness */
-export function instanceof_<T extends new (...args:any[]) => {}>(thing:unknown, clazz:T):thing is InstanceType<T> {
-	return typeof thing === "object" && thing != null && thing.constructor?.name == clazz.name;
-}

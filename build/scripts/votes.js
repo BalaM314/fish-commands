@@ -41,8 +41,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteManager = void 0;
-var players_js_1 = require("./players.js");
-var utils_js_1 = require("./utils.js");
+var players_1 = require("./players");
+var utils_1 = require("./utils");
 var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
     function VoteManager(voteTime, goal) {
@@ -54,7 +54,7 @@ var VoteManager = /** @class */ (function (_super) {
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
             //Run once the player has been removed, but resolve the player first in case the connection gets nulled
-            var fishP = players_js_1.FishPlayer.get(player);
+            var fishP = players_1.FishPlayer.get(player);
             Core.app.post(function () { return _this.unvote(fishP); });
         });
         Events.on(EventType.GameOverEvent, function () { return _this.resetVote(); });
@@ -63,7 +63,7 @@ var VoteManager = /** @class */ (function (_super) {
     VoteManager.prototype.start = function (player, newVote, data) {
         var _this = this;
         if (data === null)
-            (0, utils_js_1.crash)("Cannot start vote: data not provided");
+            (0, utils_1.crash)("Cannot start vote: data not provided");
         this.session = {
             timer: Timer.schedule(function () { return _this._checkVote(false); }, this.voteTime / 1000),
             votes: new Map(),
@@ -84,7 +84,7 @@ var VoteManager = /** @class */ (function (_super) {
     VoteManager.prototype.unvote = function (player) {
         if (!this.session)
             return;
-        var fishP = players_js_1.FishPlayer.resolve(player);
+        var fishP = players_1.FishPlayer.resolve(player);
         var vote = this.session.votes.get(fishP.uuid);
         if (vote) {
             this.fire("player vote removed", [player, vote]);
@@ -132,5 +132,5 @@ var VoteManager = /** @class */ (function (_super) {
         }
     };
     return VoteManager;
-}(utils_js_1.EventEmitter));
+}(utils_1.EventEmitter));
 exports.VoteManager = VoteManager;
