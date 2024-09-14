@@ -79,6 +79,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastUnitPosition = [0, 0];
         this.lastActive = Date.now();
         this.lastRatelimitedMessage = -1;
+        this.changedTeam = false;
         this.chatStrictness = "chat";
         this.uuid = (_m = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _m !== void 0 ? _m : (0, utils_1.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_o = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _o !== void 0 ? _o : "Unnamed player [ERROR]";
@@ -439,30 +440,24 @@ var FishPlayer = /** @class */ (function () {
         player.lastActive = Date.now();
     };
     FishPlayer.onGameOver = function (winningTeam) {
-        var e_5, _a;
-        try {
-            for (var _b = __values(Object.entries(this.cachedPlayers)), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var _d = __read(_c.value, 2), uuid = _d[0], fishPlayer = _d[1];
-                if (fishPlayer.connected()) {
-                    //Clear temporary states such as menu and taphandler
-                    fishPlayer.activeMenu.callback = undefined;
-                    fishPlayer.tapInfo.commandName = null;
-                    //Update stats
-                    if (!this.ignoreGameOver) {
-                        if (fishPlayer.team() == winningTeam)
-                            fishPlayer.stats.gamesWon++;
-                        fishPlayer.stats.gamesFinished++;
-                    }
+        var _this = this;
+        this.forEachPlayer(function (fishPlayer) {
+            //Clear temporary states such as menu and taphandler
+            fishPlayer.activeMenu.callback = undefined;
+            fishPlayer.tapInfo.commandName = null;
+            //Update stats
+            if (!_this.ignoreGameOver) {
+                fishPlayer.stats.gamesFinished++;
+                if (fishPlayer.changedTeam) {
+                    fishPlayer.sendMessage("Refusing to update stats due to a team change.");
+                }
+                else {
+                    if (fishPlayer.team() == winningTeam)
+                        fishPlayer.stats.gamesWon++;
                 }
             }
-        }
-        catch (e_5_1) { e_5 = { error: e_5_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-            }
-            finally { if (e_5) throw e_5.error; }
-        }
+            fishPlayer.changedTeam = false;
+        });
     };
     FishPlayer.ignoreGameover = function (callback) {
         this.ignoreGameOver = true;
@@ -531,7 +526,7 @@ var FishPlayer = /** @class */ (function () {
     };
     /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
-        var e_6, _a;
+        var e_5, _a;
         if (!this.connected() || !this.shouldUpdateName)
             return; //No player, no need to update
         var prefix = '';
@@ -552,12 +547,12 @@ var FishPlayer = /** @class */ (function () {
                     prefix += flag.prefix;
                 }
             }
-            catch (e_6_1) { e_6 = { error: e_6_1 }; }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
             finally {
                 try {
                     if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
                 }
-                finally { if (e_6) throw e_6.error; }
+                finally { if (e_5) throw e_5.error; }
             }
             prefix += this.rank.prefix;
         }
@@ -589,7 +584,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.prototype.checkAntiEvasion = function () {
-        var e_7, _a;
+        var e_6, _a;
         var _b, _c;
         FishPlayer.updatePunishedIPs();
         try {
@@ -606,12 +601,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_7_1) { e_7 = { error: e_7_1 }; }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
         finally {
             try {
                 if (_e && !_e.done && (_a = _d.return)) _a.call(_d);
             }
-            finally { if (e_7) throw e_7.error; }
+            finally { if (e_6) throw e_6.error; }
         }
         return true;
     };
@@ -735,7 +730,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.prototype.checkAutoRanks = function () {
-        var e_8, _a;
+        var e_7, _a;
         if (this.stelled())
             return;
         try {
@@ -751,12 +746,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_8_1) { e_8 = { error: e_8_1 }; }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_8) throw e_8.error; }
+            finally { if (e_7) throw e_7.error; }
         }
     };
     //#endregion
@@ -928,7 +923,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.loadAllLegacy = function (jsonString) {
-        var e_9, _a;
+        var e_8, _a;
         try {
             for (var _b = __values(Object.entries(JSON.parse(jsonString))), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
@@ -942,12 +937,12 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
         }
-        catch (e_9_1) { e_9 = { error: e_9_1 }; }
+        catch (e_8_1) { e_8 = { error: e_8_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
             }
-            finally { if (e_9) throw e_9.error; }
+            finally { if (e_8) throw e_8.error; }
         }
     };
     //#endregion
@@ -992,11 +987,11 @@ var FishPlayer = /** @class */ (function () {
     };
     /**
      * @returns whether a player can perform a moderation action on another player.
-     * @param strict If false, then the action is also allowed on players of same rank.
+     * @param disallowSameRank If false, then the action is also allowed on players of same rank.
      * @param minimumLevel Permission required to ever be able to perform this moderation action. Default: mod.
      */
-    FishPlayer.prototype.canModerate = function (player, strict, minimumLevel, allowSelfIfUnauthorized) {
-        if (strict === void 0) { strict = true; }
+    FishPlayer.prototype.canModerate = function (player, disallowSameRank, minimumLevel, allowSelfIfUnauthorized) {
+        if (disallowSameRank === void 0) { disallowSameRank = true; }
         if (minimumLevel === void 0) { minimumLevel = "mod"; }
         if (allowSelfIfUnauthorized === void 0) { allowSelfIfUnauthorized = false; }
         if (player == this && allowSelfIfUnauthorized)
@@ -1005,7 +1000,7 @@ var FishPlayer = /** @class */ (function () {
             return; //players below mod rank have no moderation permissions and cannot moderate anybody, except themselves
         if (player == this)
             return true;
-        if (strict)
+        if (disallowSameRank)
             return this.rank.level > player.rank.level;
         else
             return this.rank.level >= player.rank.level;

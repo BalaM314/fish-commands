@@ -585,12 +585,16 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var _b, _c;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
-            if (!sender.canModerate(args.target, true))
+            if (!sender.canModerate(args.target, true, "mod", true))
                 (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
-            if (!sender.hasPerm("changeTeamExternal") && args.team.data().cores.size <= 0)
-                (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
-            if (!sender.hasPerm("changeTeamExternal") && (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore)))
-                args.target.forceRespawn();
+            if (!sender.hasPerm("changeTeamExternal")) {
+                if (args.team.data().cores.size <= 0)
+                    (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
+                if (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore))
+                    args.target.forceRespawn();
+            }
+            if (!sender.hasPerm("mod"))
+                args.target.changedTeam = true;
             args.target.setTeam(args.team);
             if (args.target === sender)
                 outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));

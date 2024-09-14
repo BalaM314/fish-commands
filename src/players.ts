@@ -2,7 +2,7 @@ import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as config from "./config";
 import { Mode, heuristics } from "./config";
-import { uuidPattern } from "./globals";
+import { fishState, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
@@ -80,6 +80,7 @@ export class FishPlayer {
 	lastUnitPosition = [0, 0] as [x:number, y:number];
 	lastActive:number = Date.now();
 	lastRatelimitedMessage = -1;
+	changedTeam = false;
 	
 	//Stored data
 	uuid: string;
@@ -412,18 +413,21 @@ export class FishPlayer {
 	}
 	private static ignoreGameOver = false;
 	static onGameOver(winningTeam:Team){
-		for(const [uuid, fishPlayer] of Object.entries(this.cachedPlayers)){
-			if(fishPlayer.connected()){
-				//Clear temporary states such as menu and taphandler
-				fishPlayer.activeMenu.callback = undefined;
-				fishPlayer.tapInfo.commandName = null;
-				//Update stats
-				if(!this.ignoreGameOver){
+		this.forEachPlayer((fishPlayer) => {
+			//Clear temporary states such as menu and taphandler
+			fishPlayer.activeMenu.callback = undefined;
+			fishPlayer.tapInfo.commandName = null;
+			//Update stats
+			if(!this.ignoreGameOver){
+				fishPlayer.stats.gamesFinished ++;
+				if(fishPlayer.changedTeam){
+					fishPlayer.sendMessage(`Refusing to update stats due to a team change.`);
+				} else {
 					if(fishPlayer.team() == winningTeam) fishPlayer.stats.gamesWon ++;
-					fishPlayer.stats.gamesFinished ++;
 				}
 			}
-		}
+			fishPlayer.changedTeam = false;
+		});
 	}
 	static ignoreGameover(callback:() => unknown){
 		this.ignoreGameOver = true;
@@ -887,14 +891,14 @@ We apologize for the inconvenience.`
 	}
 	/**
 	 * @returns whether a player can perform a moderation action on another player.
-	 * @param strict If false, then the action is also allowed on players of same rank.
+	 * @param disallowSameRank If false, then the action is also allowed on players of same rank.
 	 * @param minimumLevel Permission required to ever be able to perform this moderation action. Default: mod.
 	 */
-	canModerate(player:FishPlayer, strict:boolean = true, minimumLevel:PermType = "mod", allowSelfIfUnauthorized = false){
+	canModerate(player:FishPlayer, disallowSameRank:boolean = true, minimumLevel:PermType = "mod", allowSelfIfUnauthorized = false){
 		if(player == this && allowSelfIfUnauthorized) return true;
 		if(!this.hasPerm(minimumLevel)) return; //players below mod rank have no moderation permissions and cannot moderate anybody, except themselves
 		if(player == this) return true;
-		if(strict)
+		if(disallowSameRank)
 			return this.rank.level > player.rank.level;
 		else
 			return this.rank.level >= player.rank.level;
