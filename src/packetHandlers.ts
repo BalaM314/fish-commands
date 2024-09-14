@@ -14,14 +14,14 @@ let lastAccessedLabel:FishPlayer | null = null;
 let lastAccessedBulkLine:FishPlayer | null = null;
 let lastAccessedLine:FishPlayer | null = null;
 
-const bulkLimit:number = 1000;
+const bulkLimit = 1000;
 
-const noPermissionText:string = "[red]You don't have permission to use this packet.";
-const invalidContentText:string = '[red]Invalid label content.';
-const tooLongText:string = '[red]Bulk content length exceeded, please use fewer effects.';
-const bulkSeparator:string = '|';
-const procError:string = '[red]An error occured while processing your request.';
-const invalidReq:string = '[red]Invalid request. Please consult the documentation.';
+const noPermissionText = "[red]You don't have permission to use this packet.";
+const invalidContentText = '[red]Invalid label content.';
+const tooLongText = '[red]Bulk content length exceeded, please use fewer effects.';
+const bulkSeparator = '|';
+const procError = '[red]An error occured while processing your request.';
+const invalidReq = '[red]Invalid request. Please consult the documentation.';
 const lowTPSError = '[red]Low server TPS, skipping request.'
 
 const tmpLinePacket = new EffectCallPacket2();
@@ -38,7 +38,7 @@ export function loadPacketHandlers() {
 
 	//fmt: "content,duration,x,y"
 	Vars.netServer.addPacketHandler('label', (player:mindustryPlayer, content:string) => {
-		const p:FishPlayer = FishPlayer.get(player);
+		const p = FishPlayer.get(player);
 		try {
 			if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
 				p.sendMessage(lowTPSError, 1000);
@@ -58,7 +58,7 @@ export function loadPacketHandlers() {
 	});
 
 	Vars.netServer.addPacketHandler('bulkLabel', (player:mindustryPlayer, content:string) => {
-		const p:FishPlayer = FishPlayer.get(player);
+		const p = FishPlayer.get(player);
 		try {
 			if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
 				p.sendMessage(lowTPSError, 1000);
@@ -73,8 +73,8 @@ export function loadPacketHandlers() {
 
 			//get individual labels
 			const labels:string[] = [];
-			let inQuotes:boolean = false;
-			let startIdx:number = 0;
+			let inQuotes = false;
+			let startIdx = 0;
 
 			for (let i = 0; i < content.length; i++) {
 				switch (content[i]) {
@@ -106,7 +106,7 @@ export function loadPacketHandlers() {
 
 			//display labels
 			for (let i = 0; i < labels.length; i++) {
-				const label:string = labels[i];
+				const label = labels[i];
 				if (label.trim().length <= 0) continue;
 				if (!handleLabel(player, label, false)) return;
 			}
@@ -117,7 +117,7 @@ export function loadPacketHandlers() {
 
 	//lines
 	Vars.netServer.addPacketHandler('lineEffect', (player:mindustryPlayer, content:string) => {
-		const p:FishPlayer = FishPlayer.get(player);
+		const p = FishPlayer.get(player);
 		try {
 			if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
 				p.sendMessage(lowTPSError, 1000);
@@ -137,7 +137,7 @@ export function loadPacketHandlers() {
 
 	//this is the silas effect but it's way too real
 	Vars.netServer.addPacketHandler('bulkLineEffect', (player:mindustryPlayer, content:string) => {
-		const p:FishPlayer = FishPlayer.get(player);
+		const p = FishPlayer.get(player);
 		if(Core.graphics.getFramesPerSecond() < MIN_EFFECT_TPS){
 			p.sendMessage(lowTPSError, 1000);
 			return;
@@ -148,7 +148,7 @@ export function loadPacketHandlers() {
 		}
 		try {
 
-			const lines:string[] = content.split(bulkSeparator);
+			const lines = content.split(bulkSeparator);
 
 			if(lines.length > bulkLimit){
 				p.sendMessage(tooLongText, 1000);
@@ -156,7 +156,7 @@ export function loadPacketHandlers() {
 			}
 
 			for (let i = 0; i < lines.length; i++) {
-				const line:string = lines[i];
+				const line = lines[i];
 				if (line.trim().length <= 0) continue;
 				if (!handleLine(line, player)) return;
 			}
@@ -250,7 +250,7 @@ function findEndQuote(content:string, startPos:number) {
 }
 
 function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):boolean {
-	const endPos:number = findEndQuote(content, 0);
+	const endPos = findEndQuote(content, 0);
 	if (endPos == -1) {
 		//invalid content
 		player.sendMessage(invalidContentText);
@@ -258,8 +258,8 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 	}
 
 	//label, clean up \"s
-	const message:string = content.substring(1, endPos).replace('\\"', '"');
-	const parts:string[] = content.substring(endPos + 2).split(',');
+	const message = content.substring(1, endPos).replace('\\"', '"');
+	const parts = content.substring(endPos + 2).split(',');
 
 	if (parts.length != 3) { //dur,x,y
 		player.sendMessage(invalidReq);
@@ -291,7 +291,7 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 }
 
 function handleLine(content:string, player:mindustryPlayer):boolean {
-	const parts:string[] = content.split(',');
+	const parts = content.split(',');
 
 	if (parts.length != 5) { //x0,y0,x1,y1,color
 		player.sendMessage(invalidReq);
