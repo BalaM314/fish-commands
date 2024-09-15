@@ -222,7 +222,9 @@ export const commands = consoleCommandList({
 					} else {
 						output(`IP &c"${args.target}"&fr was not locally banned.`);
 					}
-					if(admins.subnetBans.removeAll(r => args.target.startsWith(r))){
+					const size = admins.subnetBans.size;
+					admins.subnetBans.removeAll(r => args.target.startsWith(r))
+					if(admins.subnetBans.size < size){
 						output(`Unbanned IP ranges affecting this IP.`);
 					}
 				});

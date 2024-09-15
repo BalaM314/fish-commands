@@ -298,7 +298,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     else {
                         output("IP &c\"".concat(args.target, "\"&fr was not locally banned."));
                     }
-                    if (admins.subnetBans.removeAll(function (r) { return args.target.startsWith(r); })) {
+                    var size = admins.subnetBans.size;
+                    admins.subnetBans.removeAll(function (r) { return args.target.startsWith(r); });
+                    if (admins.subnetBans.size < size) {
                         output("Unbanned IP ranges affecting this IP.");
                     }
                 });
