@@ -141,11 +141,13 @@ exports.Req = {
         return !config_1.Mode[mode]()
             || fail("This command is disabled in ".concat((0, utils_1.formatModeName)(mode)));
     }; },
-    moderate: function (argName, allowSameRank) {
+    moderate: function (argName, allowSameRank, minimumLevel, allowSelfIfUnauthorized) {
         if (allowSameRank === void 0) { allowSameRank = false; }
+        if (minimumLevel === void 0) { minimumLevel = "mod"; }
+        if (allowSelfIfUnauthorized === void 0) { allowSelfIfUnauthorized = false; }
         return function (_a) {
             var args = _a.args, sender = _a.sender;
-            return (sender.canModerate(args[argName], !allowSameRank)
+            return (sender.canModerate(args[argName], !allowSameRank, minimumLevel, allowSelfIfUnauthorized)
                 || fail("You do not have permission to perform moderation actions on this player."));
         };
     },

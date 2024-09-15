@@ -403,7 +403,7 @@ export const commands = commandList({
 		args: ["player:player"],
 		description: "Kills a player's unit.",
 		perm: Perm.mod,
-		requirements: [Req.moderate("player", true)],
+		requirements: [Req.moderate("player", true, "admin")],
 		handler({args, outputFail, outputSuccess, f}){
 
 			const unit = args.player.unit();
@@ -420,7 +420,7 @@ export const commands = commandList({
 		args: ["player:player"],
 		description: "Forces a player to respawn.",
 		perm: Perm.mod,
-		requirements: [Req.moderate("player", true)],
+		requirements: [Req.moderate("player", true, "mod", true)],
 		handler({args, outputSuccess, f}){
 			
 			args.player.forceRespawn();

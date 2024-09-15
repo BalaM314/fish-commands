@@ -464,7 +464,7 @@ exports.commands = (0, commands_1.commandList)({
         args: ["player:player"],
         description: "Kills a player's unit.",
         perm: commands_1.Perm.mod,
-        requirements: [commands_1.Req.moderate("player", true)],
+        requirements: [commands_1.Req.moderate("player", true, "admin")],
         handler: function (_a) {
             var args = _a.args, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, f = _a.f;
             var unit = args.player.unit();
@@ -481,7 +481,7 @@ exports.commands = (0, commands_1.commandList)({
         args: ["player:player"],
         description: "Forces a player to respawn.",
         perm: commands_1.Perm.mod,
-        requirements: [commands_1.Req.moderate("player", true)],
+        requirements: [commands_1.Req.moderate("player", true, "mod", true)],
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
             args.player.forceRespawn();

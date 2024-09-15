@@ -106,9 +106,10 @@ export const Req = {
 	modeNot: (mode:ModeName) => () =>
 		!Mode[mode]()
 			|| fail(`This command is disabled in ${formatModeName(mode)}`),
-	moderate: <T extends string>(argName:T, allowSameRank:boolean = false) => ({args, sender}:{args:Record<T, FishPlayer>, sender:FishPlayer}) =>
-		(sender.canModerate(args[argName], !allowSameRank)
-			|| fail(`You do not have permission to perform moderation actions on this player.`)),
+	moderate: <T extends string>(argName:T, allowSameRank:boolean = false, minimumLevel:PermType = "mod", allowSelfIfUnauthorized = false) =>
+		({args, sender}:{args:Record<T, FishPlayer>, sender:FishPlayer}) =>
+			(sender.canModerate(args[argName], !allowSameRank, minimumLevel, allowSelfIfUnauthorized)
+				|| fail(`You do not have permission to perform moderation actions on this player.`)),
 	cooldown: (durationMS:number) => ({lastUsedSuccessfullySender}:FishCommandHandlerData<never, unknown>) =>
 		Date.now() - lastUsedSuccessfullySender >= durationMS
 			|| fail(`This command was run recently and is on cooldown.`),

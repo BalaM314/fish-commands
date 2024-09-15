@@ -507,7 +507,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             if (!(sender.connected() && sender.unit().added && !sender.unit().dead))
                 (0, commands_1.fail)("You cannot spawn ohnos while dead.");
             Ohnos.updateLength();
-            if (Ohnos.ohnos.length >= (Groups.player.size() + 1))
+            if (Ohnos.ohnos.length >= (Groups.player.size() + 1) ||
+                sender.team().data().countType(UnitTypes.alpha) >= Units.getCap(sender.team()))
                 (0, commands_1.fail)("Sorry, the max number of ohno units has been reached.");
             if ((0, utils_1.nearbyEnemyTile)(sender.unit(), 6) != null)
                 (0, commands_1.fail)("Too close to an enemy tile!");

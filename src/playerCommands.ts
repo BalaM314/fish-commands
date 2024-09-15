@@ -475,7 +475,10 @@ Available types:[yellow]
 			if(!Ohnos.enabled) fail(`Ohnos have been temporarily disabled.`);
 			if(!(sender.connected() && sender.unit().added && !sender.unit().dead)) fail(`You cannot spawn ohnos while dead.`);
 			Ohnos.updateLength();
-			if(Ohnos.ohnos.length >= (Groups.player.size() + 1)) fail(`Sorry, the max number of ohno units has been reached.`);
+			if(
+				Ohnos.ohnos.length >= (Groups.player.size() + 1) ||
+				sender.team().data().countType(UnitTypes.alpha) >= Units.getCap(sender.team())
+			) fail(`Sorry, the max number of ohno units has been reached.`);
 			if(nearbyEnemyTile(sender.unit(), 6) != null) fail(`Too close to an enemy tile!`);
 			if(!UnitTypes.alpha.supportsEnv(Vars.state.rules.env)) fail(`Ohnos cannot survive in this map.`);
 	

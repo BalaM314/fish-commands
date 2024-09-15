@@ -169,6 +169,9 @@ class Team {
 	id:number;
 }
 type TeamData = any;
+const Units: {
+	getCap(team:Team):number;
+};
 const StatusEffects: {
 	[index:string]: StatusEffect;
 }
