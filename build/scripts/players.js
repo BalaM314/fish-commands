@@ -563,10 +563,10 @@ var FishPlayer = /** @class */ (function () {
             //"Don't be a script kiddie"
             //-LiveOverflow, 2015
             if (/h.*a.*c.*k.*[3e].*r/i.test(this.name)) { //try to only replace the part that contains "hacker" if it can be found with a simple regex
-                replacedName = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "[brown]script kiddie[]");
+                this.name = replacedName = this.name.replace(/h.*a.*c.*k.*[3e].*r/gi, "[brown]script kiddie[]");
             }
             else {
-                replacedName = "[brown]script kiddie";
+                this.name = replacedName = "[brown]script kiddie";
             }
         }
         else
