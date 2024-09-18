@@ -700,6 +700,7 @@ exports.commands = (0, commands_1.commandList)({
             if (!(value == "chat" || value == "strict"))
                 (0, commands_1.fail)("Invalid chat strictness level: valid levels are \"chat\", \"strict\"");
             player.chatStrictness = value;
+            (0, utils_1.logAction)("set chat strictness to ".concat(value, " for"), sender, player);
             outputSuccess(f(templateObject_44 || (templateObject_44 = __makeTemplateObject(["Set chat strictness for player ", " to \"", "\"."], ["Set chat strictness for player ", " to \"", "\"."])), player, value));
         }
     },
