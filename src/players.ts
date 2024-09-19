@@ -1212,8 +1212,9 @@ We apologize for the inconvenience.`
 
 	//#region heuristics
 	activateHeuristics(){
+		if(Mode.hexed() || Mode.sandbox()) return;
 		//Blocks broken check
-		if(this.joinsLessThan(5) && !Mode.hexed()){
+		if(this.joinsLessThan(5)){
 			let tripped = false;
 			FishPlayer.stats.heuristics.total ++;	
 			Timer.schedule(() => {

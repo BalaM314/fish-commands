@@ -1330,8 +1330,10 @@ var FishPlayer = /** @class */ (function () {
     //#region heuristics
     FishPlayer.prototype.activateHeuristics = function () {
         var _this = this;
+        if (config_1.Mode.hexed() || config_1.Mode.sandbox())
+            return;
         //Blocks broken check
-        if (this.joinsLessThan(5) && !config_1.Mode.hexed()) {
+        if (this.joinsLessThan(5)) {
             var tripped_1 = false;
             FishPlayer.stats.heuristics.total++;
             Timer.schedule(function () {
