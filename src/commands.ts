@@ -69,7 +69,7 @@ export class Perm {
 			: Mode.pvp() ? fishP.ranksAtLeast("trusted")
 			: fishP.ranksAtLeast("admin")
 	);
-	static changeTeamExternal = new Perm("changeTeamExternal", "admin");
+	static changeTeamExternal = new Perm("changeTeamExternal", fishP => Mode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin"));
 	static spawnOhnos = new Perm("spawnOhnos", () => !Mode.pvp(), "", "Ohnos are disabled in PVP.");
 	static usidCheck = new Perm("usidCheck", "trusted");
 	static runJS = new Perm("runJS", "manager");
