@@ -369,6 +369,7 @@ class ObjectIntMapEntry<K> {
 class EntityGroup<T> {
 	copy(seq:Seq<T>):Seq<T>;
 	each(func:(item:T) => unknown):void;
+	each(predicate:(item:T) => boolean, func:(item:T) => unknown):void;
 	getByID(id:number):T;
 	isEmpty():boolean;
 	size():number;
@@ -459,6 +460,9 @@ class KickReason {
 
 class ConstructBlock {
 	static ConstructBuild: any;
+}
+class CoreBlock {
+
 }
 const Prop: any;
 
