@@ -121,7 +121,7 @@ exports.FishServers = {
     attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
     survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
     pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
-    hexed: { name: "hexed", ip: "162.248.101.53", port: "6567", aliases: ["hexed", "hex", "h", "he"] },
+    sandbox: { name: "sandbox", ip: "162.248.101.53", port: "6567", aliases: ["sand", "box", "sa", "sb"] },
     hardcore: { name: "hardcore", ip: "162.24" + "8.1" + "02.101", port: "6567", aliases: ["hardcore", "hc"], requiredPerm: "hardcore" },
     // sandbox: { ip: "162.248.102.204", port: "6567" },
     byName: function (input) {
@@ -131,7 +131,7 @@ exports.FishServers = {
     },
     all: []
 };
-exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.hexed, exports.FishServers.hardcore];
+exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.sandbox, exports.FishServers.hardcore];
 exports.Mode = {
     attack: function () { return exports.Mode.name() == "attack"; },
     survival: function () { return exports.Mode.name() == "survival"; },

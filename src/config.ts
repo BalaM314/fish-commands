@@ -112,7 +112,7 @@ export const FishServers = {
 	attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
 	survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
 	pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
-	hexed: { name: "hexed", ip: "162.248.101.53", port: "6567", aliases: ["hexed", "hex", "h", "he"] },
+	sandbox: { name: "sandbox", ip: "162.248.101.53", port: "6567", aliases: ["sand", "box", "sa", "sb"] },
 	hardcore: { name: "hardcore", ip: "162.24" + "8.1" + "02.101", port: "6567", aliases: ["hardcore", "hc"], requiredPerm: "hardcore" },
 	// sandbox: { ip: "162.248.102.204", port: "6567" },
 	byName(input:string):FishServer | null {
@@ -121,7 +121,7 @@ export const FishServers = {
 	},
 	all: [] as FishServer[]
 };
-FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.hexed, FishServers.hardcore];
+FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.sandbox, FishServers.hardcore];
 export type ModeName = keyof typeof Mode extends infer K extends keyof typeof Mode ? K extends unknown ?
 	(typeof Mode)[K] extends (() => boolean) ? K : never
 : never : never;
