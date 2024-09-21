@@ -416,35 +416,53 @@ export const commands = commandList({
 		}
 	},
 	killunits: {
-		args: ["team:team?"],
-		description: "Kills all units, optionally specifying a team.",
+		args: ["team:team?", "unit:unittype?"],
+		description: "Kills all units, optionally specifying a team and unit type.",
 		perm: Perm.admin,
-		handler({args:{team}, sender, outputSuccess, outputFail, f}){
+		handler({args:{team, unit}, sender, outputSuccess, outputFail, f}){
 			if(team){
 				menu(
 					`Confirm`,
-					`This will kill [scarlet]every unit[] on the team ${team.coloredName()}.`,
+					`This will kill [scarlet]every ${unit ? unit.localizedName : "unit"}[] on the team ${team.coloredName()}.`,
 					["[orange]Kill units[]", "[green]Cancel[]"],
 					sender,
 					({option}) => {
 						if(option == "[orange]Kill units[]"){
-							const count = team.data().units.size;
-							team.data().units.each((u:Unit) => u.kill());
-							outputSuccess(f`Killed ${count} units on ${team}`);
+							if(unit){
+								let i = 0;
+								team.data().units.each(u => u.type == unit, u => {
+									u.kill();
+									i ++;
+								});
+								outputSuccess(f`Killed ${i} units on ${team}.`);
+							} else {
+								const before = team.data().units.size;
+								team.data().units.each(u => u.kill());
+								outputSuccess(f`Killed ${before} units on ${team}.`);
+							}
 						} else outputFail(`Cancelled.`);
 					}, false
 				);
 			} else {
 				menu(
 					`Confirm`,
-					`This will kill [scarlet]every single unit[].`,
+					`This will kill [scarlet]every single ${unit ? unit.localizedName : "unit"}[].`,
 					["[orange]Kill all units[]", "[green]Cancel[]"],
 					sender,
 					({option}) => {
 						if(option == "[orange]Kill all units[]"){
-							const count = Groups.unit.size();
-							Groups.unit.each(u => u.kill());
-							outputSuccess(f`Killed ${count} units.`);
+							if(unit){
+								let i = 0;
+								Groups.unit.each(u => u.type == unit, u => {
+									u.kill();
+									i ++;
+								});
+								outputSuccess(f`Killed ${i} units.`);
+							} else {
+								const before = Groups.unit.size();
+								Groups.unit.each(u => u.kill());
+								outputSuccess(f`Killed ${before} units.`);
+							}
 						} else outputFail(`Cancelled.`);
 					}, false
 				);
@@ -465,10 +483,7 @@ export const commands = commandList({
 					({option}) => {
 						if(option == "[orange]Kill buildings[]"){
 							const count = team.data().buildings.size;
-							team.data().buildings.each(
-								(b:Building) => !(b.block instanceof CoreBlock),
-								(b:Building) => b.tile.remove()
-							);
+							team.data().buildings.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
 							outputSuccess(f`Killed ${count} buildings on ${team}`);
 						} else outputFail(`Cancelled.`);
 					}, false
@@ -482,10 +497,7 @@ export const commands = commandList({
 					({option}) => {
 						if(option == "[orange]Kill buildings[]"){
 							const count = Groups.build.size();
-							Groups.build.each(
-								(b:Building) => !(b.block instanceof CoreBlock),
-								(b:Building) => b.tile.remove()
-							);
+							Groups.build.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
 							outputSuccess(f`Killed ${count} buildings.`);
 						} else outputFail(`Cancelled.`);
 					}, false

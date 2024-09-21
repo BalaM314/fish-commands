@@ -168,7 +168,10 @@ class Team {
 	coloredName():string;
 	id:number;
 }
-type TeamData = any;
+type TeamData = {
+	units: Seq<Unit>;
+	buildings: Seq<Building>;
+};
 const Units: {
 	getCap(team:Team):number;
 };
@@ -322,6 +325,7 @@ class Seq<T> {
 	select(pred:(item:T) => boolean):Seq<T>;
 	find(pred:(item:T) => boolean):T;
 	each(func:(item:T) => unknown):void;
+	each(pred:(item:T) => boolean, func:(item:T) => unknown):void;
 	isEmpty():boolean;
 	map<R>(mapFunc:(item:T) => R):Seq<R>;
 	toString(separator?:string, stringifier?:(item:T) => string):string;
