@@ -171,6 +171,8 @@ class Team {
 type TeamData = {
 	units: Seq<Unit>;
 	buildings: Seq<Building>;
+	cores: Seq<Building>;
+	countType(type:UnitType):number;
 };
 const Units: {
 	getCap(team:Team):number;
