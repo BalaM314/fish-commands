@@ -904,6 +904,27 @@ exports.commands = (0, commands_1.commandList)({
                     displayMatches();
             }
         }
-    }
+    },
+    peace: {
+        args: ["peace:boolean"],
+        description: "Toggles peaceful mode for sandbox.",
+        perm: commands_1.Perm.mod,
+        handler: function (_a) {
+            var args = _a.args;
+            if (args.peace) {
+                globals_1.fishState.peacefulMode = true;
+                Groups.player.each(function (p) {
+                    if (p.team() != Vars.state.rules.defaultTeam) {
+                        p.team(Vars.state.rules.defaultTeam);
+                    }
+                });
+                Call.sendMessage("[[Sandbox] [green]Enabled peaceful mode.");
+            }
+            else {
+                globals_1.fishState.peacefulMode = false;
+                Call.sendMessage("[[Sandbox] [red]Disabled peaceful mode.");
+            }
+        },
+    },
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37, templateObject_38, templateObject_39, templateObject_40, templateObject_41, templateObject_42, templateObject_43, templateObject_44, templateObject_45, templateObject_46, templateObject_47, templateObject_48, templateObject_49, templateObject_50, templateObject_51, templateObject_52, templateObject_53, templateObject_54, templateObject_55, templateObject_56, templateObject_57, templateObject_58, templateObject_59, templateObject_60;

@@ -1,5 +1,5 @@
 import { Mode, ModeName } from "./config";
-import { ipPattern, uuidPattern } from "./globals";
+import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
@@ -63,7 +63,7 @@ export class Perm {
 	static warn = new Perm("warn", "mod");
 	static vanish = new Perm("vanish", "mod");
 	static changeTeam = new Perm("changeTeam", fishP => 
-		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
+		(Mode.sandbox() && !fishState.peacefulMode) ? fishP.ranksAtLeast("trusted")
 			: Mode.attack() ? fishP.ranksAtLeast("admin")
 			: Mode.hexed() ? fishP.ranksAtLeast("mod")
 			: Mode.pvp() ? fishP.ranksAtLeast("trusted")

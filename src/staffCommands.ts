@@ -841,6 +841,24 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 				else displayMatches();
 			}
 		}
-	}
-
+	},
+	peace: {
+		args: ["peace:boolean"],
+		description: "Toggles peaceful mode for sandbox.",
+		perm: Perm.mod,
+		handler({args}){
+			if(args.peace){
+				fishState.peacefulMode = true;
+				Groups.player.each(p => {
+					if(p.team() != Vars.state.rules.defaultTeam){
+						p.team(Vars.state.rules.defaultTeam);
+					}
+				});
+				Call.sendMessage(`[[Sandbox] [green]Enabled peaceful mode.`);
+			} else {
+				fishState.peacefulMode = false;
+				Call.sendMessage(`[[Sandbox] [red]Disabled peaceful mode.`);
+			}
+		},
+	},
 });
