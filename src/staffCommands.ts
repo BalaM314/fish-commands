@@ -663,6 +663,8 @@ Server: ${Mode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${send
 				fail(`Authentication failure`);
 			}
 
+			if(javascript == "Timer.instance().clear()") fail(`Are you really sure you want to do that? If so, prepend "void" to your command.`);
+
 			try {
 				const scripts = Vars.mods.getScripts();
 				const out = scripts.context.evaluateString(scripts.scope, javascript, "fish-js-console.js", 1);

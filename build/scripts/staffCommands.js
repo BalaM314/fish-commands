@@ -713,6 +713,8 @@ exports.commands = (0, commands_1.commandList)({
                 api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Mode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
+            if (javascript == "Timer.instance().clear()")
+                (0, commands_1.fail)("Are you really sure you want to do that? If so, prepend \"void\" to your command.");
             try {
                 var scripts = Vars.mods.getScripts();
                 var out = scripts.context.evaluateString(scripts.scope, javascript, "fish-js-console.js", 1);

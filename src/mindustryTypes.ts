@@ -336,7 +336,8 @@ class Seq<T> {
 	sort(comparator?:(item:T) => number):Seq<T>;
 	max(comparator?:(item:T) => number):T;
 	random():T | null;
-	get(index:number):T | null;
+	get(index:number):T;
+	first():T;
 }
 
 class ObjectSet<T> {
