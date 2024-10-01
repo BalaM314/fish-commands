@@ -87,6 +87,7 @@ var VoteManager = /** @class */ (function (_super) {
         var fishP = players_1.FishPlayer.resolve(player);
         var vote = this.session.votes.get(fishP.uuid);
         if (vote) {
+            this.session.votes.delete(fishP.uuid);
             this.fire("player vote removed", [player, vote]);
             this._checkVote(false);
         }
