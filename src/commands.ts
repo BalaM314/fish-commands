@@ -63,7 +63,7 @@ export class Perm {
 	static warn = new Perm("warn", "mod");
 	static vanish = new Perm("vanish", "mod");
 	static changeTeam = new Perm("changeTeam", fishP => 
-		(Mode.sandbox() && !fishState.peacefulMode) ? fishP.ranksAtLeast("trusted")
+		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
 			: Mode.attack() ? fishP.ranksAtLeast("admin")
 			: Mode.hexed() ? fishP.ranksAtLeast("mod")
 			: Mode.pvp() ? fishP.ranksAtLeast("trusted")

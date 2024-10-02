@@ -588,6 +588,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true, "mod", true))
                 (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+            if (config_1.Mode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
+                (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
             if (!sender.hasPerm("changeTeamExternal")) {
                 if (args.team.data().cores.size <= 0)
                     (0, commands_1.fail)("You do not have permission to change to a team with no cores.");

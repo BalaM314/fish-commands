@@ -117,7 +117,7 @@ var Perm = /** @class */ (function () {
     Perm.warn = new Perm("warn", "mod");
     Perm.vanish = new Perm("vanish", "mod");
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
-        return (config_1.Mode.sandbox() && !globals_1.fishState.peacefulMode) ? fishP.ranksAtLeast("trusted")
+        return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted")
             : config_1.Mode.attack() ? fishP.ranksAtLeast("admin")
                 : config_1.Mode.hexed() ? fishP.ranksAtLeast("mod")
                     : config_1.Mode.pvp() ? fishP.ranksAtLeast("trusted")

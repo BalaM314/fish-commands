@@ -1,7 +1,7 @@
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { discordURL, FishServers, Mode, rules } from './config';
-import { ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
@@ -562,6 +562,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		handler({args, sender, outputSuccess, f}){
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
+			if(Mode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
 			if(!sender.hasPerm("changeTeamExternal")){
 				if(args.team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
 				if(!sender.player!.dead() && !sender.unit()?.spawnedByCore)
