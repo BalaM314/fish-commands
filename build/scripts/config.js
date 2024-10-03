@@ -219,10 +219,10 @@ exports.heuristics = {
 exports.stopAntiEvadeTime = 1800000; //30 minutes
 //seperated repository urls so we could (if we wanted to) split the repository by map type
 exports.mapRepoURLs = {
-    attack: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/attack",
-    survival: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/survival",
-    pvp: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/pvp",
-    hexed: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hexed",
-    sandbox: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/sandbox",
-    hardcore: "https://api.github.com/repos/Jurorno9/Fish_Maps/contents/hardcore"
+    attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
+    survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",
+    pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
+    hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
+    sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
+    hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
 };

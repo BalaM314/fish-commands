@@ -6,7 +6,7 @@ if(/scripts(\/\\)?$/.test(process.cwd())) process.chdir("..");
 const banner = `/${"*".repeat(30)}
 fish-commands compiled output
 ${fs.readFileSync("LICENSE", "utf-8")}
-Source code available at https://github.com/BalaM314/fish-commands/
+Source code available at https://github.com/Fish-Community/fish-commands/
 ${"*".repeat(30)}/`;
 
 esbuild.buildSync({
