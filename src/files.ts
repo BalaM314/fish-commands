@@ -71,6 +71,9 @@ function downloadMaps(githubListing:GitHubFile[]):Promise<void, string> {
 	})).then(v => {});
 }
 
+/**
+ * @returns whether any maps were changed
+ */
 export function updateMaps():Promise<boolean, string> {
 	//get github map listing
 	return fetchGithubContents().then((listing) => {

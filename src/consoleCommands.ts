@@ -626,7 +626,7 @@ ${FishPlayer.mapPlayers(p =>
 		handler({output, outputSuccess, outputFail}){
 			output(`Updating maps... (this may take a while)`);
 			updateMaps()
-				.then(() => outputSuccess(`Map update completed.`))
+				.then((changed) => outputSuccess(changed ? `Maps were updated.` : `Map update completed, already up to date.`))
 				.catch((message) => outputFail(`Map update failed: ${message}`));
 		},
 	},

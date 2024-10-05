@@ -766,13 +766,19 @@ ${getAntiBotInfo("client")}`
 	updatemaps: {
 		args: [],
 		description: 'Attempt to fetch and update all map files',
-		perm: Perm.admin,
+		perm: Perm.trusted,
+		requirements: [Req.cooldownGlobal(300_000)],
 		handler({output, outputSuccess, outputFail}){
 			output(`Updating maps... (this may take a while)`);
 			updateMaps()
-				.then(() => {
-					outputSuccess(`Map update completed.`);
-					Log.info(`Map updates complete.`);
+				.then((changed) => {
+					Log.info("Maps updated.");
+					if(changed){
+						outputSuccess(`Map update completed.`);
+						Call.sendMessage(`[orange]Maps have been updated. Run [white]/maps[] to view available maps.`);
+					} else {
+						outputSuccess(`Map update completed; already up to date.`);
+					}
 				})
 				.catch((message) => {
 					outputFail(`Map update failed: ${message}`);
