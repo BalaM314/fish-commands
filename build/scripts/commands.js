@@ -129,6 +129,7 @@ var Perm = /** @class */ (function () {
     Perm.runJS = new Perm("runJS", "manager");
     Perm.bypassNameCheck = new Perm("bypassNameCheck", "fish");
     Perm.hardcore = new Perm("hardcore", "trusted");
+    Perm.massKill = new Perm("massKill", function (fishP) { return config_1.Mode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"); });
     return Perm;
 }());
 exports.Perm = Perm;

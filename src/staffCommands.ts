@@ -418,7 +418,7 @@ export const commands = commandList({
 	killunits: {
 		args: ["team:team?", "unit:unittype?"],
 		description: "Kills all units, optionally specifying a team and unit type.",
-		perm: Perm.admin,
+		perm: Perm.massKill,
 		handler({args:{team, unit}, sender, outputSuccess, outputFail, f}){
 			if(team){
 				menu(
@@ -472,7 +472,7 @@ export const commands = commandList({
 	killbuildings: {
 		args: ["team:team?"],
 		description: "Kills all buildings (except cores), optionally specifying a team.",
-		perm: Perm.admin,
+		perm: Perm.massKill,
 		handler({args:{team}, sender, outputSuccess, outputFail, f}){
 			if(team){
 				menu(

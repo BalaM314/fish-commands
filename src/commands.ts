@@ -75,6 +75,7 @@ export class Perm {
 	static runJS = new Perm("runJS", "manager");
 	static bypassNameCheck = new Perm("bypassNameCheck", "fish");
 	static hardcore = new Perm("hardcore", "trusted");
+	static massKill = new Perm("massKill", fishP => Mode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"));
 
 	check:(fishP:FishPlayer) => boolean;
 	constructor(

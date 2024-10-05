@@ -480,7 +480,7 @@ exports.commands = (0, commands_1.commandList)({
     killunits: {
         args: ["team:team?", "unit:unittype?"],
         description: "Kills all units, optionally specifying a team and unit type.",
-        perm: commands_1.Perm.admin,
+        perm: commands_1.Perm.massKill,
         handler: function (_a) {
             var _b = _a.args, team = _b.team, unit = _b.unit, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (team) {
@@ -532,7 +532,7 @@ exports.commands = (0, commands_1.commandList)({
     killbuildings: {
         args: ["team:team?"],
         description: "Kills all buildings (except cores), optionally specifying a team.",
-        perm: commands_1.Perm.admin,
+        perm: commands_1.Perm.massKill,
         handler: function (_a) {
             var team = _a.args.team, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (team) {
