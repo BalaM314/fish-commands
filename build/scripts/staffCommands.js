@@ -832,14 +832,21 @@ exports.commands = (0, commands_1.commandList)({
     updatemaps: {
         args: [],
         description: 'Attempt to fetch and update all map files',
-        perm: commands_1.Perm.admin,
+        perm: commands_1.Perm.trusted,
+        requirements: [commands_1.Req.cooldownGlobal(300000)],
         handler: function (_a) {
             var output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             output("Updating maps... (this may take a while)");
             (0, files_1.updateMaps)()
-                .then(function () {
-                outputSuccess("Map update completed.");
-                Log.info("Map updates complete.");
+                .then(function (changed) {
+                Log.info("Maps updated.");
+                if (changed) {
+                    outputSuccess("Map update completed.");
+                    Call.sendMessage("[orange]Maps have been updated. Run [white]/maps[] to view available maps.");
+                }
+                else {
+                    outputSuccess("Map update completed; already up to date.");
+                }
             })
                 .catch(function (message) {
                 outputFail("Map update failed: ".concat(message));

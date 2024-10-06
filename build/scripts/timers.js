@@ -111,7 +111,7 @@ Timer.schedule(function () {
     (0, files_1.updateMaps)()
         .then(function (result) {
         if (result) {
-            Call.sendMessage("[orange]Maps have been updated.");
+            Call.sendMessage("[orange]Maps have been updated. Run [white]/maps[] to view available maps.");
             Log.info("Updated maps.");
         }
     })

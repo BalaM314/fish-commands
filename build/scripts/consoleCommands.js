@@ -735,7 +735,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             output("Updating maps... (this may take a while)");
             (0, files_1.updateMaps)()
-                .then(function () { return outputSuccess("Map update completed."); })
+                .then(function (changed) { return outputSuccess(changed ? "Maps were updated." : "Map update completed, already up to date."); })
                 .catch(function (message) { return outputFail("Map update failed: ".concat(message)); });
         },
     },

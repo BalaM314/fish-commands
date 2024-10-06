@@ -55,6 +55,9 @@ function downloadMaps(githubListing) {
         return downloadFile(fileEntry.download_url, Vars.customMapDirectory.child(fileEntry.name).absolutePath());
     })).then(function (v) { });
 }
+/**
+ * @returns whether any maps were changed
+ */
 function updateMaps() {
     //get github map listing
     return fetchGithubContents().then(function (listing) {
