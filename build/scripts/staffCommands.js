@@ -112,7 +112,7 @@ exports.commands = (0, commands_1.commandList)({
             var duration = (_c = args.duration) !== null && _c !== void 0 ? _c : 60000;
             args.player.kick(reason, duration);
             (0, utils_1.logAction)("kicked", sender, args.player, (_d = args.reason) !== null && _d !== void 0 ? _d : undefined, duration);
-            if (duration > 1000)
+            if (duration > 60000)
                 args.player.setPunishedIP(config_1.stopAntiEvadeTime);
             outputSuccess(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Kicked player ", " for ", " with reason \"", "\""], ["Kicked player ", " for ", " with reason \"", "\""])), args.player, (0, utils_1.formatTime)(duration), reason));
         }

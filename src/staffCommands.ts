@@ -64,7 +64,7 @@ export const commands = commandList({
 			const duration = args.duration ?? 60_000;
 			args.player.kick(reason, duration);
 			logAction("kicked", sender, args.player, args.reason ?? undefined, duration);
-			if(duration > 1000) args.player.setPunishedIP(stopAntiEvadeTime);
+			if(duration > 60_000) args.player.setPunishedIP(stopAntiEvadeTime);
 			outputSuccess(f`Kicked player ${args.player} for ${formatTime(duration)} with reason "${reason}"`);
 		}
 	},
