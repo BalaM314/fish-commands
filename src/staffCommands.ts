@@ -565,7 +565,7 @@ export const commands = commandList({
 			const team = args.team ?? sender.team();
 			const unit = args.type.spawn(team, x, y);
 			spawnedUnits.push(unit);
-			logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
+			if(!Mode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
 			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);
 		}
 	},
@@ -586,7 +586,7 @@ export const commands = commandList({
 				action: `setblocked`,
 				type: args.block.localizedName
 			});
-			logAction(`set block to ${args.block.localizedName} at ${args.x},${args.y}`, sender);
+			if(!Mode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${args.x},${args.y}`, sender);
 			outputSuccess(f`Set block at ${args.x}, ${args.y} to ${args.block}`);
 		}
 	},
@@ -608,7 +608,7 @@ export const commands = commandList({
 				action: `setblocked`,
 				type: args.block.localizedName
 			});
-			logAction(`set block to ${args.block.localizedName} at ${x},${y}`, sender);
+			if(!Mode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${x},${y}`, sender);
 			outputSuccess(f`Set block at ${x}, ${y} to ${args.block}`);
 		},
 		handler({args, outputSuccess, handleTaps, currentTapMode, f}){
@@ -641,7 +641,7 @@ export const commands = commandList({
 					numKilled ++;
 				}
 			});
-			logAction(`exterminated ${numKilled} units`, sender);
+			if(!Mode.sandbox()) logAction(`exterminated ${numKilled} units`, sender);
 			outputSuccess(f`Exterminated ${numKilled} units.`);
 		}
 	},
@@ -758,7 +758,7 @@ ${getAntiBotInfo("client")}`
 				const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player!.x, sender.player!.y);
 				sender.player!.unit(emanate);
 				unitMapping[sender.uuid] = emanate;
-				logAction("spawned an emanate", sender);
+				if(!Mode.sandbox()) logAction("spawned an emanate", sender);
 				outputSuccess("Spawned an emanate.");
 			}
 		};

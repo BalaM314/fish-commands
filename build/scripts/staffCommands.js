@@ -608,7 +608,8 @@ exports.commands = (0, commands_1.commandList)({
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var unit = args.type.spawn(team, x, y);
             spawnedUnits.push(unit);
-            (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
+            if (!config_1.Mode.sandbox())
+                (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
             outputSuccess(f(templateObject_41 || (templateObject_41 = __makeTemplateObject(["Spawned unit ", " at (", ", ", ")"], ["Spawned unit ", " at (", ", ", ")"])), args.type, Math.round(x / 8), Math.round(y / 8)));
         }
     },
@@ -632,7 +633,8 @@ exports.commands = (0, commands_1.commandList)({
                 action: "setblocked",
                 type: args.block.localizedName
             });
-            (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(args.x, ",").concat(args.y), sender);
+            if (!config_1.Mode.sandbox())
+                (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(args.x, ",").concat(args.y), sender);
             outputSuccess(f(templateObject_44 || (templateObject_44 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), args.x, args.y, args.block));
         }
     },
@@ -658,7 +660,8 @@ exports.commands = (0, commands_1.commandList)({
                 action: "setblocked",
                 type: args.block.localizedName
             });
-            (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(x, ",").concat(y), sender);
+            if (!config_1.Mode.sandbox())
+                (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(x, ",").concat(y), sender);
             outputSuccess(f(templateObject_47 || (templateObject_47 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), x, y, args.block));
         },
         handler: function (_a) {
@@ -696,7 +699,8 @@ exports.commands = (0, commands_1.commandList)({
                     numKilled++;
                 }
             });
-            (0, utils_1.logAction)("exterminated ".concat(numKilled, " units"), sender);
+            if (!config_1.Mode.sandbox())
+                (0, utils_1.logAction)("exterminated ".concat(numKilled, " units"), sender);
             outputSuccess(f(templateObject_49 || (templateObject_49 = __makeTemplateObject(["Exterminated ", " units."], ["Exterminated ", " units."])), numKilled));
         }
     },
@@ -824,7 +828,8 @@ exports.commands = (0, commands_1.commandList)({
                 var emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
                 sender.player.unit(emanate);
                 unitMapping[sender.uuid] = emanate;
-                (0, utils_1.logAction)("spawned an emanate", sender);
+                if (!config_1.Mode.sandbox())
+                    (0, utils_1.logAction)("spawned an emanate", sender);
                 outputSuccess("Spawned an emanate.");
             }
         };
