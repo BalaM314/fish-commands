@@ -34,6 +34,7 @@ exports.bannedWords = (function (words) {
     "iamasussyimposter",
     ["cu" + "nt", "scunthorpe"],
     ["penis", "peniston"],
+    "hawk tuah",
     ["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
     /\bf(a)g\b/, "fa" + "gg" + "ot",
     /\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
