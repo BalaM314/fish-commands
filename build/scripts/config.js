@@ -51,7 +51,7 @@ exports.bannedInNamesWords = (function (words) {
     "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
     globals_1.uuidPattern, globals_1.ipPattern, globals_1.ipPortPattern
 ]);
-exports.adminNames = ["fish", "balamei4", "xyralith", "clashgone", "hawo", "hallo", "aricia", "rawsewage", "skeledragon", "edh83", "everydayhuman83"];
+exports.adminNames = ["fish", "balamei4", "clashgone", "darthscion", "firefridge", "aricia", "rawsewage", "skeledragon", "edh83", "everydayhuman83"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 exports.substitutions = Object.fromEntries(Object.entries({
     "a": "\u0430\u1E9A\u1EA1\u1E01\u00E4\u03B1@\u0101\u0103\u0105\u03AC",
