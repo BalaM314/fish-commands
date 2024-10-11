@@ -26,7 +26,7 @@ exports.bannedWords = (function (words) {
 })([
     //>:( -dart
     "uwu", //lol
-    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", //our apologies to citizens of the Republic of Niger
+    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", "nig" + "gre", //our apologies to citizens of the Republic of Niger
     "re" + "tard",
     'kill yourself', 'kill urself', /\bkys\b/,
     /\bkill blacks\b/,
