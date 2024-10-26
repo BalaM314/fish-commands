@@ -5,7 +5,6 @@
 import * as api from './api';
 import * as commands from './commands';
 import { handleTapEvent } from './commands';
-import { Mode } from './config';
 import * as consoleCommands from "./consoleCommands";
 import { fishState, ipJoins, tileHistory } from "./globals";
 import * as memberCommands from './memberCommands';
@@ -13,10 +12,9 @@ import * as menus from "./menus";
 import * as packetHandlers from './packetHandlers';
 import * as playerCommands from './playerCommands';
 import { FishPlayer } from './players';
-import * as ranks from "./ranks";
 import * as staffCommands from './staffCommands';
 import * as timers from './timers';
-import { StringIO, addToTileHistory, crash, logErrors, processChat, serverRestartLoop } from "./utils";
+import { addToTileHistory, processChat, serverRestartLoop } from "./utils";
 
 
 Events.on(EventType.ConnectionEvent, (e) => {

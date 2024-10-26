@@ -1,41 +1,71 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the commands system.
+*/
+//Behold, the power of typescript!
+
 import { Mode, ModeName } from "./config";
-import { fishState, ipPattern, uuidPattern } from "./globals";
+import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
 import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeName, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
 
-//Behold, the power of typescript!
-
 const hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
 
 let initialized = false;
+
+/** Stores all chat comamnds by their name. */
 export const allCommands:Record<string, FishCommandData<string, any>> = {};
+/** Stores all console commands by their name. */
 export const allConsoleCommands:Record<string, FishConsoleCommandData<string, any>> = {};
+
+/** Stores the last usage data for chat commands by their name. */
 const globalUsageData:Record<string, {
 	lastUsed: number;
 	lastUsedSuccessfully: number;
 }> = {};
+
+/** All valid command arg types. */
 const commandArgTypes = [
 	"string", "number", "boolean", "player", /*"menuPlayer",*/ "team", "time", "unittype", "block",
 	"uuid", "offlinePlayer", "map", "rank", "roleflag",
 ] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
-/** Use this to get the correct type for command lists. */
+
+
+/** Helper function to get the correct type for command lists. */
 export const commandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishCommandData<A[K], any>;
 }):Record<keyof A, FishCommandData<string, any> | (() => FishCommandData<string, any>)> => list;
-/** Use this to get the correct type for command lists. */
+/** Helper function to get the correct type for command lists. */
 export const consoleCommandList = <A extends Record<string, string>>(list:{
 	//Store the mapping between commandname and ArgStringUnion in A
 	[K in keyof A]: FishConsoleCommandData<A[K], any>;
 }):Record<keyof A, FishConsoleCommandData<string, any>> => list;
+
 export function command<TParam extends string, TData>(cmd:FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;
 export function command<TParam extends string, TData>(cmd:() => FishCommandData<TParam, TData>):FishCommandData<TParam, TData>;//not type safe, can't be bothered to find a solution that works with commandList
 export function command<TParam extends string, TData>(cmd:FishConsoleCommandData<TParam, TData>):FishConsoleCommandData<TParam, TData>;
-/** Use this wrapper function to get the correct type definitions for commands using "data" or init(). */
+/**
+ * Helper function to get the correct type definitions for commands that use "data" or init().
+ * Necessary because, while typescript is capable of inferring A1, A2...
+ * ```
+ * {
+ * 	prop1: Type<A1>;
+ * 	prop2: Type<A2>;
+ * }
+ * ```
+ * it cannot handle inferring A1 and B1.
+ * ```
+ * {
+ * 	prop1: Type<A1, B1>;
+ * 	prop2: Type<A2, B2>;
+ * }
+ * ```
+ */
 export function command(input:unknown){
 	return input;
 }
@@ -56,20 +86,26 @@ export class Perm {
 	static seeErrorMessages = new Perm("seeErrorMessages", "admin");
 	static viewUUIDs = new Perm("viewUUIDs", "admin");
 	static blockTrolling = new Perm("blockTrolling", fishP => fishP.rank === Rank.pi);
-	static bulkLabelPacket = new Perm("bulkLabelPacket", fishP => ((fishP.hasFlag("developer") || fishP.hasFlag("illusionist") || fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"));
 	static visualEffects = new Perm("visualEffects", fishP => !fishP.stelled() || fishP.ranksAtLeast("mod"));
+	static bulkVisualEffects = new Perm("bulkVisualEffects", fishP => (
+		(fishP.hasFlag("developer") || fishP.hasFlag("illusionist") || fishP.hasFlag("member")) && !fishP.stelled())
+		|| fishP.ranksAtLeast("mod")
+	);
 	static bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
 	static bypassVotekick = new Perm("bypassVotekick", "mod");
 	static warn = new Perm("warn", "mod");
 	static vanish = new Perm("vanish", "mod");
-	static changeTeam = new Perm("changeTeam", fishP => 
-		Mode.sandbox() ? fishP.ranksAtLeast("trusted")
-			: Mode.attack() ? fishP.ranksAtLeast("admin")
-			: Mode.hexed() ? fishP.ranksAtLeast("mod")
-			: Mode.pvp() ? fishP.ranksAtLeast("trusted")
-			: fishP.ranksAtLeast("admin")
+	static changeTeam = new Perm("changeTeam", fishP => {switch(true){
+		case Mode.sandbox(): return fishP.ranksAtLeast("trusted");
+		case Mode.attack(): return fishP.ranksAtLeast("admin");
+		case Mode.hexed(): return fishP.ranksAtLeast("mod");
+		case Mode.pvp(): return fishP.ranksAtLeast("trusted");
+		default: return fishP.ranksAtLeast("admin");
+	}});
+	/** Whether players should be allowed to change the team of a unit or building. If not, they will be kicked out of their current unit or building before switching teams. */
+	static changeTeamExternal = new Perm("changeTeamExternal", fishP =>
+		Mode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin")
 	);
-	static changeTeamExternal = new Perm("changeTeamExternal", fishP => Mode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin"));
 	static spawnOhnos = new Perm("spawnOhnos", () => !Mode.pvp(), "", "Ohnos are disabled in PVP.");
 	static usidCheck = new Perm("usidCheck", "trusted");
 	static runJS = new Perm("runJS", "manager");

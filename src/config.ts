@@ -1,6 +1,6 @@
+import type { PermType } from "./commands";
 import { ipPattern, ipPortPattern, uuidPattern } from "./globals"; //TODO fix storage of global variables
 import { Rank } from "./ranks";
-import type { PermType } from "./commands";
 
 export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 export const MUTED_PREFIX = '[white](muted)';

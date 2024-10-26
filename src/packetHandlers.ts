@@ -64,7 +64,7 @@ export function loadPacketHandlers() {
 				p.sendMessage(lowTPSError, 1000);
 				return;
 			}
-			if (!p.hasPerm('bulkLabelPacket')) {
+			if (!p.hasPerm('bulkVisualEffects')) {
 				p.sendMessage(noPermissionText, 1000);
 				return;
 			}
@@ -142,7 +142,7 @@ export function loadPacketHandlers() {
 			p.sendMessage(lowTPSError, 1000);
 			return;
 		}
-		if (!p.hasPerm('bulkLabelPacket')) {
+		if (!p.hasPerm('bulkVisualEffects')) {
 			p.sendMessage(noPermissionText, 1000);
 			return;
 		}
@@ -211,7 +211,7 @@ export const commands = commandList({
 	- Bulk label effect: "bulkLabel", equivalent to multiple label packets, with every label separated by a \'|\' symbol.
 
 [white]Limitations[accent]:
-	- You ${(sender.hasPerm('bulkLabelPacket')?(`[green]have been granted[accent]`):(`[red]do not have[accent]`))} access to bulk effects.
+	- You ${(sender.hasPerm('bulkVisualEffects')?(`[green]have been granted[accent]`):(`[red]do not have[accent]`))} access to bulk effects.
 	- Effects will no longer be drawn at ${MIN_EFFECT_TPS} for server preformance.
 	- Labels cannot last longer than ${MAX_LABEL_TIME} seconds.
 	- There is a set ratelimit for sending packets, be careful ...

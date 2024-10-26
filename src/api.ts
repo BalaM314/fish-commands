@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains a wrapper over the API calls to the backend server.
+*/
+
 import { Mode, ip, localDebug, maxTime } from './config';
 import { FishPlayer } from './players';
 

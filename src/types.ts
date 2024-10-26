@@ -2,6 +2,20 @@ import type { CommandArgType, Perm } from "./commands";
 import type { FishPlayer } from "./players";
 import type { Rank, RoleFlag } from "./ranks";
 
+/**
+ * Selects the type of the string keys of an enum-like class, like this:
+ * ```
+ * class Foo {
+ * 	static foo1 = new Foo("foo1");
+ * 	static foo2 = new Foo("foo2");
+ * 	static foo3 = new Foo("foo3");
+ * 	constructor(
+ * 		public bar: string,
+ * 	){}
+ * }
+ * type __ = SelectEnumClassKeys<typeof Foo>; //=> "foo1" | "foo2" | "foo3"
+ * ```
+ */
 export type SelectEnumClassKeys<C extends Function,
 	Key extends keyof C = keyof C
 > = Key extends unknown ? ( //trigger DCT
@@ -11,9 +25,8 @@ export type SelectEnumClassKeys<C extends Function,
 ) : never;
 
 export type FishCommandArgType = TypeOfArgType<CommandArgType> | null;
-export type MenuListener = (player:mindustryPlayer, option:number) => void;
 
-/** Returns the type for an arg type string. Example: returns `number` for "time". */
+/** Maps an arg type string to the TS type used to store it. Example: returns `number` for "time". */
 export type TypeOfArgType<T> =
 	T extends "string" ? string :
 	T extends "boolean" ? boolean :
@@ -39,37 +52,54 @@ export type ArgsFromArgStringUnion<ArgStringUnion extends string> = {
 	[Arg in ArgStringUnion as KeyFor<Arg>]: ValueFor<Arg>;
 };
 
+/** Reads the key from an arg string. */
 export type KeyFor<ArgString> = ArgString extends `${infer K}:${string}` ? K : never;
+/** Reads the value from an arg string, and determines whether it is optional. */
 export type ValueFor<ArgString> =
-	ArgString extends `${string}:${infer V}?` ? TypeOfArgType<V> | null : 
+	//optional
+	ArgString extends `${string}:${infer V}?` ? TypeOfArgType<V> | null :
+	//required
 	ArgString extends `${string}:${infer V}` ? TypeOfArgType<V> :
 	never;
 
 export type TapHandleMode = "off" | "once" | "on";
 
+/** Anything that can be formatted by the `f` tagged template function. */
 export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number | PlayerInfo | UnitType | Block | Team;
+/**
+ * A message that requires some other data to complete it.
+ * For example, format string cannot be fully interpolated without knowing their start color,
+ * so they return a function that accepts that information.
+ */
 export type PartialFormatString<TData = string | null> = ((data:TData) => string) & {__partialFormatString:true};
+/** The data passed to a command handler. */
 export type FishCommandHandlerData<ArgType extends string, StoredData> = {
-	/**Raw arguments that were passed to the command. */
+	/** Raw arguments that were passed to the command. */
 	rawArgs:(string | undefined)[];
-	/**Formatted and parsed args. Access an argument by name, like python's keyword args. Example: `args.player.setRank(Rank.mod);`. An argument can only be null if it was optional, otherwise the command will error before the handler runs. */
+	/**
+	 * Formatted and parsed args. Access an argument by name, like python's keyword args.
+	 * Example: `args.player.setRank(Rank.mod);`.
+	 * An argument can only be null if it was declared optional, otherwise the command will error before the handler runs. 
+	 */
 	args:ArgsFromArgStringUnion<ArgType>;
-	/**The player who ran the command. */
+	/** The player who ran the command. */
 	sender:FishPlayer;
+	/** Arbitrary data specific to the command. */
 	data:StoredData;
 	currentTapMode:TapHandleMode;
-	/** Vars.netServer.admins */
-	admins: Administration;
-	/**List of every registered command, including this one. */
+	/** List of every registered command, including this one. */
 	allCommands:Record<string, FishCommandData<string, any>>;
-	/**Timestamp of the last time this command was run successfully by any player. */
+	/** Timestamp of the last time this command was run successfully by any player. */
 	lastUsedSuccessfully:number;
-	/**Timestamp of the last time this command was run by the current sender. */
+	/** Timestamp of the last time this command was run by the current sender. */
 	lastUsedSender:number;
-	/**Timestamp of the last time this command was run succesfully by the current sender. */
+	/** Timestamp of the last time this command was run succesfully by the current sender. */
 	lastUsedSuccessfullySender:number;
 };
+/** The utility functions passed to a command handler. */
 export type FishCommandHandlerUtils = {
+	/** Vars.netServer.admins */
+	admins: Administration;
 	/** Outputs text to the sender, with a check mark symbol and green color. */
 	outputSuccess(message:string | PartialFormatString):void;
 	/** Outputs text to the sender, with a fail symbol and yellow color. */
@@ -83,7 +113,7 @@ export type FishCommandHandlerUtils = {
 	/**Call this function to set tap handling mode. */
 	handleTaps(mode:TapHandleMode):void;
 };
-export type FishCommandRunner<ArgType extends string, StoredData> =
+export type FishCommandHandler<ArgType extends string, StoredData> =
 	(fish:FishCommandHandlerData<ArgType, StoredData> & FishCommandHandlerUtils) => unknown;
 
 export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
@@ -161,7 +191,7 @@ export interface FishCommandData<ArgType extends string, StoredData> {
 	init?: () => StoredData;
 	data?: StoredData;
 	requirements?: NoInfer<FishCommandRequirement<ArgType, StoredData>>[];
-	handler: FishCommandRunner<ArgType, StoredData>;
+	handler: FishCommandHandler<ArgType, StoredData>;
 	tapped?: TapHandler<ArgType, StoredData>;
 	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
 	isHidden?: boolean;

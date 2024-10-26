@@ -130,9 +130,9 @@ class Tile {
 	getLinkedTiles(callback:(t:Tile) => void):void;
 }
 const Menus: {
-	registerMenu(listener:MenuListener):number;
+	registerMenu(listener:BuiltinMenuListener):number;
 }
-type MenuListener = (player:mindustryPlayer, option:number) => unknown;
+type BuiltinMenuListener = (player:mindustryPlayer, option:number) => unknown;
 const UnitTypes: {
 	[index:string]: UnitType;
 }

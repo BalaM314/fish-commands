@@ -825,7 +825,7 @@ export const addToTileHistory = logErrors("Error while saving a tilelog entry", 
 	if(tile == null) return;
 	[tile, uuid, action, type, time] satisfies [Tile, string, string, string, number];
 
-	tile.getLinkedTiles((t:Tile) => {
+	tile.getLinkedTiles(t => {
 		const pos = `${t.x},${t.y}`;
 		let existingData = tileHistory[pos] ? StringIO.read(tileHistory[pos], str => str.readArray(d => ({
 			action: d.readString(2),
