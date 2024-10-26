@@ -20,7 +20,7 @@
 
 This plugin uses the `fail()` function to easily stop running the current function and print an error message.
 
-Example:
+This allows creating guard clauses, which are easier to read than if statements. Example:
 ```ts
 if(target !== sender){
   if(!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
@@ -28,10 +28,10 @@ if(target !== sender){
 }
 ```
 
-This allows creating guard clauses. Additionally, it can be used like this:
+Additionally, it can be used like this:
 
 ```ts
-const historyData = tileHistory[`${x},${y}`] ?? fail(`There is no recorded history for the selected tile.`);
+const historyData:TileHistory = tileHistory[`${x},${y}`] ?? fail(`There is no recorded history for the selected tile.`);
 ```
 
 Calling this function is allowed in command handlers and menus.
@@ -140,6 +140,8 @@ handler({args, sender, outputSuccess, f}){
 The tag function formats `args.target` (a FishPlayer) as the player's colored name, and `args.target.rank` (a Rank) as the rank's colored name.
 
 `outputSuccess()` prints text with a green color, so the text `'s rank is` between the interpolation values should be colored green, too. This is handled correctly, no matter how many color tags are in the player's name.
+
+The `f` function also behaves differently if it is being run from a chat command or a console command, using the correct color syntax automatically.
 
 ## History
 * This plugin was originally written in js, by Brandons404. It was created in October 2022.

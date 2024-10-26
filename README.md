@@ -1,6 +1,6 @@
 # Fish commands
 
-A custom commands plugin for >|||>Fish servers. Created by Brandons404, rewritten by BalaM314.
+A monolithic plugin that handles all custom features for the >|||>Fish servers. Created by Brandons404, rewritten by BalaM314.
 
 **Before reading the code, see [docs/info.md](docs/info.md).**
 
@@ -21,3 +21,6 @@ List of notable features:
 * Automatically allows using a menu to resolve arguments left blank
 
 Interested in contributing? See [CONTRIBUTING.md](CONTRIBUTING.md), and thanks in advance!
+
+Join our Discord: [https://discord.gg/VpzcYSQ33Y](https://discord.gg/VpzcYSQ33Y)
+
