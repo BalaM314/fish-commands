@@ -1,2 +1,1 @@
-# js is definitely typescript
-*.js linguist-language=Typescript
+build/*.js linguist-generated

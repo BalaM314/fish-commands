@@ -144,7 +144,7 @@ export const Mode = {
 	pvp: () => Mode.name() == "pvp" || Mode.name() == "hexed",
 	sandbox: () => Mode.name() == "sandbox",
 	hexed: () => Mode.name() == "hexed",
-  hardcore: () => Mode.name() == "hardcore",
+	hardcore: () => Mode.name() == "hardcore",
 	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore",
 };
 
@@ -237,5 +237,5 @@ export const mapRepoURLs:Record<ModeName, string> = {
 	pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
 	hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
 	sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
-  hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
+	hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
 };

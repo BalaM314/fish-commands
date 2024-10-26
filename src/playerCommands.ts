@@ -122,7 +122,7 @@ export const commands = commandList({
 		},
 	},
 	vanish: {
-		args: ['target:player?'], 
+		args: ['target:player?'],
 		description: `Toggles visibility of your rank and flags.`,
 		perm: Perm.vanish,
 		handler({ args, sender, outputSuccess }){
@@ -803,8 +803,8 @@ ${getMapData().map(({key:map, value:votes}) =>
 			if(highestVotedMaps.size > 1){
 				winner = highestVotedMaps.random()!.key;
 				Call.sendMessage(
-`[green]There was a tie between the following maps: 
-${highestVotedMaps.map(({key:map, value:votes}) => 
+`[green]There was a tie between the following maps:
+${highestVotedMaps.map(({key:map, value:votes}) =>
 `[cyan]${map.name()}[yellow]: ${votes}`
 ).toString("\n")}
 [green]Picking random winner: [yellow]${winner.name()}`

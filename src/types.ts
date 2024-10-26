@@ -84,7 +84,7 @@ export type FishCommandHandlerData<ArgType extends string, StoredData> = {
 	/**
 	 * Formatted and parsed args. Access an argument by name, like python's keyword args.
 	 * Example: `args.player.setRank(Rank.mod);`.
-	 * An argument can only be null if it was declared optional, otherwise the command will error before the handler runs. 
+	 * An argument can only be null if it was declared optional, otherwise the command will error before the handler runs.
 	 */
 	args:ArgsFromArgStringUnion<ArgType>;
 	/** The player who ran the command. */

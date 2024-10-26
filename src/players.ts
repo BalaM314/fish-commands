@@ -675,7 +675,7 @@ We apologize for the inconvenience.`
 		}
 	}
 	checkAutoRanks(){
-		if(this.stelled()) return; 
+		if(this.stelled()) return;
 		for(const rankToAssign of Rank.autoRanks){
 			if(!this.ranksAtLeast(rankToAssign) && rankToAssign.autoRankData){
 				if(
@@ -766,7 +766,7 @@ We apologize for the inconvenience.`
 		out.writeString(this.name, 2, true);
 		out.writeBool(this.muted);
 		out.writeBool(this.autoflagged);
-		out.writeNumber(this.unmarkTime, 13);// this will stop working in 2286! https://en.wikipedia.org/wiki/Time_formatting_and_storage_bugs#Year_2286 
+		out.writeNumber(this.unmarkTime, 13);// this will stop working in 2286! https://en.wikipedia.org/wiki/Time_formatting_and_storage_bugs#Year_2286
 		out.writeString(this.highlight, 2, true);
 		out.writeArray(this.history, (i, str) => {
 			str.writeString(i.action, 2);

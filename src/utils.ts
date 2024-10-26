@@ -62,7 +62,7 @@ export function formatModeName(name:ModeName){
 		"hexed": "Hexed",
 		"pvp": "PVP",
 		"sandbox": "Sandbox",
-    "hardcore": "Hardcore"
+		"hardcore": "Hardcore"
 	}[name];
 }
 
@@ -325,7 +325,7 @@ export function escapeTextDiscord(text:string):string {
 
 /**
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
- * @returns a 
+ * @returns a
  */
 export function matchFilter(input:string, strict = "chat" as "chat" | "strict" | "name"):false | string {
 	const currentBannedWords = [
@@ -595,7 +595,7 @@ export function tagProcessorPartial<Tin, Tdata>(
 ):TagFunction<Tin, PartialFormatString<Tdata>> {
 	return (stringChunks:readonly string[], ...varChunks:readonly Tin[]) =>
 		Object.assign(
-			(data:Tdata) => 
+			(data:Tdata) =>
 				stringChunks.map((chunk, i) => {
 					if(stringChunks.length <= i) return chunk;
 					return (i - 1) in varChunks ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
@@ -720,7 +720,7 @@ export function outputSuccess(message:string | PartialFormatString, sender:mindu
 	sender.sendMessage(successPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[#48e076]") : message));
 }
 export function outputMessage(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
-	sender.sendMessage(((typeof message == "function" && "__partialFormatString" in message ? message(null) : message) + "").replace(/\t/g, "    "));
+	sender.sendMessage(((typeof message == "function" && "__partialFormatString" in message ? message(null) : message) + "").replace(/\t/g, " ".repeat(4)));
 }
 export function outputConsole(message:string | PartialFormatString, channel:(typeof Log)[keyof typeof Log] = Log.info){
 	channel(typeof message == "function" && "__partialFormatString" in message ? message("") : message);

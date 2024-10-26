@@ -208,7 +208,7 @@ export const commands = commandList({
 		perm: Perm.none,
 		handler({sender, output}){
 				output(
-`					        [blue]FISH[white] Packet Handler Docs
+`				[blue]FISH[white] Packet Handler Docs
 [white]Usage:[accent]
 	- Run the javascript function "Call.serverPacketReliable()" to send these. (!js in foos)
 	- You need to multiply world coordinates by Vars.tilesize (8) for things to work properly. This is a relic from the v3 days where every tile was 8 pixels.
@@ -228,8 +228,8 @@ export const commands = commandList({
 [white]Starter Example[accent]:
 
 	To place a label saying "hello" at (0,0);
-	Foos users : [lightgray]!js Call.serverPacketReliable("label", ["\\"hello\\"", 10, 0, 0].join(","))[accent]
-	newConsole users :  [lightgrey]Call.serverPacketReliable("label", ["hello", 10, 0, 10].join(","))[accent]
+	Foos users: [lightgray]!js Call.serverPacketReliable("label", ["\\"hello\\"", 10, 0, 0].join(","))[accent]
+	newConsole users: [lightgrey]Call.serverPacketReliable("label", ["hello", 10, 0, 10].join(","))[accent]
 
 [white]Comments and Credits[accent]:
 	- 'These packet handlers and everything related to them were made by [green]frog[accent].
@@ -286,10 +286,10 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 	}
 
 	/*Call.labelReliable(
-		message,          //message
+		message, //message
 		Number(parts[0]), //duration
 		Number(parts[1]), //x
-		Number(parts[2])  //y
+		Number(parts[2]) //y
 	);*/
 	tmpLabelPacket.message = message;
 	tmpLabelPacket.duration = Number(parts[0]);
@@ -313,8 +313,8 @@ function handleLine(content:string, player:mindustryPlayer):boolean {
 	/*Call.effect(
 		Fx.pointBeam,
 		Number(parts[0]), Number(parts[1]), //x,y
-		0, Tmp.c1,                          //color
-		Tmp.v1                              //x1,y1
+		0, Tmp.c1, //color
+		Tmp.v1 //x1,y1
 	);*/
 	tmpLinePacket.x = Number(parts[0]);
 	tmpLinePacket.y = Number(parts[1]);

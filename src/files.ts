@@ -59,7 +59,7 @@ function downloadFile(address:string, filename:string):Promise<void, string> {
 				instream?.close();
 				outstream?.close();
 			}
-		}, 
+		},
 		() => {
 			Log.err(`Download failed.`);
 			reject(`Network error while downloading a map file: ${address}`);
