@@ -1,5 +1,11 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the definitions for ranks and role flags.
+*/
+
 import type { SelectEnumClassKeys } from "./types";
 
+/** Each player has one rank, which is used to determine their prefix, permissions, and which other players they can perform moderation actions on. */
 export class Rank {
 	static ranks:Record<string, Rank> = {};
 	static autoRanks: Rank[] = [];
@@ -54,9 +60,13 @@ export class Rank {
 		return this.color + this.name + "[]";
 	}
 }
-Object.freeze(Rank.pi);
+Object.freeze(Rank.pi); //anti-trolling
 export type RankName = SelectEnumClassKeys<typeof Rank>;
 
+/**
+ * Role flags are used to determine a player's prefix and permissions.
+ * Players can have any combination of the role flags.
+ */
 export class RoleFlag {
 	static flags:Record<string, RoleFlag> = {};
 	static developer = new RoleFlag("developer", "[black]<[#B000FF]\uE80E[]>[]", "Awarded to people who contribute to the server's codebase.", "[#B000FF]", true, false);

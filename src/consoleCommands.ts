@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains all the console commands, which can be run through the server console.
+*/
+
 import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import * as config from "./config";

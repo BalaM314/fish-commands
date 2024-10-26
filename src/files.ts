@@ -1,3 +1,10 @@
+/**
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the code for automated map syncing.
+Original contributor: @author Jurorno9
+Maintenance: @author BalaM314
+*/
+
 import { mapRepoURLs, Mode } from "./config";
 import { Promise } from "./promise";
 import { crash, getHash } from "./utils";

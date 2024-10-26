@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the menu system.
+*/
+
 import { CommandError } from "./commands";
 import { FishPlayer } from "./players";
 import { outputFail, outputSuccess, parseError, to2DArray } from "./utils";

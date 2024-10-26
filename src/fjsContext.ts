@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the context for the "fjs" command, which executes code with access to the plugin's internals.
+*/
+
 const api = require("./api");
 const commands = require("./commands");
 const config = require("./config");

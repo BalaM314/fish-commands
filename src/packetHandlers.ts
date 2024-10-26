@@ -1,3 +1,12 @@
+/**
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the visual effects system.
+Original contributor: @author TheEt1234
+Fixes: @author BalaM314
+Fixes: @author Dart25
+Fixes: @author Jurorno9
+*/
+
 import { Perm, commandList } from './commands';
 import { FishPlayer } from './players';
 

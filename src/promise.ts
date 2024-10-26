@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains a custom (bad) polyfill for promises with slightly different behavior.
+*/
+
 
 export function queueMicrotask(callback:() => unknown, errorHandler:(err:unknown) => unknown = (err) => {
 	Log.err("Uncaught (in promise)");
@@ -12,6 +17,10 @@ export function queueMicrotask(callback:() => unknown, errorHandler:(err:unknown
 	});
 }
 
+/**
+ * Differences from normal promises:
+ * If a called-later handler throws an error, it will print an error to the console, and will not call the reject handler.
+ */
 export class Promise<TResolve, TReject> {
 	private state: ["resolved", TResolve] | ["rejected", TReject] | ["pending"] = ["pending"];
 	private resolveHandlers: ((value:TResolve) => unknown)[] = [];

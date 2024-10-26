@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the in-game chat commands that can be run by untrusted players.
+*/
+
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { discordURL, FishServers, Mode, rules } from './config';
@@ -6,7 +11,7 @@ import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { capitalizeText, crash, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
+import { capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
 import { VoteManager } from './votes';
 
 export const commands = commandList({

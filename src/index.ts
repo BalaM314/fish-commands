@@ -1,6 +1,7 @@
-/**
- * This used to be main.js but was renamed to index.js due to rhino issue
- */
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the main code, which calls other functions and initializes the plugin.
+*/
 
 import * as api from './api';
 import * as commands from './commands';

@@ -1,7 +1,8 @@
-/**
- * Main file for Fish Commands.
- * Does not do anything other than requiring index.js.
- */
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This is a special file which is automatically loaded by the game server.
+It only contains polyfills, and requires index.js.
+*/
 //WARNING: changes to this file must be manually copied to /build/main.js
 
 importPackage(Packages.arc);

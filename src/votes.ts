@@ -1,6 +1,13 @@
+/**
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the voting system.
+Some contributions: @author Jurorno9
+*/
+
 import { FishPlayer } from "./players";
 import { EventEmitter, crash } from "./utils";
 
+/** Event data for each voting event. */
 export type VoteEventMapping = {
 	"success": [forced:boolean];
 	"fail": [forced:boolean];
@@ -12,8 +19,11 @@ export type VoteEventMapping = {
 };
 export type VoteEvent = keyof VoteEventMapping;
 export type VoteEventData<T extends VoteEvent> = VoteEventMapping[T];
+
+/** Manages a vote. */
 export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventMapping> {
 
+	/** The ongoing voting session, if there is one. */
 	session: {
 		data: SessionData;
 		votes: Map<string, number>;

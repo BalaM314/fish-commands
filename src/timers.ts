@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains timers that run code at regular intervals.
+*/
+
 import { getStaffMessages } from './api';
 import * as config from "./config";
 import { Mode } from "./config";
@@ -7,6 +12,7 @@ import { FishPlayer } from "./players";
 import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
 
 
+/** Must be called once, and only once, on server start. */
 export function initializeTimers(){
 	Timer.schedule(() => {
 		//Autosave

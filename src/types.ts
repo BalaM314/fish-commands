@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains type definitions that are shared across files.
+*/
+
 import type { CommandArgType, Perm } from "./commands";
 import type { FishPlayer } from "./players";
 import type { Rank, RoleFlag } from "./ranks";

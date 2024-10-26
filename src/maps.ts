@@ -1,4 +1,7 @@
-/* Unfinished. */
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+Unfinished.
+*/
 
 import { StringIO } from "./utils";
 

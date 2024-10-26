@@ -1,12 +1,14 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains many utility functions.
+*/
+
 import * as api from './api';
 import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
 import { fishState, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
 
-export function logg(msg:string){ Call.sendMessage(msg); }
-export function list(ar:unknown[]){ Call.sendMessage(ar.join(' | ')); }
-export function keys(obj:Record<string, unknown>){ Call.sendMessage(Object.keys(obj).join(' [scarlet]|[white] ')); }
 
 const storedValues:Record<string, {
 	value: unknown;
@@ -88,6 +90,11 @@ export function colorBadBoolean(val:boolean){
 	return val ? `[red]true[]` : `[green]false[]`
 }
 
+/**
+ * Converts a 1D array into a 2D array.
+ * @param width the max length of each row.
+ * The last row may not be full.
+ */
 export function to2DArray<T>(array:T[], width:number){
 	if(array.length == 0) return [];
 	let output:T[][] = [[]];
@@ -100,6 +107,7 @@ export function to2DArray<T>(array:T[], width:number){
 	return output;
 }
 
+/** Attempts to parse a Color from the input. */
 export function getColor(input:string):Color | null {
 	try {
 		if(input.includes(',')){
@@ -123,7 +131,8 @@ export function getColor(input:string):Color | null {
 	}
 }
 
-export function nearbyEnemyTile(unit:Unit, dist:number){
+/** Searches for an enemy tile near a unit. */
+export function nearbyEnemyTile(unit:Unit, dist:number):Building | null {
 	//because the indexer is buggy
 	if(dist > 10) crash(`nearbyEnemyTile(): dist (${dist}) is too high!`);
 
@@ -144,6 +153,7 @@ export function setToArray<T>(set:ObjectSet<T> | EntityGroup<T>):T[] {
 	return array;
 }
 
+/** Attempts to parse a Team from the input. */
 export function getTeam(team:string):Team | string {
 	if(team in Team && Team[team as keyof typeof Team] instanceof Team) return Team[team as keyof typeof Team] as Team;
 	else if(Team.baseTeams.find(t => t.name.includes(team.toLowerCase()))) return Team.baseTeams.find(t => t.name.includes(team.toLowerCase()))!;
@@ -173,6 +183,8 @@ export class StringBuilder {
 	}
 }
 
+//I really should have just used bytes instead of a string.
+/** Used for serialization to strings. */
 export class StringIO {
 	offset:number = 0;
 	constructor(public string:string = ""){}
@@ -274,6 +286,7 @@ export class StringIO {
 	}
 }
 
+/** Something that emits events. */
 export class EventEmitter<
 	/** Mapping between event name and arguments to the handler. */
 	EventMapping extends Record<string, unknown[]>,
@@ -292,13 +305,16 @@ export class EventEmitter<
 	}
 }
 
+/** Best effort title-capitalization of a word. */
 export function capitalizeText(text:string):string {
 	return text
 		.split(" ")
 		.map((word, i, arr) =>
-			(["a", "an", "the", "in", "and", "of", "it"].includes(word) &&
-			i !== 0 && i !== arr.length - 1)?
-			word : word[0].toUpperCase() + word.substring(1)
+			(
+				["a", "an", "the", "in", "and", "of", "it"].includes(word) &&
+				i !== 0 && i !== arr.length - 1
+			) ? word
+				: word[0].toUpperCase() + word.substring(1)
 		).join(" ");
 }
 
@@ -309,11 +325,16 @@ export function escapeTextDiscord(text:string):string {
 
 /**
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
- * @returns 
+ * @returns a 
  */
 export function matchFilter(input:string, strict = "chat" as "chat" | "strict" | "name"):false | string {
+	const currentBannedWords = [
+		bannedWords,
+		(strict == "strict" || strict == "name") && strictBannedWords,
+		strict == "name" && bannedInNamesWords,
+	].filter(Boolean).flat();
 	//Replace substitutions
-	for(const [banned, whitelist] of bannedWords.concat(strict == "strict" || strict == "name" ? strictBannedWords : []).concat(strict == "name" ? bannedInNamesWords : [])){
+	for(const [banned, whitelist] of currentBannedWords){
 		for(const text of [input, cleanText(input, false)/*, cleanText(input, true)*/]){
 			if(banned instanceof RegExp ? banned.test(text) : text.includes(banned)){
 				let modifiedText = text;

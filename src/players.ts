@@ -1,8 +1,13 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the FishPlayer class, and many player-related functions.
+*/
+
 import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as config from "./config";
 import { Mode, heuristics } from "./config";
-import { fishState, uuidPattern } from "./globals";
+import { uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";

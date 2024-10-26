@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the in-game chat commands that can be run by trusted staff.
+*/
+
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
 import { Mode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";

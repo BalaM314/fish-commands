@@ -1,3 +1,8 @@
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains configurable constants.
+*/
+
 import type { PermType } from "./commands";
 import { ipPattern, ipPortPattern, uuidPattern } from "./globals"; //TODO fix storage of global variables
 import { Rank } from "./ranks";
@@ -39,6 +44,7 @@ export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
 	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
 	uuidPattern, ipPattern, ipPortPattern
 ]);
+/** Used for anti-impersonation. Make sure to replace numbers with letters, for example, balam314 -> balamei4. */
 export const adminNames = ["fish", "balamei4", "clashgone", "darthscion", "firefridge", "aricia", "rawsewage", "skeledragon", "edh8e", "everydayhuman8e", "benjamonsrl"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 export const substitutions:Record<string, string> = Object.fromEntries<string>(Object.entries<string>({
@@ -99,16 +105,20 @@ export const substitutions:Record<string, string> = Object.fromEntries<string>(O
 export const multiCharSubstitutions:[RegExp, string][] = [
 	[/\|-\|/g, "H"]
 ];
-// export const ip = 'localhost';
-export const ip = '45.79.202.111:5082';
+
+export const backendIP = '45.79.202.111:5082';
+
+
 type FishServer = {
 	ip:string;
 	port:string;
 	aliases:string[];
 	name:string;
+	/** If set, this permission is required to switch to or get information about this server. */
 	requiredPerm?:PermType;
 };
 //TODO convert to enum class, TODO store color and use colored name
+/** Stores the names and addresses of each active server. */
 export const FishServers = {
 	attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
 	survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
@@ -123,9 +133,11 @@ export const FishServers = {
 	all: [] as FishServer[]
 };
 FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.sandbox, FishServers.hardcore];
+
 export type ModeName = keyof typeof Mode extends infer K extends keyof typeof Mode ? K extends unknown ?
 	(typeof Mode)[K] extends (() => boolean) ? K : never
 : never : never;
+/** Stores functions that return whether the specified gamemode is the current gamemode. */
 export const Mode = {
 	attack: () => Mode.name() == "attack",
 	survival: () => Mode.name() == "survival",
@@ -135,10 +147,12 @@ export const Mode = {
   hardcore: () => Mode.name() == "hardcore",
 	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore",
 };
+
 export const localDebug = new Fi("config/.debug").exists();
 export const maxTime = 9999999999999;
 export const discordURL = `https://discord.gg/VpzcYSQ33Y`;
-//is this even good?
+
+//TODO use this
 export const FColor = (<T extends string>(data:Record<T, string>):Record<T, (str?:string) => string> =>
 	Object.fromEntries(Object.entries(data).map(([k, c]) =>
 		[k, (str?:string) => str ? `${c}${str}[]` : c]
@@ -148,6 +162,7 @@ export const FColor = (<T extends string>(data:Record<T, string>):Record<T, (str
 	/** Used for tips and welcome messages. */
 	tip: "[gold]",
 });
+/** Tips that are shown to players randomly. */
 export const tips = {
 	ads: [
 		`[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []`,
@@ -210,11 +225,12 @@ export const rules = [
 ].map(r => `[white]${r}`);
 
 export const heuristics = {
-	blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
+	/** Will trip if more than this many blocks are broken within 25 seconds of joining. */
+	blocksBrokenAfterJoin: 40,
 };
 export const stopAntiEvadeTime = 1800000; //30 minutes
 
-//seperated repository urls so we could (if we wanted to) split the repository by map type
+/** Stores the repository url for the maps for each gamemode. */
 export const mapRepoURLs:Record<ModeName, string> = {
 	attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
 	survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",
