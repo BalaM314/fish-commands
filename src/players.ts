@@ -351,7 +351,7 @@ export class FishPlayer {
 		if(Vars.netServer.currentlyKicking){
 			let vcTarget = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
 			if(vcTarget.uuid === fishPlayer.uuid) fishPlayer.kick("You have been kicked for votekick-evasion.", 3600000);
-			FishPlayer.messageStaff(`Player ${fishPlayer.uuid} Has been kicked by for votekick evasion.`);
+			FishPlayer.messageStaff(`Player ${fishPlayer.uuid} Has been kicked (60 minute) for votekick evasion.`);
 		}
 		//Clear temporary states such as menu and taphandler
 		fishPlayer.activeMenu.callback = undefined;
