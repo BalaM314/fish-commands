@@ -1,4 +1,8 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the context for the "fjs" command, which executes code with access to the plugin's internals.
+*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runJS = runJS;
 var api = require("./api");

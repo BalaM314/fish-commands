@@ -1,4 +1,8 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains member commands, which are fun cosmetics for donators.
+*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var commands_1 = require("./commands");

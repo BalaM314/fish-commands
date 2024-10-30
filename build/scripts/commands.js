@@ -1,4 +1,9 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the commands system.
+*/
+//Behold, the power of typescript!
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -52,23 +57,42 @@ var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
-//Behold, the power of typescript!
 var hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
 var initialized = false;
+/** Stores all chat comamnds by their name. */
 exports.allCommands = {};
+/** Stores all console commands by their name. */
 exports.allConsoleCommands = {};
+/** Stores the last usage data for chat commands by their name. */
 var globalUsageData = {};
+/** All valid command arg types. */
 var commandArgTypes = [
     "string", "number", "boolean", "player", /*"menuPlayer",*/ "team", "time", "unittype", "block",
     "uuid", "offlinePlayer", "map", "rank", "roleflag",
 ];
-/** Use this to get the correct type for command lists. */
+/** Helper function to get the correct type for command lists. */
 var commandList = function (list) { return list; };
 exports.commandList = commandList;
-/** Use this to get the correct type for command lists. */
+/** Helper function to get the correct type for command lists. */
 var consoleCommandList = function (list) { return list; };
 exports.consoleCommandList = consoleCommandList;
-/** Use this wrapper function to get the correct type definitions for commands using "data" or init(). */
+/**
+ * Helper function to get the correct type definitions for commands that use "data" or init().
+ * Necessary because, while typescript is capable of inferring A1, A2...
+ * ```
+ * {
+ * 	prop1: Type<A1>;
+ * 	prop2: Type<A2>;
+ * }
+ * ```
+ * it cannot handle inferring A1 and B1.
+ * ```
+ * {
+ * 	prop1: Type<A1, B1>;
+ * 	prop2: Type<A2, B2>;
+ * }
+ * ```
+ */
 function command(input) {
     return input;
 }
@@ -110,20 +134,26 @@ var Perm = /** @class */ (function () {
     Perm.seeErrorMessages = new Perm("seeErrorMessages", "admin");
     Perm.viewUUIDs = new Perm("viewUUIDs", "admin");
     Perm.blockTrolling = new Perm("blockTrolling", function (fishP) { return fishP.rank === ranks_1.Rank.pi; });
-    Perm.bulkLabelPacket = new Perm("bulkLabelPacket", function (fishP) { return ((fishP.hasFlag("developer") || fishP.hasFlag("illusionist") || fishP.hasFlag("member")) && !fishP.stelled()) || fishP.ranksAtLeast("mod"); });
     Perm.visualEffects = new Perm("visualEffects", function (fishP) { return !fishP.stelled() || fishP.ranksAtLeast("mod"); });
+    Perm.bulkVisualEffects = new Perm("bulkVisualEffects", function (fishP) { return ((fishP.hasFlag("developer") || fishP.hasFlag("illusionist") || fishP.hasFlag("member")) && !fishP.stelled())
+        || fishP.ranksAtLeast("mod"); });
     Perm.bypassVoteFreeze = new Perm("bypassVoteFreeze", "trusted");
     Perm.bypassVotekick = new Perm("bypassVotekick", "mod");
     Perm.warn = new Perm("warn", "mod");
     Perm.vanish = new Perm("vanish", "mod");
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
-        return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted")
-            : config_1.Mode.attack() ? fishP.ranksAtLeast("admin")
-                : config_1.Mode.hexed() ? fishP.ranksAtLeast("mod")
-                    : config_1.Mode.pvp() ? fishP.ranksAtLeast("trusted")
-                        : fishP.ranksAtLeast("admin");
+        switch (true) {
+            case config_1.Mode.sandbox(): return fishP.ranksAtLeast("trusted");
+            case config_1.Mode.attack(): return fishP.ranksAtLeast("admin");
+            case config_1.Mode.hexed(): return fishP.ranksAtLeast("mod");
+            case config_1.Mode.pvp(): return fishP.ranksAtLeast("trusted");
+            default: return fishP.ranksAtLeast("admin");
+        }
     });
-    Perm.changeTeamExternal = new Perm("changeTeamExternal", function (fishP) { return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin"); });
+    /** Whether players should be allowed to change the team of a unit or building. If not, they will be kicked out of their current unit or building before switching teams. */
+    Perm.changeTeamExternal = new Perm("changeTeamExternal", function (fishP) {
+        return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin");
+    });
     Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Mode.pvp(); }, "", "Ohnos are disabled in PVP.");
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");

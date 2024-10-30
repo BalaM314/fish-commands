@@ -1,4 +1,9 @@
 "use strict";
+/**
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the voting system.
+Some contributions: @author Jurorno9
+*/
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -43,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteManager = void 0;
 var players_1 = require("./players");
 var utils_1 = require("./utils");
+/** Manages a vote. */
 var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
     function VoteManager(voteTime, goal) {
@@ -50,6 +56,7 @@ var VoteManager = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.voteTime = voteTime;
         _this.goal = goal;
+        /** The ongoing voting session, if there is one. */
         _this.session = null;
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;

@@ -347,6 +347,12 @@ export class FishPlayer {
 	static onPlayerLeave(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()];
 		if(!fishPlayer) return;
+		//anti votekick evade
+		if(Vars.netServer.currentlyKicking){
+			let vcTarget = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
+			if(vcTarget.uuid === fishPlayer.uuid) fishPlayer.kick("You have been kicked for votekick-evasion.", 3600000);
+			FishPlayer.messageStaff(`Player ${fishPlayer.uuid} Has been kicked by for votekick evasion.`);
+		}
 		//Clear temporary states such as menu and taphandler
 		fishPlayer.activeMenu.callback = undefined;
 		fishPlayer.tapInfo.commandName = null;

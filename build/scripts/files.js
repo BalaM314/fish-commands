@@ -1,4 +1,10 @@
 "use strict";
+/**
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the code for automated map syncing.
+Original contributor: @author Jurorno9
+Maintenance: @author BalaM314
+*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateMaps = updateMaps;
 var config_1 = require("./config");

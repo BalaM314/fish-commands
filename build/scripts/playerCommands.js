@@ -1,4 +1,8 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the in-game chat commands that can be run by untrusted players.
+*/
 var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
     return cooked;
@@ -801,7 +805,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var winner;
             if (highestVotedMaps.size > 1) {
                 winner = highestVotedMaps.random().key;
-                Call.sendMessage("[green]There was a tie between the following maps: \n".concat(highestVotedMaps.map(function (_a) {
+                Call.sendMessage("[green]There was a tie between the following maps:\n".concat(highestVotedMaps.map(function (_a) {
                     var map = _a.key, votes = _a.value;
                     return "[cyan]".concat(map.name(), "[yellow]: ").concat(votes);
                 }).toString("\n"), "\n[green]Picking random winner: [yellow]").concat(winner.name()));

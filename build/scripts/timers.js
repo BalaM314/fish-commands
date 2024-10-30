@@ -1,4 +1,8 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains timers that run code at regular intervals.
+*/
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -19,6 +23,7 @@ var files_1 = require("./files");
 var globals_1 = require("./globals");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
+/** Must be called once, and only once, on server start. */
 function initializeTimers() {
     Timer.schedule(function () {
         var e_1, _a;

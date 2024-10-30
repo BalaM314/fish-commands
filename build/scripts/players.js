@@ -1,4 +1,8 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the FishPlayer class, and many player-related functions.
+*/
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -375,6 +379,13 @@ var FishPlayer = /** @class */ (function () {
         var fishPlayer = this.cachedPlayers[player.uuid()];
         if (!fishPlayer)
             return;
+        //anti votekick evade
+        if (Vars.netServer.currentlyKicking) {
+            var vcTarget = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
+            if (vcTarget.uuid === fishPlayer.uuid)
+                fishPlayer.kick("You have been kicked for votekick-evasion.", 3600000);
+            FishPlayer.messageStaff("Player ".concat(fishPlayer.uuid, " Has been kicked by for votekick evasion."));
+        }
         //Clear temporary states such as menu and taphandler
         fishPlayer.activeMenu.callback = undefined;
         fishPlayer.tapInfo.commandName = null;
@@ -844,7 +855,7 @@ var FishPlayer = /** @class */ (function () {
         out.writeString(this.name, 2, true);
         out.writeBool(this.muted);
         out.writeBool(this.autoflagged);
-        out.writeNumber(this.unmarkTime, 13); // this will stop working in 2286! https://en.wikipedia.org/wiki/Time_formatting_and_storage_bugs#Year_2286 
+        out.writeNumber(this.unmarkTime, 13); // this will stop working in 2286! https://en.wikipedia.org/wiki/Time_formatting_and_storage_bugs#Year_2286
         out.writeString(this.highlight, 2, true);
         out.writeArray(this.history, function (i, str) {
             str.writeString(i.action, 2);

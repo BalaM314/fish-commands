@@ -1,7 +1,8 @@
 "use strict";
-/**
- * This used to be main.js but was renamed to index.js due to rhino issue
- */
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the main code, which calls other functions and initializes the plugin.
+*/
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
