@@ -418,13 +418,15 @@ export function fail(message:string | PartialFormatString):never {
 	throw err;
 }
 
+const variadicArgumentTypes:CommandArgType[] = ["player", "string", "map"];
+
 /**Converts the CommandArg[] to the format accepted by Arc CommandHandler */
 function convertArgs(processedCmdArgs:CommandArg[], allowMenus:boolean):string {
 	return processedCmdArgs.map((arg, index, array) => {
 		const isOptional = (arg.isOptional || (arg.type == "player" && allowMenus)) && !array.slice(index + 1).some(c => !c.isOptional);
 		const brackets = isOptional ? ["[", "]"] : ["<", ">"];
 		//if the arg is a string and last argument, make it variadic (so if `/warn player a b c d` is run, the last arg is "a b c d" not "a")
-		return brackets[0] + arg.name + (["player", "string"].includes(arg.type) && index + 1 == array.length ? "..." : "") + brackets[1];
+		return brackets[0] + arg.name + (variadicArgumentTypes.includes(arg.type) && index + 1 == array.length ? "..." : "") + brackets[1];
 	}).join(" ");
 }
 

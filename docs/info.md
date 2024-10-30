@@ -6,7 +6,7 @@
   * The main.js file is special: it is written in js and needs to be manually copied to build.
 * The `build/*.js` files **are committed**.
 * The JS files are run by an old, buggy version of Mozilla Rhino. (ES5.5) This causes a lot of problems.
-* With the power of modern developer tooling, we can use modern features anyway, though.
+* With the power of modern developer tooling, we can mostly use modern features anyway, though.
 
 ## Misc
 
