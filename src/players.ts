@@ -357,7 +357,7 @@ export class FishPlayer {
 			if((() => {
 				if(fishP.hasPerm("bypassVotekick")) return false;
 				if(fishP.hasPerm("bypassVoteFreeze")) return votes >= Vars.netServer.votesRequired();
-				if(fishP.info().timesJoined > 30) return votes >= 2;
+				if(fishP.info().timesJoined > 50) return votes >= 2;
 				return votes >= 1;
 			})()){
 				const kickDuration = NetServer.kickDuration;

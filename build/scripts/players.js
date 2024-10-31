@@ -388,7 +388,7 @@ var FishPlayer = /** @class */ (function () {
                     return false;
                 if (fishP.hasPerm("bypassVoteFreeze"))
                     return votes_1 >= Vars.netServer.votesRequired();
-                if (fishP.info().timesJoined > 30)
+                if (fishP.info().timesJoined > 50)
                     return votes_1 >= 2;
                 return votes_1 >= 1;
             })()) {
