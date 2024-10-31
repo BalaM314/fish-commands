@@ -376,15 +376,34 @@ var FishPlayer = /** @class */ (function () {
     };
     /**Must be run on PlayerLeaveEvent. */
     FishPlayer.onPlayerLeave = function (player) {
-        var fishPlayer = this.cachedPlayers[player.uuid()];
-        if (!fishPlayer)
+        var fishP = this.cachedPlayers[player.uuid()];
+        if (!fishP)
             return;
+        if (Vars.netServer.currentlyKicking &&
+            Reflect.get(Vars.netServer.currentlyKicking, "target") == player) {
+            //Anti votekick evasion
+            var votes_1 = Reflect.get(Vars.netServer.currentlyKicking, "votes");
+            if ((function () {
+                if (fishP.hasPerm("bypassVotekick"))
+                    return false;
+                if (fishP.hasPerm("bypassVoteFreeze"))
+                    return votes_1 >= Vars.netServer.votesRequired();
+                if (fishP.info().timesJoined > 30)
+                    return votes_1 >= 2;
+                return votes_1 >= 1;
+            })()) {
+                var kickDuration = NetServer.kickDuration;
+                //Pass the votekick
+                Call.sendMessage("[orange]Vote passed.[scarlet] ".concat(player.name, "[orange] will be banned from the server for ").concat(kickDuration / 60, " minutes."));
+                player.kick(KickReason.vote, kickDuration);
+            }
+        }
         //Clear temporary states such as menu and taphandler
-        fishPlayer.activeMenu.callback = undefined;
-        fishPlayer.tapInfo.commandName = null;
-        fishPlayer.stats.timeInGame += (Date.now() - fishPlayer.lastJoined); //Time between joining and leaving
-        fishPlayer.lastJoined = Date.now();
-        this.recentLeaves.unshift(fishPlayer);
+        fishP.activeMenu.callback = undefined;
+        fishP.tapInfo.commandName = null;
+        fishP.stats.timeInGame += (Date.now() - fishP.lastJoined); //Time between joining and leaving
+        fishP.lastJoined = Date.now();
+        this.recentLeaves.unshift(fishP);
         if (this.recentLeaves.length > 10)
             this.recentLeaves.pop();
     };

@@ -345,14 +345,33 @@ export class FishPlayer {
 	}
 	/**Must be run on PlayerLeaveEvent. */
 	static onPlayerLeave(player:mindustryPlayer){
-		let fishPlayer = this.cachedPlayers[player.uuid()];
-		if(!fishPlayer) return;
+		let fishP = this.cachedPlayers[player.uuid()];
+		if(!fishP) return;
+
+		if(
+			Vars.netServer.currentlyKicking &&
+			Reflect.get(Vars.netServer.currentlyKicking, "target") == player
+		){
+			//Anti votekick evasion
+			const votes = Reflect.get(Vars.netServer.currentlyKicking, "votes");
+			if((() => {
+				if(fishP.hasPerm("bypassVotekick")) return false;
+				if(fishP.hasPerm("bypassVoteFreeze")) return votes >= Vars.netServer.votesRequired();
+				if(fishP.info().timesJoined > 30) return votes >= 2;
+				return votes >= 1;
+			})()){
+				const kickDuration = NetServer.kickDuration;
+				//Pass the votekick
+				Call.sendMessage(`[orange]Vote passed.[scarlet] ${player.name}[orange] will be banned from the server for ${kickDuration / 60} minutes.`);
+				player.kick(KickReason.vote, kickDuration);
+			}
+		}
 		//Clear temporary states such as menu and taphandler
-		fishPlayer.activeMenu.callback = undefined;
-		fishPlayer.tapInfo.commandName = null;
-		fishPlayer.stats.timeInGame += (Date.now() - fishPlayer.lastJoined); //Time between joining and leaving
-		fishPlayer.lastJoined = Date.now();
-		this.recentLeaves.unshift(fishPlayer);
+		fishP.activeMenu.callback = undefined;
+		fishP.tapInfo.commandName = null;
+		fishP.stats.timeInGame += (Date.now() - fishP.lastJoined); //Time between joining and leaving
+		fishP.lastJoined = Date.now();
+		this.recentLeaves.unshift(fishP);
 		if(this.recentLeaves.length > 10) this.recentLeaves.pop();
 	}
 	static validateVotekickSession(){
