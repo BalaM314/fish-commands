@@ -1,4 +1,8 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains configurable constants.
+*/
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -16,7 +20,7 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapRepoURLs = exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.ip = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.mapRepoURLs = exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.backendIP = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
@@ -52,6 +56,7 @@ exports.bannedInNamesWords = (function (words) {
     "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
     globals_1.uuidPattern, globals_1.ipPattern, globals_1.ipPortPattern
 ]);
+/** Used for anti-impersonation. Make sure to replace numbers with letters, for example, balam314 -> balamei4. */
 exports.adminNames = ["fish", "balamei4", "clashgone", "darthscion", "firefridge", "aricia", "rawsewage", "skeledragon", "edh8e", "everydayhuman8e", "benjamonsrl"];
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 exports.substitutions = Object.fromEntries(Object.entries({
@@ -115,9 +120,9 @@ exports.substitutions = Object.fromEntries(Object.entries({
 exports.multiCharSubstitutions = [
     [/\|-\|/g, "H"]
 ];
-// export const ip = 'localhost';
-exports.ip = '45.79.202.111:5082';
+exports.backendIP = '45.79.202.111:5082';
 //TODO convert to enum class, TODO store color and use colored name
+/** Stores the names and addresses of each active server. */
 exports.FishServers = {
     attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
     survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
@@ -133,6 +138,7 @@ exports.FishServers = {
     all: []
 };
 exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.sandbox, exports.FishServers.hardcore];
+/** Stores functions that return whether the specified gamemode is the current gamemode. */
 exports.Mode = {
     attack: function () { return exports.Mode.name() == "attack"; },
     survival: function () { return exports.Mode.name() == "survival"; },
@@ -145,7 +151,7 @@ exports.Mode = {
 exports.localDebug = new Fi("config/.debug").exists();
 exports.maxTime = 9999999999999;
 exports.discordURL = "https://discord.gg/VpzcYSQ33Y";
-//is this even good?
+//TODO use this
 exports.FColor = (function (data) {
     return Object.fromEntries(Object.entries(data).map(function (_a) {
         var _b = __read(_a, 2), k = _b[0], c = _b[1];
@@ -156,6 +162,7 @@ exports.FColor = (function (data) {
     /** Used for tips and welcome messages. */
     tip: "[gold]",
 });
+/** Tips that are shown to players randomly. */
 exports.tips = {
     ads: [
         "[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
@@ -215,10 +222,11 @@ exports.rules = [
     "Failure to follow these rules will result in consequences: mostly a Marked Griefer tag for any game disruption, mute for broken chat rules, and bans if there are repeated offenses or bypasses (up to moderator discretion)."
 ].map(function (r) { return "[white]".concat(r); });
 exports.heuristics = {
-    blocksBrokenAfterJoin: 40 //Will trip if more than this many blocks are broken within 25 seconds of joining.
+    /** Will trip if more than this many blocks are broken within 25 seconds of joining. */
+    blocksBrokenAfterJoin: 40,
 };
 exports.stopAntiEvadeTime = 1800000; //30 minutes
-//seperated repository urls so we could (if we wanted to) split the repository by map type
+/** Stores the repository url for the maps for each gamemode. */
 exports.mapRepoURLs = {
     attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
     survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",

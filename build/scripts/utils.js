@@ -1,4 +1,8 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains many utility functions.
+*/
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -37,9 +41,6 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addToTileHistory = exports.EventEmitter = exports.StringIO = exports.StringBuilder = void 0;
-exports.logg = logg;
-exports.list = list;
-exports.keys = keys;
 exports.memoize = memoize;
 exports.formatTime = formatTime;
 exports.formatModeName = formatModeName;
@@ -95,9 +96,6 @@ var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var players_1 = require("./players");
-function logg(msg) { Call.sendMessage(msg); }
-function list(ar) { Call.sendMessage(ar.join(' | ')); }
-function keys(obj) { Call.sendMessage(Object.keys(obj).join(' [scarlet]|[white] ')); }
 var storedValues = {};
 /**
  * Stores the output of a function and returns that value
@@ -165,6 +163,11 @@ function colorBoolean(val) {
 function colorBadBoolean(val) {
     return val ? "[red]true[]" : "[green]false[]";
 }
+/**
+ * Converts a 1D array into a 2D array.
+ * @param width the max length of each row.
+ * The last row may not be full.
+ */
 function to2DArray(array, width) {
     if (array.length == 0)
         return [];
@@ -177,6 +180,7 @@ function to2DArray(array, width) {
     });
     return output;
 }
+/** Attempts to parse a Color from the input. */
 function getColor(input) {
     try {
         if (input.includes(',')) {
@@ -203,6 +207,7 @@ function getColor(input) {
         return null;
     }
 }
+/** Searches for an enemy tile near a unit. */
 function nearbyEnemyTile(unit, dist) {
     //because the indexer is buggy
     if (dist > 10)
@@ -223,6 +228,7 @@ function setToArray(set) {
     set.each(function (item) { return array.push(item); });
     return array;
 }
+/** Attempts to parse a Team from the input. */
 function getTeam(team) {
     if (team in Team && Team[team] instanceof Team)
         return Team[team];
@@ -257,6 +263,8 @@ var StringBuilder = /** @class */ (function () {
     return StringBuilder;
 }());
 exports.StringBuilder = StringBuilder;
+//I really should have just used bytes instead of a string.
+/** Used for serialization to strings. */
 var StringIO = /** @class */ (function () {
     function StringIO(string) {
         if (string === void 0) { string = ""; }
@@ -385,6 +393,7 @@ var StringIO = /** @class */ (function () {
     return StringIO;
 }());
 exports.StringIO = StringIO;
+/** Something that emits events. */
 var EventEmitter = /** @class */ (function () {
     function EventEmitter() {
         this.listeners = {};
@@ -415,13 +424,14 @@ var EventEmitter = /** @class */ (function () {
     return EventEmitter;
 }());
 exports.EventEmitter = EventEmitter;
+/** Best effort title-capitalization of a word. */
 function capitalizeText(text) {
     return text
         .split(" ")
         .map(function (word, i, arr) {
         return (["a", "an", "the", "in", "and", "of", "it"].includes(word) &&
-            i !== 0 && i !== arr.length - 1) ?
-            word : word[0].toUpperCase() + word.substring(1);
+            i !== 0 && i !== arr.length - 1) ? word
+            : word[0].toUpperCase() + word.substring(1);
     }).join(" ");
 }
 var pattern = Pattern.compile("([*\\_~`|:])");
@@ -430,15 +440,20 @@ function escapeTextDiscord(text) {
 }
 /**
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
- * @returns
+ * @returns a
  */
 function matchFilter(input, strict) {
     var e_2, _a, e_3, _b;
     if (strict === void 0) { strict = "chat"; }
+    var currentBannedWords = [
+        config_1.bannedWords,
+        (strict == "strict" || strict == "name") && config_1.strictBannedWords,
+        strict == "name" && config_1.bannedInNamesWords,
+    ].filter(Boolean).flat();
     try {
         //Replace substitutions
-        for (var _c = __values(config_1.bannedWords.concat(strict == "strict" || strict == "name" ? config_1.strictBannedWords : []).concat(strict == "name" ? config_1.bannedInNamesWords : [])), _d = _c.next(); !_d.done; _d = _c.next()) {
-            var _e = __read(_d.value, 2), banned = _e[0], whitelist = _e[1];
+        for (var currentBannedWords_1 = __values(currentBannedWords), currentBannedWords_1_1 = currentBannedWords_1.next(); !currentBannedWords_1_1.done; currentBannedWords_1_1 = currentBannedWords_1.next()) {
+            var _c = __read(currentBannedWords_1_1.value, 2), banned = _c[0], whitelist = _c[1];
             var _loop_1 = function (text) {
                 if (banned instanceof RegExp ? banned.test(text) : text.includes(banned)) {
                     var modifiedText_1 = text;
@@ -448,8 +463,8 @@ function matchFilter(input, strict) {
                 }
             };
             try {
-                for (var _f = (e_3 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _g = _f.next(); !_g.done; _g = _f.next()) {
-                    var text = _g.value;
+                for (var _d = (e_3 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _e = _d.next(); !_e.done; _e = _d.next()) {
+                    var text = _e.value;
                     var state_1 = _loop_1(text);
                     if (typeof state_1 === "object")
                         return state_1.value;
@@ -458,7 +473,7 @@ function matchFilter(input, strict) {
             catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
-                    if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
+                    if (_e && !_e.done && (_b = _d.return)) _b.call(_d);
                 }
                 finally { if (e_3) throw e_3.error; }
             }
@@ -467,7 +482,7 @@ function matchFilter(input, strict) {
     catch (e_2_1) { e_2 = { error: e_2_1 }; }
     finally {
         try {
-            if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
+            if (currentBannedWords_1_1 && !currentBannedWords_1_1.done && (_a = currentBannedWords_1.return)) _a.call(currentBannedWords_1);
         }
         finally { if (e_2) throw e_2.error; }
     }
@@ -865,7 +880,7 @@ function outputSuccess(message, sender) {
     sender.sendMessage(successPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[#48e076]") : message));
 }
 function outputMessage(message, sender) {
-    sender.sendMessage(((typeof message == "function" && "__partialFormatString" in message ? message(null) : message) + "").replace(/\t/g, "    "));
+    sender.sendMessage(((typeof message == "function" && "__partialFormatString" in message ? message(null) : message) + "").replace(/\t/g, " ".repeat(4)));
 }
 function outputConsole(message, channel) {
     if (channel === void 0) { channel = Log.info; }

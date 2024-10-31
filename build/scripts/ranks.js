@@ -1,6 +1,11 @@
 "use strict";
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This file contains the definitions for ranks and role flags.
+*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleFlag = exports.Rank = void 0;
+/** Each player has one rank, which is used to determine their prefix, permissions, and which other players they can perform moderation actions on. */
 var Rank = /** @class */ (function () {
     function Rank(name, 
     /** Used to determine whether a rank outranks another. */ level, description, prefix, shortPrefix, color, autoRankData) {
@@ -46,7 +51,11 @@ var Rank = /** @class */ (function () {
     return Rank;
 }());
 exports.Rank = Rank;
-Object.freeze(Rank.pi);
+Object.freeze(Rank.pi); //anti-trolling
+/**
+ * Role flags are used to determine a player's prefix and permissions.
+ * Players can have any combination of the role flags.
+ */
 var RoleFlag = /** @class */ (function () {
     function RoleFlag(name, prefix, description, color, peristent, assignableByModerators) {
         if (peristent === void 0) { peristent = true; }
