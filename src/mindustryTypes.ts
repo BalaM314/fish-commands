@@ -473,12 +473,9 @@ class Process {
 }
 
 const Packets: {
-	KickReason: Record<string, KickReason>;
+	KickReason: Record<"kick" | "clientOutdated" | "serverOutdated" | "banned" | "gameover" | "recentKick" | "nameInUse" | "idInUse" | "nameEmpty" | "customClient" | "serverClose" | "vote" | "typeMismatch" | "whitelist" | "playerLimit" | "serverRestarting", KickReason>;
 };
-class KickReason {
-	quiet: boolean;
-	static kick: KickReason; static clientOutdated: KickReason; static serverOutdated: KickReason; static banned: KickReason; static gameover: KickReason; static recentKick: KickReason; static nameInUse: KickReason; static idInUse: KickReason; static nameEmpty: KickReason; static customClient: KickReason; static serverClose: KickReason; static vote: KickReason; static typeMismatch: KickReason; static whitelist: KickReason; static playerLimit: KickReason; static serverRestarting: KickReason;
-}
+type KickReason = { quiet: boolean };
 
 class ConstructBlock {
 	static ConstructBuild: any;

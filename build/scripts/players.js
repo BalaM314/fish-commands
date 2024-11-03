@@ -395,7 +395,7 @@ var FishPlayer = /** @class */ (function () {
                 var kickDuration = NetServer.kickDuration;
                 //Pass the votekick
                 Call.sendMessage("[orange]Vote passed.[scarlet] ".concat(player.name, "[orange] will be banned from the server for ").concat(kickDuration / 60, " minutes."));
-                player.kick(KickReason.vote, kickDuration);
+                player.kick(Packets.KickReason.vote, kickDuration);
                 Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
             }
         }
