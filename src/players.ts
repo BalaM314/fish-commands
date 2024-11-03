@@ -353,7 +353,7 @@ export class FishPlayer {
 			Reflect.get(Vars.netServer.currentlyKicking, "target") == player
 		){
 			//Anti votekick evasion
-			const votes = Reflect.get(Vars.netServer.currentlyKicking, "votes");
+			const votes = Reflect.get(Vars.netServer.currentlyKicking, "votes") as number;
 			if((() => {
 				if(fishP.hasPerm("bypassVotekick")) return false;
 				if(fishP.hasPerm("bypassVoteFreeze")) return votes >= Vars.netServer.votesRequired();
@@ -364,6 +364,7 @@ export class FishPlayer {
 				//Pass the votekick
 				Call.sendMessage(`[orange]Vote passed.[scarlet] ${player.name}[orange] will be banned from the server for ${kickDuration / 60} minutes.`);
 				player.kick(KickReason.vote, kickDuration);
+				(Reflect.get(Vars.netServer.currentlyKicking, "task") as TimerTask).cancel();
 			}
 		}
 		//Clear temporary states such as menu and taphandler
