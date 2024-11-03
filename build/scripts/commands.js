@@ -193,7 +193,7 @@ exports.Req = {
             || fail("This command was run recently and is on cooldown.");
     }; },
 };
-/**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
+/** Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
     //this was copypasted from mlogx haha
     var matchResult = str.match(/(\w+):(\w+)(\?)?/);
@@ -249,7 +249,7 @@ function joinArgs(rawArgs) {
     }
     return outputArgs;
 }
-/**Takes a list of joined args passed to the command, and processes it, turning it into a kwargs style object. */
+/** Takes a list of joined args passed to the command, and processes it, turning it into a kwargs style object. */
 function processArgs(args, processedCmdArgs, allowMenus) {
     var e_2, _a;
     if (allowMenus === void 0) { allowMenus = true; }
@@ -527,7 +527,7 @@ function fail(message) {
     throw err;
 }
 var variadicArgumentTypes = ["player", "string", "map"];
-/**Converts the CommandArg[] to the format accepted by Arc CommandHandler */
+/** Converts the CommandArg[] to the format accepted by Arc CommandHandler */
 function convertArgs(processedCmdArgs, allowMenus) {
     return processedCmdArgs.map(function (arg, index, array) {
         var isOptional = (arg.isOptional || (arg.type == "player" && allowMenus)) && !array.slice(index + 1).some(function (c) { return !c.isOptional; });
@@ -753,7 +753,7 @@ function registerConsole(commands, serverHandler) {
         finally { if (e_4) throw e_4.error; }
     }
 }
-/**Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
+/** Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
 function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
     if (unresolvedArgs.length == 0) {
         callback(processedArgs);

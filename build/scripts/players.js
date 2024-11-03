@@ -146,7 +146,7 @@ var FishPlayer = /** @class */ (function () {
         var _a;
         return (_a = this.cachedPlayers[id]) !== null && _a !== void 0 ? _a : null;
     };
-    /**Returns the FishPlayer representing the first online player matching a given name. */
+    /** Returns the FishPlayer representing the first online player matching a given name. */
     FishPlayer.getByName = function (name) {
         if (name == "")
             return null;
@@ -161,7 +161,7 @@ var FishPlayer = /** @class */ (function () {
         return realPlayer ? this.get(realPlayer) : null;
     };
     ;
-    /**Returns the FishPlayers representing all online players matching a given name. */
+    /** Returns the FishPlayers representing all online players matching a given name. */
     FishPlayer.getAllByName = function (name, strict) {
         if (strict === void 0) { strict = true; }
         if (name == "")
@@ -312,7 +312,7 @@ var FishPlayer = /** @class */ (function () {
     //#endregion
     //#region eventhandling
     //Contains methods that handle an event and must be called by other code (usually through Events.on).
-    /**Must be run on PlayerConnectEvent. */
+    /** Must be run on PlayerConnectEvent. */
     FishPlayer.onPlayerConnect = function (player) {
         var _a;
         var _b, _c;
@@ -344,7 +344,7 @@ var FishPlayer = /** @class */ (function () {
                 (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].", ["[green]I understand and agree to these terms"], fishPlayer);
         }
     };
-    /**Must be run on PlayerJoinEvent. */
+    /** Must be run on PlayerJoinEvent. */
     FishPlayer.onPlayerJoin = function (player) {
         var _this = this;
         var _a;
@@ -374,7 +374,7 @@ var FishPlayer = /** @class */ (function () {
             fishP.updateName();
         });
     };
-    /**Must be run on PlayerLeaveEvent. */
+    /** Must be run on PlayerLeaveEvent. */
     FishPlayer.onPlayerLeave = function (player) {
         var fishP = this.cachedPlayers[player.uuid()];
         if (!fishP)
@@ -488,7 +488,7 @@ var FishPlayer = /** @class */ (function () {
         callback();
         this.ignoreGameOver = false;
     };
-    /**Must be run on UnitChangeEvent. */
+    /** Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
         if (unit.spawnedByCore)
             this.onRespawn(player);
@@ -521,7 +521,7 @@ var FishPlayer = /** @class */ (function () {
         });
         return out;
     };
-    /**Must be called at player join, before updateName(). */
+    /** Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
         var _this = this;
         var _a;
@@ -548,7 +548,7 @@ var FishPlayer = /** @class */ (function () {
             this.rainbow = null;
         }
     };
-    /**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
+    /** Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
     FishPlayer.prototype.updateName = function () {
         var e_5, _a;
         if (!this.connected() || !this.shouldUpdateName)
@@ -690,7 +690,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.validate = function () {
         return this.checkName() && this.checkUsid() && this.checkAntiEvasion();
     };
-    /**Checks if this player's name is allowed. */
+    /** Checks if this player's name is allowed. */
     FishPlayer.prototype.checkName = function () {
         if ((0, utils_1.matchFilter)(this.name, "name")) {
             this.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name because it contains a banned word.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
@@ -703,7 +703,7 @@ var FishPlayer = /** @class */ (function () {
         }
         return false;
     };
-    /**Checks if this player's USID is correct. */
+    /** Checks if this player's USID is correct. */
     FishPlayer.prototype.checkUsid = function () {
         if (this.usid != null && this.usid != "" && this.player.usid() != this.usid) {
             Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
@@ -889,7 +889,7 @@ var FishPlayer = /** @class */ (function () {
         out.writeNumber(this.stats.gamesWon, 5, true);
         out.writeBool(this.showRankPrefix);
     };
-    /**Saves cached FishPlayers to JSON in Core.settings. */
+    /** Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
         var out = new utils_1.StringIO();
         out.writeNumber(this.saveVersion, 2);
@@ -923,7 +923,7 @@ var FishPlayer = /** @class */ (function () {
             return Core.settings.get("fish", "");
         }
     };
-    /**Loads cached FishPlayers from JSON in Core.settings. */
+    /** Loads cached FishPlayers from JSON in Core.settings. */
     FishPlayer.loadAll = function (string) {
         var _this = this;
         if (string === void 0) { string = this.getFishPlayersString(); }
@@ -1133,7 +1133,7 @@ var FishPlayer = /** @class */ (function () {
     };
     //#endregion
     //#region moderation
-    /**Records a moderation action taken on a player. */
+    /** Records a moderation action taken on a player. */
     FishPlayer.prototype.addHistoryEntry = function (entry) {
         if (this.history.length > FishPlayer.maxHistoryLength) {
             this.history.shift();
@@ -1153,7 +1153,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.stelled = function () {
         return this.marked() || this.autoflagged;
     };
-    /**Sets the unmark time but doesn't stop the player's unit or send them a message. */
+    /** Sets the unmark time but doesn't stop the player's unit or send them a message. */
     FishPlayer.prototype.updateStopTime = function (time) {
         var _this = this;
         this.unmarkTime = Date.now() + time;

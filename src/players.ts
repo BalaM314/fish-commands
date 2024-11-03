@@ -172,7 +172,7 @@ export class FishPlayer {
 	static getById(id:string):FishPlayer | null {
 		return this.cachedPlayers[id] ?? null;
 	}
-	/**Returns the FishPlayer representing the first online player matching a given name. */
+	/** Returns the FishPlayer representing the first online player matching a given name. */
 	static getByName(name:string):FishPlayer | null {
 		if(name == "") return null;
 		const realPlayer = Groups.player.find(p => {
@@ -186,7 +186,7 @@ export class FishPlayer {
 		return realPlayer ? this.get(realPlayer) : null;
 	};
 	
-	/**Returns the FishPlayers representing all online players matching a given name. */
+	/** Returns the FishPlayers representing all online players matching a given name. */
 	static getAllByName(name:string, strict = true):FishPlayer[] {
 		if(name == "") return [];
 		const output:FishPlayer[] = [];
@@ -287,7 +287,7 @@ export class FishPlayer {
 
 	//#region eventhandling
 	//Contains methods that handle an event and must be called by other code (usually through Events.on).
-	/**Must be run on PlayerConnectEvent. */
+	/** Must be run on PlayerConnectEvent. */
 	static onPlayerConnect(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
 		fishPlayer.updateSavedInfoFromPlayer(player);
@@ -316,7 +316,7 @@ export class FishPlayer {
 
 		}
 	}
-	/**Must be run on PlayerJoinEvent. */
+	/** Must be run on PlayerJoinEvent. */
 	static onPlayerJoin(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()] ??= (() => {
 			Log.err(`onPlayerJoin: no fish player was created? ${player.uuid()}`);
@@ -343,7 +343,7 @@ export class FishPlayer {
 			fishP.updateName();
 		});
 	}
-	/**Must be run on PlayerLeaveEvent. */
+	/** Must be run on PlayerLeaveEvent. */
 	static onPlayerLeave(player:mindustryPlayer){
 		let fishP = this.cachedPlayers[player.uuid()];
 		if(!fishP) return;
@@ -459,7 +459,7 @@ export class FishPlayer {
 		callback();
 		this.ignoreGameOver = false;
 	}
-	/**Must be run on UnitChangeEvent. */
+	/** Must be run on UnitChangeEvent. */
 	static onUnitChange(player:mindustryPlayer, unit:Unit){
 		if(unit.spawnedByCore)
 			this.onRespawn(player);
@@ -489,7 +489,7 @@ export class FishPlayer {
 		});
 		return out;
 	}
-	/**Must be called at player join, before updateName(). */
+	/** Must be called at player join, before updateName(). */
 	updateSavedInfoFromPlayer(player:mindustryPlayer){
 		this.player = player;
 		this.name = player.name;
@@ -513,7 +513,7 @@ export class FishPlayer {
 			this.rainbow = null;
 		}
 	}
-	/**Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
+	/** Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
 	updateName(){
 		if(!this.connected() || !this.shouldUpdateName) return;//No player, no need to update
 		let prefix = '';
@@ -622,7 +622,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 	validate(){
 		return this.checkName() && this.checkUsid() && this.checkAntiEvasion();
 	}
-	/**Checks if this player's name is allowed. */
+	/** Checks if this player's name is allowed. */
 	checkName(){
 		if(matchFilter(this.name, "name")){
 			this.kick(
@@ -639,7 +639,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		}
 		return false;
 	}
-	/**Checks if this player's USID is correct. */
+	/** Checks if this player's USID is correct. */
 	checkUsid(){
 		if(this.usid != null && this.usid != "" && this.player!.usid() != this.usid){
 			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player!.usid()}&r`);
@@ -807,7 +807,7 @@ We apologize for the inconvenience.`
 		out.writeNumber(this.stats.gamesWon, 5, true);
 		out.writeBool(this.showRankPrefix);
 	}
-	/**Saves cached FishPlayers to JSON in Core.settings. */
+	/** Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){
 		let out = new StringIO();
 		out.writeNumber(this.saveVersion, 2);
@@ -841,7 +841,7 @@ We apologize for the inconvenience.`
 			return Core.settings.get("fish", "");
 		}
 	}
-	/**Loads cached FishPlayers from JSON in Core.settings. */
+	/** Loads cached FishPlayers from JSON in Core.settings. */
 	static loadAll(string = this.getFishPlayersString()){
 		try {
 			if(string == "") return; //If it's empty, don't try to load anything
@@ -1018,7 +1018,7 @@ We apologize for the inconvenience.`
 	//#endregion
 
 	//#region moderation
-	/**Records a moderation action taken on a player. */
+	/** Records a moderation action taken on a player. */
 	addHistoryEntry(entry:PlayerHistoryEntry){
 		if(this.history.length > FishPlayer.maxHistoryLength){
 			this.history.shift();
@@ -1038,7 +1038,7 @@ We apologize for the inconvenience.`
 	stelled():boolean {
 		return this.marked() || this.autoflagged;
 	}
-	/**Sets the unmark time but doesn't stop the player's unit or send them a message. */
+	/** Sets the unmark time but doesn't stop the player's unit or send them a message. */
 	updateStopTime(time:number):void {
 		this.unmarkTime = Date.now() + time;
 		if(this.unmarkTime > config.maxTime) this.unmarkTime = config.maxTime;

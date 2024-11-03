@@ -64,7 +64,7 @@ export function getStopped(uuid:string, callback: (unmark:any) => unknown, callb
 }
 
 let cachedIps:Record<string, boolean | undefined> = {};
-/**Make an API request to see if an IP is likely VPN. */
+/** Make an API request to see if an IP is likely VPN. */
 export function isVpn(ip:string, callback: (isVpn:boolean) => unknown, callbackError?: (errorMessage:Throwable) => unknown){
 	if(ip in cachedIps) return callback(cachedIps[ip]!);
 	Http.get(`http://ip-api.com/json/${ip}?fields=proxy,hosting`, (res) => {
@@ -82,7 +82,7 @@ export function isVpn(ip:string, callback: (isVpn:boolean) => unknown, callbackE
 	}));
 }
 
-/**Send text to the moderation logs channel in Discord. */
+/** Send text to the moderation logs channel in Discord. */
 export function sendModerationMessage(message: string) {
 	if(localDebug){
 		Log.info(`Sent moderation log message: ${message}`);
@@ -97,7 +97,7 @@ export function sendModerationMessage(message: string) {
 	});
 }
 
-/**Get staff messages from discord. */
+/** Get staff messages from discord. */
 export function getStaffMessages(callback: (messages: string) => unknown) {
 	if(localDebug) return;
 	const req = Http.post(`http://${backendIP}/api/getStaffMessages`, JSON.stringify({ server: Mode.name() }))
@@ -111,7 +111,7 @@ export function getStaffMessages(callback: (messages: string) => unknown) {
 	});
 }
 
-/**Send staff messages from server. */
+/** Send staff messages from server. */
 export function sendStaffMessage(message:string, playerName:string, callback?: (sent:boolean) => unknown){
 	if(localDebug) return;
 	const req = Http.post(

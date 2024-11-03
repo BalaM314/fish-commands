@@ -588,7 +588,7 @@ function logAction(action, by, to, reason, duration) {
         return;
     }
 }
-/**@returns the number of milliseconds. */
+/** @returns the number of milliseconds. */
 function parseTimeString(str) {
     var e_5, _a;
     var formats = [
@@ -624,14 +624,14 @@ function parseTimeString(str) {
     }
     return null;
 }
-/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
+/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
 function escapeStringColorsClient(str) {
     return str.replace(/\[/g, "[[");
 }
 // export function highlightStringColorsClient(str:string):string {
 // 	return str.replace(/(?<!\[)\[[a-z0-9#]{2,10}\]/gi, "[gray][$0[]");
 // }
-/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
+/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
 function escapeStringColorsServer(str) {
     return str.replace(/&/g, "&&");
 }

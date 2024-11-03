@@ -449,7 +449,7 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 	}
 }
 
-/**@returns the number of milliseconds. */
+/** @returns the number of milliseconds. */
 export function parseTimeString(str:string):number | null {
 	const formats = (<[RegExp, number][]>[
 		[/(\d+)s/, 1],
@@ -470,7 +470,7 @@ export function parseTimeString(str:string):number | null {
 	return null;
 }
 
-/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
+/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
 export function escapeStringColorsClient(str:string):string {
 	return str.replace(/\[/g, "[[");
 }
@@ -479,7 +479,7 @@ export function escapeStringColorsClient(str:string):string {
 // 	return str.replace(/(?<!\[)\[[a-z0-9#]{2,10}\]/gi, "[gray][$0[]");
 // }
 
-/**Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
+/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
 export function escapeStringColorsServer(str:string):string {
 	return str.replace(/&/g, "&&");
 }

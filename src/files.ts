@@ -1,4 +1,4 @@
-/**
+/*
 Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains the code for automated map syncing.
 Original contributor: @author Jurorno9

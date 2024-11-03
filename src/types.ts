@@ -113,9 +113,9 @@ export type FishCommandHandlerUtils = {
 	output(message:string | PartialFormatString):void;
 	/** Use to tag template literals, formatting players, numbers, ranks, and more */
 	f:TagFunction<Formattable, PartialFormatString>;
-	/**Executes a server console command. Be careful! */
+	/** Executes a server console command. Be careful! */
 	execServer(message:string):void;
-	/**Call this function to set tap handling mode. */
+	/** Call this function to set tap handling mode. */
 	handleTaps(mode:TapHandleMode):void;
 };
 export type FishCommandHandler<ArgType extends string, StoredData> =
@@ -123,7 +123,7 @@ export type FishCommandHandler<ArgType extends string, StoredData> =
 
 export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 	(_:{
-		/**Raw arguments that were passed to the command. */
+		/** Raw arguments that were passed to the command. */
 		rawArgs:(string | undefined)[];
 		/**
 		 * Formatted and parsed args.
@@ -141,20 +141,20 @@ export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 		output(message:string | PartialFormatString):void;
 		/** Use to tag template literals, formatting players, numbers, ranks, and more */
 		f:TagFunction<Formattable, PartialFormatString>;
-		/**Executes a server console command. Be careful to not commit recursion as that will cause a crash.*/
+		/** Executes a server console command. Be careful to not commit recursion as that will cause a crash.*/
 		execServer(message:string):void;
 		/** Vars.netServer.admins */
 		admins: Administration;
-		/**Timestamp of the last time this command was run. */
+		/** Timestamp of the last time this command was run. */
 		lastUsed:number;
-		/**Timestamp of the last time this command was run succesfully. */
+		/** Timestamp of the last time this command was run succesfully. */
 		lastUsedSuccessfully:number;
 	}): unknown;
 }
 
 export interface TapHandler<ArgType extends string, StoredData> {
 	(_:{
-		/**Last args used to call the parent command. */
+		/** Last args used to call the parent command. */
 		args:ArgsFromArgStringUnion<ArgType>;
 		sender:FishPlayer;
 		x:number;
@@ -166,15 +166,15 @@ export interface TapHandler<ArgType extends string, StoredData> {
 		outputSuccess(message:string | PartialFormatString):void;
 		/** Use to tag template literals, formatting players, numbers, ranks, and more */
 		f:TagFunction<Formattable, PartialFormatString>;
-		/**Timestamp of the last time this command was run. */
+		/** Timestamp of the last time this command was run. */
 		commandLastUsed:number;
-		/**Timestamp of the last time this command was run succesfully. */
+		/** Timestamp of the last time this command was run succesfully. */
 		commandLastUsedSuccessfully:number;
 		/** Vars.netServer.admins */
 		admins: Administration;
-		/**Timestamp of the last time this tap handler was run. */
+		/** Timestamp of the last time this tap handler was run. */
 		lastUsed:number;
-		/**Timestamp of the last time this tap handler was run succesfully. (without fail() being called) */
+		/** Timestamp of the last time this tap handler was run succesfully. (without fail() being called) */
 		lastUsedSuccessfully:number;
 	}):unknown;
 }
@@ -182,7 +182,7 @@ export interface TapHandler<ArgType extends string, StoredData> {
 export type FishCommandRequirement<ArgType extends string, StoredData> = (data:FishCommandHandlerData<ArgType, StoredData>) => unknown;
 
 export interface FishCommandData<ArgType extends string, StoredData> {
-	/**Args for this command, like ["player:player", "reason:string?"] */
+	/** Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
 	description: string;
 	/**
@@ -190,7 +190,7 @@ export interface FishCommandData<ArgType extends string, StoredData> {
 	 * If the player does not have this permission, the handler is not run and an error message is printed.
 	 **/
 	perm: Perm;
-	/**Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
+	/** Custom error message for unauthorized players. The default is `You do not have the required permission (mod) to execute this command`. */
 	customUnauthorizedMessage?: string;
 	/** Called exactly once at server start. Use this to add event handlers. */
 	init?: () => StoredData;
@@ -198,11 +198,11 @@ export interface FishCommandData<ArgType extends string, StoredData> {
 	requirements?: NoInfer<FishCommandRequirement<ArgType, StoredData>>[];
 	handler: FishCommandHandler<ArgType, StoredData>;
 	tapped?: TapHandler<ArgType, StoredData>;
-	/**If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
+	/** If true, this command is hidden and pretends to not exist for players that do not have access to it.. */
 	isHidden?: boolean;
 }
 export interface FishConsoleCommandData<ArgType extends string, StoredData> {
-	/**Args for this command, like ["player:player", "reason:string?"] */
+	/** Args for this command, like ["player:player", "reason:string?"] */
 	args: ArgType[];
 	description: string;
 	/** Called exactly once at server start. Use this to add event handlers. */
@@ -257,7 +257,7 @@ export interface ClientCommandHandler {
 }
 
 export interface ServerCommandHandler {
-	/**Executes a server console command. */
+	/** Executes a server console command. */
 	handleMessage(command:string):void;
 	register(name:string, args:string, description:string, runner:(args:string[], player:mindustryPlayer) => unknown):void;
 	removeCommand(name:string):void;
@@ -265,7 +265,7 @@ export interface ServerCommandHandler {
 
 export interface PreprocessedCommandArg {
 	type: CommandArgType;
-	/**Whether the argument is optional (and may be null) */
+	/** Whether the argument is optional (and may be null) */
 	optional?: boolean;
 }
 

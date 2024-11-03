@@ -72,7 +72,7 @@ function getStopped(uuid, callback, callbackError) {
     });
 }
 var cachedIps = {};
-/**Make an API request to see if an IP is likely VPN. */
+/** Make an API request to see if an IP is likely VPN. */
 function isVpn(ip, callback, callbackError) {
     if (ip in cachedIps)
         return callback(cachedIps[ip]);
@@ -91,7 +91,7 @@ function isVpn(ip, callback, callbackError) {
         callback(false);
     }));
 }
-/**Send text to the moderation logs channel in Discord. */
+/** Send text to the moderation logs channel in Discord. */
 function sendModerationMessage(message) {
     if (config_1.localDebug) {
         Log.info("Sent moderation log message: ".concat(message));
@@ -104,7 +104,7 @@ function sendModerationMessage(message) {
         //Log.info(response.getResultAsString());
     });
 }
-/**Get staff messages from discord. */
+/** Get staff messages from discord. */
 function getStaffMessages(callback) {
     if (config_1.localDebug)
         return;
@@ -120,7 +120,7 @@ function getStaffMessages(callback) {
             callback(JSON.parse(temp).messages);
     });
 }
-/**Send staff messages from server. */
+/** Send staff messages from server. */
 function sendStaffMessage(message, playerName, callback) {
     if (config_1.localDebug)
         return;

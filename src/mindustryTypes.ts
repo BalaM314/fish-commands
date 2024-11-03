@@ -491,7 +491,7 @@ const Prop: any;
 function print(message:string):void;
 
 class PlayerInfo {
-	/**uuid */
+	/** uuid */
 	id: string;
 	lastName: string;
 	lastIP: string;

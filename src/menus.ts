@@ -7,11 +7,11 @@ import { CommandError } from "./commands";
 import { FishPlayer } from "./players";
 import { outputFail, outputSuccess, parseError, to2DArray } from "./utils";
 
-/**Stores a mapping from name to the numeric id of a listener that has been registered. */
+/** Stores a mapping from name to the numeric id of a listener that has been registered. */
 const registeredListeners:{
 	[index:string]: number;
 } = {};
-/**Stores all listeners in use by fish-commands. */
+/** Stores all listeners in use by fish-commands. */
 const listeners = (
 	<T extends Record<string, (player:mindustryPlayer, option:number) => void>>(d:T) => d
 )({
@@ -31,16 +31,16 @@ const listeners = (
 	}
 });
 
-/**Registers all listeners, should be called on server load. */
+/** Registers all listeners, should be called on server load. */
 export function registerListeners(){
 	for(const [key, listener] of Object.entries(listeners)){
 		registeredListeners[key] ??= Menus.registerMenu(listener);
 	}
 }
 
-/**Displays a menu to a player. */
+/** Displays a menu to a player. */
 function menu(title:string, description:string, options:string[], target:FishPlayer):void;
-/**Displays a menu to a player with callback. */
+/** Displays a menu to a player with callback. */
 function menu<const T>(
 	title:string, description:string, options:T[], target:FishPlayer,
 	callback: (opts: {

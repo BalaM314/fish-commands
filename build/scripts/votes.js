@@ -1,5 +1,5 @@
 "use strict";
-/**
+/*
 Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains the voting system.
 Some contributions: @author Jurorno9

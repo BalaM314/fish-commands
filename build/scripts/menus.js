@@ -37,10 +37,10 @@ exports.menu = menu;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
-/**Stores a mapping from name to the numeric id of a listener that has been registered. */
+/** Stores a mapping from name to the numeric id of a listener that has been registered. */
 var registeredListeners = {};
 exports.listeners = registeredListeners;
-/**Stores all listeners in use by fish-commands. */
+/** Stores all listeners in use by fish-commands. */
 var listeners = (function (d) { return d; })({
     generic: function (player, option) {
         var _a, _b;
@@ -58,7 +58,7 @@ var listeners = (function (d) { return d; })({
         //do nothing
     }
 });
-/**Registers all listeners, should be called on server load. */
+/** Registers all listeners, should be called on server load. */
 function registerListeners() {
     var e_1, _a;
     var _b;

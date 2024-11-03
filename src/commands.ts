@@ -155,7 +155,7 @@ export const Req = {
 			|| fail(`This command was run recently and is on cooldown.`),
 };
 
-/**Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
+/** Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str:string):CommandArg {
 	//this was copypasted from mlogx haha
 	const matchResult = str.match(/(\w+):(\w+)(\?)?/);
@@ -201,7 +201,7 @@ function joinArgs(rawArgs:string[]){
 	return outputArgs;
 }
 
-/**Takes a list of joined args passed to the command, and processes it, turning it into a kwargs style object. */
+/** Takes a list of joined args passed to the command, and processes it, turning it into a kwargs style object. */
 function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:boolean = true):{
 	processedArgs: Record<string, FishCommandArgType>;
 	unresolvedArgs: CommandArg[];
@@ -420,7 +420,7 @@ export function fail(message:string | PartialFormatString):never {
 
 const variadicArgumentTypes:CommandArgType[] = ["player", "string", "map"];
 
-/**Converts the CommandArg[] to the format accepted by Arc CommandHandler */
+/** Converts the CommandArg[] to the format accepted by Arc CommandHandler */
 function convertArgs(processedCmdArgs:CommandArg[], allowMenus:boolean):string {
 	return processedCmdArgs.map((arg, index, array) => {
 		const isOptional = (arg.isOptional || (arg.type == "player" && allowMenus)) && !array.slice(index + 1).some(c => !c.isOptional);
@@ -636,7 +636,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<s
 	}
 }
 
-/**Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
+/** Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
 function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>, unresolvedArgs:CommandArg[], sender:FishPlayer, callback:(args:Record<string, FishCommandArgType>) => void){
 	if(unresolvedArgs.length == 0){
 		callback(processedArgs);

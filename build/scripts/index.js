@@ -177,7 +177,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     packetHandlers.loadPacketHandlers();
     commands.initialize();
 });
-/**Keeps track of any action performed on a tile for use in tilelog. */
+// Keeps track of any action performed on a tile for use in tilelog.
 Events.on(EventType.BlockBuildBeginEvent, utils_1.addToTileHistory);
 Events.on(EventType.BuildRotateEvent, utils_1.addToTileHistory);
 Events.on(EventType.ConfigEvent, utils_1.addToTileHistory);

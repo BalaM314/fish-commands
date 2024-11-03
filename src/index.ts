@@ -161,7 +161,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 
 });
 
-/**Keeps track of any action performed on a tile for use in tilelog. */
+// Keeps track of any action performed on a tile for use in tilelog.
 
 Events.on(EventType.BlockBuildBeginEvent, addToTileHistory);
 Events.on(EventType.BuildRotateEvent, addToTileHistory);
