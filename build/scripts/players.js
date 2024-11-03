@@ -392,11 +392,12 @@ var FishPlayer = /** @class */ (function () {
                     return votes_1 >= 2;
                 return votes_1 >= 1;
             })()) {
-                var kickDuration = NetServer.kickDuration;
+                var kickDuration = NetServer.kickDuration * 1000; //it is stored in seconds but needs to be converted to millis
                 //Pass the votekick
                 Call.sendMessage("[orange]Vote passed.[scarlet] ".concat(player.name, "[orange] will be banned from the server for ").concat(kickDuration / 60, " minutes."));
                 player.kick(Packets.KickReason.vote, kickDuration);
                 Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
+                Vars.netServer.currentlyKicking = null;
             }
         }
         //Clear temporary states such as menu and taphandler

@@ -360,11 +360,12 @@ export class FishPlayer {
 				if(fishP.info().timesJoined > 50) return votes >= 2;
 				return votes >= 1;
 			})()){
-				const kickDuration = NetServer.kickDuration;
+				const kickDuration = NetServer.kickDuration * 1000; //it is stored in seconds but needs to be converted to millis
 				//Pass the votekick
 				Call.sendMessage(`[orange]Vote passed.[scarlet] ${player.name}[orange] will be banned from the server for ${kickDuration / 60} minutes.`);
 				player.kick(Packets.KickReason.vote, kickDuration);
 				(Reflect.get(Vars.netServer.currentlyKicking, "task") as TimerTask).cancel();
+				Vars.netServer.currentlyKicking = null;
 			}
 		}
 		//Clear temporary states such as menu and taphandler
