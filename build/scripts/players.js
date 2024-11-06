@@ -539,6 +539,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastMousePosition = [0, 0];
         this.lastActive = Date.now();
         this.shouldUpdateName = true;
+        this.changedTeam = false;
         this.tstats = {
             blocksBroken: 0
         };
