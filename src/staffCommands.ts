@@ -533,14 +533,14 @@ export const commands = commandList({
 	},
 
 	info: {
-		args: ["target:player", "hideColors:boolean?"],
+		args: ["target:player", "showColors:boolean?"],
 		description: "Displays information about an online player. See also /infos",
 		perm: Perm.none,
 		handler({sender, args, output, f}){
 			const info = args.target.info();
-			const names = args.hideColors
-				? [...new Set(info.names.map(n => Strings.stripColors(n)).toArray())].join(", ")
-				: info.names.map(escapeStringColorsClient).toString(", ");
+			const names = args.showColors
+				? info.names.map(escapeStringColorsClient).toString(", ")
+				: [...new Set(info.names.map(n => Strings.stripColors(n)).toArray())].join(", ");
 			output(f`\
 [accent]Info for player ${args.target} [gray](${escapeStringColorsClient(args.target.name)}) (#${args.target.player!.id.toString()})
 	[accent]Rank: ${args.target.rank}

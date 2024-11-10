@@ -586,15 +586,15 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     info: {
-        args: ["target:player", "hideColors:boolean?"],
+        args: ["target:player", "showColors:boolean?"],
         description: "Displays information about an online player. See also /infos",
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender, args = _a.args, output = _a.output, f = _a.f;
             var info = args.target.info();
-            var names = args.hideColors
-                ? __spreadArray([], __read(new Set(info.names.map(function (n) { return Strings.stripColors(n); }).toArray())), false).join(", ")
-                : info.names.map(utils_1.escapeStringColorsClient).toString(", ");
+            var names = args.showColors
+                ? info.names.map(utils_1.escapeStringColorsClient).toString(", ")
+                : __spreadArray([], __read(new Set(info.names.map(function (n) { return Strings.stripColors(n); }).toArray())), false).join(", ");
             output(f(templateObject_39 || (templateObject_39 = __makeTemplateObject(["[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]Names used: [[", "]"], ["\\\n[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]Names used: [[", "]"])), args.target, (0, utils_1.escapeStringColorsClient)(args.target.name), args.target.player.id.toString(), args.target.rank, Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), (0, utils_1.colorBadBoolean)(!args.target.hasPerm("play")), args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", (0, utils_1.colorBadBoolean)(args.target.muted), (0, utils_1.colorBadBoolean)(args.target.autoflagged), info.timesJoined, info.timesKicked, names));
             if (sender.hasPerm("viewUUIDs"))
                 output(f(templateObject_40 || (templateObject_40 = __makeTemplateObject(["\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""], ["\\\n\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""])), args.target.uuid, args.target.ip()));
