@@ -86,7 +86,7 @@ export type FishCommandHandlerData<ArgType extends string, StoredData> = {
 	 * Example: `args.player.setRank(Rank.mod);`.
 	 * An argument can only be null if it was declared optional, otherwise the command will error before the handler runs.
 	 */
-	args:ArgsFromArgStringUnion<ArgType>;
+	args:Expand<ArgsFromArgStringUnion<ArgType>>;
 	/** The player who ran the command. */
 	sender:FishPlayer;
 	/** Arbitrary data specific to the command. */
@@ -285,6 +285,7 @@ export interface FlaggedIPData {
 };
 
 export type Boolf<T> = (input:T) => boolean;
+export type Expand<T> = T extends Function ? T : { [K in keyof T]: T[K] };
 
 export interface TagFunction<Tin = string, Tout = string> {
 	(stringChunks: readonly string[], ...varChunks: readonly Tin[]):Tout;
