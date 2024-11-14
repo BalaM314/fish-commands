@@ -534,7 +534,7 @@ export const commands = commandList({
 
 	info: {
 		args: ["target:player", "showColors:boolean?"],
-		description: "Displays information about an online player. See also /infos",
+		description: "Displays information about an online player.",
 		perm: Perm.none,
 		handler({sender, args, output, f}){
 			const info = args.target.info();
@@ -550,6 +550,7 @@ export const commands = commandList({
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
 	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
 	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
+	[accent]First joined: ${formatTimeRelative(args.target.firstJoined)}
 	[accent]Names used: [[${names}]`
 			);
 			if(sender.hasPerm("viewUUIDs"))

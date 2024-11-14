@@ -91,7 +91,7 @@ var FishPlayer = /** @class */ (function () {
         this.muted = muted;
         this.unmarkTime = unmarked;
         this.lastJoined = lastJoined !== null && lastJoined !== void 0 ? lastJoined : -1;
-        this.firstJoined = (_p = firstJoined !== null && firstJoined !== void 0 ? firstJoined : this.lastJoined) !== null && _p !== void 0 ? _p : Date.now();
+        this.firstJoined = (_p = firstJoined !== null && firstJoined !== void 0 ? firstJoined : lastJoined) !== null && _p !== void 0 ? _p : Date.now();
         this.autoflagged = autoflagged;
         this.highlight = highlight;
         this.history = history;

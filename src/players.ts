@@ -127,7 +127,7 @@ export class FishPlayer {
 		this.muted = muted;
 		this.unmarkTime = unmarked;
 		this.lastJoined = lastJoined ?? -1;
-		this.firstJoined = firstJoined ?? this.lastJoined ?? Date.now();
+		this.firstJoined = firstJoined ?? lastJoined ?? Date.now();
 		this.autoflagged = autoflagged;
 		this.highlight = highlight;
 		this.history = history;
