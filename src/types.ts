@@ -234,6 +234,7 @@ export interface FishPlayerData {
 	usid: string | null;
 	chatStrictness: "chat" | "strict";
 	lastJoined: number;
+	firstJoined: number;
 	stats: {
 		blocksBroken: number;
 		blocksPlaced: number;

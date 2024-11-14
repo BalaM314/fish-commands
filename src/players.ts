@@ -17,7 +17,7 @@ import { StringIO, cleanText, crash, escapeStringColorsClient, escapeStringColor
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 8;
+	static readonly saveVersion = 9;
 	static readonly chunkSize = 50000;
 
 	//Static transients
@@ -104,6 +104,7 @@ export class FishPlayer {
 	chatStrictness: "chat" | "strict" = "chat";
 	/** -1 represents unknown */
 	lastJoined:number;
+	firstJoined:number;
 	stats: {
 		blocksBroken: number;
 		blocksPlaced: number;
@@ -118,7 +119,7 @@ export class FishPlayer {
 	constructor({
 		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
 		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid,
-		chatStrictness = "chat", lastJoined, stats, showRankPrefix = true,
+		chatStrictness = "chat", lastJoined, firstJoined, stats, showRankPrefix = true,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
 		this.uuid = uuid ?? player?.uuid() ?? crash(`Attempted to create FishPlayer with no UUID`);
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
@@ -126,6 +127,7 @@ export class FishPlayer {
 		this.muted = muted;
 		this.unmarkTime = unmarked;
 		this.lastJoined = lastJoined ?? -1;
+		this.firstJoined = firstJoined ?? this.lastJoined ?? Date.now();
 		this.autoflagged = autoflagged;
 		this.highlight = highlight;
 		this.history = history;
@@ -779,6 +781,36 @@ We apologize for the inconvenience.`
 					},
 					showRankPrefix: fishPlayerData.readBool(),
 				}, player);
+			case 9:
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					autoflagged: fishPlayerData.readBool(),
+					unmarkTime: fishPlayerData.readNumber(13),
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2),
+					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+					lastJoined: fishPlayerData.readNumber(15),
+					firstJoined: fishPlayerData.readNumber(15),
+					stats: {
+						blocksBroken: fishPlayerData.readNumber(10),
+						blocksPlaced: fishPlayerData.readNumber(10),
+						timeInGame: fishPlayerData.readNumber(15),
+						chatMessagesSent: fishPlayerData.readNumber(7),
+						gamesFinished: fishPlayerData.readNumber(5),
+						gamesWon: fishPlayerData.readNumber(5),
+					},
+					showRankPrefix: fishPlayerData.readBool(),
+				}, player);
 			default: crash(`Unknown save version ${version}`);
 		}
 	}
@@ -801,6 +833,7 @@ We apologize for the inconvenience.`
 		out.writeString(this.usid, 2);
 		out.writeEnumString(this.chatStrictness, ["chat", "strict"]);
 		out.writeNumber(this.lastJoined, 15);
+		out.writeNumber(this.firstJoined, 15);
 		out.writeNumber(this.stats.blocksBroken, 10, true);
 		out.writeNumber(this.stats.blocksPlaced, 10, true);
 		out.writeNumber(this.stats.timeInGame, 15, true);

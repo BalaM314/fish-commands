@@ -53,8 +53,8 @@ var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
-        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, _k = _a.chatStrictness, chatStrictness = _k === void 0 ? "chat" : _k, lastJoined = _a.lastJoined, stats = _a.stats, _l = _a.showRankPrefix, showRankPrefix = _l === void 0 ? true : _l;
-        var _m, _o, _p, _q;
+        var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, _k = _a.chatStrictness, chatStrictness = _k === void 0 ? "chat" : _k, lastJoined = _a.lastJoined, firstJoined = _a.firstJoined, stats = _a.stats, _l = _a.showRankPrefix, showRankPrefix = _l === void 0 ? true : _l;
+        var _m, _o, _p, _q, _r;
         //Transients
         this.player = null;
         this.pet = "";
@@ -91,15 +91,16 @@ var FishPlayer = /** @class */ (function () {
         this.muted = muted;
         this.unmarkTime = unmarked;
         this.lastJoined = lastJoined !== null && lastJoined !== void 0 ? lastJoined : -1;
+        this.firstJoined = (_p = firstJoined !== null && firstJoined !== void 0 ? firstJoined : this.lastJoined) !== null && _p !== void 0 ? _p : Date.now();
         this.autoflagged = autoflagged;
         this.highlight = highlight;
         this.history = history;
         this.player = player;
         this.rainbow = rainbow;
         this.cleanedName = (0, utils_1.escapeStringColorsServer)(Strings.stripColors(this.name));
-        this.rank = (_p = ranks_1.Rank.getByName(rank)) !== null && _p !== void 0 ? _p : ranks_1.Rank.player;
+        this.rank = (_q = ranks_1.Rank.getByName(rank)) !== null && _q !== void 0 ? _q : ranks_1.Rank.player;
         this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
-        this.usid = (_q = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _q !== void 0 ? _q : null;
+        this.usid = (_r = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _r !== void 0 ? _r : null;
         this.chatStrictness = chatStrictness;
         this.stats = stats !== null && stats !== void 0 ? stats : {
             blocksBroken: 0,
@@ -786,7 +787,7 @@ var FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         switch (version) {
             case 0:
             case 1:
@@ -859,6 +860,39 @@ var FishPlayer = /** @class */ (function () {
                     },
                     showRankPrefix: fishPlayerData.readBool(),
                 }, player);
+            case 9:
+                return new this({
+                    uuid: (_g = fishPlayerData.readString(2)) !== null && _g !== void 0 ? _g : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
+                    name: (_h = fishPlayerData.readString(2)) !== null && _h !== void 0 ? _h : "Unnamed player [ERROR]",
+                    muted: fishPlayerData.readBool(),
+                    autoflagged: fishPlayerData.readBool(),
+                    unmarkTime: fishPlayerData.readNumber(13),
+                    highlight: fishPlayerData.readString(2),
+                    history: fishPlayerData.readArray(function (str) {
+                        var _a, _b;
+                        return ({
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
+                            time: str.readNumber(15)
+                        });
+                    }),
+                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
+                    rank: (_j = fishPlayerData.readString(2)) !== null && _j !== void 0 ? _j : "",
+                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
+                    usid: fishPlayerData.readString(2),
+                    chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+                    lastJoined: fishPlayerData.readNumber(15),
+                    firstJoined: fishPlayerData.readNumber(15),
+                    stats: {
+                        blocksBroken: fishPlayerData.readNumber(10),
+                        blocksPlaced: fishPlayerData.readNumber(10),
+                        timeInGame: fishPlayerData.readNumber(15),
+                        chatMessagesSent: fishPlayerData.readNumber(7),
+                        gamesFinished: fishPlayerData.readNumber(5),
+                        gamesWon: fishPlayerData.readNumber(5),
+                    },
+                    showRankPrefix: fishPlayerData.readBool(),
+                }, player);
             default: (0, utils_1.crash)("Unknown save version ".concat(version));
         }
     };
@@ -883,6 +917,7 @@ var FishPlayer = /** @class */ (function () {
         out.writeString(this.usid, 2);
         out.writeEnumString(this.chatStrictness, ["chat", "strict"]);
         out.writeNumber(this.lastJoined, 15);
+        out.writeNumber(this.firstJoined, 15);
         out.writeNumber(this.stats.blocksBroken, 10, true);
         out.writeNumber(this.stats.blocksPlaced, 10, true);
         out.writeNumber(this.stats.timeInGame, 15, true);
@@ -1386,7 +1421,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    FishPlayer.saveVersion = 8;
+    FishPlayer.saveVersion = 9;
     FishPlayer.chunkSize = 50000;
     //Static transients
     FishPlayer.stats = {

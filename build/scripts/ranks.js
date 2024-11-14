@@ -40,7 +40,8 @@ var Rank = /** @class */ (function () {
     Rank.autoRanks = [];
     Rank.player = new Rank("player", 0, "Ordinary players.", "", "&lk[p]&fr", "");
     Rank.active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[#E67E22]\uE800[]>[]", "&g[P]&fr", "[forest]", {
-        joins: 25, playtime: 3600000, blocksPlaced: 2000
+        joins: 70, playtime: 5 * 60 * 60 * 1000, blocksPlaced: 3000,
+        timeSinceFirstJoin: 86400000 * 7,
     });
     Rank.trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
     Rank.mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&lg[M]&fr", "[#6FFC7C]");
