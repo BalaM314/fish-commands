@@ -12,8 +12,10 @@ export class Rank {
 
 	static player = new Rank("player", 0, "Ordinary players.", "", "&lk[p]&fr", "");
 	static active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[#E67E22]\uE800[]>[]", "&g[P]&fr", "[forest]", {
-		joins: 70, playtime: 5 * 60 * 60 * 1000, blocksPlaced: 3000,
-		timeSinceFirstJoin: 86400_000 * 7,
+		joins: 50,
+		playtime: 24 * 60 * 60 * 1000, //24 hours
+		blocksPlaced: 5000,
+		timeSinceFirstJoin: 24 * 60 * 60 * 1000 * 7, //7 days
 	});
 	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
 	static mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&lg[M]&fr", "[#6FFC7C]");
@@ -26,6 +28,8 @@ export class Rank {
 		joins: number;
 		playtime: number;
 		blocksPlaced: number;
+		timeSinceFirstJoin: number;
+		chatMessagesSent: number;
 	}
 
 	constructor(
@@ -35,12 +39,7 @@ export class Rank {
 		public prefix:string,
 		public shortPrefix:string,
 		public color:string,
-		autoRankData?: {
-			joins?: number;
-			playtime?: number;
-			blocksPlaced?: number;
-			timeSinceFirstJoin?: number;
-		}
+		autoRankData?: Partial<Rank["autoRankData"]>,
 	){
 		Rank.ranks[name] = this;
 		if(autoRankData){
@@ -48,6 +47,8 @@ export class Rank {
 				joins: autoRankData.joins ?? 0,
 				playtime: autoRankData.playtime ?? 0,
 				blocksPlaced: autoRankData.blocksPlaced ?? 0,
+				timeSinceFirstJoin: autoRankData.timeSinceFirstJoin ?? 0,
+				chatMessagesSent: autoRankData.chatMessagesSent ?? 0,
 			};
 			Rank.autoRanks.push(this);
 		}

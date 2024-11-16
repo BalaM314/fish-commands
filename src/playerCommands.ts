@@ -11,7 +11,7 @@ import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { capitalizeText, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
+import { capitalizeText, formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
 import { VoteManager } from './votes';
 
 export const commands = commandList({
@@ -855,6 +855,7 @@ Blocks broken: ${target.stats.blocksBroken}
 Blocks placed: ${target.stats.blocksPlaced}
 Chat messages sent: ${target.stats.chatMessagesSent}
 Games finished: ${target.stats.gamesFinished}
+Time in-game: ${formatTime(target.stats.timeInGame)}
 Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			);
 		}

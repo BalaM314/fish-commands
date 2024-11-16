@@ -9,7 +9,7 @@ exports.RoleFlag = exports.Rank = void 0;
 var Rank = /** @class */ (function () {
     function Rank(name, 
     /** Used to determine whether a rank outranks another. */ level, description, prefix, shortPrefix, color, autoRankData) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e;
         this.name = name;
         this.level = level;
         this.description = description;
@@ -22,6 +22,8 @@ var Rank = /** @class */ (function () {
                 joins: (_a = autoRankData.joins) !== null && _a !== void 0 ? _a : 0,
                 playtime: (_b = autoRankData.playtime) !== null && _b !== void 0 ? _b : 0,
                 blocksPlaced: (_c = autoRankData.blocksPlaced) !== null && _c !== void 0 ? _c : 0,
+                timeSinceFirstJoin: (_d = autoRankData.timeSinceFirstJoin) !== null && _d !== void 0 ? _d : 0,
+                chatMessagesSent: (_e = autoRankData.chatMessagesSent) !== null && _e !== void 0 ? _e : 0,
             };
             Rank.autoRanks.push(this);
         }
@@ -40,8 +42,10 @@ var Rank = /** @class */ (function () {
     Rank.autoRanks = [];
     Rank.player = new Rank("player", 0, "Ordinary players.", "", "&lk[p]&fr", "");
     Rank.active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[#E67E22]\uE800[]>[]", "&g[P]&fr", "[forest]", {
-        joins: 70, playtime: 5 * 60 * 60 * 1000, blocksPlaced: 3000,
-        timeSinceFirstJoin: 86400000 * 7,
+        joins: 50,
+        playtime: 24 * 60 * 60 * 1000, //24 hours
+        blocksPlaced: 5000,
+        timeSinceFirstJoin: 24 * 60 * 60 * 1000 * 7, //7 days
     });
     Rank.trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
     Rank.mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&lg[M]&fr", "[#6FFC7C]");

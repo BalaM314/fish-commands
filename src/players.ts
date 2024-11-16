@@ -306,7 +306,7 @@ export class FishPlayer {
 			fishPlayer.updateAdminStatus();
 			fishPlayer.updateMemberExclusiveState();
 			fishPlayer.checkVPNAndJoins();
-			// fishPlayer.checkAutoRanks();
+			fishPlayer.checkAutoRanks();
 			api.getStopped(player.uuid(), (unmarkTime) => {
 				if(unmarkTime)
 					fishPlayer.unmarkTime = unmarkTime;
@@ -705,7 +705,9 @@ We apologize for the inconvenience.`
 				if(
 					this.joinsAtLeast(rankToAssign.autoRankData.joins) &&
 					this.stats.blocksPlaced >= rankToAssign.autoRankData.blocksPlaced &&
-					this.stats.timeInGame >= rankToAssign.autoRankData.playtime
+					this.stats.timeInGame >= rankToAssign.autoRankData.playtime &&
+					this.stats.chatMessagesSent >= rankToAssign.autoRankData.chatMessagesSent &&
+					(Date.now() - this.firstJoined) >= rankToAssign.autoRankData.timeSinceFirstJoin
 				){
 					this.setRank(rankToAssign);
 					this.sendMessage(`You have been automatically promoted to rank ${rankToAssign.coloredName()}!`);

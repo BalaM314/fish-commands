@@ -333,7 +333,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.updateAdminStatus();
             fishPlayer.updateMemberExclusiveState();
             fishPlayer.checkVPNAndJoins();
-            // fishPlayer.checkAutoRanks();
+            fishPlayer.checkAutoRanks();
             api.getStopped(player.uuid(), function (unmarkTime) {
                 if (unmarkTime)
                     fishPlayer.unmarkTime = unmarkTime;
@@ -766,7 +766,9 @@ var FishPlayer = /** @class */ (function () {
                 if (!this.ranksAtLeast(rankToAssign) && rankToAssign.autoRankData) {
                     if (this.joinsAtLeast(rankToAssign.autoRankData.joins) &&
                         this.stats.blocksPlaced >= rankToAssign.autoRankData.blocksPlaced &&
-                        this.stats.timeInGame >= rankToAssign.autoRankData.playtime) {
+                        this.stats.timeInGame >= rankToAssign.autoRankData.playtime &&
+                        this.stats.chatMessagesSent >= rankToAssign.autoRankData.chatMessagesSent &&
+                        (Date.now() - this.firstJoined) >= rankToAssign.autoRankData.timeSinceFirstJoin) {
                         this.setRank(rankToAssign);
                         this.sendMessage("You have been automatically promoted to rank ".concat(rankToAssign.coloredName(), "!"));
                     }
