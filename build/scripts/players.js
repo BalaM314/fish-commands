@@ -472,7 +472,7 @@ var FishPlayer = /** @class */ (function () {
             fishPlayer.activeMenu.callback = undefined;
             fishPlayer.tapInfo.commandName = null;
             //Update stats
-            if (!_this.ignoreGameOver) {
+            if (!_this.ignoreGameOver && fishPlayer.team() != Team.derelict && winningTeam != Team.derelict) {
                 fishPlayer.stats.gamesFinished++;
                 if (fishPlayer.changedTeam) {
                     fishPlayer.sendMessage("Refusing to update stats due to a team change.");
@@ -1170,6 +1170,18 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.joinsLessThan = function (amount) {
         return this.info().timesJoined < amount;
     };
+    /**
+     * Returns a score between 0 and 1, as an estimate of the player's skill level.
+     * Defaults to 0.2 (guessing that the best trusted players can beat 5 noobs)
+     */
+    FishPlayer.prototype.teamBalanceScore = function () {
+        var _this = this;
+        /** A number between 0 and 0.7 */
+        var score = (function () {
+            if (_this.stats.gamesFinished < 10)
+                return 0.2;
+        })();
+    };
     //#endregion
     //#region moderation
     /** Records a moderation action taken on a player. */
@@ -1415,7 +1427,6 @@ var FishPlayer = /** @class */ (function () {
                             if (_this.marked())
                                 FishPlayer.stats.heuristics.trippedCorrect++;
                         }, 1200);
-                        //this.player.kick(Packets.KickReason.kick, 3600*1000);
                     }
                 }
             }, 0, 1, this.firstJoin() ? 30 : 20);

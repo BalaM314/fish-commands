@@ -446,7 +446,7 @@ export class FishPlayer {
 			fishPlayer.activeMenu.callback = undefined;
 			fishPlayer.tapInfo.commandName = null;
 			//Update stats
-			if(!this.ignoreGameOver){
+			if(!this.ignoreGameOver && fishPlayer.team() != Team.derelict && winningTeam != Team.derelict){
 				fishPlayer.stats.gamesFinished ++;
 				if(fishPlayer.changedTeam){
 					fishPlayer.sendMessage(`Refusing to update stats due to a team change.`);
@@ -1052,6 +1052,17 @@ We apologize for the inconvenience.`
 	joinsLessThan(amount:number){
 		return this.info().timesJoined < amount;
 	}
+
+	/**
+	 * Returns a score between 0 and 1, as an estimate of the player's skill level.
+	 * Defaults to 0.2 (guessing that the best trusted players can beat 5 noobs)
+	 */
+	teamBalanceScore(){
+		/** A number between 0 and 0.7 */
+		const score = (() => {
+			if(this.stats.gamesFinished < 10) return 0.2;
+		})();
+	}
 	//#endregion
 
 	//#region moderation
@@ -1278,7 +1289,7 @@ We apologize for the inconvenience.`
 		//Blocks broken check
 		if(this.joinsLessThan(5)){
 			let tripped = false;
-			FishPlayer.stats.heuristics.total ++;	
+			FishPlayer.stats.heuristics.total ++;
 			Timer.schedule(() => {
 				if(this.connected() && !tripped){
 					FishPlayer.stats.heuristics.blocksBroken[this.uuid] = this.tstats.blocksBroken;
@@ -1296,7 +1307,6 @@ Please look at ${this.position()} and see if they were actually griefing. If the
 								FishPlayer.stats.heuristics.tripped[this.uuid] = this.marked();
 							if(this.marked()) FishPlayer.stats.heuristics.trippedCorrect ++;
 						}, 1200);
-						//this.player.kick(Packets.KickReason.kick, 3600*1000);
 					}
 				}
 			}, 0, 1, this.firstJoin() ? 30 : 20);
