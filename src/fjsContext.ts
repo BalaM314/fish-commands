@@ -7,6 +7,7 @@ const api = require("./api");
 const commands = require("./commands");
 const config = require("./config");
 const { commands: consoleCommands } = require("./consoleCommands");
+const files = require("./files");
 const globals = require("./globals");
 const { commands: memberCommands } = require("./memberCommands");
 const menus = require("./menus");
@@ -17,6 +18,7 @@ const ranks = require("./ranks");
 const { commands: staffCommands } = require("./staffCommands");
 const timers = require("./timers");
 const utils = require("./utils");
+const votes = require("./votes");
 const { Promise } = require("./promise");
 
 const { Perm, allCommands } = commands;
@@ -25,6 +27,8 @@ const { Rank, RoleFlag } = ranks;
 const { menu } = menus;
 
 Object.assign(this as never, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
+
+const Ranks = null!;
 
 const $ = Object.assign(
 	function $(input:unknown){

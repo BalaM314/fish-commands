@@ -9,6 +9,7 @@ var api = require("./api");
 var commands = require("./commands");
 var config = require("./config");
 var consoleCommands = require("./consoleCommands").commands;
+var files = require("./files");
 var globals = require("./globals");
 var memberCommands = require("./memberCommands").commands;
 var menus = require("./menus");
@@ -19,12 +20,14 @@ var ranks = require("./ranks");
 var staffCommands = require("./staffCommands").commands;
 var timers = require("./timers");
 var utils = require("./utils");
+var votes = require("./votes");
 var Promise = require("./promise").Promise;
 var Perm = commands.Perm, allCommands = commands.allCommands;
 var FishPlayer = players.FishPlayer;
 var Rank = ranks.Rank, RoleFlag = ranks.RoleFlag;
 var menu = menus.menu;
 Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
+var Ranks = null;
 var $ = Object.assign(function $(input) {
     if (typeof input == "string") {
         if (Pattern.matches("[a-zA-Z0-9+/]{22}==", input)) {
