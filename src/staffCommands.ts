@@ -348,18 +348,18 @@ export const commands = commandList({
 	},
 
 	ban: {
-		args: ["uuid:uuid?"],
+		args: ["uuid_or_ip:string?"],
 		description: "Bans a player by UUID and IP.",
 		perm: Perm.admin,
 		handler({args, sender, outputSuccess, f, admins}){
-			if(args.uuid){
+			if(args.uuid_or_ip && uuidPattern.test(args.uuid_or_ip)){
 				//Overload 1: ban by uuid
+				const uuid = args.uuid_or_ip;
 				let data:PlayerInfo | null;
-				if((data = admins.getInfoOptional(args.uuid)) != null && data.admin) fail(`Cannot ban an admin.`);
-				const name = data ? `${escapeStringColorsClient(data.lastName)} (${args.uuid}/${data.lastIP})` : args.uuid;
+				if((data = admins.getInfoOptional(uuid)) != null && data.admin) fail(`Cannot ban an admin.`);
+				const name = data ? `${escapeStringColorsClient(data.lastName)} (${uuid}/${data.lastIP})` : uuid;
 				menu("Confirm", `Are you sure you want to ban ${name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
 					if(confirm != "[red]Yes") fail("Cancelled.");
-					const uuid = args.uuid!;
 					admins.banPlayerID(uuid);
 					if(data){
 						const ip = data.lastIP;
@@ -378,8 +378,29 @@ export const commands = commandList({
 					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
 				}, false);
 				return;
+			} else if(args.uuid_or_ip && ipPattern.test(args.uuid_or_ip)){
+				//Overload 2: ban by uuid
+				const ip = args.uuid_or_ip;
+				menu("Confirm", `Are you sure you want to ban IP ${ip}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
+					if(confirm != "[red]Yes") fail("Cancelled.");
+
+					api.ban({ip});
+					const info = admins.findByIP(ip);
+					if(info) logAction("banned", sender, info);
+					else logAction(`banned ${ip}`, sender);
+
+					const alreadyBanned = admins.banPlayerIP(ip);
+					if(alreadyBanned){
+						outputSuccess(f`IP ${ip} is already banned. Ban was synced to other servers.`);
+					} else {
+						outputSuccess(f`IP ${ip} has been banned. Ban was synced to other servers.`);
+					}
+					
+					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
+				}, false);
+				return;
 			}
-			//Overload 1: ban by menu
+			//Overload 3: ban by menu
 			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
 				if(option.admin) fail(`Cannot ban an admin.`);
 				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
@@ -392,15 +413,6 @@ export const commands = commandList({
 					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
 				}, false);
 			}, true, opt => opt.name);
-		}
-	},
-
-	ipban: {
-		args: [],
-		description: "This command was moved to /ban.",
-		perm: Perm.admin,
-		handler({}){
-			fail(`This command was moved to [scarlet]/ban[]`);
 		}
 	},
 
