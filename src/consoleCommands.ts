@@ -212,6 +212,9 @@ export const commands = consoleCommandList({
 				if(FishPlayer.removePunishedIP(args.target)){
 					output(`Removed IP &c"${args.target}"&fr from the anti-evasion list.`);
 				}
+				if(admins.kickedIPs.remove(args.target)){
+					output(`Removed temporary kick for IP &c"${args.target}"&fr.`);
+				}
 				output("Checking ban status...");
 				api.getBanned({ip: args.target}, (banned) => {
 					if(banned){
@@ -260,11 +263,15 @@ export const commands = consoleCommandList({
 						output(`UUID &c"${args.target}"&fr was not locally banned.`);
 					}
 					if(info){
+						if(info.lastKicked > 0){
+							info.lastKicked = 0;
+							output(`Removed temporary kick for UUID &c"${args.target}"&fr.`);
+						}
 						output(`You may also want to consider unbanning the IP "${info.lastIP}".`);
 					}
 				});
 			} else {
-				fail(`Cannot unban by name; please use the info command to find the IP and UUID of the player you are looking for.`);
+				fail(`Cannot unban by name; please use the info or search commands to find the IP and UUID of the player you are looking for.`);
 			}
 		}
 
