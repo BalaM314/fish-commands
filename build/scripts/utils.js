@@ -906,8 +906,8 @@ function processChat(player, message, effects) {
             Log.info("Censored message from player ".concat(player.name, ": \"").concat(escapeStringColorsServer(message), "\"; contained \"").concat(filterTripText, "\""));
             players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(message, "\" contained \"").concat(filterTripText, "\""));
         }
-        message = "I really hope everyone is having a fun time :) <3";
-        highlight !== null && highlight !== void 0 ? highlight : (highlight = "[#f456f]");
+        message = config_1.chatFilterReplacement.message();
+        highlight !== null && highlight !== void 0 ? highlight : (highlight = config_1.chatFilterReplacement.highlight());
     }
     if (message.startsWith("./"))
         message = message.replace("./", "/");

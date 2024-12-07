@@ -4,7 +4,7 @@ This file contains many utility functions.
 */
 
 import * as api from './api';
-import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
+import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, chatFilterReplacement, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
 import { fishState, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
@@ -748,8 +748,8 @@ export function processChat(player:mindustryPlayer, message:string, effects = fa
 			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(message)}"; contained "${filterTripText}"`);
 			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${message}" contained "${filterTripText}"`);
 		}
-		message = `I really hope everyone is having a fun time :) <3`;
-		highlight ??= `[#f456f]`;
+		message = chatFilterReplacement.message();
+		highlight ??= chatFilterReplacement.highlight();
 	}
 
 	if(message.startsWith("./")) message = message.replace("./", "/");

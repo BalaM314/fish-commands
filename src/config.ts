@@ -6,6 +6,7 @@ This file contains configurable constants.
 import type { PermType } from "./commands";
 import { ipPattern, ipPortPattern, uuidPattern } from "./globals"; //TODO fix storage of global variables
 import { Rank } from "./ranks";
+import { random } from "./utils";
 
 export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 export const MUTED_PREFIX = '[white](muted)';
@@ -207,6 +208,9 @@ export const tips = {
 		`You can tell new players not to break power voids with [white]/void[]`,
 		`You can add [pink]color[] to things with color tags! Try typing "[[${["pink", "green", "cyan", "acid", "royal", "coral"][Math.floor(Math.random() * 6)]}]Hello" in chat, and see what happens!`
 	],
+	christmas: [
+		
+	],
 	staff: [
 
 	]
@@ -240,3 +244,17 @@ export const mapRepoURLs:Record<ModeName, string> = {
 	sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
 	hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
 };
+
+export const chatFilterReplacement: {
+	message: () => string;
+	highlight: () => string;
+} = {
+	message: () => `I really hope everyone is having a fun time :) <3`,
+	highlight: () => `[#f456f]`,
+};
+
+export const isChristmas = new Date().getMonth() == 11;
+
+export const welcomeMessage = () => random([
+	`[gold]Welcome![]`
+]);

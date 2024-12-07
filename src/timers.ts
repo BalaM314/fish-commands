@@ -50,7 +50,8 @@ export function initializeTimers(){
 	//Tip
 	Timer.schedule(() => {
 		const showAd = Math.random() < 0.10; //10% chance every 15 minutes
-		const messagePool = showAd ? config.tips.ads : config.tips.normal;
+		let messagePool = showAd ? config.tips.ads : config.tips.normal;
+		if(config.isChristmas) messagePool = messagePool.concat(config.tips.christmas);
 		const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
 		const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`
 		Call.sendMessage(message);

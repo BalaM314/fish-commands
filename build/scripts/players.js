@@ -733,7 +733,7 @@ var FishPlayer = /** @class */ (function () {
         else if (!this.showRankPrefix)
             this.sendMessage("[gold]Hello there! Your rank prefix is currently hidden. You can show it again by running [white]/vanish[].");
         else {
-            this.sendMessage("[gold]Welcome![]");
+            this.sendMessage(config.welcomeMessage());
             //show tips
             var showAd = false;
             if (Date.now() - this.lastShownAd > 86400000) {
@@ -750,6 +750,8 @@ var FishPlayer = /** @class */ (function () {
                 showAd = true;
             }
             var messagePool = showAd ? config.tips.ads : config.tips.normal;
+            if (config.isChristmas)
+                messagePool = messagePool.concat(config.tips.christmas);
             var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
             var message_1 = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
             //Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join

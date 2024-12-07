@@ -20,9 +20,10 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mapRepoURLs = exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.backendIP = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
+exports.welcomeMessage = exports.isChristmas = exports.chatFilterReplacement = exports.mapRepoURLs = exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.backendIP = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
 var globals_1 = require("./globals"); //TODO fix storage of global variables
 var ranks_1 = require("./ranks");
+var utils_1 = require("./utils");
 exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
 exports.MUTED_PREFIX = '[white](muted)';
 exports.bannedWords = (function (words) {
@@ -207,6 +208,7 @@ exports.tips = {
         "You can tell new players not to break power voids with [white]/void[]",
         "You can add [pink]color[] to things with color tags! Try typing \"[[".concat(["pink", "green", "cyan", "acid", "royal", "coral"][Math.floor(Math.random() * 6)], "]Hello\" in chat, and see what happens!")
     ],
+    christmas: [],
     staff: []
 };
 exports.rules = [
@@ -236,3 +238,12 @@ exports.mapRepoURLs = {
     sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
     hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
 };
+exports.chatFilterReplacement = {
+    message: function () { return "I really hope everyone is having a fun time :) <3"; },
+    highlight: function () { return "[#f456f]"; },
+};
+exports.isChristmas = new Date().getMonth() == 11;
+var welcomeMessage = function () { return (0, utils_1.random)([
+    "[gold]Welcome![]"
+]); };
+exports.welcomeMessage = welcomeMessage;

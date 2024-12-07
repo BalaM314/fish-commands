@@ -675,7 +675,7 @@ We apologize for the inconvenience.`
 		); else if(!this.showRankPrefix) this.sendMessage(
 `[gold]Hello there! Your rank prefix is currently hidden. You can show it again by running [white]/vanish[].`
 		); else {
-			this.sendMessage(`[gold]Welcome![]`);
+			this.sendMessage(config.welcomeMessage());
 
 			//show tips
 			let showAd = false;
@@ -690,7 +690,8 @@ We apologize for the inconvenience.`
 				this.showAdNext = false;
 				showAd = true;
 			}
-			const messagePool = showAd ? config.tips.ads : config.tips.normal;
+			let messagePool = showAd ? config.tips.ads : config.tips.normal;
+			if(config.isChristmas) messagePool = messagePool.concat(config.tips.christmas);
 			const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
 			const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`;
 

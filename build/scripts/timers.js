@@ -74,6 +74,8 @@ function initializeTimers() {
     Timer.schedule(function () {
         var showAd = Math.random() < 0.10; //10% chance every 15 minutes
         var messagePool = showAd ? config.tips.ads : config.tips.normal;
+        if (config.isChristmas)
+            messagePool = messagePool.concat(config.tips.christmas);
         var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
         var message = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
         Call.sendMessage(message);
