@@ -95,6 +95,7 @@ exports.getHash = getHash;
 var api = require("./api");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
+var globals_2 = require("./globals");
 var players_1 = require("./players");
 var storedValues = {};
 /**
@@ -118,7 +119,7 @@ function memoize(callback, dep, id) {
     return storedValues[id].value;
 }
 function formatTime(time) {
-    if (config_1.maxTime - (time + Date.now()) < 20000)
+    if (globals_1.maxTime - (time + Date.now()) < 20000)
         return "forever";
     var months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
     var days = Math.floor((time % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
@@ -446,26 +447,30 @@ function matchFilter(input, strict) {
     var e_2, _a, e_3, _b;
     if (strict === void 0) { strict = "chat"; }
     var currentBannedWords = [
-        config_1.bannedWords,
-        (strict == "strict" || strict == "name") && config_1.strictBannedWords,
-        strict == "name" && config_1.bannedInNamesWords,
+        config_1.bannedWords.normal,
+        (strict == "strict" || strict == "name") && config_1.bannedWords.strict,
+        strict == "name" && config_1.bannedWords.names,
     ].filter(Boolean).flat();
     try {
         //Replace substitutions
         for (var currentBannedWords_1 = __values(currentBannedWords), currentBannedWords_1_1 = currentBannedWords_1.next(); !currentBannedWords_1_1.done; currentBannedWords_1_1 = currentBannedWords_1.next()) {
             var _c = __read(currentBannedWords_1_1.value, 2), banned = _c[0], whitelist = _c[1];
-            var _loop_1 = function (text) {
-                if (banned instanceof RegExp ? banned.test(text) : text.includes(banned)) {
-                    var modifiedText_1 = text;
+            var _loop_1 = function (text_1) {
+                if (banned instanceof RegExp ? banned.test(text_1) : text_1.includes(banned)) {
+                    var modifiedText_1 = text_1;
                     whitelist.forEach(function (w) { return modifiedText_1 = modifiedText_1.replace(new RegExp(w, "g"), ""); }); //Replace whitelisted words with nothing
                     if (banned instanceof RegExp ? banned.test(modifiedText_1) : modifiedText_1.includes(banned)) //If the text still matches, fail
-                        return { value: banned instanceof RegExp ? banned.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : banned }; //parsing regex with regex, massive hack
+                        return { value: (banned === globals_2.uuidPattern ? "a Mindustry UUID" :
+                                banned === globals_2.ipPattern || banned === globals_2.ipPortPattern ? "an IP address" :
+                                    //parsing regex with regex, massive hack
+                                    banned instanceof RegExp ? banned.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") :
+                                        banned) };
                 }
             };
             try {
                 for (var _d = (e_3 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _e = _d.next(); !_e.done; _e = _d.next()) {
-                    var text = _e.value;
-                    var state_1 = _loop_1(text);
+                    var text_1 = _e.value;
+                    var state_1 = _loop_1(text_1);
                     if (typeof state_1 === "object")
                         return state_1.value;
                 }
@@ -552,11 +557,11 @@ function isImpersonator(name, isAdmin) {
 }
 function logAction(action, by, to, reason, duration) {
     if (by === undefined) { //overload 1
-        api.sendModerationMessage("".concat(action, "\n**Server:** ").concat(config_1.Mode.name()));
+        api.sendModerationMessage("".concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
         return;
     }
     if (to === undefined) { //overload 2
-        api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, "\n**Server:** ").concat(config_1.Mode.name()));
+        api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
         return;
     }
     if (to) { //overload 3
@@ -568,7 +573,7 @@ function logAction(action, by, to, reason, duration) {
             ip = to.ip();
         }
         else if (typeof to == "string") {
-            if (globals_1.uuidPattern.test(to)) {
+            if (globals_2.uuidPattern.test(to)) {
                 name = "[".concat(to, "]");
                 uuid = to;
                 ip = "[unknown]";
@@ -584,7 +589,7 @@ function logAction(action, by, to, reason, duration) {
             uuid = to.id;
             ip = to.lastIP;
         }
-        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat(config_1.Mode.name(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
+        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat(config_1.Gamemode.name(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
         return;
     }
 }
@@ -602,7 +607,7 @@ function parseTimeString(str) {
         return [Pattern.compile(regex.source), mult];
     });
     if (str == "forever")
-        return (config_1.maxTime - Date.now() - 10000);
+        return (globals_1.maxTime - Date.now() - 10000);
     try {
         for (var formats_1 = __values(formats), formats_1_1 = formats_1.next(); !formats_1_1.done; formats_1_1 = formats_1.next()) {
             var _b = __read(formats_1_1.value, 2), pattern_1 = _b[0], mult = _b[1];
@@ -640,7 +645,7 @@ function serverRestartLoop(sec) {
     if (sec > 0) {
         if (sec < 15 || sec % 5 == 0)
             Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
-        globals_1.fishState.restartLoopTask = Timer.schedule(function () { return serverRestartLoop(sec - 1); }, 1);
+        globals_2.fishState.restartLoopTask = Timer.schedule(function () { return serverRestartLoop(sec - 1); }, 1);
     }
     else {
         Log.info("Restarting...");
@@ -800,21 +805,21 @@ function definitelyRealMemoryCorruption() {
     api.sendModerationMessage("Activated memory corruption prank on server ".concat(Vars.state.rules.mode().name()));
     var t1f = false;
     var t2f = false;
-    globals_1.fishState.corruption_t1 = Timer.schedule(function () { return Vars.state.rules.defaultTeam.data().cores.first().items.set(Items.dormantCyst, (t1f = t1f !== true) ? 69 : 420); }, 0, 0.4, 600);
-    globals_1.fishState.corruption_t2 = Timer.schedule(function () { return Vars.state.rules.defaultTeam.data().cores.first().items.set(Items.fissileMatter, (t2f = t2f !== true) ? 999 : 123); }, 0, 1.5, 200);
+    globals_2.fishState.corruption_t1 = Timer.schedule(function () { return Vars.state.rules.defaultTeam.data().cores.first().items.set(Items.dormantCyst, (t1f = t1f !== true) ? 69 : 420); }, 0, 0.4, 600);
+    globals_2.fishState.corruption_t2 = Timer.schedule(function () { return Vars.state.rules.defaultTeam.data().cores.first().items.set(Items.fissileMatter, (t2f = t2f !== true) ? 999 : 123); }, 0, 1.5, 200);
     var hexString = Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, "0");
     Call.sendMessage("[scarlet]Error: internal server error.");
     Call.sendMessage("[scarlet]Error: memory corruption: mindustry.world.modules.ItemModule@".concat(hexString));
 }
 function getEnemyTeam() {
-    if (config_1.Mode.pvp())
+    if (config_1.Gamemode.pvp())
         return Team.derelict;
     else
         return Vars.state.rules.waveTeam;
 }
 function neutralGameover() {
     players_1.FishPlayer.ignoreGameover(function () {
-        if (config_1.Mode.hexed())
+        if (config_1.Gamemode.hexed())
             serverRestartLoop(15);
         else
             Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
@@ -852,11 +857,11 @@ function random(arg0, arg1) {
 function logHTrip(player, name, message) {
     Log.warn("&yPlayer &b\"".concat(player.cleanedName, "\"&y (&b").concat(player.uuid, "&y/&b").concat(player.ip(), "&y) tripped &c").concat(name, "&y") + (message ? ": ".concat(message) : ""));
     players_1.FishPlayer.messageStaff("[yellow]Player [blue]\"".concat(player.cleanedName, "\"[] tripped [cyan]").concat(name, "[]") + (message ? ": ".concat(message) : ""));
-    api.sendModerationMessage("Player `".concat(player.cleanedName, "` (`").concat(player.uuid, "`/`").concat(player.ip(), "`) tripped **").concat(name, "**").concat(message ? ": ".concat(message) : "", "\n**Server:** ").concat(config_1.Mode.name()));
+    api.sendModerationMessage("Player `".concat(player.cleanedName, "` (`").concat(player.uuid, "`/`").concat(player.ip(), "`) tripped **").concat(name, "**").concat(message ? ": ".concat(message) : "", "\n**Server:** ").concat(config_1.Gamemode.name()));
 }
 function setType(input) { }
 function untilForever() {
-    return (config_1.maxTime - Date.now() - 10000);
+    return (globals_1.maxTime - Date.now() - 10000);
 }
 function crash(message) {
     throw new Error(message);
@@ -906,8 +911,8 @@ function processChat(player, message, effects) {
             Log.info("Censored message from player ".concat(player.name, ": \"").concat(escapeStringColorsServer(message), "\"; contained \"").concat(filterTripText, "\""));
             players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(message, "\" contained \"").concat(filterTripText, "\""));
         }
-        message = config_1.chatFilterReplacement.message();
-        highlight !== null && highlight !== void 0 ? highlight : (highlight = config_1.chatFilterReplacement.highlight());
+        message = config_1.text.chatFilterReplacement.message();
+        highlight !== null && highlight !== void 0 ? highlight : (highlight = config_1.text.chatFilterReplacement.highlight());
     }
     if (message.startsWith("./"))
         message = message.replace("./", "/");
@@ -969,7 +974,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
         type = e.unit.type.name;
     }
     else if (e instanceof EventType.BlockDestroyEvent) {
-        if (config_1.Mode.attack() && ((_u = e.tile.build) === null || _u === void 0 ? void 0 : _u.team) != Vars.state.rules.defaultTeam)
+        if (config_1.Gamemode.attack() && ((_u = e.tile.build) === null || _u === void 0 ? void 0 : _u.team) != Vars.state.rules.defaultTeam)
             return; //Don't log destruction of enemy blocks
         tile = e.tile;
         uuid = "[[something]";
@@ -1026,7 +1031,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
     [tile, uuid, action, type, time];
     tile.getLinkedTiles(function (t) {
         var pos = "".concat(t.x, ",").concat(t.y);
-        var existingData = globals_1.tileHistory[pos] ? StringIO.read(globals_1.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
+        var existingData = globals_2.tileHistory[pos] ? StringIO.read(globals_2.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
             action: d.readString(2),
             uuid: d.readString(3),
             time: d.readNumber(16),
@@ -1042,7 +1047,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
             existingData = existingData.splice(0, 9);
         }
         //Write
-        globals_1.tileHistory[t.x + ',' + t.y] = StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
+        globals_2.tileHistory[t.x + ',' + t.y] = StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
             str.writeString(el.action, 2);
             str.writeString(el.uuid, 3);
             str.writeNumber(el.time, 16);
@@ -1051,7 +1056,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
     });
 });
 function getIPRange(input, error) {
-    if (globals_1.ipRangeCIDRPattern.test(input)) {
+    if (globals_2.ipRangeCIDRPattern.test(input)) {
         var _a = __read(input.split("/"), 2), ip = _a[0], maskLength = _a[1];
         switch (maskLength) {
             case "24":
@@ -1063,7 +1068,7 @@ function getIPRange(input, error) {
                 return null;
         }
     }
-    else if (globals_1.ipRangeWildcardPattern.test(input)) {
+    else if (globals_2.ipRangeWildcardPattern.test(input)) {
         //1.2.3.*
         //1.2.*
         var _b = __read(input.split("."), 4), a = _b[0], b = _b[1], c = _b[2], d = _b[3];

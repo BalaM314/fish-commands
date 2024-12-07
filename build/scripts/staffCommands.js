@@ -48,9 +48,10 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
+var globals_1 = require("./globals");
 var files_1 = require("./files");
 var fjsContext = require("./fjsContext");
-var globals_1 = require("./globals");
+var globals_2 = require("./globals");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
@@ -140,7 +141,7 @@ exports.commands = (0, commands_1.commandList)({
             }
             else {
                 var time = (_c = args.time) !== null && _c !== void 0 ? _c : (0, utils_1.untilForever)();
-                if (time + Date.now() > config_1.maxTime)
+                if (time + Date.now() > globals_1.maxTime)
                     (0, commands_1.fail)("Error: time too high.");
                 args.player.stop(sender, time, (_d = args.message) !== null && _d !== void 0 ? _d : undefined);
                 (0, utils_1.logAction)('stopped', sender, args.player, (_e = args.message) !== null && _e !== void 0 ? _e : undefined, time);
@@ -181,9 +182,9 @@ exports.commands = (0, commands_1.commandList)({
             var _b = _a.args, rank = _b.rank, player = _b.player, outputSuccess = _a.outputSuccess, f = _a.f, sender = _a.sender;
             if (rank.level >= sender.rank.level)
                 (0, commands_1.fail)(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["You do not have permission to promote players to rank ", ", because your current rank is ", ""], ["You do not have permission to promote players to rank ", ", because your current rank is ", ""])), rank, sender.rank));
-            if (rank == ranks_1.Rank.pi && !config_1.localDebug)
+            if (rank == ranks_1.Rank.pi && !config_1.Mode.localDebug)
                 (0, commands_1.fail)(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Rank ", " is immutable."], ["Rank ", " is immutable."])), rank));
-            if (player.immutable() && !config_1.localDebug)
+            if (player.immutable() && !config_1.Mode.localDebug)
                 (0, commands_1.fail)(f(templateObject_15 || (templateObject_15 = __makeTemplateObject(["Player ", " is immutable."], ["Player ", " is immutable."])), player));
             player.setRank(rank);
             (0, utils_1.logAction)("set rank to ".concat(rank.name, " for"), sender, player);
@@ -236,7 +237,7 @@ exports.commands = (0, commands_1.commandList)({
                     outputFail("You do not have permission to stop this player.");
                 }
             }
-            if (args.name && globals_1.uuidPattern.test(args.name)) {
+            if (args.name && globals_2.uuidPattern.test(args.name)) {
                 var info = admins.getInfoOptional(args.name);
                 if (info != null) {
                     stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : (0, utils_1.untilForever)());
@@ -280,7 +281,7 @@ exports.commands = (0, commands_1.commandList)({
                         var time = optionTime == "2 days" ? 172800000 :
                             optionTime == "7 days" ? 604800000 :
                                 optionTime == "30 days" ? 2592000000 :
-                                    (config_1.maxTime - Date.now() - 10000);
+                                    (globals_1.maxTime - Date.now() - 10000);
                         stop(optionPlayer, time);
                     }, false);
                 }
@@ -352,7 +353,7 @@ exports.commands = (0, commands_1.commandList)({
             var timeRemaining = args.time / 1000;
             var labelx = sender.unit().x;
             var labely = sender.unit().y;
-            globals_1.fishState.labels.push(Timer.schedule(function () {
+            globals_2.fishState.labels.push(Timer.schedule(function () {
                 if (timeRemaining > 0) {
                     var timeseconds = timeRemaining % 60;
                     var timeminutes = (timeRemaining - timeseconds) / 60;
@@ -369,7 +370,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
-            globals_1.fishState.labels.forEach(function (l) { return l.cancel(); });
+            globals_2.fishState.labels.forEach(function (l) { return l.cancel(); });
             outputSuccess("Removed all labels.");
         }
     },
@@ -406,7 +407,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
-            if (args.uuid_or_ip && globals_1.uuidPattern.test(args.uuid_or_ip)) {
+            if (args.uuid_or_ip && globals_2.uuidPattern.test(args.uuid_or_ip)) {
                 //Overload 1: ban by uuid
                 var uuid_1 = args.uuid_or_ip;
                 var data_1;
@@ -437,7 +438,7 @@ exports.commands = (0, commands_1.commandList)({
                 }, false);
                 return;
             }
-            else if (args.uuid_or_ip && globals_1.ipPattern.test(args.uuid_or_ip)) {
+            else if (args.uuid_or_ip && globals_2.ipPattern.test(args.uuid_or_ip)) {
                 //Overload 2: ban by uuid
                 var ip_1 = args.uuid_or_ip;
                 (0, menus_1.menu)("Confirm", "Are you sure you want to ban IP ".concat(ip_1, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
@@ -628,7 +629,7 @@ exports.commands = (0, commands_1.commandList)({
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var unit = args.type.spawn(team, x, y);
             spawnedUnits.push(unit);
-            if (!config_1.Mode.sandbox())
+            if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
             outputSuccess(f(templateObject_43 || (templateObject_43 = __makeTemplateObject(["Spawned unit ", " at (", ", ", ")"], ["Spawned unit ", " at (", ", ", ")"])), args.type, Math.round(x / 8), Math.round(y / 8)));
         }
@@ -653,7 +654,7 @@ exports.commands = (0, commands_1.commandList)({
                 action: "setblocked",
                 type: args.block.localizedName
             });
-            if (!config_1.Mode.sandbox())
+            if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(args.x, ",").concat(args.y), sender);
             outputSuccess(f(templateObject_46 || (templateObject_46 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), args.x, args.y, args.block));
         }
@@ -680,7 +681,7 @@ exports.commands = (0, commands_1.commandList)({
                 action: "setblocked",
                 type: args.block.localizedName
             });
-            if (!config_1.Mode.sandbox())
+            if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(x, ",").concat(y), sender);
             outputSuccess(f(templateObject_49 || (templateObject_49 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), x, y, args.block));
         },
@@ -719,7 +720,7 @@ exports.commands = (0, commands_1.commandList)({
                     numKilled++;
                 }
             });
-            if (!config_1.Mode.sandbox())
+            if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("exterminated ".concat(numKilled, " units"), sender);
             outputSuccess(f(templateObject_51 || (templateObject_51 = __makeTemplateObject(["Exterminated ", " units."], ["Exterminated ", " units."])), numKilled));
         }
@@ -734,7 +735,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Mode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             if (javascript == "Timer.instance().clear()")
@@ -776,7 +777,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Mode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             fjsContext.runJS(javascript, output, outputFail);
@@ -848,7 +849,7 @@ exports.commands = (0, commands_1.commandList)({
                 var emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
                 sender.player.unit(emanate);
                 unitMapping[sender.uuid] = emanate;
-                if (!config_1.Mode.sandbox())
+                if (!config_1.Gamemode.sandbox())
                     (0, utils_1.logAction)("spawned an emanate", sender);
                 outputSuccess("Spawned an emanate.");
             }
@@ -905,7 +906,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var input = _a.args.input, admins = _a.admins, output = _a.output, f = _a.f, sender = _a.sender;
-            if (globals_1.uuidPattern.test(input)) {
+            if (globals_2.uuidPattern.test(input)) {
                 var fishP = players_1.FishPlayer.getById(input);
                 var info = admins.getInfoOptional(input);
                 if (fishP == null && info == null)
@@ -917,7 +918,7 @@ exports.commands = (0, commands_1.commandList)({
                 else
                     (0, commands_1.fail)(f(templateObject_56 || (templateObject_56 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
             }
-            else if (globals_1.ipPattern.test(input)) {
+            else if (globals_2.ipPattern.test(input)) {
                 var matches = admins.findByIPs(input);
                 if (matches.isEmpty())
                     (0, commands_1.fail)(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
@@ -946,7 +947,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var args = _a.args;
             if (args.peace) {
-                globals_1.fishState.peacefulMode = true;
+                globals_2.fishState.peacefulMode = true;
                 Groups.player.each(function (p) {
                     if (p.team() != Vars.state.rules.defaultTeam) {
                         p.team(Vars.state.rules.defaultTeam);
@@ -955,7 +956,7 @@ exports.commands = (0, commands_1.commandList)({
                 Call.sendMessage("[[Sandbox] [green]Enabled peaceful mode.");
             }
             else {
-                globals_1.fishState.peacefulMode = false;
+                globals_2.fishState.peacefulMode = false;
                 Call.sendMessage("[[Sandbox] [red]Disabled peaceful mode.");
             }
         },

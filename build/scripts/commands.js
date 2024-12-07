@@ -143,33 +143,33 @@ var Perm = /** @class */ (function () {
     Perm.vanish = new Perm("vanish", "mod");
     Perm.changeTeam = new Perm("changeTeam", function (fishP) {
         switch (true) {
-            case config_1.Mode.sandbox(): return fishP.ranksAtLeast("trusted");
-            case config_1.Mode.attack(): return fishP.ranksAtLeast("admin");
-            case config_1.Mode.hexed(): return fishP.ranksAtLeast("mod");
-            case config_1.Mode.pvp(): return fishP.ranksAtLeast("trusted");
+            case config_1.Gamemode.sandbox(): return fishP.ranksAtLeast("trusted");
+            case config_1.Gamemode.attack(): return fishP.ranksAtLeast("admin");
+            case config_1.Gamemode.hexed(): return fishP.ranksAtLeast("mod");
+            case config_1.Gamemode.pvp(): return fishP.ranksAtLeast("trusted");
             default: return fishP.ranksAtLeast("admin");
         }
     });
     /** Whether players should be allowed to change the team of a unit or building. If not, they will be kicked out of their current unit or building before switching teams. */
     Perm.changeTeamExternal = new Perm("changeTeamExternal", function (fishP) {
-        return config_1.Mode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin");
+        return config_1.Gamemode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin");
     });
-    Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Mode.pvp(); }, "", "Ohnos are disabled in PVP.");
+    Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Gamemode.pvp(); }, "", "Ohnos are disabled in PVP.");
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");
     Perm.bypassNameCheck = new Perm("bypassNameCheck", "fish");
     Perm.hardcore = new Perm("hardcore", "trusted");
-    Perm.massKill = new Perm("massKill", function (fishP) { return config_1.Mode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"); });
+    Perm.massKill = new Perm("massKill", function (fishP) { return config_1.Gamemode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"); });
     return Perm;
 }());
 exports.Perm = Perm;
 exports.Req = {
     mode: function (mode) { return function () {
-        return config_1.Mode[mode]()
+        return config_1.Gamemode[mode]()
             || fail("This command is only available in ".concat((0, utils_1.formatModeName)(mode)));
     }; },
     modeNot: function (mode) { return function () {
-        return !config_1.Mode[mode]()
+        return !config_1.Gamemode[mode]()
             || fail("This command is disabled in ".concat((0, utils_1.formatModeName)(mode)));
     }; },
     moderate: function (argName, allowSameRank, minimumLevel, allowSelfIfUnauthorized) {

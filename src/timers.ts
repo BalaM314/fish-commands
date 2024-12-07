@@ -5,7 +5,7 @@ This file contains timers that run code at regular intervals.
 
 import { getStaffMessages } from './api';
 import * as config from "./config";
-import { Mode } from "./config";
+import { Gamemode } from "./config";
 import { updateMaps } from './files';
 import { ipJoins } from "./globals";
 import { FishPlayer } from "./players";
@@ -31,7 +31,7 @@ export function initializeTimers(){
 	}, 10, 300);
 	//Memory corruption prank
 	Timer.schedule(() => {
-		if(Math.random() < 0.2 && !Mode.hexed()){
+		if(Math.random() < 0.2 && !Gamemode.hexed()){
 			//Timer triggers every 17 hours, and the random chance is 20%, so the average interval between pranks is 85 hours
 			definitelyRealMemoryCorruption();
 		}
@@ -41,7 +41,7 @@ export function initializeTimers(){
 		FishPlayer.forEachPlayer(p => p.displayTrail()),
 	5, 0.15);
 	//Staff chat
-	if(!config.localDebug)
+	if(!config.Mode.localDebug)
 		Timer.schedule(() => {
 			getStaffMessages((messages) => {
 				if(messages.length) FishPlayer.messageStaff(messages);
@@ -51,7 +51,7 @@ export function initializeTimers(){
 	Timer.schedule(() => {
 		const showAd = Math.random() < 0.10; //10% chance every 15 minutes
 		let messagePool = showAd ? config.tips.ads : config.tips.normal;
-		if(config.isChristmas) messagePool = messagePool.concat(config.tips.christmas);
+		if(config.Mode.isChristmas) messagePool = messagePool.concat(config.tips.christmas);
 		const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
 		const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`
 		Call.sendMessage(message);

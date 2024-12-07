@@ -4,7 +4,7 @@ This file contains the commands system.
 */
 //Behold, the power of typescript!
 
-import { Mode, ModeName } from "./config";
+import { Gamemode, GamemodeName } from "./config";
 import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
@@ -96,22 +96,22 @@ export class Perm {
 	static warn = new Perm("warn", "mod");
 	static vanish = new Perm("vanish", "mod");
 	static changeTeam = new Perm("changeTeam", fishP => {switch(true){
-		case Mode.sandbox(): return fishP.ranksAtLeast("trusted");
-		case Mode.attack(): return fishP.ranksAtLeast("admin");
-		case Mode.hexed(): return fishP.ranksAtLeast("mod");
-		case Mode.pvp(): return fishP.ranksAtLeast("trusted");
+		case Gamemode.sandbox(): return fishP.ranksAtLeast("trusted");
+		case Gamemode.attack(): return fishP.ranksAtLeast("admin");
+		case Gamemode.hexed(): return fishP.ranksAtLeast("mod");
+		case Gamemode.pvp(): return fishP.ranksAtLeast("trusted");
 		default: return fishP.ranksAtLeast("admin");
 	}});
 	/** Whether players should be allowed to change the team of a unit or building. If not, they will be kicked out of their current unit or building before switching teams. */
 	static changeTeamExternal = new Perm("changeTeamExternal", fishP =>
-		Mode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin")
+		Gamemode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin")
 	);
-	static spawnOhnos = new Perm("spawnOhnos", () => !Mode.pvp(), "", "Ohnos are disabled in PVP.");
+	static spawnOhnos = new Perm("spawnOhnos", () => !Gamemode.pvp(), "", "Ohnos are disabled in PVP.");
 	static usidCheck = new Perm("usidCheck", "trusted");
 	static runJS = new Perm("runJS", "manager");
 	static bypassNameCheck = new Perm("bypassNameCheck", "fish");
 	static hardcore = new Perm("hardcore", "trusted");
-	static massKill = new Perm("massKill", fishP => Mode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"));
+	static massKill = new Perm("massKill", fishP => Gamemode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"));
 
 	check:(fishP:FishPlayer) => boolean;
 	constructor(
@@ -137,11 +137,11 @@ export class Perm {
 export type PermType = SelectEnumClassKeys<typeof Perm>;
 
 export const Req = {
-	mode: (mode:ModeName) => () =>
-		Mode[mode]()
+	mode: (mode:GamemodeName) => () =>
+		Gamemode[mode]()
 			|| fail(`This command is only available in ${formatModeName(mode)}`),
-	modeNot: (mode:ModeName) => () =>
-		!Mode[mode]()
+	modeNot: (mode:GamemodeName) => () =>
+		!Gamemode[mode]()
 			|| fail(`This command is disabled in ${formatModeName(mode)}`),
 	moderate: <T extends string>(argName:T, allowSameRank:boolean = false, minimumLevel:PermType = "mod", allowSelfIfUnauthorized = false) =>
 		({args, sender}:{args:Record<T, FishPlayer>, sender:FishPlayer}) =>

@@ -53,7 +53,7 @@ function initializeTimers() {
     }, 10, 300);
     //Memory corruption prank
     Timer.schedule(function () {
-        if (Math.random() < 0.2 && !config_1.Mode.hexed()) {
+        if (Math.random() < 0.2 && !config_1.Gamemode.hexed()) {
             //Timer triggers every 17 hours, and the random chance is 20%, so the average interval between pranks is 85 hours
             (0, utils_1.definitelyRealMemoryCorruption)();
         }
@@ -63,7 +63,7 @@ function initializeTimers() {
         return players_1.FishPlayer.forEachPlayer(function (p) { return p.displayTrail(); });
     }, 5, 0.15);
     //Staff chat
-    if (!config.localDebug)
+    if (!config.Mode.localDebug)
         Timer.schedule(function () {
             (0, api_1.getStaffMessages)(function (messages) {
                 if (messages.length)
@@ -74,7 +74,7 @@ function initializeTimers() {
     Timer.schedule(function () {
         var showAd = Math.random() < 0.10; //10% chance every 15 minutes
         var messagePool = showAd ? config.tips.ads : config.tips.normal;
-        if (config.isChristmas)
+        if (config.Mode.isChristmas)
             messagePool = messagePool.concat(config.tips.christmas);
         var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
         var message = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");

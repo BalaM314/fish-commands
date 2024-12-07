@@ -47,11 +47,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
-var config = require("./config");
 var config_1 = require("./config");
+var globals = require("./globals");
+var config_2 = require("./config");
+var globals_1 = require("./globals");
 var files_1 = require("./files");
 var fjsContext = require("./fjsContext");
-var globals_1 = require("./globals");
+var globals_2 = require("./globals");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
@@ -61,9 +63,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Set a player's rank.",
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (args.rank == ranks_1.Rank.pi && !config.localDebug)
+            if (args.rank == ranks_1.Rank.pi && !config_1.Mode.localDebug)
                 (0, commands_1.fail)(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Rank ", " is immutable."], ["Rank ", " is immutable."])), args.rank));
-            if (args.player.immutable() && !config.localDebug)
+            if (args.player.immutable() && !config_1.Mode.localDebug)
                 (0, commands_1.fail)(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["Player ", " is immutable."], ["Player ", " is immutable."])), args.player));
             args.player.setRank(args.rank);
             (0, utils_1.logAction)("set rank to ".concat(args.rank.name, " for"), "console", args.player);
@@ -201,7 +203,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var args = _a.args, output = _a.output, outputFail = _a.outputFail, admins = _a.admins;
             var range;
-            if (globals_1.ipPattern.test(args.target)) {
+            if (globals_2.ipPattern.test(args.target)) {
                 //target is an ip
                 api.ban({ ip: args.target });
                 var info = admins.findByIP(args.target);
@@ -226,13 +228,13 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     output("&lrIP range &c\"".concat(range, "\"&lr was banned. Subnet bans are not synced."));
                 }
             }
-            else if (globals_1.uuidPattern.test(args.target)) {
+            else if (globals_2.uuidPattern.test(args.target)) {
                 var info = admins.getInfoOptional(args.target);
                 if (info)
                     (0, utils_1.logAction)("whacked", "console", info);
                 else
                     (0, utils_1.logAction)("console ip-whacked ".concat(args.target));
-                api.addStopped(args.target, config.maxTime);
+                api.addStopped(args.target, globals.maxTime);
                 if (admins.isIDBanned(args.target)) {
                     api.ban({ uuid: args.target });
                     output("UUID &c\"".concat(args.target, "\"&fr is already banned. Ban was synced to other servers."));
@@ -267,7 +269,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     admins.banPlayerIP(ip);
                     (0, utils_1.logAction)("console whacked ".concat(Strings.stripColors(player.name), " (`").concat(uuid, "`/`").concat(ip, "`)"));
                     api.ban({ uuid: uuid, ip: ip });
-                    api.addStopped(player.uuid(), config.maxTime);
+                    api.addStopped(player.uuid(), globals.maxTime);
                     output("&lrIP &c\"".concat(ip, "\"&lr was banned. UUID &c\"").concat(uuid, "\"&lr was banned. Ban was synced to other servers."));
                 }
             }
@@ -280,7 +282,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var args = _a.args, output = _a.output, admins = _a.admins;
             var range;
-            if (globals_1.ipPattern.test(args.target)) {
+            if (globals_2.ipPattern.test(args.target)) {
                 //target is an ip
                 if (players_1.FishPlayer.removePunishedIP(args.target)) {
                     output("Removed IP &c\"".concat(args.target, "\"&fr from the anti-evasion list."));
@@ -320,7 +322,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     output("IP range &c\"".concat(range, "\"&fr was not banned."));
                 }
             }
-            else if (globals_1.uuidPattern.test(args.target)) {
+            else if (globals_2.uuidPattern.test(args.target)) {
                 if (players_1.FishPlayer.removePunishedUUID(args.target)) {
                     output("Removed UUID &c\"".concat(args.target, "\"&fr from the anti-evasion list."));
                 }
@@ -448,7 +450,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var commandsDir = Vars.modDirectory.child("fish-commands");
             if (!commandsDir.exists())
                 (0, commands_1.fail)("Fish commands directory at path ".concat(commandsDir.absolutePath(), " does not exist!"));
-            if (config.localDebug)
+            if (config_1.Mode.localDebug)
                 (0, commands_1.fail)("Cannot update in local debug mode.");
             var fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
             if (Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)) {
@@ -479,7 +481,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args;
-            if (config_1.Mode.pvp()) {
+            if (config_2.Gamemode.pvp()) {
                 if (Groups.player.isEmpty()) {
                     Log.info("Restarting immediately as no players are online.");
                     (0, utils_1.serverRestartLoop)(0);
@@ -492,7 +494,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 else {
                     Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart queued. The server will restart after the current match is over.[]\n[accent]---[[[coral]+++[]]---");
                     Log.info("PVP detected, restart will occur at the end of the current match. Run \"restart -1\" to override, but &rthat would interrupt the current pvp match, and players would lose their teams.&fr");
-                    globals_1.fishState.restartQueued = true;
+                    globals_2.fishState.restartQueued = true;
                 }
             }
             else {
@@ -531,7 +533,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Checks memory usage of various objects.",
         handler: function (_a) {
             var output = _a.output;
-            output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 10))), " KB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, " (has data: ").concat(Object.values(players_1.FishPlayer.cachedPlayers).filter(function (p) { return p.hasData(); }).length, ")\nFish player data string length: ").concat(players_1.FishPlayer.getFishPlayersString.length, " (").concat(Core.settings.getInt("fish-subkeys"), " subkeys)\nLength of tilelog entries: ").concat(Math.round(Object.values(globals_1.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0) / (Math.pow(2, 10))), " KB"));
+            output("Memory usage:\nTotal: ".concat(Math.round(Core.app.getJavaHeap() / (Math.pow(2, 10))), " KB\nNumber of cached fish players: ").concat(Object.keys(players_1.FishPlayer.cachedPlayers).length, " (has data: ").concat(Object.values(players_1.FishPlayer.cachedPlayers).filter(function (p) { return p.hasData(); }).length, ")\nFish player data string length: ").concat(players_1.FishPlayer.getFishPlayersString.length, " (").concat(Core.settings.getInt("fish-subkeys"), " subkeys)\nLength of tilelog entries: ").concat(Math.round(Object.values(globals_2.tileHistory).reduce(function (acc, a) { return acc + a.length; }, 0) / (Math.pow(2, 10))), " KB"));
         }
     },
     stopplayer: {
@@ -550,7 +552,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 return;
             }
             var time = (_b = args.time) !== null && _b !== void 0 ? _b : 604800000;
-            if (time + Date.now() > config_1.maxTime)
+            if (time + Date.now() > globals_1.maxTime)
                 (0, commands_1.fail)("Error: time too high.");
             args.player.stop("console", time, (_c = args.message) !== null && _c !== void 0 ? _c : undefined);
             (0, utils_1.logAction)('stopped', "console", args.player, (_d = args.message) !== null && _d !== void 0 ? _d : undefined, time);
@@ -562,7 +564,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Stops a player by uuid.",
         handler: function (_a) {
             var _b = _a.args, uuid = _b.uuid, time = _b.time, outputSuccess = _a.outputSuccess, admins = _a.admins;
-            var stopTime = time !== null && time !== void 0 ? time : (config_1.maxTime - Date.now() - 10000);
+            var stopTime = time !== null && time !== void 0 ? time : (globals_1.maxTime - Date.now() - 10000);
             var info = admins.getInfoOptional(uuid);
             if (info == null)
                 (0, commands_1.fail)("Unknown player ".concat(uuid));
@@ -620,8 +622,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
                     numStaff++;
             });
             output("\nStatus:\nPlaying on map &fi".concat(Vars.state.map.plainName(), "&fr for ").concat((0, utils_1.formatTime)(1000 * Vars.state.tick / 60), "\n").concat(Vars.state.rules.waves ? "Wave &c".concat(Vars.state.wave, "&fr, &c").concat(Math.ceil(Vars.state.wavetime / 60), "&fr seconds until next wave.\n") : "", "&c").concat(Groups.unit.size(), "&fr units, &c").concat(Vars.state.enemies, "&fr enemies, &c").concat(Groups.build.size(), "&fr buildings\nTPS: ").concat((0, utils_1.colorNumber)(Core.graphics.getFramesPerSecond(), function (f) { return f > 58 ? "&g" : f > 30 ? "&y" : f > 10 ? "&r" : "&br&w"; }, "server"), ", Memory: &c").concat(Math.round(Core.app.getJavaHeap() / 1048576), "&fr MB\nServer uptime: ").concat((0, utils_1.formatTime)(uptime), " (since ").concat((0, utils_1.formatTimestamp)(Date.now() - uptime), ")\n").concat([
-                globals_1.fishState.restartQueued ? "&by&lwRestart queued&fr" : "",
-                globals_1.fishState.restartLoopTask ? "&by&lwRestarting now&fr" : "",
+                globals_2.fishState.restartQueued ? "&by&lwRestart queued&fr" : "",
+                globals_2.fishState.restartLoopTask ? "&by&lwRestarting now&fr" : "",
                 players_1.FishPlayer.antiBotMode() ? "&br&wANTIBOT ACTIVE!&fr" + (0, utils_1.getAntiBotInfo)("server") : "",
             ].filter(function (l) { return l.length > 0; }).join("\n"), "\n").concat((0, utils_1.colorNumber)(Groups.player.size(), function (n) { return n > 0 ? "&c" : "&lr"; }, "server"), " players online, ").concat((0, utils_1.colorNumber)(numStaff, function (n) { return n > 0 ? "&c" : "&lr"; }, "server"), " staff members.\n").concat(players_1.FishPlayer.mapPlayers(function (p) {
                 return "\t".concat(p.rank.shortPrefix, " &c").concat(p.uuid, "&fr &c").concat(p.name, "&fr");
@@ -718,7 +720,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Downloads a map from URL.",
         handler: function (_a) {
             var _b = _a.args, filename = _b.filename, map = _b.map, output = _a.output, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
-            (0, commands_1.fail)("This command was removed, please add it to the github repo: ".concat(config_1.mapRepoURLs[config_1.Mode.name()]));
+            (0, commands_1.fail)("This command was removed, please add it to the github repo: ".concat(config_2.mapRepoURLs[config_2.Gamemode.name()]));
             if (!/^https?:\/\//i.test(map))
                 (0, commands_1.fail)("Argument must be a URL starting with https:// or http://");
             if (!/\.msav$/.test(filename))

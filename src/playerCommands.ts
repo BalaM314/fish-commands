@@ -5,7 +5,7 @@ This file contains the in-game chat commands that can be run by untrusted player
 
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
-import { discordURL, FishServers, Mode, rules } from './config';
+import { FishServer, Gamemode, rules, text } from './config';
 import { fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
@@ -70,7 +70,7 @@ export const commands = commandList({
 		description: 'Takes you to our discord.',
 		perm: Perm.none,
 		handler({ sender }) {
-			Call.openURI(sender.con, discordURL);
+			Call.openURI(sender.con, text.discordURL);
 		},
 	},
 
@@ -153,7 +153,7 @@ export const commands = commandList({
 	},
 
 	...Object.fromEntries(
-		FishServers.all.map(server => [
+		FishServer.all.map(server => [
 			server.name,
 			{
 				args: [],
@@ -180,12 +180,12 @@ export const commands = commandList({
 				//direct connect
 				Call.connect(target.con, ...args.server.split(":"));
 			} else {
-				const server = FishServers.byName(args.server)
-					?? fail(`Unknown server ${args.server}. Valid options: ${FishServers.all.map(s => s.name).join(", ")}`);
+				const server = FishServer.byName(args.server)
+					?? fail(`Unknown server ${args.server}. Valid options: ${FishServer.all.map(s => s.name).join(", ")}`);
 
 				//Pretend the server doesn't exist
 				if(server.requiredPerm && !sender.hasPerm(server.requiredPerm))
-					fail(`Unknown server ${args.server}. Valid options: ${FishServers.all.map(s => s.name).join(", ")}`);
+					fail(`Unknown server ${args.server}. Valid options: ${FishServer.all.map(s => s.name).join(", ")}`);
 
 				if(target == sender)
 					FishPlayer.messageAllWithPerm(server.requiredPerm, `${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
@@ -279,7 +279,7 @@ export const commands = commandList({
 			perm: Perm.play,
 			handler({args, sender, outputSuccess, f}){
 				args.target ??= sender;
-				if(!Mode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
+				if(!Gamemode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
 				if(args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
 				if(args.target !== sender && !sender.ranksAtLeast("admin")) fail(`You do not have permission to force other players to spectate.`);
 				if(spectators.has(args.target)){
@@ -535,7 +535,7 @@ Available types:[yellow]
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
 		handler({args, sender, lastUsedSuccessfullySender, lastUsedSuccessfully, outputSuccess, f}){
-			if(!Mode.attack()) fail(`This command can only be run in Attack.`);
+			if(!Gamemode.attack()) fail(`This command can only be run in Attack.`);
 			if(args.player){
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
@@ -567,7 +567,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		handler({args, sender, outputSuccess, f}){
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
-			if(Mode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
+			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
 			if(!sender.hasPerm("changeTeamExternal")){
 				if(args.team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
 				if(!sender.player!.dead() && !sender.unit()?.spawnedByCore)
@@ -624,7 +624,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		}),
 		requirements: [Req.cooldown(3000)],
 		handler({sender, data:{manager}}){
-			if(!Mode.survival()) fail(`This command is only enabled in survival.`);
+			if(!Gamemode.survival()) fail(`This command is only enabled in survival.`);
 			if(Vars.state.gameOver) fail(`This game is already over.`); //TODO command run states system
 
 			if(!manager.session){
@@ -827,7 +827,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
 			requirements: [Req.cooldown(10000)],
 			handler({args:{map}, sender}){
-				if(Mode.hexed()) fail(`This command is disabled in Hexed.`);
+				if(Gamemode.hexed()) fail(`This command is disabled in Hexed.`);
 				if(votes.get(sender)) fail(`You have already voted.`);
 				
 				votes.set(sender, map);

@@ -4,49 +4,55 @@ This file contains configurable constants.
 */
 
 import type { PermType } from "./commands";
-import { ipPattern, ipPortPattern, uuidPattern } from "./globals"; //TODO fix storage of global variables
+import { ipPattern, ipPortPattern, uuidPattern } from "./globals";
 import { Rank } from "./ranks";
 import { random } from "./utils";
 
-export const MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
-export const MUTED_PREFIX = '[white](muted)';
-export const bannedWords:[word:string | RegExp, whitelist:string[]][] = (
-	(words:(string | string[] | RegExp)[]) =>
-		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
-)([
-	//>:( -dart
-	"uwu", //lol
-	
-	"nig"+"ger", "nig"+"ga", "niger", "ni8"+"8ger", "nig"+"gre", //our apologies to citizens of the Republic of Niger
-	"re"+"tard",
-	'kill yourself', 'kill urself', /\bkys\b/,
-	/\bkill blacks\b/,
-	["co"+"ck", "cockroach", "poppycock"],
-	"iamasussyimposter",
-	["cu"+"nt", "scunthorpe"],
-	["penis", "peniston"],
-	"hawk tuah",
-	["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
-	/\bf(a)g\b/, "fa"+"gg"+"ot",
-	/\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
-	["porn", "maporn"],
-	"ur gay", "your gay", "youre gay", "you're gay",
-]);
-export const strictBannedWords:[word:string | RegExp, whitelist:string[]][] = (
-	(words:(string | string[] | RegExp)[]) =>
-		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
-)([
-	"fu"+"ck", "bi"+"tch", ["sh"+"it", "harshit"], /\ba(s)s\b/, "as"+"shole", ["dick", "medick", "dickens"],
-]);
-export const bannedInNamesWords:[word:string | RegExp, whitelist:string[]][] = (
-	(words:(string | string[] | RegExp)[]) =>
-		words.map(word => (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)])
-)([
-	"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
-	uuidPattern, ipPattern, ipPortPattern
-]);
-/** Used for anti-impersonation. Make sure to replace numbers with letters, for example, balam314 -> balamei4. */
-export const adminNames = ["fish", "balamei4", "clashgone", "darthscion", "firefridge", "aricia", "rawsewage", "skeledragon", "edh8e", "everydayhuman8e", "benjamonsrl"];
+
+
+//#region filtering
+export type BannedWordList = [word: string | RegExp, whitelist: string[]][];
+type Pre_BannedWordList = (string | string[] | RegExp)[];
+function processBannedWordList(words: Pre_BannedWordList):BannedWordList {
+	return words.map(word =>
+		(typeof word == "string" || word instanceof RegExp) ?
+			[word, []]
+		: [word[0], word.slice(1)]
+	);
+}
+export const bannedWords: {
+	normal: BannedWordList;
+	strict: BannedWordList;
+	names: BannedWordList;
+} = {
+	normal: processBannedWordList([
+		//>:( -dart
+		"uwu", //lol
+		
+		"nig"+"ger", "nig"+"ga", "niger", "ni8"+"8ger", "nig"+"gre", //our apologies to citizens of the Republic of Niger
+		"re"+"tard",
+		'kill yourself', 'kill urself', /\bkys\b/,
+		/\bkill blacks\b/,
+		["co"+"ck", "cockroach", "poppycock"],
+		"iamasussyimposter",
+		["cu"+"nt", "scunthorpe"],
+		["penis", "peniston"],
+		"hawk tuah",
+		["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
+		/\bf(a)g\b/, "fa"+"gg"+"ot",
+		/\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
+		["porn", "maporn"],
+		"ur gay", "your gay", "youre gay", "you're gay",
+	]),
+	strict: processBannedWordList([
+		"fu"+"ck", "bi"+"tch", ["sh"+"it", "harshit"], /\ba(s)s\b/, "as"+"shole", ["dick", "medick", "dickens"],
+	]),
+	names: processBannedWordList([
+		"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
+		uuidPattern, ipPattern, ipPortPattern
+	])
+};
+
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 export const substitutions:Record<string, string> = Object.fromEntries<string>(Object.entries<string>({
 	"a": "\u0430\u1E9A\u1EA1\u1E01\u00E4\u03B1@\u0101\u0103\u0105\u03AC",
@@ -106,52 +112,115 @@ export const substitutions:Record<string, string> = Object.fromEntries<string>(O
 export const multiCharSubstitutions:[RegExp, string][] = [
 	[/\|-\|/g, "H"]
 ];
-
+//#endregion
+//#region misc
+/** Used for anti-impersonation. Make sure to replace numbers with letters, for example, balam314 -> balamei4. */
+export const adminNames = ["fish", "balamei4", "clashgone", "darthscion", "firefridge", "aricia", "rawsewage", "skeledragon", "edh8e", "everydayhuman8e", "benjamonsrl"];
+export const heuristics = {
+	/** Will trip if more than this many blocks are broken within 25 seconds of joining. */
+	blocksBrokenAfterJoin: 40,
+};
+export const stopAntiEvadeTime = 1800000; //30 minutes
+export const Mode = {
+	localDebug: new Fi("config/.debug").exists(),
+	isChristmas: new Date().getMonth() == 11,
+	isAprilFools: new Date().getMonth() == 3 && new Date().getDate() == 1,
+};
+//#endregion
+//#region servers
 export const backendIP = '45.79.202.111:5082';
-
-
-type FishServer = {
-	ip:string;
-	port:string;
-	aliases:string[];
-	name:string;
-	/** If set, this permission is required to switch to or get information about this server. */
-	requiredPerm?:PermType;
+/** Stores the repository url for the maps for each gamemode. */
+export const mapRepoURLs:Record<GamemodeName, string> = {
+	attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
+	survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",
+	pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
+	hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
+	sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
+	hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
 };
-//TODO convert to enum class, TODO store color and use colored name
+
+
 /** Stores the names and addresses of each active server. */
-export const FishServers = {
-	attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
-	survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
-	pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
-	sandbox: { name: "sandbox", ip: "162.248.101.53", port: "6567", aliases: ["sand", "box", "sa", "sb"] },
-	hardcore: { name: "hardcore", ip: "162.24" + "8.1" + "02.101", port: "6567", aliases: ["hardcore", "hc"], requiredPerm: "hardcore" },
-	// sandbox: { ip: "162.248.102.204", port: "6567" },
-	byName(input:string):FishServer | null {
-		input = input.toLowerCase();
-		return FishServers.all.find(s => s.aliases.includes(input)) ?? null;
-	},
-	all: [] as FishServer[]
-};
-FishServers.all = [FishServers.attack, FishServers.survival, FishServers.pvp, FishServers.sandbox, FishServers.hardcore];
+export class FishServer {
+	constructor(
+		public name:string,
+		public ip:string,
+		public port:string,
+		public aliases:string[],
+		/** If set, this permission is required to switch to or get information about this server. */
+		public requiredPerm?:PermType,
+	){
+		FishServer.all.push(this);
+	}
 
-export type ModeName = keyof typeof Mode extends infer K extends keyof typeof Mode ? K extends unknown ?
-	(typeof Mode)[K] extends (() => boolean) ? K : never
+	static all: FishServer[] = [];
+	static attack = new FishServer(
+		"attack",
+		"162.248.100.98", "6567",
+		["attack", "attac", "atack", "atak", "atck", "atk", "a"]
+	);
+	static survival = new FishServer(
+		"survival",
+		"162.248.101.95", "6567",
+		["survival", "surviv", "surv", "sur", "su", "s", "sl"]
+	);
+	static pvp = new FishServer(
+		"pvp",
+		"162.248.100.133", "6567",
+		["pvp", "pv", "p", "playerversusplayer"]
+	);
+	static sandbox = new FishServer(
+		"sandbox",
+		"162.248.101.53", "6567",
+		["sand", "box", "sa", "sb"]
+	);
+	static hardcore = new FishServer(
+		"hardcore",
+		[..."101.201.842.261"].reverse().join(), "6567",
+		["hardcore", "hc"],
+		"hardcore"
+	);
+	static byName(input:string):FishServer | null {
+		input = input.toLowerCase();
+		return FishServer.all.find(s => s.aliases.includes(input)) ?? null;
+	}
+};
+
+export type GamemodeName = keyof typeof Gamemode extends infer K extends keyof typeof Gamemode ? K extends unknown ?
+	(typeof Gamemode)[K] extends (() => boolean) ? K : never
 : never : never;
 /** Stores functions that return whether the specified gamemode is the current gamemode. */
-export const Mode = {
-	attack: () => Mode.name() == "attack",
-	survival: () => Mode.name() == "survival",
-	pvp: () => Mode.name() == "pvp" || Mode.name() == "hexed",
-	sandbox: () => Mode.name() == "sandbox",
-	hexed: () => Mode.name() == "hexed",
-	hardcore: () => Mode.name() == "hardcore",
+export const Gamemode = {
+	attack: () => Gamemode.name() == "attack",
+	survival: () => Gamemode.name() == "survival",
+	pvp: () => Gamemode.name() == "pvp" || Gamemode.name() == "hexed",
+	sandbox: () => Gamemode.name() == "sandbox",
+	hexed: () => Gamemode.name() == "hexed",
+	hardcore: () => Gamemode.name() == "hardcore",
 	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore",
 };
+//#endregion
+//#region text content
 
-export const localDebug = new Fi("config/.debug").exists();
-export const maxTime = 9999999999999;
-export const discordURL = `https://discord.gg/VpzcYSQ33Y`;
+export const prefixes = {
+	marked: '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]',
+	muted: '[white](muted)',
+};
+
+export const text = {
+	discordURL: `https://discord.gg/VpzcYSQ33Y`,
+	welcomeMessage: () => random([
+		`[gold]Welcome![]`
+	]),
+	chatFilterReplacement: {
+		message: () => `I really hope everyone is having a fun time :) <3`,
+		highlight: () => `[#f456f]`,
+	} satisfies {
+		message: () => string;
+		highlight: () => string;
+	},
+};
+
 
 //TODO use this
 export const FColor = (<T extends string>(data:Record<T, string>):Record<T, (str?:string) => string> =>
@@ -170,7 +239,7 @@ export const tips = {
 		`[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] https://patreon.com/FishServers []`,
 		`[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at[sky] https://patreon.com/FishServers []`,
 		`Want to support the server and get some perks? Get a [pink]Fish Membership[] at[sky] https://patreon.com/FishServers []`,
-		`Join our [#7289da]Discord server[]! [#7289da]${discordURL}[] or type [#7289da]/discord[]`,
+		`Join our [#7289da]Discord server[]! [#7289da]${text.discordURL}[] or type [#7289da]/discord[]`,
 	],
 	normal: [
 		//commands
@@ -197,9 +266,9 @@ export const tips = {
 		`If you want to end the current map, DO NOT BREAK DEFENCES! Vote to change the map with [white]/rtv[].`,
 		//misc
 		`Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!`,
-		`Griefers will often be found with the text ${MARKED_PREFIX} prepended to their name.`,
+		`Griefers will often be found with the text ${prefixes.marked} prepended to their name.`,
 		`Players marked as [yellow]\u26A0[orange]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.`,
-		`Need to appeal a moderation action? Join the discord at [#7289da]${discordURL}[] or type [#7289da]/discord[]`,
+		`Need to appeal a moderation action? Join the discord at [#7289da]${text.discordURL}[] or type [#7289da]/discord[]`,
 		`Want to send the phrase [white]"/command"[] in chat? Type [white]"./command"[] and the [white].[] will be removed.`,
 		`All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.`,
 		`Players with a ${Rank.trusted.prefix} in front of their name aren't staff members, but they do have extra powers.`,
@@ -209,52 +278,23 @@ export const tips = {
 		`You can add [pink]color[] to things with color tags! Try typing "[[${["pink", "green", "cyan", "acid", "royal", "coral"][Math.floor(Math.random() * 6)]}]Hello" in chat, and see what happens!`
 	],
 	christmas: [
-		
+
 	],
 	staff: [
 
 	]
 };
 export const rules = [
-	`# 1: [red]No griefing. This refers to intentionally destroying and sabotaging constructions by other players, suiciding units, trying to destroy the player cores, or intentionally triggering traps. Griefing will result in a "${MARKED_PREFIX}[red]" prefix, preventing you from doing anything.`,
+	`# 1: [red]No griefing. This refers to intentionally destroying and sabotaging constructions by other players, suiciding units, trying to destroy the player cores, or intentionally triggering traps. Griefing will result in a "${prefixes.marked}[red]" prefix, preventing you from doing anything.`,
 	`# 2: [orange]Do not build or send pornographic images, flashing images, or gore, and do not be horny or a creep in chat; there are minors here.`,
-	`# 3: [yellow]Do not harass other people, be respectful. We have zero tolerance for racism, sexism, anti-LGBTIA+, or any other forms of bigotry.`,
+	`# 3: [yellow]Do not harass other people, be respectful. We have zero tolerance for racism, sexism, anti-LGBTQ+, or any other forms of bigotry.`,
 	`# 4: [green]Be reasonable with pinging other people on Discord, and globally messaging staff in-game. Misuse may result in a mute. Spamming of any sort is prohibited.`,
 	`# 5: [cyan]Don't impersonate a person or rank. Impersonation of staff may result in a ban.`,
 	`# 6: [blue]Talking about controversial or sensitive political or historical topics is not allowed, except for civilized, monitored conversations on Discord at moderators' discretion. Building symbols of hate, such as swastikas, may result in a ban.`,
 	`# 7: [purple]Don't votekick if there's an active staff member online and in the server; just message them in-game and they should take action. If you votekick someone without a good reason, you will be punished.`,
 	`# 8: [pink]No trolling or intentionally causing chaos. This includes any actions or messages that disrupt the community or create an unpleasant atmosphere.`,
 	`# 9: [brown]In Discord, Keep all discussions related to the current channel's topic.`,
-	`#10: [grey]No discussion of self-harm or suicide unless you are asking for help.[red] DO NOT joke about such topics.[grey] If you seek help, our staff team will do our best to help you but will still refer you to the crisis links we have available as we are not professionals. We can and will still try our best to listen, and help you with the small things you are going through in life.`,
+	`#10: [grey]No discussion of self-harm or suicide unless you are asking for help. [red]DO NOT joke about such topics.[grey] If you seek help, our staff team will do our best to help you but will still refer you to the crisis links we have available as we are not professionals. We can and will still try our best to listen, and help you with the small things you are going through in life.`,
 	`Failure to follow these rules will result in consequences: mostly a Marked Griefer tag for any game disruption, mute for broken chat rules, and bans if there are repeated offenses or bypasses (up to moderator discretion).`
 ].map(r => `[white]${r}`);
-
-export const heuristics = {
-	/** Will trip if more than this many blocks are broken within 25 seconds of joining. */
-	blocksBrokenAfterJoin: 40,
-};
-export const stopAntiEvadeTime = 1800000; //30 minutes
-
-/** Stores the repository url for the maps for each gamemode. */
-export const mapRepoURLs:Record<ModeName, string> = {
-	attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
-	survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",
-	pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
-	hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
-	sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
-	hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
-};
-
-export const chatFilterReplacement: {
-	message: () => string;
-	highlight: () => string;
-} = {
-	message: () => `I really hope everyone is having a fun time :) <3`,
-	highlight: () => `[#f456f]`,
-};
-
-export const isChristmas = new Date().getMonth() == 11;
-
-export const welcomeMessage = () => random([
-	`[gold]Welcome![]`
-]);
+//#endregion

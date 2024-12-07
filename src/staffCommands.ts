@@ -5,7 +5,8 @@ This file contains the in-game chat commands that can be run by trusted staff.
 
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
-import { Mode, localDebug, maxTime, rules, stopAntiEvadeTime } from "./config";
+import { Gamemode, Mode, rules, stopAntiEvadeTime } from "./config";
+import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
@@ -128,8 +129,8 @@ export const commands = commandList({
 		handler({args:{rank, player}, outputSuccess, f, sender}){
 			if(rank.level >= sender.rank.level)
 				fail(f`You do not have permission to promote players to rank ${rank}, because your current rank is ${sender.rank}`);
-			if(rank == Rank.pi && !localDebug) fail(f`Rank ${rank} is immutable.`);
-			if(player.immutable() && !localDebug) fail(f`Player ${player} is immutable.`);
+			if(rank == Rank.pi && !Mode.localDebug) fail(f`Rank ${rank} is immutable.`);
+			if(player.immutable() && !Mode.localDebug) fail(f`Player ${player} is immutable.`);
 
 			player.setRank(rank);
 			logAction(`set rank to ${rank.name} for`, sender, player);
@@ -583,7 +584,7 @@ export const commands = commandList({
 			const team = args.team ?? sender.team();
 			const unit = args.type.spawn(team, x, y);
 			spawnedUnits.push(unit);
-			if(!Mode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
+			if(!Gamemode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
 			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);
 		}
 	},
@@ -604,7 +605,7 @@ export const commands = commandList({
 				action: `setblocked`,
 				type: args.block.localizedName
 			});
-			if(!Mode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${args.x},${args.y}`, sender);
+			if(!Gamemode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${args.x},${args.y}`, sender);
 			outputSuccess(f`Set block at ${args.x}, ${args.y} to ${args.block}`);
 		}
 	},
@@ -626,7 +627,7 @@ export const commands = commandList({
 				action: `setblocked`,
 				type: args.block.localizedName
 			});
-			if(!Mode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${x},${y}`, sender);
+			if(!Gamemode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${x},${y}`, sender);
 			outputSuccess(f`Set block at ${x}, ${y} to ${args.block}`);
 		},
 		handler({args, outputSuccess, handleTaps, currentTapMode, f}){
@@ -659,7 +660,7 @@ export const commands = commandList({
 					numKilled ++;
 				}
 			});
-			if(!Mode.sandbox()) logAction(`exterminated ${numKilled} units`, sender);
+			if(!Gamemode.sandbox()) logAction(`exterminated ${numKilled} units`, sender);
 			outputSuccess(f`Exterminated ${numKilled} units.`);
 		}
 	},
@@ -675,7 +676,7 @@ export const commands = commandList({
 			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
-Server: ${Mode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
 <@!709904412033810533>`
 				);
 				fail(`Authentication failure`);
@@ -716,7 +717,7 @@ Server: ${Mode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${send
 			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
-Server: ${Mode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
 <@!709904412033810533>`
 				);
 				fail(`Authentication failure`);
@@ -776,7 +777,7 @@ ${getAntiBotInfo("client")}`
 				const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player!.x, sender.player!.y);
 				sender.player!.unit(emanate);
 				unitMapping[sender.uuid] = emanate;
-				if(!Mode.sandbox()) logAction("spawned an emanate", sender);
+				if(!Gamemode.sandbox()) logAction("spawned an emanate", sender);
 				outputSuccess("Spawned an emanate.");
 			}
 		};

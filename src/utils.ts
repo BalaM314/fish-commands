@@ -4,8 +4,9 @@ This file contains many utility functions.
 */
 
 import * as api from './api';
-import { Mode, ModeName, adminNames, bannedInNamesWords, bannedWords, chatFilterReplacement, maxTime, multiCharSubstitutions, strictBannedWords, substitutions } from "./config";
-import { fishState, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
+import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
+import { maxTime } from "./globals";
+import { fishState, ipPattern, ipPortPattern, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys, TagFunction } from './types';
 
@@ -55,7 +56,7 @@ export function formatTime(time:number){
 }
 
 //TODO move this data to be right next to Mode
-export function formatModeName(name:ModeName){
+export function formatModeName(name:GamemodeName){
 	return {
 		"attack": "Attack",
 		"survival": "Survival",
@@ -327,11 +328,11 @@ export function escapeTextDiscord(text:string):string {
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns a
  */
-export function matchFilter(input:string, strict = "chat" as "chat" | "strict" | "name"):false | string {
+export function matchFilter(input:string, strict = "chat" as "chat" | "strict" | "name"):false | string | [string] {
 	const currentBannedWords = [
-		bannedWords,
-		(strict == "strict" || strict == "name") && strictBannedWords,
-		strict == "name" && bannedInNamesWords,
+		bannedWords.normal,
+		(strict == "strict" || strict == "name") && bannedWords.strict,
+		strict == "name" && bannedWords.names,
 	].filter(Boolean).flat();
 	//Replace substitutions
 	for(const [banned, whitelist] of currentBannedWords){
@@ -340,7 +341,13 @@ export function matchFilter(input:string, strict = "chat" as "chat" | "strict" |
 				let modifiedText = text;
 				whitelist.forEach(w => modifiedText = modifiedText.replace(new RegExp(w, "g"), "")); //Replace whitelisted words with nothing
 				if(banned instanceof RegExp ? banned.test(modifiedText) : modifiedText.includes(banned)) //If the text still matches, fail
-					return banned instanceof RegExp ? banned.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") : banned; //parsing regex with regex, massive hack
+					return (
+						banned === uuidPattern ? `a Mindustry UUID` :
+						banned === ipPattern || banned === ipPortPattern ? `an IP address` :
+						//parsing regex with regex, massive hack
+						banned instanceof RegExp ? banned.source.replace(/\\b|\(\?\<\!.+?\)|\(\?\!.+?\)/g, "") :
+						banned
+					);
 			}
 		}
 	}
@@ -406,14 +413,14 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 	if(by === undefined){ //overload 1
 		api.sendModerationMessage(
 `${action}
-**Server:** ${Mode.name()}`
+**Server:** ${Gamemode.name()}`
 		);
 		return;
 	}
 	if(to === undefined){ //overload 2
 		api.sendModerationMessage(
 `${(by as FishPlayer).cleanedName} ${action}
-**Server:** ${Mode.name()}`
+**Server:** ${Gamemode.name()}`
 		);
 		return;
 	}
@@ -441,7 +448,7 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 		}
 		api.sendModerationMessage(
 `${actor} ${action} ${name} ${duration ? `for ${formatTime(duration)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
-**Server:** ${Mode.name()}
+**Server:** ${Gamemode.name()}
 **uuid:** \`${uuid}\`
 **ip**: \`${ip}\``
 		);
@@ -631,13 +638,13 @@ export function definitelyRealMemoryCorruption(){
 }
 
 export function getEnemyTeam():Team {
-	if(Mode.pvp()) return Team.derelict;
+	if(Gamemode.pvp()) return Team.derelict;
 	else return Vars.state.rules.waveTeam;
 }
 
 export function neutralGameover(){
 	FishPlayer.ignoreGameover(() => {
-		if(Mode.hexed()) serverRestartLoop(15);
+		if(Gamemode.hexed()) serverRestartLoop(15);
 		else Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
 	});
 }
@@ -680,7 +687,7 @@ export function random(arg0:unknown, arg1?:number):any {
 export function logHTrip(player:FishPlayer, name:string, message?:string){
 	Log.warn(`&yPlayer &b"${player.cleanedName}"&y (&b${player.uuid}&y/&b${player.ip()}&y) tripped &c${name}&y` + (message ? `: ${message}` : ""));
 	FishPlayer.messageStaff(`[yellow]Player [blue]"${player.cleanedName}"[] tripped [cyan]${name}[]` + (message ? `: ${message}` : ""));
-	api.sendModerationMessage(`Player \`${player.cleanedName}\` (\`${player.uuid}\`/\`${player.ip()}\`) tripped **${name}**${message ? `: ${message}` : ""}\n**Server:** ${Mode.name()}`);
+	api.sendModerationMessage(`Player \`${player.cleanedName}\` (\`${player.uuid}\`/\`${player.ip()}\`) tripped **${name}**${message ? `: ${message}` : ""}\n**Server:** ${Gamemode.name()}`);
 }
 
 export function setType<T>(input:unknown):asserts input is T {}
@@ -748,8 +755,8 @@ export function processChat(player:mindustryPlayer, message:string, effects = fa
 			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(message)}"; contained "${filterTripText}"`);
 			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${message}" contained "${filterTripText}"`);
 		}
-		message = chatFilterReplacement.message();
-		highlight ??= chatFilterReplacement.highlight();
+		message = text.chatFilterReplacement.message();
+		highlight ??= text.chatFilterReplacement.highlight();
 	}
 
 	if(message.startsWith("./")) message = message.replace("./", "/");
@@ -807,7 +814,7 @@ export const addToTileHistory = logErrors("Error while saving a tilelog entry", 
 		action = "killed";
 		type = e.unit.type.name;
 	} else if(e instanceof EventType.BlockDestroyEvent){
-		if(Mode.attack() && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
+		if(Gamemode.attack() && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
 		tile = e.tile;
 		uuid = "[[something]";
 		action = "killed";

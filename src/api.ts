@@ -3,12 +3,13 @@ Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains a wrapper over the API calls to the backend server.
 */
 
-import { Mode, backendIP, localDebug, maxTime } from './config';
+import { Gamemode, backendIP, Mode } from './config';
+import { maxTime } from "./globals";
 import { FishPlayer } from './players';
 
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {
-	if(localDebug) return;
+	if(Mode.localDebug) return;
 	const req = Http.post(`http://${backendIP}/api/addStopped`, JSON.stringify({ id: uuid, time }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -21,7 +22,7 @@ export function addStopped(uuid: string, time:number) {
 
 /** Mark a player as freed */
 export function free(uuid: string) {
-	if(localDebug) return;
+	if(Mode.localDebug) return;
 	const req = Http.post(`http://${backendIP}/api/free`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -46,7 +47,7 @@ export function getStopped(uuid:string, callback: (unmark:any) => unknown, callb
 		else callback(null);
 	}
 
-	if(localDebug) return fail("local debug mode");
+	if(Mode.localDebug) return fail("local debug mode");
 
 	const req = Http.post(`http://${backendIP}/api/getStopped`, JSON.stringify({ id: uuid }))
 		.header('Content-Type', 'application/json')
@@ -84,7 +85,7 @@ export function isVpn(ip:string, callback: (isVpn:boolean) => unknown, callbackE
 
 /** Send text to the moderation logs channel in Discord. */
 export function sendModerationMessage(message: string) {
-	if(localDebug){
+	if(Mode.localDebug){
 		Log.info(`Sent moderation log message: ${message}`);
 		return;
 	}
@@ -99,8 +100,8 @@ export function sendModerationMessage(message: string) {
 
 /** Get staff messages from discord. */
 export function getStaffMessages(callback: (messages: string) => unknown) {
-	if(localDebug) return;
-	const req = Http.post(`http://${backendIP}/api/getStaffMessages`, JSON.stringify({ server: Mode.name() }))
+	if(Mode.localDebug) return;
+	const req = Http.post(`http://${backendIP}/api/getStaffMessages`, JSON.stringify({ server: Gamemode.name() }))
 		.header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 	req.error(() => Log.err(`[API] Network error when trying to call api.getStaffMessages()`));
@@ -113,11 +114,11 @@ export function getStaffMessages(callback: (messages: string) => unknown) {
 
 /** Send staff messages from server. */
 export function sendStaffMessage(message:string, playerName:string, callback?: (sent:boolean) => unknown){
-	if(localDebug) return;
+	if(Mode.localDebug) return;
 	const req = Http.post(
 		`http://${backendIP}/api/sendStaffMessage`,
 		// need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
-		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server: Mode.name() })
+		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server: Gamemode.name() })
 	).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 	req.error(() => {
@@ -133,7 +134,7 @@ export function sendStaffMessage(message:string, playerName:string, callback?: (
 
 /** Bans the provided ip and/or uuid. */
 export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) => unknown = () => {}){
-	if(localDebug) return;
+	if(Mode.localDebug) return;
 	const req = Http.post(`http://${backendIP}/api/ban`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -148,7 +149,7 @@ export function ban(data:{ip?:string; uuid?:string;}, callback:(status:string) =
 
 /** Unbans the provided ip and/or uuid. */
 export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string, error?:string) => unknown = () => {}){
-	if(localDebug) return;
+	if(Mode.localDebug) return;
 	const req = Http.post(`http://${backendIP}/api/unban`, JSON.stringify(data))
 		.header('Content-Type', 'application/json')
 		.header('Accept', '*/*');
@@ -164,7 +165,7 @@ export function unban(data:{ip?:string; uuid?:string;}, callback:(status:string,
 
 /** Gets if either the provided uuid or ip is banned. */
 export function getBanned(data:{uuid?:string, ip?:string}, callback:(banned:boolean) => unknown){
-	if(localDebug){
+	if(Mode.localDebug){
 		Log.info(`[API] Attempted to getBanned(${data.uuid}/${data.ip}), assuming false due to local debug`);
 		callback(false);
 		return;

@@ -19,46 +19,54 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.welcomeMessage = exports.isChristmas = exports.chatFilterReplacement = exports.mapRepoURLs = exports.stopAntiEvadeTime = exports.heuristics = exports.rules = exports.tips = exports.FColor = exports.discordURL = exports.maxTime = exports.localDebug = exports.Mode = exports.FishServers = exports.backendIP = exports.multiCharSubstitutions = exports.substitutions = exports.adminNames = exports.bannedInNamesWords = exports.strictBannedWords = exports.bannedWords = exports.MUTED_PREFIX = exports.MARKED_PREFIX = void 0;
-var globals_1 = require("./globals"); //TODO fix storage of global variables
+exports.rules = exports.tips = exports.FColor = exports.text = exports.prefixes = exports.Gamemode = exports.FishServer = exports.mapRepoURLs = exports.backendIP = exports.Mode = exports.stopAntiEvadeTime = exports.heuristics = exports.adminNames = exports.multiCharSubstitutions = exports.substitutions = exports.bannedWords = void 0;
+var globals_1 = require("./globals");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
-exports.MARKED_PREFIX = '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]';
-exports.MUTED_PREFIX = '[white](muted)';
-exports.bannedWords = (function (words) {
-    return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
-})([
-    //>:( -dart
-    "uwu", //lol
-    "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", "nig" + "gre", //our apologies to citizens of the Republic of Niger
-    "re" + "tard",
-    'kill yourself', 'kill urself', /\bkys\b/,
-    /\bkill blacks\b/,
-    ["co" + "ck", "cockroach", "poppycock"],
-    "iamasussyimposter",
-    ["cu" + "nt", "scunthorpe"],
-    ["penis", "peniston"],
-    "hawk tuah",
-    ["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
-    /\bf(a)g\b/, "fa" + "gg" + "ot",
-    /\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
-    ["porn", "maporn"],
-    "ur gay", "your gay", "youre gay", "you're gay",
-]);
-exports.strictBannedWords = (function (words) {
-    return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
-})([
-    "fu" + "ck", "bi" + "tch", ["sh" + "it", "harshit"], /\ba(s)s\b/, "as" + "shole", ["dick", "medick", "dickens"],
-]);
-exports.bannedInNamesWords = (function (words) {
-    return words.map(function (word) { return (typeof word == "string" || word instanceof RegExp) ? [word, []] : [word[0], word.slice(1)]; });
-})([
-    "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
-    globals_1.uuidPattern, globals_1.ipPattern, globals_1.ipPortPattern
-]);
-/** Used for anti-impersonation. Make sure to replace numbers with letters, for example, balam314 -> balamei4. */
-exports.adminNames = ["fish", "balamei4", "clashgone", "darthscion", "firefridge", "aricia", "rawsewage", "skeledragon", "edh8e", "everydayhuman8e", "benjamonsrl"];
+function processBannedWordList(words) {
+    return words.map(function (word) {
+        return (typeof word == "string" || word instanceof RegExp) ?
+            [word, []]
+            : [word[0], word.slice(1)];
+    });
+}
+exports.bannedWords = {
+    normal: processBannedWordList([
+        //>:( -dart
+        "uwu", //lol
+        "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", "nig" + "gre", //our apologies to citizens of the Republic of Niger
+        "re" + "tard",
+        'kill yourself', 'kill urself', /\bkys\b/,
+        /\bkill blacks\b/,
+        ["co" + "ck", "cockroach", "poppycock"],
+        "iamasussyimposter",
+        ["cu" + "nt", "scunthorpe"],
+        ["penis", "peniston"],
+        "hawk tuah",
+        ["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
+        /\bf(a)g\b/, "fa" + "gg" + "ot",
+        /\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
+        ["porn", "maporn"],
+        "ur gay", "your gay", "youre gay", "you're gay",
+    ]),
+    strict: processBannedWordList([
+        "fu" + "ck", "bi" + "tch", ["sh" + "it", "harshit"], /\ba(s)s\b/, "as" + "shole", ["dick", "medick", "dickens"],
+    ]),
+    names: processBannedWordList([
+        "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
+        globals_1.uuidPattern, globals_1.ipPattern, globals_1.ipPortPattern
+    ])
+};
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 exports.substitutions = Object.fromEntries(Object.entries({
     "a": "\u0430\u1E9A\u1EA1\u1E01\u00E4\u03B1@\u0101\u0103\u0105\u03AC",
@@ -121,37 +129,85 @@ exports.substitutions = Object.fromEntries(Object.entries({
 exports.multiCharSubstitutions = [
     [/\|-\|/g, "H"]
 ];
+//#endregion
+//#region misc
+/** Used for anti-impersonation. Make sure to replace numbers with letters, for example, balam314 -> balamei4. */
+exports.adminNames = ["fish", "balamei4", "clashgone", "darthscion", "firefridge", "aricia", "rawsewage", "skeledragon", "edh8e", "everydayhuman8e", "benjamonsrl"];
+exports.heuristics = {
+    /** Will trip if more than this many blocks are broken within 25 seconds of joining. */
+    blocksBrokenAfterJoin: 40,
+};
+exports.stopAntiEvadeTime = 1800000; //30 minutes
+exports.Mode = {
+    localDebug: new Fi("config/.debug").exists(),
+    isChristmas: new Date().getMonth() == 11,
+    isAprilFools: new Date().getMonth() == 3 && new Date().getDate() == 1,
+};
+//#endregion
+//#region servers
 exports.backendIP = '45.79.202.111:5082';
-//TODO convert to enum class, TODO store color and use colored name
+/** Stores the repository url for the maps for each gamemode. */
+exports.mapRepoURLs = {
+    attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
+    survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",
+    pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
+    hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
+    sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
+    hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
+};
 /** Stores the names and addresses of each active server. */
-exports.FishServers = {
-    attack: { name: "attack", ip: "162.248.100.98", port: "6567", aliases: ["attack", "attac", "atack", "atak", "atck", "atk", "a"] },
-    survival: { name: "survival", ip: "162.248.101.95", port: "6567", aliases: ["survival", "surviv", "surv", "sur", "su", "s", "sl"] },
-    pvp: { name: "pvp", ip: "162.248.100.133", port: "6567", aliases: ["pvp", "pv", "p", "playerversusplayer"] },
-    sandbox: { name: "sandbox", ip: "162.248.101.53", port: "6567", aliases: ["sand", "box", "sa", "sb"] },
-    hardcore: { name: "hardcore", ip: "162.24" + "8.1" + "02.101", port: "6567", aliases: ["hardcore", "hc"], requiredPerm: "hardcore" },
-    // sandbox: { ip: "162.248.102.204", port: "6567" },
-    byName: function (input) {
+var FishServer = /** @class */ (function () {
+    function FishServer(name, ip, port, aliases, 
+    /** If set, this permission is required to switch to or get information about this server. */
+    requiredPerm) {
+        this.name = name;
+        this.ip = ip;
+        this.port = port;
+        this.aliases = aliases;
+        this.requiredPerm = requiredPerm;
+        FishServer.all.push(this);
+    }
+    FishServer.byName = function (input) {
         var _a;
         input = input.toLowerCase();
-        return (_a = exports.FishServers.all.find(function (s) { return s.aliases.includes(input); })) !== null && _a !== void 0 ? _a : null;
-    },
-    all: []
-};
-exports.FishServers.all = [exports.FishServers.attack, exports.FishServers.survival, exports.FishServers.pvp, exports.FishServers.sandbox, exports.FishServers.hardcore];
+        return (_a = FishServer.all.find(function (s) { return s.aliases.includes(input); })) !== null && _a !== void 0 ? _a : null;
+    };
+    FishServer.all = [];
+    FishServer.attack = new FishServer("attack", "162.248.100.98", "6567", ["attack", "attac", "atack", "atak", "atck", "atk", "a"]);
+    FishServer.survival = new FishServer("survival", "162.248.101.95", "6567", ["survival", "surviv", "surv", "sur", "su", "s", "sl"]);
+    FishServer.pvp = new FishServer("pvp", "162.248.100.133", "6567", ["pvp", "pv", "p", "playerversusplayer"]);
+    FishServer.sandbox = new FishServer("sandbox", "162.248.101.53", "6567", ["sand", "box", "sa", "sb"]);
+    FishServer.hardcore = new FishServer("hardcore", __spreadArray([], __read("101.201.842.261"), false).reverse().join(), "6567", ["hardcore", "hc"], "hardcore");
+    return FishServer;
+}());
+exports.FishServer = FishServer;
+;
 /** Stores functions that return whether the specified gamemode is the current gamemode. */
-exports.Mode = {
-    attack: function () { return exports.Mode.name() == "attack"; },
-    survival: function () { return exports.Mode.name() == "survival"; },
-    pvp: function () { return exports.Mode.name() == "pvp" || exports.Mode.name() == "hexed"; },
-    sandbox: function () { return exports.Mode.name() == "sandbox"; },
-    hexed: function () { return exports.Mode.name() == "hexed"; },
-    hardcore: function () { return exports.Mode.name() == "hardcore"; },
+exports.Gamemode = {
+    attack: function () { return exports.Gamemode.name() == "attack"; },
+    survival: function () { return exports.Gamemode.name() == "survival"; },
+    pvp: function () { return exports.Gamemode.name() == "pvp" || exports.Gamemode.name() == "hexed"; },
+    sandbox: function () { return exports.Gamemode.name() == "sandbox"; },
+    hexed: function () { return exports.Gamemode.name() == "hexed"; },
+    hardcore: function () { return exports.Gamemode.name() == "hardcore"; },
     name: function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); },
 };
-exports.localDebug = new Fi("config/.debug").exists();
-exports.maxTime = 9999999999999;
-exports.discordURL = "https://discord.gg/VpzcYSQ33Y";
+//#endregion
+//#region text content
+exports.prefixes = {
+    marked: '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]',
+    muted: '[white](muted)',
+};
+exports.text = {
+    discordURL: "https://discord.gg/VpzcYSQ33Y",
+    welcomeMessage: function () { return (0, utils_1.random)([
+        "[gold]Welcome![]"
+    ]); },
+    chatFilterReplacement: {
+        message: function () { return "I really hope everyone is having a fun time :) <3"; },
+        highlight: function () { return "[#f456f]"; },
+    },
+};
 //TODO use this
 exports.FColor = (function (data) {
     return Object.fromEntries(Object.entries(data).map(function (_a) {
@@ -170,7 +226,7 @@ exports.tips = {
         "[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
         "[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
         "Want to support the server and get some perks? Get a [pink]Fish Membership[] at[sky] https://patreon.com/FishServers []",
-        "Join our [#7289da]Discord server[]! [#7289da]".concat(exports.discordURL, "[] or type [#7289da]/discord[]"),
+        "Join our [#7289da]Discord server[]! [#7289da]".concat(exports.text.discordURL, "[] or type [#7289da]/discord[]"),
     ],
     normal: [
         //commands
@@ -197,9 +253,9 @@ exports.tips = {
         "If you want to end the current map, DO NOT BREAK DEFENCES! Vote to change the map with [white]/rtv[].",
         //misc
         "Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!",
-        "Griefers will often be found with the text ".concat(exports.MARKED_PREFIX, " prepended to their name."),
+        "Griefers will often be found with the text ".concat(exports.prefixes.marked, " prepended to their name."),
         "Players marked as [yellow]\u26A0[orange]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.",
-        "Need to appeal a moderation action? Join the discord at [#7289da]".concat(exports.discordURL, "[] or type [#7289da]/discord[]"),
+        "Need to appeal a moderation action? Join the discord at [#7289da]".concat(exports.text.discordURL, "[] or type [#7289da]/discord[]"),
         "Want to send the phrase [white]\"/command\"[] in chat? Type [white]\"./command\"[] and the [white].[] will be removed.",
         "All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.",
         "Players with a ".concat(ranks_1.Rank.trusted.prefix, " in front of their name aren't staff members, but they do have extra powers."),
@@ -212,38 +268,16 @@ exports.tips = {
     staff: []
 };
 exports.rules = [
-    "# 1: [red]No griefing. This refers to intentionally destroying and sabotaging constructions by other players, suiciding units, trying to destroy the player cores, or intentionally triggering traps. Griefing will result in a \"".concat(exports.MARKED_PREFIX, "[red]\" prefix, preventing you from doing anything."),
+    "# 1: [red]No griefing. This refers to intentionally destroying and sabotaging constructions by other players, suiciding units, trying to destroy the player cores, or intentionally triggering traps. Griefing will result in a \"".concat(exports.prefixes.marked, "[red]\" prefix, preventing you from doing anything."),
     "# 2: [orange]Do not build or send pornographic images, flashing images, or gore, and do not be horny or a creep in chat; there are minors here.",
-    "# 3: [yellow]Do not harass other people, be respectful. We have zero tolerance for racism, sexism, anti-LGBTIA+, or any other forms of bigotry.",
+    "# 3: [yellow]Do not harass other people, be respectful. We have zero tolerance for racism, sexism, anti-LGBTQ+, or any other forms of bigotry.",
     "# 4: [green]Be reasonable with pinging other people on Discord, and globally messaging staff in-game. Misuse may result in a mute. Spamming of any sort is prohibited.",
     "# 5: [cyan]Don't impersonate a person or rank. Impersonation of staff may result in a ban.",
     "# 6: [blue]Talking about controversial or sensitive political or historical topics is not allowed, except for civilized, monitored conversations on Discord at moderators' discretion. Building symbols of hate, such as swastikas, may result in a ban.",
     "# 7: [purple]Don't votekick if there's an active staff member online and in the server; just message them in-game and they should take action. If you votekick someone without a good reason, you will be punished.",
     "# 8: [pink]No trolling or intentionally causing chaos. This includes any actions or messages that disrupt the community or create an unpleasant atmosphere.",
     "# 9: [brown]In Discord, Keep all discussions related to the current channel's topic.",
-    "#10: [grey]No discussion of self-harm or suicide unless you are asking for help.[red] DO NOT joke about such topics.[grey] If you seek help, our staff team will do our best to help you but will still refer you to the crisis links we have available as we are not professionals. We can and will still try our best to listen, and help you with the small things you are going through in life.",
+    "#10: [grey]No discussion of self-harm or suicide unless you are asking for help. [red]DO NOT joke about such topics.[grey] If you seek help, our staff team will do our best to help you but will still refer you to the crisis links we have available as we are not professionals. We can and will still try our best to listen, and help you with the small things you are going through in life.",
     "Failure to follow these rules will result in consequences: mostly a Marked Griefer tag for any game disruption, mute for broken chat rules, and bans if there are repeated offenses or bypasses (up to moderator discretion)."
 ].map(function (r) { return "[white]".concat(r); });
-exports.heuristics = {
-    /** Will trip if more than this many blocks are broken within 25 seconds of joining. */
-    blocksBrokenAfterJoin: 40,
-};
-exports.stopAntiEvadeTime = 1800000; //30 minutes
-/** Stores the repository url for the maps for each gamemode. */
-exports.mapRepoURLs = {
-    attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
-    survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",
-    pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
-    hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
-    sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
-    hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
-};
-exports.chatFilterReplacement = {
-    message: function () { return "I really hope everyone is having a fun time :) <3"; },
-    highlight: function () { return "[#f456f]"; },
-};
-exports.isChristmas = new Date().getMonth() == 11;
-var welcomeMessage = function () { return (0, utils_1.random)([
-    "[gold]Welcome![]"
-]); };
-exports.welcomeMessage = welcomeMessage;
+//#endregion

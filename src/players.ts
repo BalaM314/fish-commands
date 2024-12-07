@@ -5,8 +5,8 @@ This file contains the FishPlayer class, and many player-related functions.
 
 import * as api from "./api";
 import { Perm, PermType } from "./commands";
-import * as config from "./config";
-import { Mode, heuristics } from "./config";
+import * as globals from "./globals";
+import { Gamemode, heuristics, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
 import { uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
@@ -73,7 +73,7 @@ export class FishPlayer {
 		lastArgs: {} as Record<string, FishCommandArgType>,
 		mode: "once" as "once" | "on",
 	};
-	lastShownAd:number = config.maxTime;
+	lastShownAd:number = globals.maxTime;
 	showAdNext:boolean = false;
 	tstats = {
 		//remember to clear this in updateSavedInfoFromPlayer!
@@ -314,7 +314,7 @@ export class FishPlayer {
 				fishPlayer.updateName();
 			});
 			//I think this is a better spot for this
-			if(fishPlayer.firstJoin()) menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].",["[green]I understand and agree to these terms"],fishPlayer);
+			if(fishPlayer.firstJoin()) menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].",["[green]I understand and agree to these terms"],fishPlayer);
 
 		}
 	}
@@ -522,9 +522,9 @@ export class FishPlayer {
 		if(!this.connected() || !this.shouldUpdateName) return;//No player, no need to update
 		let prefix = '';
 		if(!this.hasPerm("bypassNameCheck") && isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
-		if(this.marked()) prefix += config.MARKED_PREFIX;
+		if(this.marked()) prefix += prefixes.marked;
 		else if(this.autoflagged) prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
-		if(this.muted) prefix += config.MUTED_PREFIX;
+		if(this.muted) prefix += prefixes.muted;
 		if(this.afk()) prefix += "[orange]\uE876 AFK \uE876 | [white]";
 		if(this.showRankPrefix){
 			for(const flag of this.flags){
@@ -602,7 +602,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 						Log.warn(`Player ${this.name} (${this.uuid}) was autoflagged.`);
 						menu("[gold]Welcome to Fish Community!", `[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`, ["Close", "[#7289da]Discord"], this, ({option, sender}) => {
 							if(option == "[#7289da]Discord"){
-								Call.openURI(sender.con, config.discordURL);
+								Call.openURI(sender.con, text.discordURL);
 							}
 						}, false);
 						this.sendMessage(`[gold]Welcome to Fish Community!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`);
@@ -662,7 +662,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		if(this.marked()) this.sendMessage(
 `[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.
 To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
-Your mark will expire automatically ${this.unmarkTime == config.maxTime ? "in [red]never[]" : `[green]${formatTimeRelative(this.unmarkTime)}[]`}.
+Your mark will expire automatically ${this.unmarkTime == globals.maxTime ? "in [red]never[]" : `[green]${formatTimeRelative(this.unmarkTime)}[]`}.
 We apologize for the inconvenience.`
 		); else if(this.muted) this.sendMessage(
 `[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.
@@ -675,14 +675,14 @@ We apologize for the inconvenience.`
 		); else if(!this.showRankPrefix) this.sendMessage(
 `[gold]Hello there! Your rank prefix is currently hidden. You can show it again by running [white]/vanish[].`
 		); else {
-			this.sendMessage(config.welcomeMessage());
+			this.sendMessage(text.welcomeMessage());
 
 			//show tips
 			let showAd = false;
 			if(Date.now() - this.lastShownAd > 86400000){
 				this.lastShownAd = Date.now();
 				this.showAdNext = true;
-			} else if(this.lastShownAd == config.maxTime){
+			} else if(this.lastShownAd == globals.maxTime){
 				//this is the first time they joined, show ad the next time they join
 				this.showAdNext = true;
 				this.lastShownAd = Date.now();
@@ -690,8 +690,8 @@ We apologize for the inconvenience.`
 				this.showAdNext = false;
 				showAd = true;
 			}
-			let messagePool = showAd ? config.tips.ads : config.tips.normal;
-			if(config.isChristmas) messagePool = messagePool.concat(config.tips.christmas);
+			let messagePool = showAd ? tips.ads : tips.normal;
+			if(Mode.isChristmas) messagePool = messagePool.concat(tips.christmas);
 			const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
 			const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`;
 
@@ -936,9 +936,9 @@ We apologize for the inconvenience.`
 	static onBotWhack(){
 		this.antiBotModePersist = true;
 		if(Date.now() - this.lastBotWhacked > 3600000) //1 hour since last bot whack
-			api.sendModerationMessage(`!!! <@&1040193678817378305> Possible ongoing bot attack in **${Mode.name()}**`);
+			api.sendModerationMessage(`!!! <@&1040193678817378305> Possible ongoing bot attack in **${Gamemode.name()}**`);
 		else if(Date.now() - this.lastBotWhacked > 600000) //10 minutes
-			api.sendModerationMessage(`!!! Possible ongoing bot attack in **${Mode.name()}**`);
+			api.sendModerationMessage(`!!! Possible ongoing bot attack in **${Gamemode.name()}**`);
 		this.lastBotWhacked = Date.now();
 		this.whackFlaggedPlayers();
 	}
@@ -1004,7 +1004,7 @@ We apologize for the inconvenience.`
 	}
 
 	setRank(rank:Rank){
-		if(rank == Rank.pi && !config.localDebug) throw new TypeError(`Cannot find function setRank in object [object Object].`);
+		if(rank == Rank.pi && !Mode.localDebug) throw new TypeError(`Cannot find function setRank in object [object Object].`);
 		this.rank = rank;
 		this.updateName();
 		this.updateAdminStatus();
@@ -1090,7 +1090,7 @@ We apologize for the inconvenience.`
 	/** Sets the unmark time but doesn't stop the player's unit or send them a message. */
 	updateStopTime(time:number):void {
 		this.unmarkTime = Date.now() + time;
-		if(this.unmarkTime > config.maxTime) this.unmarkTime = config.maxTime;
+		if(this.unmarkTime > globals.maxTime) this.unmarkTime = globals.maxTime;
 		api.addStopped(this.uuid, this.unmarkTime);
 		FishPlayer.saveAll();
 		//Set unmark timer
@@ -1112,7 +1112,7 @@ We apologize for the inconvenience.`
 			by: by instanceof FishPlayer ? by.name : by,
 			time: Date.now(),
 		});
-		if(duration > 60_000) this.setPunishedIP(config.stopAntiEvadeTime);
+		if(duration > 60_000) this.setPunishedIP(stopAntiEvadeTime);
 		this.showRankPrefix = true;
 		this.updateName();
 		if(this.connected() && notify){
@@ -1184,7 +1184,7 @@ We apologize for the inconvenience.`
 		this.showRankPrefix = true;
 		this.updateName();
 		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
-		this.setPunishedIP(config.stopAntiEvadeTime);
+		this.setPunishedIP(stopAntiEvadeTime);
 		this.addHistoryEntry({
 			action: 'muted',
 			by: by instanceof FishPlayer ? by.name : by,
@@ -1286,7 +1286,7 @@ We apologize for the inconvenience.`
 
 	//#region heuristics
 	activateHeuristics(){
-		if(Mode.hexed() || Mode.sandbox()) return;
+		if(Gamemode.hexed() || Gamemode.sandbox()) return;
 		//Blocks broken check
 		if(this.joinsLessThan(5)){
 			let tripped = false;
@@ -1297,7 +1297,7 @@ We apologize for the inconvenience.`
 					if(this.tstats.blocksBroken > heuristics.blocksBrokenAfterJoin){
 						tripped = true;
 						logHTrip(this, "blocks broken after join", `${this.tstats.blocksBroken}/${heuristics.blocksBrokenAfterJoin}`);
-						this.stop("automod", config.maxTime, `Automatic stop due to suspicious activity`);
+						this.stop("automod", globals.maxTime, `Automatic stop due to suspicious activity`);
 						FishPlayer.messageAllExcept(this,
 `[yellow]Player ${this.cleanedName} has been stopped automatically due to suspected griefing.
 Please look at ${this.position()} and see if they were actually griefing. If they were not, please inform a staff member.`);

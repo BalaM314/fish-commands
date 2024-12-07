@@ -107,7 +107,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var sender = _a.sender;
-            Call.openURI(sender.con, config_1.discordURL);
+            Call.openURI(sender.con, config_1.text.discordURL);
         },
     }, tilelog: {
         args: ['persist:boolean?'],
@@ -194,7 +194,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             var output = _a.output, f = _a.f, tile = _a.tile;
             output(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["ID is ", ""], ["ID is ", ""])), tile.block().id));
         }
-    } }, Object.fromEntries(config_1.FishServers.all.map(function (server) { return [
+    } }, Object.fromEntries(config_1.FishServer.all.map(function (server) { return [
     server.name,
     {
         args: [],
@@ -222,10 +222,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 Call.connect.apply(Call, __spreadArray([target.con], __read(args.server.split(":")), false));
             }
             else {
-                var server = (_c = config_1.FishServers.byName(args.server)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServers.all.map(function (s) { return s.name; }).join(", ")));
+                var server = (_c = config_1.FishServer.byName(args.server)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServer.all.map(function (s) { return s.name; }).join(", ")));
                 //Pretend the server doesn't exist
                 if (server.requiredPerm && !sender.hasPerm(server.requiredPerm))
-                    (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServers.all.map(function (s) { return s.name; }).join(", ")));
+                    (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServer.all.map(function (s) { return s.name; }).join(", ")));
                 if (target == sender)
                     players_1.FishPlayer.messageAllWithPerm(server.requiredPerm, "".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
                 Call.connect(target.con, server.ip, server.port);
@@ -327,7 +327,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 var _b;
                 var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
                 (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
-                if (!config_1.Mode.pvp() && !sender.hasPerm("mod"))
+                if (!config_1.Gamemode.pvp() && !sender.hasPerm("mod"))
                     (0, commands_1.fail)("You do not have permission to spectate on a non-pvp server.");
                 if (args.target !== sender && args.target.hasPerm("blockTrolling"))
                     (0, commands_1.fail)("Target player is insufficiently trollable.");
@@ -563,7 +563,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.play,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, lastUsedSuccessfully = _a.lastUsedSuccessfully, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (!config_1.Mode.attack())
+            if (!config_1.Gamemode.attack())
                 (0, commands_1.fail)("This command can only be run in Attack.");
             if (args.player) {
                 if (Date.now() - lastUsedSuccessfullySender < 20000)
@@ -592,7 +592,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true, "mod", true))
                 (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
-            if (config_1.Mode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
+            if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
             if (!sender.hasPerm("changeTeamExternal")) {
                 if (args.team.data().cores.size <= 0)
@@ -651,7 +651,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         requirements: [commands_1.Req.cooldown(3000)],
         handler: function (_a) {
             var sender = _a.sender, manager = _a.data.manager;
-            if (!config_1.Mode.survival())
+            if (!config_1.Gamemode.survival())
                 (0, commands_1.fail)("This command is only enabled in survival.");
             if (Vars.state.gameOver)
                 (0, commands_1.fail)("This game is already over."); //TODO command run states system
@@ -827,7 +827,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             requirements: [commands_1.Req.cooldown(10000)],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;
-                if (config_1.Mode.hexed())
+                if (config_1.Gamemode.hexed())
                     (0, commands_1.fail)("This command is disabled in Hexed.");
                 if (votes.get(sender))
                     (0, commands_1.fail)("You have already voted.");

@@ -45,7 +45,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FishPlayer = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
-var config = require("./config");
+var globals = require("./globals");
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -71,7 +71,7 @@ var FishPlayer = /** @class */ (function () {
             lastArgs: {},
             mode: "once",
         };
-        this.lastShownAd = config.maxTime;
+        this.lastShownAd = globals.maxTime;
         this.showAdNext = false;
         this.tstats = {
             //remember to clear this in updateSavedInfoFromPlayer!
@@ -342,7 +342,7 @@ var FishPlayer = /** @class */ (function () {
             });
             //I think this is a better spot for this
             if (fishPlayer.firstJoin())
-                (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].", ["[green]I understand and agree to these terms"], fishPlayer);
+                (0, menus_1.menu)("Rules for [#0000ff] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].", ["[green]I understand and agree to these terms"], fishPlayer);
         }
     };
     /** Must be run on PlayerJoinEvent. */
@@ -560,11 +560,11 @@ var FishPlayer = /** @class */ (function () {
         if (!this.hasPerm("bypassNameCheck") && (0, utils_1.isImpersonator)(this.name, this.ranksAtLeast("admin")))
             prefix += "[scarlet]SUSSY IMPOSTOR[]";
         if (this.marked())
-            prefix += config.MARKED_PREFIX;
+            prefix += config_1.prefixes.marked;
         else if (this.autoflagged)
             prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
         if (this.muted)
-            prefix += config.MUTED_PREFIX;
+            prefix += config_1.prefixes.muted;
         if (this.afk())
             prefix += "[orange]\uE876 AFK \uE876 | [white]";
         if (this.showRankPrefix) {
@@ -667,7 +667,7 @@ var FishPlayer = /** @class */ (function () {
                         (0, menus_1.menu)("[gold]Welcome to Fish Community!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "[#7289da]Discord"], _this, function (_a) {
                             var option = _a.option, sender = _a.sender;
                             if (option == "[#7289da]Discord") {
-                                Call.openURI(sender.con, config.discordURL);
+                                Call.openURI(sender.con, config_1.text.discordURL);
                             }
                         }, false);
                         _this.sendMessage("[gold]Welcome to Fish Community!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");
@@ -725,7 +725,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.sendWelcomeMessage = function () {
         var _this = this;
         if (this.marked())
-            this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nYour mark will expire automatically ").concat(this.unmarkTime == config.maxTime ? "in [red]never[]" : "[green]".concat((0, utils_1.formatTimeRelative)(this.unmarkTime), "[]"), ".\nWe apologize for the inconvenience."));
+            this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nYour mark will expire automatically ").concat(this.unmarkTime == globals.maxTime ? "in [red]never[]" : "[green]".concat((0, utils_1.formatTimeRelative)(this.unmarkTime), "[]"), ".\nWe apologize for the inconvenience."));
         else if (this.muted)
             this.sendMessage("[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
         else if (this.autoflagged)
@@ -733,14 +733,14 @@ var FishPlayer = /** @class */ (function () {
         else if (!this.showRankPrefix)
             this.sendMessage("[gold]Hello there! Your rank prefix is currently hidden. You can show it again by running [white]/vanish[].");
         else {
-            this.sendMessage(config.welcomeMessage());
+            this.sendMessage(config_1.text.welcomeMessage());
             //show tips
             var showAd = false;
             if (Date.now() - this.lastShownAd > 86400000) {
                 this.lastShownAd = Date.now();
                 this.showAdNext = true;
             }
-            else if (this.lastShownAd == config.maxTime) {
+            else if (this.lastShownAd == globals.maxTime) {
                 //this is the first time they joined, show ad the next time they join
                 this.showAdNext = true;
                 this.lastShownAd = Date.now();
@@ -749,9 +749,9 @@ var FishPlayer = /** @class */ (function () {
                 this.showAdNext = false;
                 showAd = true;
             }
-            var messagePool = showAd ? config.tips.ads : config.tips.normal;
-            if (config.isChristmas)
-                messagePool = messagePool.concat(config.tips.christmas);
+            var messagePool = showAd ? config_1.tips.ads : config_1.tips.normal;
+            if (config_1.Mode.isChristmas)
+                messagePool = messagePool.concat(config_1.tips.christmas);
             var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
             var message_1 = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
             //Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
@@ -1034,9 +1034,9 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.onBotWhack = function () {
         this.antiBotModePersist = true;
         if (Date.now() - this.lastBotWhacked > 3600000) //1 hour since last bot whack
-            api.sendModerationMessage("!!! <@&1040193678817378305> Possible ongoing bot attack in **".concat(config_1.Mode.name(), "**"));
+            api.sendModerationMessage("!!! <@&1040193678817378305> Possible ongoing bot attack in **".concat(config_1.Gamemode.name(), "**"));
         else if (Date.now() - this.lastBotWhacked > 600000) //10 minutes
-            api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_1.Mode.name(), "**"));
+            api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_1.Gamemode.name(), "**"));
         this.lastBotWhacked = Date.now();
         this.whackFlaggedPlayers();
     };
@@ -1117,7 +1117,7 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.prototype.setRank = function (rank) {
-        if (rank == ranks_1.Rank.pi && !config.localDebug)
+        if (rank == ranks_1.Rank.pi && !config_1.Mode.localDebug)
             throw new TypeError("Cannot find function setRank in object [object Object].");
         this.rank = rank;
         this.updateName();
@@ -1210,8 +1210,8 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.updateStopTime = function (time) {
         var _this = this;
         this.unmarkTime = Date.now() + time;
-        if (this.unmarkTime > config.maxTime)
-            this.unmarkTime = config.maxTime;
+        if (this.unmarkTime > globals.maxTime)
+            this.unmarkTime = globals.maxTime;
         api.addStopped(this.uuid, this.unmarkTime);
         FishPlayer.saveAll();
         //Set unmark timer
@@ -1235,7 +1235,7 @@ var FishPlayer = /** @class */ (function () {
             time: Date.now(),
         });
         if (duration > 60000)
-            this.setPunishedIP(config.stopAntiEvadeTime);
+            this.setPunishedIP(config_1.stopAntiEvadeTime);
         this.showRankPrefix = true;
         this.updateName();
         if (this.connected() && notify) {
@@ -1319,7 +1319,7 @@ var FishPlayer = /** @class */ (function () {
         this.showRankPrefix = true;
         this.updateName();
         this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
-        this.setPunishedIP(config.stopAntiEvadeTime);
+        this.setPunishedIP(config_1.stopAntiEvadeTime);
         this.addHistoryEntry({
             action: 'muted',
             by: by instanceof FishPlayer ? by.name : by,
@@ -1407,7 +1407,7 @@ var FishPlayer = /** @class */ (function () {
     //#region heuristics
     FishPlayer.prototype.activateHeuristics = function () {
         var _this = this;
-        if (config_1.Mode.hexed() || config_1.Mode.sandbox())
+        if (config_1.Gamemode.hexed() || config_1.Gamemode.sandbox())
             return;
         //Blocks broken check
         if (this.joinsLessThan(5)) {
@@ -1419,7 +1419,7 @@ var FishPlayer = /** @class */ (function () {
                     if (_this.tstats.blocksBroken > config_1.heuristics.blocksBrokenAfterJoin) {
                         tripped_1 = true;
                         (0, utils_1.logHTrip)(_this, "blocks broken after join", "".concat(_this.tstats.blocksBroken, "/").concat(config_1.heuristics.blocksBrokenAfterJoin));
-                        _this.stop("automod", config.maxTime, "Automatic stop due to suspicious activity");
+                        _this.stop("automod", globals.maxTime, "Automatic stop due to suspicious activity");
                         FishPlayer.messageAllExcept(_this, "[yellow]Player ".concat(_this.cleanedName, " has been stopped automatically due to suspected griefing.\nPlease look at ").concat(_this.position(), " and see if they were actually griefing. If they were not, please inform a staff member."));
                         FishPlayer.stats.heuristics.numTripped++;
                         FishPlayer.stats.heuristics.tripped[_this.uuid] = "waiting";

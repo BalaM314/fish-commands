@@ -5,8 +5,10 @@ This file contains all the console commands, which can be run through the server
 
 import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
-import * as config from "./config";
-import { Mode, mapRepoURLs, maxTime } from "./config";
+import { Mode } from "./config";
+import * as globals from "./globals";
+import { Gamemode, mapRepoURLs } from "./config";
+import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
@@ -20,8 +22,8 @@ export const commands = consoleCommandList({
 		args: ["player:player", "rank:rank"],
 		description: "Set a player's rank.",
 		handler({args, outputSuccess, f}){
-			if(args.rank == Rank.pi && !config.localDebug) fail(f`Rank ${args.rank} is immutable.`);
-			if(args.player.immutable() && !config.localDebug) fail(f`Player ${args.player} is immutable.`);
+			if(args.rank == Rank.pi && !Mode.localDebug) fail(f`Rank ${args.rank} is immutable.`);
+			if(args.player.immutable() && !Mode.localDebug) fail(f`Player ${args.player} is immutable.`);
 
 			args.player.setRank(args.rank);
 			logAction(`set rank to ${args.rank.name} for`, "console", args.player);
@@ -164,7 +166,7 @@ export const commands = consoleCommandList({
 				if(info) logAction("whacked", "console", info);
 				else logAction(`console ip-whacked ${args.target}`);
 
-				api.addStopped(args.target, config.maxTime);
+				api.addStopped(args.target, globals.maxTime);
 				if(admins.isIDBanned(args.target)){
 					api.ban({uuid: args.target});
 					output(`UUID &c"${args.target}"&fr is already banned. Ban was synced to other servers.`);
@@ -193,7 +195,7 @@ export const commands = consoleCommandList({
 					admins.banPlayerIP(ip);
 					logAction(`console whacked ${Strings.stripColors(player.name)} (\`${uuid}\`/\`${ip}\`)`);
 					api.ban({uuid, ip});
-					api.addStopped(player.uuid(), config.maxTime);
+					api.addStopped(player.uuid(), globals.maxTime);
 					output(`&lrIP &c"${ip}"&lr was banned. UUID &c"${uuid}"&lr was banned. Ban was synced to other servers.`);
 				}
 			}
@@ -351,7 +353,7 @@ export const commands = consoleCommandList({
 			const commandsDir = Vars.modDirectory.child("fish-commands");
 			if(!commandsDir.exists())
 				fail(`Fish commands directory at path ${commandsDir.absolutePath()} does not exist!`);
-			if(config.localDebug) fail(`Cannot update in local debug mode.`);
+			if(Mode.localDebug) fail(`Cannot update in local debug mode.`);
 			let fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
 			if(Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)){
 				//fish-commands is linked to the build directory of somewhere else
@@ -378,7 +380,7 @@ export const commands = consoleCommandList({
 		args: ["time:number?"],
 		description: "Restarts the server.",
 		handler({args}){
-			if(Mode.pvp()){
+			if(Gamemode.pvp()){
 				if(Groups.player.isEmpty()){
 					Log.info(`Restarting immediately as no players are online.`);
 					serverRestartLoop(0);
@@ -615,7 +617,7 @@ ${FishPlayer.mapPlayers(p =>
 		args: ["filename:string", "map:string"],
 		description: "Downloads a map from URL.",
 		handler({args:{filename, map}, output, outputFail, outputSuccess}){
-			fail(`This command was removed, please add it to the github repo: ${mapRepoURLs[Mode.name()]}`);
+			fail(`This command was removed, please add it to the github repo: ${mapRepoURLs[Gamemode.name()]}`);
 			if(!/^https?:\/\//i.test(map)) fail(`Argument must be a URL starting with https:// or http://`);
 			if(!/\.msav$/.test(filename)) fail(`Filename must end with .msav`);
 			if(Strings.sanitizeFilename(filename) != filename) fail(`Filename contains special characters, please use "${Strings.sanitizeFilename(filename)}" instead`);
