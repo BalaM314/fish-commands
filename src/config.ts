@@ -205,6 +205,7 @@ export const tips = {
 		`Staff members will have the following prefixes in front of their name: ${Rank.manager.prefix}, ${Rank.admin.prefix}, ${Rank.mod.prefix}`,
 		`Wave cooldown too long? Skip the wait with [white]/vnw[]`,
 		`You can tell new players not to break power voids with [white]/void[]`,
+		`You can add [pink]color[] to things with color tags! Try typing "[[${["pink", "green", "cyan", "acid", "royal", "coral"][Math.floor(Math.random() * 6)]}]Hello" in chat, and see what happens!`
 	],
 	staff: [
 
