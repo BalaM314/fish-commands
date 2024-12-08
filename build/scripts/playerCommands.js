@@ -222,10 +222,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 Call.connect.apply(Call, __spreadArray([target.con], __read(args.server.split(":")), false));
             }
             else {
-                var server = (_c = config_1.FishServer.byName(args.server)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServer.all.map(function (s) { return s.name; }).join(", ")));
+                var unknownServerMessage = "Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServer.all.filter(function (s) { return !s.requiredPerm || sender.hasPerm(s.requiredPerm); }).map(function (s) { return s.name; }).join(", "));
+                var server = (_c = config_1.FishServer.byName(args.server)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(unknownServerMessage);
                 //Pretend the server doesn't exist
                 if (server.requiredPerm && !sender.hasPerm(server.requiredPerm))
-                    (0, commands_1.fail)("Unknown server ".concat(args.server, ". Valid options: ").concat(config_1.FishServer.all.map(function (s) { return s.name; }).join(", ")));
+                    (0, commands_1.fail)(unknownServerMessage);
                 if (target == sender)
                     players_1.FishPlayer.messageAllWithPerm(server.requiredPerm, "".concat(sender.name, "[magenta] has gone to the ").concat(server.name, " server. Use [cyan]/").concat(server.name, " [magenta]to join them!"));
                 Call.connect(target.con, server.ip, server.port);

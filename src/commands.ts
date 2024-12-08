@@ -4,7 +4,7 @@ This file contains the commands system.
 */
 //Behold, the power of typescript!
 
-import { Gamemode, GamemodeName } from "./config";
+import { FColor, Gamemode, GamemodeName, text } from "./config";
 import { ipPattern, uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { FishPlayer } from "./players";
@@ -78,7 +78,7 @@ export class Perm {
 	static trusted = Perm.fromRank(Rank.trusted);
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
-	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a [pink]Fish Membership[] to use this command. Subscribe on the [sky]/discord[yellow]!`);
+	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a ${FColor.member`Fish Membership`} to use this command. Get a Fish Membership at[sky] ${text.membershipURL} []`);
 	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast("mod"));
 	static bypassChatFilter = new Perm("bypassChatFilter", "admin");
 	static seeMutedMessages = new Perm("seeMutedMessages", fishP => fishP.muted || fishP.autoflagged || fishP.ranksAtLeast("mod"));

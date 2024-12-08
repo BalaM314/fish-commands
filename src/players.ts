@@ -6,7 +6,7 @@ This file contains the FishPlayer class, and many player-related functions.
 import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as globals from "./globals";
-import { Gamemode, heuristics, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
+import { FColor, Gamemode, heuristics, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
 import { uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
@@ -523,7 +523,7 @@ export class FishPlayer {
 		let prefix = '';
 		if(!this.hasPerm("bypassNameCheck") && isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
 		if(this.marked()) prefix += prefixes.marked;
-		else if(this.autoflagged) prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
+		else if(this.autoflagged) prefix += prefixes.flagged;
 		if(this.muted) prefix += prefixes.muted;
 		if(this.afk()) prefix += "[orange]\uE876 AFK \uE876 | [white]";
 		if(this.showRankPrefix){
@@ -600,12 +600,23 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 						api.sendStaffMessage(`Autoflagged player ${this.name}[cyan] for suspected vpn!`, "AntiVPN");
 						FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);
 						Log.warn(`Player ${this.name} (${this.uuid}) was autoflagged.`);
-						menu("[gold]Welcome to Fish Community!", `[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`, ["Close", "[#7289da]Discord"], this, ({option, sender}) => {
-							if(option == "[#7289da]Discord"){
-								Call.openURI(sender.con, text.discordURL);
-							}
-						}, false);
-						this.sendMessage(`[gold]Welcome to Fish Community!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.`);
+						menu(
+							"[gold]Welcome to Fish Community!",
+							`[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ${FColor.discord`Join our Discord`} to request a staff member come online if none are on.`,
+							["Close", "Discord"],
+							this,
+							({option, sender}) => {
+								if(option == "Discord"){
+									Call.openURI(sender.con, text.discordURL);
+								}
+							},
+							false,
+							str => ({
+								"Close": "Close",
+								"Discord": FColor.discord("Discord")
+							}[str])
+						);
+						this.sendMessage(`[gold]Welcome to Fish Community!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ${FColor.discord`Join our Discord`} to request a staff member come online if none are on.`);
 					}
 				} else if(info.timesJoined < 5){
 					FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn.`);
@@ -659,18 +670,19 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 		if(this.trail) Call.effect(Fx[this.trail.type], this.player!.x, this.player!.y, 0, this.trail.color);
 	}
 	sendWelcomeMessage(){
+		const appealLine = `To appeal, ${FColor.discord`join our discord`} with ${FColor.discord`/discord`}, or ask a ${Rank.mod.color}staff member[] in-game.`;
 		if(this.marked()) this.sendMessage(
 `[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.
-To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
+${appealLine}
 Your mark will expire automatically ${this.unmarkTime == globals.maxTime ? "in [red]never[]" : `[green]${formatTimeRelative(this.unmarkTime)}[]`}.
 We apologize for the inconvenience.`
 		); else if(this.muted) this.sendMessage(
 `[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.
-To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
+${appealLine}
 We apologize for the inconvenience.`
 		); else if(this.autoflagged) this.sendMessage(
 `[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.
-To appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ${Rank.mod.color}staff member[] in-game.
+${appealLine}
 We apologize for the inconvenience.`
 		); else if(!this.showRankPrefix) this.sendMessage(
 `[gold]Hello there! Your rank prefix is currently hidden. You can show it again by running [white]/vanish[].`

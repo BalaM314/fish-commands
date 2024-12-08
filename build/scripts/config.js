@@ -3,6 +3,10 @@
 Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains configurable constants.
 */
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -170,14 +174,14 @@ var FishServer = /** @class */ (function () {
     FishServer.byName = function (input) {
         var _a;
         input = input.toLowerCase();
-        return (_a = FishServer.all.find(function (s) { return s.aliases.includes(input); })) !== null && _a !== void 0 ? _a : null;
+        return (_a = FishServer.all.find(function (s) { return s.aliases.concat(s.name).includes(input); })) !== null && _a !== void 0 ? _a : null;
     };
     FishServer.all = [];
-    FishServer.attack = new FishServer("attack", "162.248.100.98", "6567", ["attack", "attac", "atack", "atak", "atck", "atk", "a"]);
-    FishServer.survival = new FishServer("survival", "162.248.101.95", "6567", ["survival", "surviv", "surv", "sur", "su", "s", "sl"]);
-    FishServer.pvp = new FishServer("pvp", "162.248.100.133", "6567", ["pvp", "pv", "p", "playerversusplayer"]);
+    FishServer.attack = new FishServer("attack", "162.248.100.98", "6567", ["attac", "atack", "atak", "atck", "atk", "a"]);
+    FishServer.survival = new FishServer("survival", "162.248.101.95", "6567", ["surviv", "surv", "sur", "su", "s", "sl"]);
+    FishServer.pvp = new FishServer("pvp", "162.248.100.133", "6567", ["pv", "p", "v", "playerversusplayer"]);
     FishServer.sandbox = new FishServer("sandbox", "162.248.101.53", "6567", ["sand", "box", "sa", "sb"]);
-    FishServer.hardcore = new FishServer("hardcore", __spreadArray([], __read("101.201.842.261"), false).reverse().join(), "6567", ["hardcore", "hc"], "hardcore");
+    FishServer.hardcore = new FishServer("hardcore", __spreadArray([], __read("101.201.842.261"), false).reverse().join(), "6567", ["hc", "hardc", "hcore"], "hardcore");
     return FishServer;
 }());
 exports.FishServer = FishServer;
@@ -196,10 +200,12 @@ exports.Gamemode = {
 //#region text content
 exports.prefixes = {
     marked: '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]',
+    flagged: '[yellow]\u26A0[orange]Flagged[]\u26A0[]',
     muted: '[white](muted)',
 };
 exports.text = {
     discordURL: "https://discord.gg/VpzcYSQ33Y",
+    membershipURL: "https://patreon.com/FishServers",
     welcomeMessage: function () { return (0, utils_1.random)([
         "[gold]Welcome![]"
     ]); },
@@ -212,21 +218,31 @@ exports.text = {
 exports.FColor = (function (data) {
     return Object.fromEntries(Object.entries(data).map(function (_a) {
         var _b = __read(_a, 2), k = _b[0], c = _b[1];
-        return [k, function (str) { return str ? "".concat(c).concat(str, "[]") : c; }];
+        return [k, function (str) {
+                var varChunks = [];
+                for (var _i = 1; _i < arguments.length; _i++) {
+                    varChunks[_i - 1] = arguments[_i];
+                }
+                return str != null ?
+                    "".concat(c).concat(Array.isArray(str) ? String.raw.apply(String, __spreadArray([{ raw: str }], __read(varChunks), false)) : str, "[]")
+                    : c;
+            }
+        ];
     }));
 })({
     discord: "[#7289DA]",
     /** Used for tips and welcome messages. */
     tip: "[gold]",
+    member: "[pink]",
 });
 /** Tips that are shown to players randomly. */
 exports.tips = {
     ads: [
-        "[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
-        "[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
-        "[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at[sky] https://patreon.com/FishServers []",
-        "Want to support the server and get some perks? Get a [pink]Fish Membership[] at[sky] https://patreon.com/FishServers []",
-        "Join our [#7289da]Discord server[]! [#7289da]".concat(exports.text.discordURL, "[] or type [#7289da]/discord[]"),
+        "".concat(exports.FColor.member(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Fish Membership"], ["Fish Membership"]))), " subscribers can access the ").concat(exports.FColor.member(templateObject_2 || (templateObject_2 = __makeTemplateObject(["/pet"], ["/pet"]))), " command, which spawns a merui that follows you around. Get a Fish Membership at[sky] ").concat(exports.text.membershipURL, " []"),
+        "".concat(exports.FColor.member(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Fish Membership"], ["Fish Membership"]))), " subscribers can use the ").concat(exports.FColor.member(templateObject_4 || (templateObject_4 = __makeTemplateObject(["/highlight"], ["/highlight"]))), " command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] ").concat(exports.text.membershipURL, " []"),
+        "".concat(exports.FColor.member(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Fish Membership"], ["Fish Membership"]))), " subscribers can use the ").concat(exports.FColor.member(templateObject_6 || (templateObject_6 = __makeTemplateObject(["/rainbow"], ["/rainbow"]))), " command, which makes your name flash different colors. Get a Fish Membership at[sky] ").concat(exports.text.membershipURL, " []"),
+        "Want to support the server and get some perks? Get a ".concat(exports.FColor.member(templateObject_7 || (templateObject_7 = __makeTemplateObject(["Fish Membership"], ["Fish Membership"]))), " at[sky] ").concat(exports.text.membershipURL, " []"),
+        "Join our ".concat(exports.FColor.discord(templateObject_8 || (templateObject_8 = __makeTemplateObject(["Discord server"], ["Discord server"]))), "[]! ").concat(exports.FColor.discord(exports.text.discordURL), " or type ").concat(exports.FColor.discord(templateObject_9 || (templateObject_9 = __makeTemplateObject(["/discord"], ["/discord"])))),
     ],
     normal: [
         //commands
@@ -254,8 +270,8 @@ exports.tips = {
         //misc
         "Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!",
         "Griefers will often be found with the text ".concat(exports.prefixes.marked, " prepended to their name."),
-        "Players marked as [yellow]\u26A0[orange]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.",
-        "Need to appeal a moderation action? Join the discord at [#7289da]".concat(exports.text.discordURL, "[] or type [#7289da]/discord[]"),
+        "Players marked as ".concat(exports.prefixes.flagged, " have been flagged as suspicious by our detection systems, but they may not be griefers."),
+        "Need to appeal a moderation action? Join the discord at ".concat(exports.FColor.discord(exports.text.discordURL), " or type /discord"),
         "Want to send the phrase [white]\"/command\"[] in chat? Type [white]\"./command\"[] and the [white].[] will be removed.",
         "All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.",
         "Players with a ".concat(ranks_1.Rank.trusted.prefix, " in front of their name aren't staff members, but they do have extra powers."),
@@ -280,4 +296,5 @@ exports.rules = [
     "#10: [grey]No discussion of self-harm or suicide unless you are asking for help. [red]DO NOT joke about such topics.[grey] If you seek help, our staff team will do our best to help you but will still refer you to the crisis links we have available as we are not professionals. We can and will still try our best to listen, and help you with the small things you are going through in life.",
     "Failure to follow these rules will result in consequences: mostly a Marked Griefer tag for any game disruption, mute for broken chat rules, and bans if there are repeated offenses or bypasses (up to moderator discretion)."
 ].map(function (r) { return "[white]".concat(r); });
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9;
 //#endregion

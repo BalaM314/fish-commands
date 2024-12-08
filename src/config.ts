@@ -157,17 +157,17 @@ export class FishServer {
 	static attack = new FishServer(
 		"attack",
 		"162.248.100.98", "6567",
-		["attack", "attac", "atack", "atak", "atck", "atk", "a"]
+		["attac", "atack", "atak", "atck", "atk", "a"]
 	);
 	static survival = new FishServer(
 		"survival",
 		"162.248.101.95", "6567",
-		["survival", "surviv", "surv", "sur", "su", "s", "sl"]
+		["surviv", "surv", "sur", "su", "s", "sl"]
 	);
 	static pvp = new FishServer(
 		"pvp",
 		"162.248.100.133", "6567",
-		["pvp", "pv", "p", "playerversusplayer"]
+		["pv", "p", "v", "playerversusplayer"]
 	);
 	static sandbox = new FishServer(
 		"sandbox",
@@ -177,12 +177,12 @@ export class FishServer {
 	static hardcore = new FishServer(
 		"hardcore",
 		[..."101.201.842.261"].reverse().join(), "6567",
-		["hardcore", "hc"],
+		["hc", "hardc", "hcore"],
 		"hardcore"
 	);
 	static byName(input:string):FishServer | null {
 		input = input.toLowerCase();
-		return FishServer.all.find(s => s.aliases.includes(input)) ?? null;
+		return FishServer.all.find(s => s.aliases.concat(s.name).includes(input)) ?? null;
 	}
 };
 
@@ -204,11 +204,13 @@ export const Gamemode = {
 
 export const prefixes = {
 	marked: '[yellow]\u26A0[scarlet]Marked Griefer[]\u26A0[]',
+	flagged: '[yellow]\u26A0[orange]Flagged[]\u26A0[]',
 	muted: '[white](muted)',
 };
 
 export const text = {
 	discordURL: `https://discord.gg/VpzcYSQ33Y`,
+	membershipURL: `https://patreon.com/FishServers`,
 	welcomeMessage: () => random([
 		`[gold]Welcome![]`
 	]),
@@ -223,23 +225,32 @@ export const text = {
 
 
 //TODO use this
-export const FColor = (<T extends string>(data:Record<T, string>):Record<T, (str?:string) => string> =>
+export const FColor = (<T extends string>(data:Record<T, string>):Record<T, {
+	(): string;
+	(str?:string): string;
+	(stringChunks: readonly string[], ...varChunks: readonly (string | number)[]): string;
+}> =>
 	Object.fromEntries(Object.entries(data).map(([k, c]) =>
-		[k, (str?:string) => str ? `${c}${str}[]` : c]
+		[k, (str?:string | readonly string[], ...varChunks: readonly (string | number)[]) =>
+			str != null ?
+				`${c}${Array.isArray(str) ? String.raw({ raw: str }, ...varChunks) : str}[]`
+			: c
+		]
 	)
 ))({
 	discord: "[#7289DA]",
 	/** Used for tips and welcome messages. */
 	tip: "[gold]",
+	member: "[pink]",
 });
 /** Tips that are shown to players randomly. */
 export const tips = {
 	ads: [
-		`[pink]Fish Membership[] subscribers can access the [pink]/pet[] command, which spawns a merui that follows you around. Get a Fish Membership at[sky] https://patreon.com/FishServers []`,
-		`[pink]Fish Membership[] subscribers can use the [pink]/highlight[] command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] https://patreon.com/FishServers []`,
-		`[pink]Fish Membership[] subscribers can use the [pink]/rainbow[] command, which makes your name flash different colors. Get a Fish Membership at[sky] https://patreon.com/FishServers []`,
-		`Want to support the server and get some perks? Get a [pink]Fish Membership[] at[sky] https://patreon.com/FishServers []`,
-		`Join our [#7289da]Discord server[]! [#7289da]${text.discordURL}[] or type [#7289da]/discord[]`,
+		`${FColor.member`Fish Membership`} subscribers can access the ${FColor.member`/pet`} command, which spawns a merui that follows you around. Get a Fish Membership at[sky] ${text.membershipURL} []`,
+		`${FColor.member`Fish Membership`} subscribers can use the ${FColor.member`/highlight`} command, which turns your chat messages to a color of your choice. Get a Fish Membership at[sky] ${text.membershipURL} []`,
+		`${FColor.member`Fish Membership`} subscribers can use the ${FColor.member`/rainbow`} command, which makes your name flash different colors. Get a Fish Membership at[sky] ${text.membershipURL} []`,
+		`Want to support the server and get some perks? Get a ${FColor.member`Fish Membership`} at[sky] ${text.membershipURL} []`,
+		`Join our ${FColor.discord`Discord server`}[]! ${FColor.discord(text.discordURL)} or type ${FColor.discord`/discord`}`,
 	],
 	normal: [
 		//commands
@@ -267,8 +278,8 @@ export const tips = {
 		//misc
 		`Anyone attempting to impersonate a ranked player, or the server, will have [scarlet]SUSSY IMPOSTOR[] prepended to their name. Beware!`,
 		`Griefers will often be found with the text ${prefixes.marked} prepended to their name.`,
-		`Players marked as [yellow]\u26A0[orange]Flagged[]\u26A0[] have been flagged as suspicious by our detection systems, but they may not be griefers.`,
-		`Need to appeal a moderation action? Join the discord at [#7289da]${text.discordURL}[] or type [#7289da]/discord[]`,
+		`Players marked as ${prefixes.flagged} have been flagged as suspicious by our detection systems, but they may not be griefers.`,
+		`Need to appeal a moderation action? Join the discord at ${FColor.discord(text.discordURL)} or type /discord`,
 		`Want to send the phrase [white]"/command"[] in chat? Type [white]"./command"[] and the [white].[] will be removed.`,
 		`All commands with a player as an argument support using a menu to specify the player. Just run the command leaving the argument blank, and a menu will show up.`,
 		`Players with a ${Rank.trusted.prefix} in front of their name aren't staff members, but they do have extra powers.`,

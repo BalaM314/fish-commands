@@ -3,6 +3,10 @@
 Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains the FishPlayer class, and many player-related functions.
 */
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -562,7 +566,7 @@ var FishPlayer = /** @class */ (function () {
         if (this.marked())
             prefix += config_1.prefixes.marked;
         else if (this.autoflagged)
-            prefix += "[yellow]\u26A0[orange]Flagged[]\u26A0[]";
+            prefix += config_1.prefixes.flagged;
         if (this.muted)
             prefix += config_1.prefixes.muted;
         if (this.afk())
@@ -664,13 +668,16 @@ var FishPlayer = /** @class */ (function () {
                         api.sendStaffMessage("Autoflagged player ".concat(_this.name, "[cyan] for suspected vpn!"), "AntiVPN");
                         FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
                         Log.warn("Player ".concat(_this.name, " (").concat(_this.uuid, ") was autoflagged."));
-                        (0, menus_1.menu)("[gold]Welcome to Fish Community!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.", ["Close", "[#7289da]Discord"], _this, function (_a) {
+                        (0, menus_1.menu)("[gold]Welcome to Fish Community!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ".concat(config_1.FColor.discord(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Join our Discord"], ["Join our Discord"]))), " to request a staff member come online if none are on."), ["Close", "Discord"], _this, function (_a) {
                             var option = _a.option, sender = _a.sender;
-                            if (option == "[#7289da]Discord") {
+                            if (option == "Discord") {
                                 Call.openURI(sender.con, config_1.text.discordURL);
                             }
-                        }, false);
-                        _this.sendMessage("[gold]Welcome to Fish Community!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. [#7289da]Join our Discord[] to request a staff member come online if none are on.");
+                        }, false, function (str) { return ({
+                            "Close": "Close",
+                            "Discord": config_1.FColor.discord("Discord")
+                        }[str]); });
+                        _this.sendMessage("[gold]Welcome to Fish Community!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ".concat(config_1.FColor.discord(templateObject_2 || (templateObject_2 = __makeTemplateObject(["Join our Discord"], ["Join our Discord"]))), " to request a staff member come online if none are on."));
                     }
                 }
                 else if (info.timesJoined < 5) {
@@ -724,12 +731,13 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.prototype.sendWelcomeMessage = function () {
         var _this = this;
+        var appealLine = "To appeal, ".concat(config_1.FColor.discord(templateObject_3 || (templateObject_3 = __makeTemplateObject(["join our discord"], ["join our discord"]))), " with ").concat(config_1.FColor.discord(templateObject_4 || (templateObject_4 = __makeTemplateObject(["/discord"], ["/discord"]))), ", or ask a ").concat(ranks_1.Rank.mod.color, "staff member[] in-game.");
         if (this.marked())
-            this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nYour mark will expire automatically ").concat(this.unmarkTime == globals.maxTime ? "in [red]never[]" : "[green]".concat((0, utils_1.formatTimeRelative)(this.unmarkTime), "[]"), ".\nWe apologize for the inconvenience."));
+            this.sendMessage("[gold]Hello there! You are currently [scarlet]marked as a griefer[]. You cannot do anything in-game while marked.\n".concat(appealLine, "\nYour mark will expire automatically ").concat(this.unmarkTime == globals.maxTime ? "in [red]never[]" : "[green]".concat((0, utils_1.formatTimeRelative)(this.unmarkTime), "[]"), ".\nWe apologize for the inconvenience."));
         else if (this.muted)
-            this.sendMessage("[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
+            this.sendMessage("[gold]Hello there! You are currently [red]muted[]. You can still play normally, but cannot send chat messages to other non-staff players while muted.\n".concat(appealLine, "\nWe apologize for the inconvenience."));
         else if (this.autoflagged)
-            this.sendMessage("[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.\nTo appeal, [#7289da]join our discord[] with [#7289da]/discord[], or ask a ".concat(ranks_1.Rank.mod.color, "staff member[] in-game.\nWe apologize for the inconvenience."));
+            this.sendMessage("[gold]Hello there! You are currently [red]flagged as suspicious[]. You cannot do anything in-game.\n".concat(appealLine, "\nWe apologize for the inconvenience."));
         else if (!this.showRankPrefix)
             this.sendMessage("[gold]Hello there! Your rank prefix is currently hidden. You can show it again by running [white]/vanish[].");
         else {
@@ -1465,3 +1473,4 @@ var FishPlayer = /** @class */ (function () {
     return FishPlayer;
 }());
 exports.FishPlayer = FishPlayer;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4;

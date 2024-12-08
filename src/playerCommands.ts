@@ -180,12 +180,13 @@ export const commands = commandList({
 				//direct connect
 				Call.connect(target.con, ...args.server.split(":"));
 			} else {
+				const unknownServerMessage = `Unknown server ${args.server}. Valid options: ${FishServer.all.filter(s => !s.requiredPerm || sender.hasPerm(s.requiredPerm)).map(s => s.name).join(", ")}`;
 				const server = FishServer.byName(args.server)
-					?? fail(`Unknown server ${args.server}. Valid options: ${FishServer.all.map(s => s.name).join(", ")}`);
+					?? fail(unknownServerMessage);
 
 				//Pretend the server doesn't exist
 				if(server.requiredPerm && !sender.hasPerm(server.requiredPerm))
-					fail(`Unknown server ${args.server}. Valid options: ${FishServer.all.map(s => s.name).join(", ")}`);
+					fail(unknownServerMessage);
 
 				if(target == sender)
 					FishPlayer.messageAllWithPerm(server.requiredPerm, `${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
