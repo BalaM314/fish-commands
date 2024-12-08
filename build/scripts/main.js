@@ -1,8 +1,9 @@
-/**
- * Main file for Fish Commands.
- * Does not do anything other than requiring index.js.
- */
-//WARNING: changes to this file must be manually copied to /build/main.js
+/*
+Copyright © BalaM314, 2024. All Rights Reserved.
+This is a special file which is automatically loaded by the game server.
+It only contains polyfills, and requires index.js.
+*/
+//WARNING: changes to this file must be manually copied to /build/scripts/main.js
 
 importPackage(Packages.arc);
 importClass(Packages.arc.util.CommandHandler);
@@ -29,6 +30,15 @@ Array.prototype.flat = function(depth){
 	return depth > 0 ? this.reduce((acc, item) =>
 		acc.concat(Array.isArray(item) ? item.flat(depth - 1) : item)
 	, []) : this;
+}
+String.raw = function(callSite){
+	const substitutions = Array.prototype.slice.call(arguments, 1);
+  return Array.from(callSite.raw).map((chunk, i) => {
+    if (callSite.raw.length <= i) {
+      return chunk;
+    }
+    return substitutions[i - 1] ? substitutions[i - 1] + chunk : chunk;
+  }).join('');
 }
 //Fix rhino regex
 if(/ae?a/.test("aeea")){
