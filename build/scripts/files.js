@@ -10,6 +10,7 @@ exports.updateMaps = updateMaps;
 var config_1 = require("./config");
 var promise_1 = require("./promise");
 var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
 function fetchGithubContents() {
     return new promise_1.Promise(function (resolve, reject) {
@@ -29,7 +30,7 @@ function fetchGithubContents() {
 }
 function downloadFile(address, filename) {
     if (!/^https?:\/\//i.test(address)) {
-        (0, utils_1.crash)("Invalid address, please start with 'http://' or 'https://'");
+        (0, funcs_1.crash)("Invalid address, please start with 'http://' or 'https://'");
     }
     return new promise_1.Promise(function (resolve, reject) {
         var instream = null;

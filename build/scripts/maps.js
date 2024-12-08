@@ -20,14 +20,14 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
 var FMap = /** @class */ (function () {
     function FMap(map) {
         this.map = map;
         this.runs = [];
     }
     FMap.read = function (data) {
-        return utils_1.StringIO.read(data, function (str) { return new FMap(null); }); //TODO
+        return funcs_1.StringIO.read(data, function (str) { return new FMap(null); }); //TODO
     };
     FMap.prototype.write = function () {
     };

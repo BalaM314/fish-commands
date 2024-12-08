@@ -11,7 +11,10 @@ import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { capitalizeText, formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, StringBuilder, StringIO, teleportPlayer, to2DArray } from './utils';
+import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
+import { capitalizeText } from './funcs';
+import { StringBuilder, StringIO } from './funcs';
+import { to2DArray } from './funcs';
 import { VoteManager } from './votes';
 
 export const commands = commandList({

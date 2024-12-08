@@ -36,7 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.rules = exports.tips = exports.FColor = exports.text = exports.prefixes = exports.Gamemode = exports.FishServer = exports.mapRepoURLs = exports.backendIP = exports.Mode = exports.stopAntiEvadeTime = exports.heuristics = exports.adminNames = exports.multiCharSubstitutions = exports.substitutions = exports.bannedWords = void 0;
 var globals_1 = require("./globals");
 var ranks_1 = require("./ranks");
-var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
 function processBannedWordList(words) {
     return words.map(function (word) {
         return (typeof word == "string" || word instanceof RegExp) ?
@@ -206,7 +206,7 @@ exports.prefixes = {
 exports.text = {
     discordURL: "https://discord.gg/VpzcYSQ33Y",
     membershipURL: "https://patreon.com/FishServers",
-    welcomeMessage: function () { return (0, utils_1.random)([
+    welcomeMessage: function () { return (0, funcs_1.random)([
         "[gold]Welcome![]"
     ]); },
     chatFilterReplacement: {

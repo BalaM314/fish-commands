@@ -14,7 +14,8 @@ import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, setToArray, updateBans } from "./utils";
+import { colorNumber, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, updateBans } from "./utils";
+import { setToArray } from './funcs';
 
 
 export const commands = consoleCommandList({

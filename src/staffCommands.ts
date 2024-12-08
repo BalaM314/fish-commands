@@ -13,7 +13,12 @@ import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { addToTileHistory, colorBadBoolean, crash, escapeStringColorsClient, escapeTextDiscord, formatTime, formatTimeRelative, getAntiBotInfo, logAction, parseError, serverRestartLoop, setToArray, untilForever, updateBans } from "./utils";
+import { addToTileHistory, colorBadBoolean, formatTime, formatTimeRelative, getAntiBotInfo, logAction, serverRestartLoop, untilForever, updateBans } from "./utils";
+import { parseError } from './funcs';
+import { escapeStringColorsClient } from './funcs';
+import { escapeTextDiscord } from './funcs';
+import { crash } from './funcs';
+import { setToArray } from './funcs';
 
 const spawnedUnits:Unit[] = [];
 

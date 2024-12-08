@@ -7,7 +7,8 @@ Maintenance: @author BalaM314
 
 import { mapRepoURLs, Gamemode } from "./config";
 import { Promise } from "./promise";
-import { crash, getHash } from "./utils";
+import { getHash } from "./utils";
+import { crash } from './funcs';
 
 
 

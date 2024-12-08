@@ -10,7 +10,11 @@ import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
-import { crash, escapeStringColorsClient, escapeStringColorsServer, formatModeName, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseError, parseTimeString, tagProcessorPartial } from "./utils";
+import { formatModeName, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseTimeString } from "./utils";
+import { tagProcessorPartial } from './funcs';
+import { parseError } from './funcs';
+import { escapeStringColorsClient, escapeStringColorsServer } from './funcs';
+import { crash } from './funcs';
 
 const hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
 

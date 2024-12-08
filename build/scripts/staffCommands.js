@@ -56,6 +56,11 @@ var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
+var funcs_2 = require("./funcs");
+var funcs_3 = require("./funcs");
+var funcs_4 = require("./funcs");
+var funcs_5 = require("./funcs");
 var spawnedUnits = [];
 exports.commands = (0, commands_1.commandList)({
     warn: {
@@ -249,9 +254,9 @@ exports.commands = (0, commands_1.commandList)({
             }
             var possiblePlayers;
             if (args.name) {
-                possiblePlayers = (0, utils_1.setToArray)(admins.searchNames(args.name));
+                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
                 if (possiblePlayers.length > maxPlayers) {
-                    var exactPlayers = (0, utils_1.setToArray)(admins.findByName(args.name));
+                    var exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
                     if (exactPlayers.length > 0) {
                         possiblePlayers = exactPlayers;
                     }
@@ -413,7 +418,7 @@ exports.commands = (0, commands_1.commandList)({
                 var data_1;
                 if ((data_1 = admins.getInfoOptional(uuid_1)) != null && data_1.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
-                var name = data_1 ? "".concat((0, utils_1.escapeStringColorsClient)(data_1.lastName), " (").concat(uuid_1, "/").concat(data_1.lastIP, ")") : uuid_1;
+                var name = data_1 ? "".concat((0, funcs_2.escapeStringColorsClient)(data_1.lastName), " (").concat(uuid_1, "/").concat(data_1.lastIP, ")") : uuid_1;
                 (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
                     var confirm = _a.option;
                     if (confirm != "[red]Yes")
@@ -425,7 +430,7 @@ exports.commands = (0, commands_1.commandList)({
                         api.ban({ ip: ip, uuid: uuid_1 });
                         Log.info("".concat(uuid_1, "/").concat(ip, " was banned."));
                         (0, utils_1.logAction)("banned", sender, data_1);
-                        outputSuccess(f(templateObject_27 || (templateObject_27 = __makeTemplateObject(["Banned player ", " (", "/", ")"], ["Banned player ", " (", "/", ")"])), (0, utils_1.escapeStringColorsClient)(data_1.lastName), uuid_1, ip));
+                        outputSuccess(f(templateObject_27 || (templateObject_27 = __makeTemplateObject(["Banned player ", " (", "/", ")"], ["Banned player ", " (", "/", ")"])), (0, funcs_2.escapeStringColorsClient)(data_1.lastName), uuid_1, ip));
                         //TODO add way to specify whether to activate or escape color tags
                     }
                     else {
@@ -463,7 +468,7 @@ exports.commands = (0, commands_1.commandList)({
                 return;
             }
             //Overload 3: ban by menu
-            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, utils_1.setToArray)(Groups.player), sender, function (_a) {
+            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_5.setToArray)(Groups.player), sender, function (_a) {
                 var option = _a.option;
                 if (option.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
@@ -610,9 +615,9 @@ exports.commands = (0, commands_1.commandList)({
             var sender = _a.sender, args = _a.args, output = _a.output, f = _a.f;
             var info = args.target.info();
             var names = args.showColors
-                ? info.names.map(utils_1.escapeStringColorsClient).toString(", ")
+                ? info.names.map(funcs_2.escapeStringColorsClient).toString(", ")
                 : __spreadArray([], __read(new Set(info.names.map(function (n) { return Strings.stripColors(n); }).toArray())), false).join(", ");
-            output(f(templateObject_41 || (templateObject_41 = __makeTemplateObject(["[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"], ["\\\n[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"])), args.target, (0, utils_1.escapeStringColorsClient)(args.target.name), args.target.player.id.toString(), args.target.rank, Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), (0, utils_1.colorBadBoolean)(!args.target.hasPerm("play")), args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", (0, utils_1.colorBadBoolean)(args.target.muted), (0, utils_1.colorBadBoolean)(args.target.autoflagged), info.timesJoined, info.timesKicked, (0, utils_1.formatTimeRelative)(args.target.firstJoined), names));
+            output(f(templateObject_41 || (templateObject_41 = __makeTemplateObject(["[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"], ["\\\n[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"])), args.target, (0, funcs_2.escapeStringColorsClient)(args.target.name), args.target.player.id.toString(), args.target.rank, Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), (0, utils_1.colorBadBoolean)(!args.target.hasPerm("play")), args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", (0, utils_1.colorBadBoolean)(args.target.muted), (0, utils_1.colorBadBoolean)(args.target.autoflagged), info.timesJoined, info.timesKicked, (0, utils_1.formatTimeRelative)(args.target.firstJoined), names));
             if (sender.hasPerm("viewUUIDs"))
                 output(f(templateObject_42 || (templateObject_42 = __makeTemplateObject(["\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""], ["\\\n\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""])), args.target.uuid, args.target.ip()));
         }
@@ -667,7 +672,7 @@ exports.commands = (0, commands_1.commandList)({
             var _b, _c;
             var args = _a.args, sender = _a.sender, f = _a.f, x = _a.x, y = _a.y, outputSuccess = _a.outputSuccess;
             if (!args.block)
-                (0, utils_1.crash)("uh oh");
+                (0, funcs_4.crash)("uh oh");
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var tile = Vars.world.tile(x, y);
             if (args.rotation != null && (args.rotation < 0 || args.rotation > 3))
@@ -735,7 +740,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             if (javascript == "Timer.instance().clear()")
@@ -753,7 +758,7 @@ exports.commands = (0, commands_1.commandList)({
                     output("[blue]null[]");
                 }
                 else if (out instanceof Error) {
-                    outputFail((0, utils_1.parseError)(out));
+                    outputFail((0, funcs_1.parseError)(out));
                 }
                 else if (typeof out == "number") {
                     output("[blue]".concat(out, "[]"));
@@ -763,7 +768,7 @@ exports.commands = (0, commands_1.commandList)({
                 }
             }
             catch (err) {
-                outputFail((0, utils_1.parseError)(err));
+                outputFail((0, funcs_1.parseError)(err));
             }
         }
     },
@@ -777,7 +782,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, utils_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             fjsContext.runJS(javascript, output, outputFail);
@@ -912,9 +917,9 @@ exports.commands = (0, commands_1.commandList)({
                 if (fishP == null && info == null)
                     (0, commands_1.fail)(f(templateObject_53 || (templateObject_53 = __makeTemplateObject(["No stored data matched uuid ", "."], ["No stored data matched uuid ", "."])), input));
                 else if (fishP == null && info)
-                    output(f(templateObject_54 || (templateObject_54 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                    output(f(templateObject_54 || (templateObject_54 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
                 else if (fishP && info)
-                    output(f(templateObject_55 || (templateObject_55 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                    output(f(templateObject_55 || (templateObject_55 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
                 else
                     (0, commands_1.fail)(f(templateObject_56 || (templateObject_56 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
             }
@@ -923,7 +928,7 @@ exports.commands = (0, commands_1.commandList)({
                 if (matches.isEmpty())
                     (0, commands_1.fail)(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
                 output(f(templateObject_58 || (templateObject_58 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches.size, matches.size == 1 ? "" : "es", input));
-                matches.each(function (info) { return output(f(templateObject_59 || (templateObject_59 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                matches.each(function (info) { return output(f(templateObject_59 || (templateObject_59 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
             }
             else {
                 var matches_1 = Vars.netServer.admins.searchNames(input);
@@ -931,7 +936,7 @@ exports.commands = (0, commands_1.commandList)({
                     (0, commands_1.fail)(f(templateObject_60 || (templateObject_60 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
                 output(f(templateObject_61 || (templateObject_61 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
                 var displayMatches = function () {
-                    matches_1.each(function (info) { return output(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, utils_1.escapeStringColorsClient)(info.lastName), info.names.map(utils_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                    matches_1.each(function (info) { return output(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
                 };
                 if (matches_1.size > 20)
                     (0, menus_1.menu)("Confirm", "Are you sure you want to view all ".concat(matches_1.size, " matches?"), ["Yes"], sender, displayMatches);

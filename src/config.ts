@@ -6,7 +6,7 @@ This file contains configurable constants.
 import type { PermType } from "./commands";
 import { ipPattern, ipPortPattern, uuidPattern } from "./globals";
 import { Rank } from "./ranks";
-import { random } from "./utils";
+import { random } from './funcs';
 
 
 

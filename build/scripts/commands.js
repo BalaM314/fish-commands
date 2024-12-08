@@ -61,6 +61,10 @@ var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
+var funcs_2 = require("./funcs");
+var funcs_3 = require("./funcs");
+var funcs_4 = require("./funcs");
 var hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
 var initialized = false;
 /** Stores all chat comamnds by their name. */
@@ -110,7 +114,7 @@ var Perm = /** @class */ (function () {
         this.unauthorizedMessage = unauthorizedMessage;
         if (typeof check == "string") {
             if (ranks_1.Rank.getByName(check) == null)
-                (0, utils_1.crash)("Invalid perm ".concat(name, ": invalid rank name ").concat(check));
+                (0, funcs_4.crash)("Invalid perm ".concat(name, ": invalid rank name ").concat(check));
             this.check = function (fishP) { return fishP.ranksAtLeast(check); };
         }
         else {
@@ -123,7 +127,7 @@ var Perm = /** @class */ (function () {
     };
     Perm.getByName = function (name) {
         var _a;
-        return (_a = Perm.perms[name]) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("Invalid requiredPerm");
+        return (_a = Perm.perms[name]) !== null && _a !== void 0 ? _a : (0, funcs_4.crash)("Invalid requiredPerm");
     };
     Perm.perms = {};
     Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
@@ -202,14 +206,14 @@ function processArgString(str) {
     //this was copypasted from mlogx haha
     var matchResult = str.match(/(\w+):(\w+)(\?)?/);
     if (!matchResult) {
-        (0, utils_1.crash)("Bad arg string ".concat(str, ": does not match pattern word:word(?)"));
+        (0, funcs_4.crash)("Bad arg string ".concat(str, ": does not match pattern word:word(?)"));
     }
     var _a = __read(matchResult, 4), name = _a[1], type = _a[2], isOptional = _a[3];
     if (commandArgTypes.includes(type)) {
         return { name: name, type: type, isOptional: !!isOptional };
     }
     else {
-        (0, utils_1.crash)("Bad arg string ".concat(str, ": invalid type ").concat(type));
+        (0, funcs_4.crash)("Bad arg string ".concat(str, ": invalid type ").concat(type));
     }
 }
 function formatArg(a) {
@@ -399,7 +403,7 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                     break;
                 default:
                     cmdArg.type;
-                    (0, utils_1.crash)("impossible");
+                    (0, funcs_4.crash)("impossible");
             }
         }
     }
@@ -412,9 +416,9 @@ function processArgs(args, processedCmdArgs, allowMenus) {
     }
     return { processedArgs: outputArgs, unresolvedArgs: unresolvedArgs };
 }
-var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
+var outputFormatter_server = (0, funcs_1.tagProcessorPartial)(function (chunk) {
     if (chunk instanceof players_1.FishPlayer) {
-        return "&c(".concat((0, utils_1.escapeStringColorsServer)(chunk.cleanedName), ")&fr");
+        return "&c(".concat((0, funcs_3.escapeStringColorsServer)(chunk.cleanedName), ")&fr");
     }
     else if (chunk instanceof ranks_1.Rank) {
         return "&p".concat(chunk.name, "&fr");
@@ -423,11 +427,11 @@ var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
         return "&p".concat(chunk.name, "&fr");
     }
     else if (chunk instanceof Error) {
-        return "&r".concat((0, utils_1.escapeStringColorsServer)(chunk.toString()), "&fr");
+        return "&r".concat((0, funcs_3.escapeStringColorsServer)(chunk.toString()), "&fr");
     }
     else if (chunk instanceof Player) {
         var player = chunk; //not sure why this is necessary, typescript randomly converts any to unknown
-        return "&cPlayer#".concat(player.id, " (").concat((0, utils_1.escapeStringColorsServer)(Strings.stripColors(player.name)), ")&fr");
+        return "&cPlayer#".concat(player.id, " (").concat((0, funcs_3.escapeStringColorsServer)(Strings.stripColors(player.name)), ")&fr");
     }
     else if (typeof chunk == "string") {
         if (globals_1.uuidPattern.test(chunk)) {
@@ -447,7 +451,7 @@ var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
         return "&b".concat(chunk.toString(), "&fr");
     }
     else if (chunk instanceof Administration.PlayerInfo) {
-        return "&c".concat((0, utils_1.escapeStringColorsServer)(chunk.plainLastName()), "&fr");
+        return "&c".concat((0, funcs_3.escapeStringColorsServer)(chunk.plainLastName()), "&fr");
     }
     else if (chunk instanceof UnitType) {
         return "&c".concat(chunk.localizedName, "&fr");
@@ -465,7 +469,7 @@ var outputFormatter_server = (0, utils_1.tagProcessorPartial)(function (chunk) {
         return chunk; //let it get stringified by the JS engine
     }
 });
-var outputFormatter_client = (0, utils_1.tagProcessorPartial)(function (chunk, i, data, stringChunks) {
+var outputFormatter_client = (0, funcs_1.tagProcessorPartial)(function (chunk, i, data, stringChunks) {
     var _a, _b;
     var reset = (_b = data !== null && data !== void 0 ? data : (_a = stringChunks[0].match(/^\[.+?\]/)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : "";
     if (chunk instanceof players_1.FishPlayer) {
@@ -577,7 +581,7 @@ function handleTapEvent(event) {
         else {
             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
             if (sender.hasPerm("seeErrorMessages"))
-                sender.sendMessage((0, utils_1.parseError)(err));
+                sender.sendMessage((0, funcs_2.parseError)(err));
             Log.err("Unhandled error in command execution: ".concat(sender.cleanedName, " ran /").concat(sender.tapInfo.commandName, " and tapped"));
             Log.err(err);
         }
@@ -601,7 +605,7 @@ function register(commands, clientHandler, serverHandler) {
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
         clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
                 if (!initialized)
-                    (0, utils_1.crash)("Commands not initialized!");
+                    (0, funcs_4.crash)("Commands not initialized!");
                 var fishSender = players_1.FishPlayer.get(sender);
                 players_1.FishPlayer.onPlayerCommand(fishSender, name, unjoinedRawArgs);
                 //Verify authorization
@@ -649,7 +653,7 @@ function register(commands, clientHandler, serverHandler) {
                             currentTapMode: fishSender.tapInfo.commandName == null ? "off" : fishSender.tapInfo.mode,
                             handleTaps: function (mode) {
                                 if (data.tapped == undefined)
-                                    (0, utils_1.crash)("No tap handler to activate: command \"".concat(name, "\""));
+                                    (0, funcs_4.crash)("No tap handler to activate: command \"".concat(name, "\""));
                                 if (mode == "off") {
                                     fishSender.tapInfo.commandName = null;
                                 }
@@ -675,7 +679,7 @@ function register(commands, clientHandler, serverHandler) {
                         else {
                             sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
                             if (fishSender.hasPerm("seeErrorMessages"))
-                                sender.sendMessage((0, utils_1.parseError)(err));
+                                sender.sendMessage((0, funcs_2.parseError)(err));
                             Log.err("Unhandled error in command execution: ".concat(fishSender.cleanedName, " ran /").concat(name));
                             Log.err(err);
                             Log.err(err.stack);
@@ -713,7 +717,7 @@ function registerConsole(commands, serverHandler) {
                 var _a;
                 var _b;
                 if (!initialized)
-                    (0, utils_1.crash)("Commands not initialized!");
+                    (0, funcs_4.crash)("Commands not initialized!");
                 //closure over processedCmdArgs, should be fine
                 //Process the args
                 var output = processArgs(rawArgs, processedCmdArgs, false);
@@ -737,7 +741,7 @@ function registerConsole(commands, serverHandler) {
                     }
                     else {
                         Log.err("&lrAn error occured while executing the command!&fr");
-                        Log.err((0, utils_1.parseError)(err));
+                        Log.err((0, funcs_2.parseError)(err));
                     }
                 }
             } }));
@@ -770,19 +774,19 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
             case "player":
                 Groups.player.each(function (player) { return optionsList_1.push(player); });
                 break;
-            default: (0, utils_1.crash)("Unable to resolve arg of type ".concat(argToResolve_1.type));
+            default: (0, funcs_4.crash)("Unable to resolve arg of type ".concat(argToResolve_1.type));
         }
         (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList_1, sender, function (_a) {
             var option = _a.option;
             processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(option);
             resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
-        }, true, function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, utils_1.escapeStringColorsClient)(player.name); });
+        }, true, function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, funcs_3.escapeStringColorsClient)(player.name); });
     }
 }
 function initialize() {
     var e_5, _a, e_6, _b;
     if (initialized) {
-        (0, utils_1.crash)("Already initialized commands.");
+        (0, funcs_4.crash)("Already initialized commands.");
     }
     try {
         for (var _c = __values(Object.entries(exports.allConsoleCommands)), _d = _c.next(); !_d.done; _d = _c.next()) {

@@ -37,6 +37,8 @@ exports.menu = menu;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
+var funcs_2 = require("./funcs");
 /** Stores a mapping from name to the numeric id of a listener that has been registered. */
 var registeredListeners = {};
 exports.listeners = registeredListeners;
@@ -84,13 +86,13 @@ columns) {
     if (columns === void 0) { columns = 3; }
     if (!callback) {
         //overload 1, just display a menu with no callback
-        Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [["<no options>"]] : (0, utils_1.to2DArray)(options.map(optionStringifier), columns));
+        Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [["<no options>"]] : (0, funcs_2.to2DArray)(options.map(optionStringifier), columns));
     }
     else {
         //overload 2, display a menu with callback
         //Set up the 2D array of options, and add cancel
         //Use "<no options>" as a fallback, because Call.menu with an empty array of options causes a client crash
-        var arrangedOptions = (options.length == 0 && !includeCancel) ? [["<no options>"]] : (0, utils_1.to2DArray)(options.map(optionStringifier), columns);
+        var arrangedOptions = (options.length == 0 && !includeCancel) ? [["<no options>"]] : (0, funcs_2.to2DArray)(options.map(optionStringifier), columns);
         if (includeCancel) {
             arrangedOptions.push(["Cancel"]);
             target.activeMenu.cancelOptionId = options.length;
@@ -123,7 +125,7 @@ columns) {
                 else {
                     target.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
                     if (target.hasPerm("seeErrorMessages"))
-                        target.sendMessage((0, utils_1.parseError)(err));
+                        target.sendMessage((0, funcs_1.parseError)(err));
                     Log.err("Unhandled error in menu callback: ".concat(target.cleanedName, " submitted menu \"").concat(title, "\" \"").concat(description, "\""));
                     Log.err(err);
                 }

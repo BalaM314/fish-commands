@@ -11,7 +11,12 @@ import { uuidPattern } from "./globals";
 import { menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
-import { StringIO, cleanText, crash, escapeStringColorsClient, escapeStringColorsServer, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, matchFilter, parseError, setToArray } from "./utils";
+import { cleanText, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, matchFilter } from "./utils";
+import { parseError } from './funcs';
+import { escapeStringColorsClient, escapeStringColorsServer } from './funcs';
+import { crash } from './funcs';
+import { StringIO } from './funcs';
+import { setToArray } from './funcs';
 
 
 export class FishPlayer {

@@ -5,7 +5,8 @@ Some contributions: @author Jurorno9
 */
 
 import { FishPlayer } from "./players";
-import { EventEmitter, crash } from "./utils";
+import { crash } from './funcs';
+import { EventEmitter } from './funcs';
 
 /** Event data for each voting event. */
 export type VoteEventMapping = {

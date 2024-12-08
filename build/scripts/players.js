@@ -55,6 +55,11 @@ var globals_1 = require("./globals");
 var menus_1 = require("./menus");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
+var funcs_2 = require("./funcs");
+var funcs_3 = require("./funcs");
+var funcs_4 = require("./funcs");
+var funcs_5 = require("./funcs");
 var FishPlayer = /** @class */ (function () {
     function FishPlayer(_a, player) {
         var uuid = _a.uuid, name = _a.name, _b = _a.muted, muted = _b === void 0 ? false : _b, _c = _a.autoflagged, autoflagged = _c === void 0 ? false : _c, _d = _a.unmarkTime, unmarked = _d === void 0 ? -1 : _d, _e = _a.highlight, highlight = _e === void 0 ? null : _e, _f = _a.history, history = _f === void 0 ? [] : _f, _g = _a.rainbow, rainbow = _g === void 0 ? null : _g, _h = _a.rank, rank = _h === void 0 ? "player" : _h, _j = _a.flags, flags = _j === void 0 ? [] : _j, usid = _a.usid, _k = _a.chatStrictness, chatStrictness = _k === void 0 ? "chat" : _k, lastJoined = _a.lastJoined, firstJoined = _a.firstJoined, stats = _a.stats, _l = _a.showRankPrefix, showRankPrefix = _l === void 0 ? true : _l;
@@ -89,7 +94,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastRatelimitedMessage = -1;
         this.changedTeam = false;
         this.chatStrictness = "chat";
-        this.uuid = (_m = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _m !== void 0 ? _m : (0, utils_1.crash)("Attempted to create FishPlayer with no UUID");
+        this.uuid = (_m = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _m !== void 0 ? _m : (0, funcs_3.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_o = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _o !== void 0 ? _o : "Unnamed player [ERROR]";
         this.prefixedName = this.name;
         this.muted = muted;
@@ -101,7 +106,7 @@ var FishPlayer = /** @class */ (function () {
         this.history = history;
         this.player = player;
         this.rainbow = rainbow;
-        this.cleanedName = (0, utils_1.escapeStringColorsServer)(Strings.stripColors(this.name));
+        this.cleanedName = (0, funcs_2.escapeStringColorsServer)(Strings.stripColors(this.name));
         this.rank = (_q = ranks_1.Rank.getByName(rank)) !== null && _q !== void 0 ? _q : ranks_1.Rank.player;
         this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
         this.usid = (_r = usid !== null && usid !== void 0 ? usid : player === null || player === void 0 ? void 0 : player.usid()) !== null && _r !== void 0 ? _r : null;
@@ -218,7 +223,7 @@ var FishPlayer = /** @class */ (function () {
         var e_2, _a;
         if (str == "")
             return "none";
-        var players = (0, utils_1.setToArray)(Groups.player);
+        var players = (0, funcs_5.setToArray)(Groups.player);
         var matchingPlayers;
         var filters = [
             function (p) { return p.name === str; },
@@ -706,7 +711,7 @@ var FishPlayer = /** @class */ (function () {
             this.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name because it contains a banned word.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
         else if (Strings.stripColors(this.name).trim().length == 0) {
-            this.kick("[scarlet]\"".concat((0, utils_1.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is blank. Please change it."), 1);
+            this.kick("[scarlet]\"".concat((0, funcs_2.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is blank. Please change it."), 1);
         }
         else {
             return true;
@@ -807,11 +812,11 @@ var FishPlayer = /** @class */ (function () {
             case 3:
             case 4:
             case 5:
-                (0, utils_1.crash)("Version ".concat(version, " is not longer supported, this should not be possible"));
+                (0, funcs_3.crash)("Version ".concat(version, " is not longer supported, this should not be possible"));
             case 6:
             case 7:
                 return new this({
-                    uuid: (_a = fishPlayerData.readString(2)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
+                    uuid: (_a = fishPlayerData.readString(2)) !== null && _a !== void 0 ? _a : (0, funcs_3.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_b = fishPlayerData.readString(2)) !== null && _b !== void 0 ? _b : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool(),
@@ -842,7 +847,7 @@ var FishPlayer = /** @class */ (function () {
                 }, player);
             case 8:
                 return new this({
-                    uuid: (_d = fishPlayerData.readString(2)) !== null && _d !== void 0 ? _d : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
+                    uuid: (_d = fishPlayerData.readString(2)) !== null && _d !== void 0 ? _d : (0, funcs_3.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_e = fishPlayerData.readString(2)) !== null && _e !== void 0 ? _e : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool(),
@@ -874,7 +879,7 @@ var FishPlayer = /** @class */ (function () {
                 }, player);
             case 9:
                 return new this({
-                    uuid: (_g = fishPlayerData.readString(2)) !== null && _g !== void 0 ? _g : (0, utils_1.crash)("Failed to deserialize FishPlayer: UUID was null."),
+                    uuid: (_g = fishPlayerData.readString(2)) !== null && _g !== void 0 ? _g : (0, funcs_3.crash)("Failed to deserialize FishPlayer: UUID was null."),
                     name: (_h = fishPlayerData.readString(2)) !== null && _h !== void 0 ? _h : "Unnamed player [ERROR]",
                     muted: fishPlayerData.readBool(),
                     autoflagged: fishPlayerData.readBool(),
@@ -905,7 +910,7 @@ var FishPlayer = /** @class */ (function () {
                     },
                     showRankPrefix: fishPlayerData.readBool(),
                 }, player);
-            default: (0, utils_1.crash)("Unknown save version ".concat(version));
+            default: (0, funcs_3.crash)("Unknown save version ".concat(version));
         }
     };
     FishPlayer.prototype.write = function (out) {
@@ -940,7 +945,7 @@ var FishPlayer = /** @class */ (function () {
     };
     /** Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
-        var out = new utils_1.StringIO();
+        var out = new funcs_4.StringIO();
         out.writeNumber(this.saveVersion, 2);
         out.writeArray(Object.entries(this.cachedPlayers), function (_a) {
             var _b = __read(_a, 2), uuid = _b[0], player = _b[1];
@@ -981,7 +986,7 @@ var FishPlayer = /** @class */ (function () {
                 return; //If it's empty, don't try to load anything
             if (string.startsWith("{"))
                 return this.loadAllLegacy(string);
-            var out = new utils_1.StringIO(string);
+            var out = new funcs_4.StringIO(string);
             var version_1 = out.readNumber(2);
             out.readArray(function (str) { return FishPlayer.read(version_1, str, null); }, version_1 <= 6 ? 4 : 6) //this is really unsafe and is going to cause downtime if i don't fix it
                 .forEach(function (p) { return _this.cachedPlayers[p.uuid] = p; });
@@ -989,7 +994,7 @@ var FishPlayer = /** @class */ (function () {
         }
         catch (err) {
             Log.err("[CRITICAL] FAILED TO LOAD CACHED FISH PLAYER DATA");
-            Log.err((0, utils_1.parseError)(err));
+            Log.err((0, funcs_1.parseError)(err));
             Log.err("=============================");
             Log.err(string);
             Log.err("=============================");
@@ -1135,7 +1140,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.setFlag = function (flag_, value) {
         var _a;
         var flag = typeof flag_ == "string" ?
-            ((_a = ranks_1.RoleFlag.getByName(flag_)) !== null && _a !== void 0 ? _a : (0, utils_1.crash)("Type error in FishPlayer.setFlag(): flag ".concat(flag_, " is invalid")))
+            ((_a = ranks_1.RoleFlag.getByName(flag_)) !== null && _a !== void 0 ? _a : (0, funcs_3.crash)("Type error in FishPlayer.setFlag(): flag ".concat(flag_, " is invalid")))
             : flag_;
         if (value) {
             this.flags.add(flag);

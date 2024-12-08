@@ -47,7 +47,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteManager = void 0;
 var players_1 = require("./players");
-var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
+var funcs_2 = require("./funcs");
 /** Manages a vote. */
 var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
@@ -70,7 +71,7 @@ var VoteManager = /** @class */ (function (_super) {
     VoteManager.prototype.start = function (player, newVote, data) {
         var _this = this;
         if (data === null)
-            (0, utils_1.crash)("Cannot start vote: data not provided");
+            (0, funcs_1.crash)("Cannot start vote: data not provided");
         this.session = {
             timer: Timer.schedule(function () { return _this._checkVote(false); }, this.voteTime / 1000),
             votes: new Map(),
@@ -140,5 +141,5 @@ var VoteManager = /** @class */ (function (_super) {
         }
     };
     return VoteManager;
-}(utils_1.EventEmitter));
+}(funcs_2.EventEmitter));
 exports.VoteManager = VoteManager;

@@ -57,6 +57,7 @@ var globals_2 = require("./globals");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
+var funcs_1 = require("./funcs");
 exports.commands = (0, commands_1.consoleCommandList)({
     setrank: {
         args: ["player:player", "rank:rank"],
@@ -104,7 +105,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var e_1, _b;
             var args = _a.args, output = _a.output, admins = _a.admins;
-            var infoList = (0, utils_1.setToArray)(admins.findByName(args.player));
+            var infoList = (0, funcs_1.setToArray)(admins.findByName(args.player));
             if (infoList.length == 0)
                 (0, commands_1.fail)("No players found.");
             var outputString = [""];

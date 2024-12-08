@@ -40,48 +40,35 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addToTileHistory = exports.EventEmitter = exports.StringIO = exports.StringBuilder = void 0;
-exports.memoize = memoize;
+exports.addToTileHistory = void 0;
 exports.formatTime = formatTime;
 exports.formatModeName = formatModeName;
 exports.formatTimestamp = formatTimestamp;
 exports.formatTimeRelative = formatTimeRelative;
 exports.colorBoolean = colorBoolean;
 exports.colorBadBoolean = colorBadBoolean;
-exports.to2DArray = to2DArray;
 exports.getColor = getColor;
 exports.nearbyEnemyTile = nearbyEnemyTile;
-exports.setToArray = setToArray;
 exports.getTeam = getTeam;
-exports.capitalizeText = capitalizeText;
-exports.escapeTextDiscord = escapeTextDiscord;
 exports.matchFilter = matchFilter;
-exports.repeatAlternate = repeatAlternate;
 exports.cleanText = cleanText;
 exports.isImpersonator = isImpersonator;
 exports.logAction = logAction;
 exports.parseTimeString = parseTimeString;
-exports.escapeStringColorsClient = escapeStringColorsClient;
-exports.escapeStringColorsServer = escapeStringColorsServer;
 exports.serverRestartLoop = serverRestartLoop;
 exports.isBuildable = isBuildable;
 exports.getUnitType = getUnitType;
 exports.getMap = getMap;
 exports.getBlock = getBlock;
 exports.teleportPlayer = teleportPlayer;
-exports.parseError = parseError;
-exports.tagProcessor = tagProcessor;
-exports.tagProcessorPartial = tagProcessorPartial;
 exports.logErrors = logErrors;
 exports.definitelyRealMemoryCorruption = definitelyRealMemoryCorruption;
 exports.getEnemyTeam = getEnemyTeam;
 exports.neutralGameover = neutralGameover;
 exports.skipWaves = skipWaves;
-exports.random = random;
 exports.logHTrip = logHTrip;
 exports.setType = setType;
 exports.untilForever = untilForever;
-exports.crash = crash;
 exports.colorNumber = colorNumber;
 exports.getAntiBotInfo = getAntiBotInfo;
 exports.outputFail = outputFail;
@@ -94,30 +81,10 @@ exports.getIPRange = getIPRange;
 exports.getHash = getHash;
 var api = require("./api");
 var config_1 = require("./config");
+var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
 var globals_2 = require("./globals");
 var players_1 = require("./players");
-var storedValues = {};
-/**
- * Stores the output of a function and returns that value
- * instead of running the function again unless any
- * dependencies have changed to improve performance with
- * functions that have expensive computation.
- * @param callback function to run if a dependancy has changed
- * @param dep dependency array of values to monitor
- * @param id arbitrary unique id of the function for storage purposes.
- */
-function memoize(callback, dep, id) {
-    if (!storedValues[id]) {
-        storedValues[id] = { value: callback(), dep: dep };
-    }
-    else if (dep.some(function (d, ind) { return d !== storedValues[id].dep[ind]; })) {
-        //If the value changed
-        storedValues[id].value = callback();
-        storedValues[id].dep = dep;
-    }
-    return storedValues[id].value;
-}
 function formatTime(time) {
     if (globals_1.maxTime - (time + Date.now()) < 20000)
         return "forever";
@@ -164,23 +131,6 @@ function colorBoolean(val) {
 function colorBadBoolean(val) {
     return val ? "[red]true[]" : "[green]false[]";
 }
-/**
- * Converts a 1D array into a 2D array.
- * @param width the max length of each row.
- * The last row may not be full.
- */
-function to2DArray(array, width) {
-    if (array.length == 0)
-        return [];
-    var output = [[]];
-    array.forEach(function (el) {
-        if (output.at(-1).length >= width) {
-            output.push([]);
-        }
-        output.at(-1).push(el);
-    });
-    return output;
-}
 /** Attempts to parse a Color from the input. */
 function getColor(input) {
     try {
@@ -212,7 +162,7 @@ function getColor(input) {
 function nearbyEnemyTile(unit, dist) {
     //because the indexer is buggy
     if (dist > 10)
-        crash("nearbyEnemyTile(): dist (".concat(dist, ") is too high!"));
+        (0, funcs_1.crash)("nearbyEnemyTile(): dist (".concat(dist, ") is too high!"));
     var x = Math.floor(unit.x / Vars.tilesize);
     var y = Math.floor(unit.y / Vars.tilesize);
     for (var i = -dist; i <= dist; i++) {
@@ -223,11 +173,6 @@ function nearbyEnemyTile(unit, dist) {
         }
     }
     return null;
-}
-function setToArray(set) {
-    var array = [];
-    set.each(function (item) { return array.push(item); });
-    return array;
 }
 /** Attempts to parse a Team from the input. */
 function getTeam(team) {
@@ -246,205 +191,12 @@ function getTeam(team) {
     }
     return "\"".concat(team, "\" is not a valid team string.");
 }
-var StringBuilder = /** @class */ (function () {
-    function StringBuilder(str) {
-        if (str === void 0) { str = ""; }
-        this.str = str;
-    }
-    StringBuilder.prototype.add = function (str) {
-        this.str += str;
-        return this;
-    };
-    StringBuilder.prototype.chunk = function (str) {
-        if (Strings.stripColors(str).length > 0) {
-            this.str = this.str + " " + str;
-        }
-        return this;
-    };
-    return StringBuilder;
-}());
-exports.StringBuilder = StringBuilder;
-//I really should have just used bytes instead of a string.
-/** Used for serialization to strings. */
-var StringIO = /** @class */ (function () {
-    function StringIO(string) {
-        if (string === void 0) { string = ""; }
-        this.string = string;
-        this.offset = 0;
-    }
-    StringIO.prototype.read = function (length) {
-        if (length === void 0) { length = 1; }
-        if (this.offset + length > this.string.length)
-            crash("Unexpected EOF");
-        return this.string.slice(this.offset, this.offset += length);
-    };
-    StringIO.prototype.write = function (str) {
-        this.string += str;
-    };
-    StringIO.prototype.readString = function (/** The length of the written length. */ lenlen) {
-        if (lenlen === void 0) { lenlen = 3; }
-        var length = parseInt(this.read(lenlen));
-        if (length == 0)
-            return null;
-        return this.read(length);
-    };
-    StringIO.prototype.writeString = function (str, lenlen, truncate) {
-        if (lenlen === void 0) { lenlen = 3; }
-        if (truncate === void 0) { truncate = false; }
-        if (str === null) {
-            this.string += "0".repeat(lenlen);
-        }
-        else if (typeof str !== "string") {
-            crash("Attempted to serialize string ".concat(str, ", but it was not a string"));
-        }
-        else if (str.length > (Math.pow(10, lenlen) - 1)) {
-            if (truncate) {
-                Log.err("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1), " (was ").concat(str.length, "), truncating"));
-                this.string += (Math.pow(10, lenlen) - 1).toString().padStart(lenlen, "0");
-                this.string += str.slice(0, (Math.pow(10, lenlen) - 1));
-            }
-            else {
-                crash("Cannot write strings with length greater than ".concat((Math.pow(10, lenlen) - 1), " (was ").concat(str.length, ")\n String was: \"").concat(str, "\""));
-            }
-        }
-        else {
-            this.string += str.length.toString().padStart(lenlen, "0");
-            this.string += str;
-        }
-    };
-    StringIO.prototype.readEnumString = function (options) {
-        var length = (options.length - 1).toString().length;
-        var option = this.readNumber(length);
-        return options[option];
-    };
-    StringIO.prototype.writeEnumString = function (value, options) {
-        var length = (options.length - 1).toString().length;
-        var option = options.indexOf(value);
-        if (option == -1)
-            crash("Attempted to write invalid value \"".concat(value, "\" for enum, valid values are (").concat(options.join(", "), ")"));
-        this.writeNumber(option, length);
-    };
-    StringIO.prototype.readNumber = function (size) {
-        if (size === void 0) { size = 4; }
-        var data = this.read(size);
-        if (/^0*-\d+$/.test(data)) {
-            //negative numbers were incorrectly stored in previous versions
-            data = "-" + data.split("-")[1];
-        }
-        if (isNaN(Number(data)))
-            crash("Attempted to read invalid number: ".concat(data));
-        return Number(data);
-    };
-    StringIO.prototype.writeNumber = function (num, size, clamp) {
-        if (size === void 0) { size = 4; }
-        if (clamp === void 0) { clamp = false; }
-        if (typeof num != "number")
-            crash("".concat(num, " was not a number!"));
-        if (num.toString().length > size) {
-            if (clamp) {
-                if (num > (Math.pow(10, size)) - 1)
-                    this.string += (Math.pow(10, size)) - 1;
-                else
-                    this.string += num.toString().slice(0, size);
-            }
-            else
-                crash("Cannot write number ".concat(num, " with length ").concat(size, ": too long"));
-        }
-        this.string += num.toString().padStart(size, "0");
-    };
-    StringIO.prototype.readBool = function () {
-        return this.read(1) == "T" ? true : false;
-    };
-    StringIO.prototype.writeBool = function (val) {
-        this.write(val ? "T" : "F");
-    };
-    StringIO.prototype.writeArray = function (array, func, lenlen) {
-        var _this = this;
-        this.writeNumber(array.length, lenlen);
-        array.forEach(function (e) { return func(e, _this); });
-    };
-    StringIO.prototype.readArray = function (func, lenlen) {
-        var length = this.readNumber(lenlen);
-        var array = [];
-        for (var i = 0; i < length; i++) {
-            array[i] = func(this);
-        }
-        return array;
-    };
-    StringIO.prototype.expectEOF = function () {
-        if (this.string.length > this.offset)
-            crash("Expected EOF, but found extra data: \"".concat(this.string.slice(this.offset), "\""));
-    };
-    StringIO.read = function (data, func) {
-        var str = new StringIO(data);
-        try {
-            return func(str);
-        }
-        catch (err) {
-            Log.err("Error while reading compressed data!");
-            Log.err(data);
-            throw err;
-        }
-    };
-    StringIO.write = function (data, func) {
-        var str = new StringIO();
-        func(str, data);
-        return str.string;
-    };
-    return StringIO;
-}());
-exports.StringIO = StringIO;
-/** Something that emits events. */
-var EventEmitter = /** @class */ (function () {
-    function EventEmitter() {
-        this.listeners = {};
-    }
-    EventEmitter.prototype.on = function (event, callback) {
-        var _a;
-        var _b;
-        ((_a = (_b = this.listeners)[event]) !== null && _a !== void 0 ? _a : (_b[event] = [])).push(callback);
-        return this;
-    };
-    EventEmitter.prototype.fire = function (event, args) {
-        var e_1, _a;
-        var _b;
-        try {
-            for (var _c = __values((_b = this.listeners[event]) !== null && _b !== void 0 ? _b : []), _d = _c.next(); !_d.done; _d = _c.next()) {
-                var listener = _d.value;
-                listener.apply(void 0, __spreadArray([this], __read(args), false));
-            }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
-            }
-            finally { if (e_1) throw e_1.error; }
-        }
-    };
-    return EventEmitter;
-}());
-exports.EventEmitter = EventEmitter;
-/** Best effort title-capitalization of a word. */
-function capitalizeText(text) {
-    return text
-        .split(" ")
-        .map(function (word, i, arr) {
-        return (["a", "an", "the", "in", "and", "of", "it"].includes(word) &&
-            i !== 0 && i !== arr.length - 1) ? word
-            : word[0].toUpperCase() + word.substring(1);
-    }).join(" ");
-}
-var pattern = Pattern.compile("([*\\_~`|:])");
-function escapeTextDiscord(text) {
-    return pattern.matcher(text).replaceAll("\\\\$1");
-}
 /**
  * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns a
  */
 function matchFilter(input, strict) {
-    var e_2, _a, e_3, _b;
+    var e_1, _a, e_2, _b;
     if (strict === void 0) { strict = "chat"; }
     var currentBannedWords = [
         config_1.bannedWords.normal,
@@ -468,33 +220,30 @@ function matchFilter(input, strict) {
                 }
             };
             try {
-                for (var _d = (e_3 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _e = _d.next(); !_e.done; _e = _d.next()) {
+                for (var _d = (e_2 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _e = _d.next(); !_e.done; _e = _d.next()) {
                     var text_1 = _e.value;
                     var state_1 = _loop_1(text_1);
                     if (typeof state_1 === "object")
                         return state_1.value;
                 }
             }
-            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
             finally {
                 try {
                     if (_e && !_e.done && (_b = _d.return)) _b.call(_d);
                 }
-                finally { if (e_3) throw e_3.error; }
+                finally { if (e_2) throw e_2.error; }
             }
         }
     }
-    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
     finally {
         try {
             if (currentBannedWords_1_1 && !currentBannedWords_1_1.done && (_a = currentBannedWords_1.return)) _a.call(currentBannedWords_1);
         }
-        finally { if (e_2) throw e_2.error; }
+        finally { if (e_1) throw e_1.error; }
     }
     return false;
-}
-function repeatAlternate(a, b, numARepeats) {
-    return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
 }
 function cleanText(text, applyAntiEvasion) {
     if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
@@ -512,7 +261,7 @@ function cleanText(text, applyAntiEvasion) {
     return replacedText;
 }
 function isImpersonator(name, isAdmin) {
-    var e_4, _a;
+    var e_3, _a;
     var replacedText = cleanText(name);
     var antiEvasionText = cleanText(name, true);
     //very clean code i know
@@ -546,12 +295,12 @@ function isImpersonator(name, isAdmin) {
                 return message;
         }
     }
-    catch (e_4_1) { e_4 = { error: e_4_1 }; }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
     finally {
         try {
             if (filters_1_1 && !filters_1_1.done && (_a = filters_1.return)) _a.call(filters_1);
         }
-        finally { if (e_4) throw e_4.error; }
+        finally { if (e_3) throw e_3.error; }
     }
     return false;
 }
@@ -568,7 +317,7 @@ function logAction(action, by, to, reason, duration) {
         var name = void 0, uuid = void 0, ip = void 0;
         var actor = typeof by === "string" ? by : by.name;
         if (to instanceof players_1.FishPlayer) {
-            name = escapeTextDiscord(to.name);
+            name = (0, funcs_1.escapeTextDiscord)(to.name);
             uuid = to.uuid;
             ip = to.ip();
         }
@@ -585,17 +334,17 @@ function logAction(action, by, to, reason, duration) {
             }
         }
         else {
-            name = escapeTextDiscord(to.lastName);
+            name = (0, funcs_1.escapeTextDiscord)(to.lastName);
             uuid = to.id;
             ip = to.lastIP;
         }
-        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat(escapeTextDiscord(reason)) : "", "\n**Server:** ").concat(config_1.Gamemode.name(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
+        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat((0, funcs_1.escapeTextDiscord)(reason)) : "", "\n**Server:** ").concat(config_1.Gamemode.name(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
         return;
     }
 }
 /** @returns the number of milliseconds. */
 function parseTimeString(str) {
-    var e_5, _a;
+    var e_4, _a;
     var formats = [
         [/(\d+)s/, 1],
         [/(\d+)m/, 60],
@@ -610,9 +359,9 @@ function parseTimeString(str) {
         return (globals_1.maxTime - Date.now() - 10000);
     try {
         for (var formats_1 = __values(formats), formats_1_1 = formats_1.next(); !formats_1_1.done; formats_1_1 = formats_1.next()) {
-            var _b = __read(formats_1_1.value, 2), pattern_1 = _b[0], mult = _b[1];
+            var _b = __read(formats_1_1.value, 2), pattern = _b[0], mult = _b[1];
             //rhino regex doesn't work
-            var matcher = pattern_1.matcher(str);
+            var matcher = pattern.matcher(str);
             if (matcher.matches()) {
                 var num = Number(matcher.group(1));
                 if (!isNaN(num))
@@ -620,25 +369,14 @@ function parseTimeString(str) {
             }
         }
     }
-    catch (e_5_1) { e_5 = { error: e_5_1 }; }
+    catch (e_4_1) { e_4 = { error: e_4_1 }; }
     finally {
         try {
             if (formats_1_1 && !formats_1_1.done && (_a = formats_1.return)) _a.call(formats_1);
         }
-        finally { if (e_5) throw e_5.error; }
+        finally { if (e_4) throw e_4.error; }
     }
     return null;
-}
-/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
-function escapeStringColorsClient(str) {
-    return str.replace(/\[/g, "[[");
-}
-// export function highlightStringColorsClient(str:string):string {
-// 	return str.replace(/(?<!\[)\[[a-z0-9#]{2,10}\]/gi, "[gray][$0[]");
-// }
-/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
-function escapeStringColorsServer(str) {
-    return str.replace(/&/g, "&&");
 }
 /** Triggers the restart countdown. Execution always returns from this function. */
 function serverRestartLoop(sec) {
@@ -673,7 +411,7 @@ function getUnitType(type) {
 }
 //TODO refactor this, lots of duped code across multiple select functions
 function getMap(name) {
-    var e_6, _a;
+    var e_5, _a;
     if (name == "")
         return "none";
     var mode = Vars.state.rules.mode();
@@ -705,12 +443,12 @@ function getMap(name) {
             //if empty, go to next filter
         }
     }
-    catch (e_6_1) { e_6 = { error: e_6_1 }; }
+    catch (e_5_1) { e_5 = { error: e_5_1 }; }
     finally {
         try {
             if (filters_2_1 && !filters_2_1.done && (_a = filters_2.return)) _a.call(filters_2);
         }
-        finally { if (e_6) throw e_6.error; }
+        finally { if (e_5) throw e_5.error; }
     }
     //no filters returned a result
     return "none";
@@ -742,48 +480,6 @@ function teleportPlayer(player, to) {
         Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
     }, 0, 0.016, 10);
 }
-function parseError(thing) {
-    if (thing instanceof Error) {
-        return thing.toString();
-    }
-    else if (typeof thing == "string") {
-        return thing;
-    }
-    else {
-        Log.info("[[FINDTAG]] Unable to parse the following error object");
-        Log.info(thing);
-        return "Unable to parse error object";
-    }
-}
-/** Generates a tag template processor from a function that processes one value at a time. */
-function tagProcessor(transformer) {
-    return function (stringChunks) {
-        var varChunks = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            varChunks[_i - 1] = arguments[_i];
-        }
-        return String.raw.apply(String, __spreadArray([{ raw: stringChunks }], __read(varChunks.map(function (chunk, i) { return transformer(chunk, i, stringChunks, varChunks); })), false));
-    };
-}
-//third order function ._. warning: causes major confusion
-/** Generates a tag template partial processor from a function that processes one value at a time. */
-function tagProcessorPartial(transformer) {
-    return function (stringChunks) {
-        var varChunks = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            varChunks[_i - 1] = arguments[_i];
-        }
-        return Object.assign(function (data) {
-            return stringChunks.map(function (chunk, i) {
-                if (stringChunks.length <= i)
-                    return chunk;
-                return (i - 1) in varChunks ? transformer(varChunks[i - 1], i, data, stringChunks, varChunks) + chunk : chunk;
-            }).join('');
-        }, {
-            __partialFormatString: true
-        });
-    };
-}
 function logErrors(message, func) {
     return function () {
         var args = [];
@@ -795,7 +491,7 @@ function logErrors(message, func) {
         }
         catch (err) {
             Log.err(message);
-            Log.err(parseError(err));
+            Log.err((0, funcs_1.parseError)(err));
         }
     };
 }
@@ -837,23 +533,6 @@ function skipWaves(wavesToSkip, runIntermediateWaves) {
         Vars.logic.skipWave();
     }
 }
-function random(arg0, arg1) {
-    if (typeof arg0 == "number") {
-        var max = void 0, min = void 0;
-        if (arg1 == undefined) {
-            max = arg0;
-            min = 0;
-        }
-        else {
-            min = arg0;
-            max = arg1;
-        }
-        return Math.random() * (max - min) + min;
-    }
-    else if (arg0 instanceof Array) {
-        return arg0[Math.floor(Math.random() * arg0.length)];
-    }
-}
 function logHTrip(player, name, message) {
     Log.warn("&yPlayer &b\"".concat(player.cleanedName, "\"&y (&b").concat(player.uuid, "&y/&b").concat(player.ip(), "&y) tripped &c").concat(name, "&y") + (message ? ": ".concat(message) : ""));
     players_1.FishPlayer.messageStaff("[yellow]Player [blue]\"".concat(player.cleanedName, "\"[] tripped [cyan]").concat(name, "[]") + (message ? ": ".concat(message) : ""));
@@ -862,9 +541,6 @@ function logHTrip(player, name, message) {
 function setType(input) { }
 function untilForever() {
     return (globals_1.maxTime - Date.now() - 10000);
-}
-function crash(message) {
-    throw new Error(message);
 }
 function colorNumber(number, getColor, side) {
     if (side === void 0) { side = "client"; }
@@ -908,7 +584,7 @@ function processChat(player, message, effects) {
     if ((!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
         && (filterTripText = matchFilter(message, fishPlayer.chatStrictness))) {
         if (effects) {
-            Log.info("Censored message from player ".concat(player.name, ": \"").concat(escapeStringColorsServer(message), "\"; contained \"").concat(filterTripText, "\""));
+            Log.info("Censored message from player ".concat(player.name, ": \"").concat((0, funcs_1.escapeStringColorsServer)(message), "\"; contained \"").concat(filterTripText, "\""));
             players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(message, "\" contained \"").concat(filterTripText, "\""));
         }
         message = config_1.text.chatFilterReplacement.message();
@@ -1022,7 +698,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
         var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
-        tile = (_0 = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _0 !== void 0 ? _0 : crash("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
+        tile = (_0 = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _0 !== void 0 ? _0 : (0, funcs_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
     }
     else
         return;
@@ -1031,7 +707,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
     [tile, uuid, action, type, time];
     tile.getLinkedTiles(function (t) {
         var pos = "".concat(t.x, ",").concat(t.y);
-        var existingData = globals_2.tileHistory[pos] ? StringIO.read(globals_2.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
+        var existingData = globals_2.tileHistory[pos] ? funcs_1.StringIO.read(globals_2.tileHistory[pos], function (str) { return str.readArray(function (d) { return ({
             action: d.readString(2),
             uuid: d.readString(3),
             time: d.readNumber(16),
@@ -1047,7 +723,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
             existingData = existingData.splice(0, 9);
         }
         //Write
-        globals_2.tileHistory[t.x + ',' + t.y] = StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
+        globals_2.tileHistory[t.x + ',' + t.y] = funcs_1.StringIO.write(existingData, function (str, data) { return str.writeArray(data, function (el) {
             str.writeString(el.action, 2);
             str.writeString(el.uuid, 3);
             str.writeNumber(el.time, 16);

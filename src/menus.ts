@@ -5,7 +5,9 @@ This file contains the menu system.
 
 import { CommandError } from "./commands";
 import { FishPlayer } from "./players";
-import { outputFail, outputSuccess, parseError, to2DArray } from "./utils";
+import { outputFail, outputSuccess } from "./utils";
+import { parseError } from './funcs';
+import { to2DArray } from './funcs';
 
 /** Stores a mapping from name to the numeric id of a listener that has been registered. */
 const registeredListeners:{
