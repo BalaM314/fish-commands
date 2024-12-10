@@ -17,7 +17,7 @@ export class Rank {
 		blocksPlaced: 5000,
 		timeSinceFirstJoin: 24 * 60 * 60 * 1000 * 7, //7 days
 	});
-	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
+	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[forest]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
 	static mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&lg[M]&fr", "[#6FFC7C]");
 	static admin = new Rank("admin", 4, "Administrators with the power to ban players.", "[black]<[#C30202]\uE82C[]>[]", "&lr[A]&fr", "[#C30202]");
 	static manager = new Rank("manager", 10, "Managers have file and console access.", "[black]<[scarlet]\uE88E[]>[]", "&c[E]&fr", "[scarlet]");
