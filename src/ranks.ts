@@ -11,13 +11,13 @@ export class Rank {
 	static autoRanks: Rank[] = [];
 
 	static player = new Rank("player", 0, "Ordinary players.", "", "&lk[p]&fr", "");
-	static active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[#E67E22]\uE800[]>[]", "&g[P]&fr", "[forest]", {
+	static active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[#forest]\uE800[]>[]", "&g[P]&fr", "[forest]", {
 		joins: 50,
 		playtime: 24 * 60 * 60 * 1000, //24 hours
 		blocksPlaced: 5000,
 		timeSinceFirstJoin: 24 * 60 * 60 * 1000 * 7, //7 days
 	});
-	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[forest]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
+	static trusted = new Rank("trusted", 2, "Trusted players who have gained the trust of a mod or admin.", "[black]<[#E67E22]\uE813[]>[]", "&y[T]&fr", "[#E67E22]");
 	static mod = new Rank("mod", 3, "Moderators who can mute, stop, and kick players.", "[black]<[#6FFC7C]\uE817[]>[]", "&lg[M]&fr", "[#6FFC7C]");
 	static admin = new Rank("admin", 4, "Administrators with the power to ban players.", "[black]<[#C30202]\uE82C[]>[]", "&lr[A]&fr", "[#C30202]");
 	static manager = new Rank("manager", 10, "Managers have file and console access.", "[black]<[scarlet]\uE88E[]>[]", "&c[E]&fr", "[scarlet]");
