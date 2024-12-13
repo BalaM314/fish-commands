@@ -45,7 +45,7 @@ This plugin uses callback-based menu handling.
 const fruits = ['🍏', '🍐', '🍊', '🍉'];
 let expectingResponse = false;
 const chooseFruitHandler = Menus.registerMenu((player, option) => {
-  const fruit = fruits[option];
+  const fruit = fruits.concat("Cancel")[option];
   if(!expectingResponse) return; //The player can respond to this menu even when we didn't ask, so validation is necessary
   expectingResponse = false;
   if(!fruit) return; //The player can provide any number here, so validation is necessary
