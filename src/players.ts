@@ -707,8 +707,7 @@ We apologize for the inconvenience.`
 				this.showAdNext = false;
 				showAd = true;
 			}
-			let messagePool = showAd ? tips.ads : tips.normal;
-			if(Mode.isChristmas) messagePool = messagePool.concat(tips.christmas);
+			let messagePool = showAd ? tips.ads : (Mode.isChristmas && Math.random() > 0.6) ? tips.christmas : tips.normal;
 			const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
 			const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`;
 

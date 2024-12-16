@@ -73,9 +73,7 @@ function initializeTimers() {
     //Tip
     Timer.schedule(function () {
         var showAd = Math.random() < 0.10; //10% chance every 15 minutes
-        var messagePool = showAd ? config.tips.ads : config.tips.normal;
-        if (config.Mode.isChristmas)
-            messagePool = messagePool.concat(config.tips.christmas);
+        var messagePool = showAd ? config.tips.ads : (config.Mode.isChristmas && Math.random() > 0.5) ? config.tips.christmas : config.tips.normal;
         var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
         var message = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
         Call.sendMessage(message);

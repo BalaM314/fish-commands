@@ -207,11 +207,27 @@ exports.text = {
     discordURL: "https://discord.gg/VpzcYSQ33Y",
     membershipURL: "https://patreon.com/FishServers",
     welcomeMessage: function () { return (0, funcs_1.random)([
-        "[gold]Welcome![]"
+        "[#22AA22]Merry [#EC4444]Christmas!",
+        "[gold]Happy Holidays! [white]\u2022*\u2022\u2603*\u2022",
+        "[gold]Happy Hanukkah!",
+        "[#EC4444]May your days be merry and bright!",
+        "[gold]Merry Fishmas! >|||> [white]\u2603",
+        "[gold]Deck the halls with lots of fun!",
+        "[gold]>|||> Fish wishes you [#22AA22]a merry Christmas!",
     ]); },
     chatFilterReplacement: {
-        message: function () { return "I really hope everyone is having a fun time :) <3"; },
-        highlight: function () { return "[#f456f]"; },
+        message: function () { return (0, funcs_1.random)([
+            "Have a holly jolly Christmas :) <3",
+            "I really hope everyone is jolly for the season! :D",
+            "All I want for Christmaaaaaaas is everyone having a fun time! :)",
+            "Remember to be nice in chat: Santa is watching! <3",
+            "All I want for Christmas is Fish! >|||>",
+        ]); },
+        highlight: function () { return (0, funcs_1.random)([
+            "[#22AA22]",
+            "[#EC4444]",
+            "[#FFFFFF]"
+        ]); },
     },
 };
 //TODO use this
@@ -280,7 +296,13 @@ exports.tips = {
         "You can tell new players not to break power voids with [white]/void[]",
         "You can add [pink]color[] to things with color tags! Try typing \"[[".concat(["pink", "green", "cyan", "acid", "royal", "coral"][Math.floor(Math.random() * 6)], "]Hello\" in chat, and see what happens!")
     ],
-    christmas: [],
+    christmas: [
+        "Remember to be nice in-game, Santa is watching!",
+        "Santa's checking his list, so be nice!",
+        "Have a merry christmas and a happy new year!",
+        "Fish becomes a bit more jolly around Christmastime!",
+        "Many server maps have been changed for the season.",
+    ],
     staff: []
 };
 exports.rules = [
