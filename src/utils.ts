@@ -124,18 +124,20 @@ export function getTeam(team:string):Team | string {
 
 
 /**
- * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
+ * @param wordList "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns a
  */
-export function matchFilter(input:string, strict = "chat" as "chat" | "strict" | "name"):false | string | [string] {
+export function matchFilter(input:string, wordList = "chat" as "chat" | "strict" | "name", aggressive = false):false | string | [string] {
 	const currentBannedWords = [
 		bannedWords.normal,
-		(strict == "strict" || strict == "name") && bannedWords.strict,
-		strict == "name" && bannedWords.names,
+		(wordList == "strict" || wordList == "name") && bannedWords.strict,
+		wordList == "name" && bannedWords.names,
 	].filter(Boolean).flat();
 	//Replace substitutions
+	const variations = [input, cleanText(input, false)];
+	if(aggressive) variations.push(cleanText(input, true));
 	for(const [banned, whitelist] of currentBannedWords){
-		for(const text of [input, cleanText(input, false)/*, cleanText(input, true)*/]){
+		for(const text of variations){
 			if(banned instanceof RegExp ? banned.test(text) : text.includes(banned)){
 				let modifiedText = text;
 				whitelist.forEach(w => modifiedText = modifiedText.replace(new RegExp(w, "g"), "")); //Replace whitelisted words with nothing
@@ -163,7 +165,7 @@ export function cleanText(text:string, applyAntiEvasion = false){
 		.toLowerCase()
 		.trim();
 	if(applyAntiEvasion){
-		replacedText = replacedText.replace(new RegExp(`[^a-zA-Z]`, "gi"), "");
+		replacedText = replacedText.replace(new RegExp(`[^a-zA-Z0-9]`, "gi"), "");
 	}
 	return replacedText;
 }
@@ -462,10 +464,20 @@ export function processChat(player:mindustryPlayer, message:string, effects = fa
 	const fishPlayer = FishPlayer.get(player);
 	let highlight = fishPlayer.highlight;
 	let filterTripText;
+	const suspicious = fishPlayer.joinsLessThan(3);
 	if(
 		(!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
-		&& (filterTripText = matchFilter(message, fishPlayer.chatStrictness))
+		&& (filterTripText = matchFilter(message, fishPlayer.chatStrictness, suspicious))
 	){
+		if(
+			suspicious && message.split(" ")
+				.map(w => w.replace(/[-_.^*,]/g, ""))
+				.some(w => bannedWords.autoWhack.includes(w))
+		){
+			logHTrip(fishPlayer, "bad words in chat", `message: \`${message}\``);
+			fishPlayer.muted = true;
+			fishPlayer.stop("automod", maxTime, `Automatic stop due to suspicious activity`);
+		}
 		if(effects){
 			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(message)}"; contained "${filterTripText}"`);
 			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${message}" contained "${filterTripText}"`);

@@ -24,12 +24,14 @@ export const bannedWords: {
 	normal: BannedWordList;
 	strict: BannedWordList;
 	names: BannedWordList;
+	/** new players will automatically be banned if they send a word that looks like one of these */
+	autoWhack: string[];
 } = {
 	normal: processBannedWordList([
 		//>:( -dart
 		"uwu", //lol
 		
-		"nig"+"ger", "nig"+"ga", "niger", "ni8"+"8ger", "nig"+"gre", //our apologies to citizens of the Republic of Niger
+		"nig"+"ger", "nig"+"ga", "niger", "ni8"+"8er", "nig"+"gre", //our apologies to citizens of the Republic of Niger
 		"re"+"tard",
 		'kill yourself', 'kill urself', /\bkys\b/,
 		/\bkill blacks\b/,
@@ -38,6 +40,7 @@ export const bannedWords: {
 		["cu"+"nt", "scunthorpe"],
 		["penis", "peniston"],
 		"hawk tuah",
+
 		["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
 		/\bf(a)g\b/, "fa"+"gg"+"ot",
 		/\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
@@ -50,7 +53,8 @@ export const bannedWords: {
 	names: processBannedWordList([
 		"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
 		uuidPattern, ipPattern, ipPortPattern
-	])
+	]),
+	autoWhack: ["nig"+"ger","nig"+"ga","ni8"+"8er","hit"+"ler","fa"+"gg"+"ot"],
 };
 
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII

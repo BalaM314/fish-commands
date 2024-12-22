@@ -192,19 +192,23 @@ function getTeam(team) {
     return "\"".concat(team, "\" is not a valid team string.");
 }
 /**
- * @param strict "chat" is least strict, followed by "strict", and "name" is most strict.
+ * @param wordList "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns a
  */
-function matchFilter(input, strict) {
+function matchFilter(input, wordList, aggressive) {
     var e_1, _a, e_2, _b;
-    if (strict === void 0) { strict = "chat"; }
+    if (wordList === void 0) { wordList = "chat"; }
+    if (aggressive === void 0) { aggressive = false; }
     var currentBannedWords = [
         config_1.bannedWords.normal,
-        (strict == "strict" || strict == "name") && config_1.bannedWords.strict,
-        strict == "name" && config_1.bannedWords.names,
+        (wordList == "strict" || wordList == "name") && config_1.bannedWords.strict,
+        wordList == "name" && config_1.bannedWords.names,
     ].filter(Boolean).flat();
+    //Replace substitutions
+    var variations = [input, cleanText(input, false)];
+    if (aggressive)
+        variations.push(cleanText(input, true));
     try {
-        //Replace substitutions
         for (var currentBannedWords_1 = __values(currentBannedWords), currentBannedWords_1_1 = currentBannedWords_1.next(); !currentBannedWords_1_1.done; currentBannedWords_1_1 = currentBannedWords_1.next()) {
             var _c = __read(currentBannedWords_1_1.value, 2), banned = _c[0], whitelist = _c[1];
             var _loop_1 = function (text_1) {
@@ -220,8 +224,8 @@ function matchFilter(input, strict) {
                 }
             };
             try {
-                for (var _d = (e_2 = void 0, __values([input, cleanText(input, false) /*, cleanText(input, true)*/])), _e = _d.next(); !_e.done; _e = _d.next()) {
-                    var text_1 = _e.value;
+                for (var variations_1 = (e_2 = void 0, __values(variations)), variations_1_1 = variations_1.next(); !variations_1_1.done; variations_1_1 = variations_1.next()) {
+                    var text_1 = variations_1_1.value;
                     var state_1 = _loop_1(text_1);
                     if (typeof state_1 === "object")
                         return state_1.value;
@@ -230,7 +234,7 @@ function matchFilter(input, strict) {
             catch (e_2_1) { e_2 = { error: e_2_1 }; }
             finally {
                 try {
-                    if (_e && !_e.done && (_b = _d.return)) _b.call(_d);
+                    if (variations_1_1 && !variations_1_1.done && (_b = variations_1.return)) _b.call(variations_1);
                 }
                 finally { if (e_2) throw e_2.error; }
             }
@@ -256,7 +260,7 @@ function cleanText(text, applyAntiEvasion) {
         .toLowerCase()
         .trim();
     if (applyAntiEvasion) {
-        replacedText = replacedText.replace(new RegExp("[^a-zA-Z]", "gi"), "");
+        replacedText = replacedText.replace(new RegExp("[^a-zA-Z0-9]", "gi"), "");
     }
     return replacedText;
 }
@@ -581,8 +585,16 @@ function processChat(player, message, effects) {
     var fishPlayer = players_1.FishPlayer.get(player);
     var highlight = fishPlayer.highlight;
     var filterTripText;
+    var suspicious = fishPlayer.joinsLessThan(3);
     if ((!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
-        && (filterTripText = matchFilter(message, fishPlayer.chatStrictness))) {
+        && (filterTripText = matchFilter(message, fishPlayer.chatStrictness, suspicious))) {
+        if (suspicious && message.split(" ")
+            .map(function (w) { return w.replace(/[-_.^*,]/g, ""); })
+            .some(function (w) { return config_1.bannedWords.autoWhack.includes(w); })) {
+            logHTrip(fishPlayer, "bad words in chat", "message: `".concat(message, "`"));
+            fishPlayer.muted = true;
+            fishPlayer.stop("automod", globals_1.maxTime, "Automatic stop due to suspicious activity");
+        }
         if (effects) {
             Log.info("Censored message from player ".concat(player.name, ": \"").concat((0, funcs_1.escapeStringColorsServer)(message), "\"; contained \"").concat(filterTripText, "\""));
             players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(message, "\" contained \"").concat(filterTripText, "\""));

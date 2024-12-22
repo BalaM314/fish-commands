@@ -48,7 +48,7 @@ exports.bannedWords = {
     normal: processBannedWordList([
         //>:( -dart
         "uwu", //lol
-        "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8ger", "nig" + "gre", //our apologies to citizens of the Republic of Niger
+        "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8er", "nig" + "gre", //our apologies to citizens of the Republic of Niger
         "re" + "tard",
         'kill yourself', 'kill urself', /\bkys\b/,
         /\bkill blacks\b/,
@@ -69,7 +69,8 @@ exports.bannedWords = {
     names: processBannedWordList([
         "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
         globals_1.uuidPattern, globals_1.ipPattern, globals_1.ipPortPattern
-    ])
+    ]),
+    autoWhack: ["nig" + "ger", "nig" + "ga", "ni8" + "8er", "hit" + "ler", "fa" + "gg" + "ot"],
 };
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 exports.substitutions = Object.fromEntries(Object.entries({
