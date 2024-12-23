@@ -133,6 +133,7 @@ export function matchFilter(input:string, wordList = "chat" as "chat" | "strict"
 		(wordList == "strict" || wordList == "name") && bannedWords.strict,
 		wordList == "name" && bannedWords.names,
 	].filter(Boolean).flat();
+	if(aggressive) currentBannedWords.push(["hitler", []]);
 	//Replace substitutions
 	const variations = [input, cleanText(input, false)];
 	if(aggressive) variations.push(cleanText(input, true));
@@ -155,11 +156,16 @@ export function matchFilter(input:string, wordList = "chat" as "chat" | "strict"
 	return false;
 }
 
+const foosPattern = Pattern.compile(/[\u0F80-\u107F]{2}$/.source);
+export function removeFoosChars(text:string):string {
+	return foosPattern.matcher(text).replaceAll("");
+}
+
 export function cleanText(text:string, applyAntiEvasion = false){
 	//Replace substitutions
 	let replacedText =
 		multiCharSubstitutions.reduce((acc, [from, to]) => acc.replace(from, to),
-			Strings.stripColors(text)
+			Strings.stripColors(removeFoosChars(text))
 			.split("").map(c => substitutions[c] ?? c).join("")
 		)
 		.toLowerCase()
@@ -469,16 +475,16 @@ export function processChat(player:mindustryPlayer, message:string, effects = fa
 		(!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
 		&& (filterTripText = matchFilter(message, fishPlayer.chatStrictness, suspicious))
 	){
-		if(
-			suspicious && message.split(" ")
-				.map(w => w.replace(/[-_.^*,]/g, ""))
-				.some(w => bannedWords.autoWhack.includes(w))
-		){
-			logHTrip(fishPlayer, "bad words in chat", `message: \`${message}\``);
-			fishPlayer.muted = true;
-			fishPlayer.stop("automod", maxTime, `Automatic stop due to suspicious activity`);
-		}
 		if(effects){
+			if(
+				suspicious && removeFoosChars(message).split(" ")
+					.map(w => w.replace(/[-_.^*,]/g, ""))
+					.some(w => bannedWords.autoWhack.includes(w))
+			){
+				logHTrip(fishPlayer, "bad words in chat", `message: \`${message}\``);
+				fishPlayer.muted = true;
+				fishPlayer.stop("automod", maxTime, `Automatic stop due to suspicious activity`, false);
+			}
 			Log.info(`Censored message from player ${player.name}: "${escapeStringColorsServer(message)}"; contained "${filterTripText}"`);
 			FishPlayer.messageStaff(`[yellow]Censored message from player ${fishPlayer.cleanedName}: "${message}" contained "${filterTripText}"`);
 		}
