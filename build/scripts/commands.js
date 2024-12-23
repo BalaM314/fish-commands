@@ -200,6 +200,10 @@ exports.Req = {
         return Date.now() - lastUsedSuccessfullySender >= durationMS
             || fail("This command was run recently and is on cooldown.");
     }; },
+    gameRunning: function () {
+        return !Vars.state.gameOver
+            || fail("This game is over, please wait for the next map to load.");
+    }
 };
 /** Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
 function processArgString(str) {
