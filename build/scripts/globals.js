@@ -15,6 +15,7 @@ exports.fishState = {
     lastPranked: Date.now(),
     labels: [],
     peacefulMode: false,
+    joinBell: false,
 };
 exports.ipJoins = new ObjectIntMap(); //todo somehow tell java that K is String and not Object
 exports.uuidPattern = /^[a-zA-Z0-9+/]{22}==$/;

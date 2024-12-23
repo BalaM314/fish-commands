@@ -384,6 +384,16 @@ exports.commands = (0, commands_1.consoleCommandList)({
             output(admins.subnetBans.toString("\n"));
         }
     },
+    joinbell: {
+        args: ["on:boolean?"],
+        description: "Toggles the join bell function.",
+        handler: function (_a) {
+            var on = _a.args.on;
+            on !== null && on !== void 0 ? on : (on = !globals_2.fishState.joinBell);
+            globals_2.fishState.joinBell = on;
+            Log.info("Enabled sound on new player join. Run \"joinbell 0\" to turn it off.");
+        }
+    },
     loadfishplayerdata: {
         args: ["areyousure:boolean", "fishplayerdata:string"],
         description: "Overwrites current fish player data.",

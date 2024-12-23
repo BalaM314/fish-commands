@@ -695,7 +695,11 @@ var FishPlayer = /** @class */ (function () {
                 }
             }
             if (info.timesJoined == 1) {
-                Log.info("&lrNew player joined: &c".concat(_this.cleanedName, "&lr (&c").concat(_this.uuid, "&lr/&c").concat(ip, "&lr)"));
+                var message = "&lrNew player joined: &c".concat(_this.cleanedName, "&lr (&c").concat(_this.uuid, "&lr/&c").concat(ip, "&lr)");
+                //Add BEL, this causes an audible noise
+                if (globals.fishState.joinBell)
+                    message += '\x07';
+                Log.info(message);
             }
         }, function (err) {
             Log.err("Error while checking for VPN status of ip ".concat(ip, "!"));

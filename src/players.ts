@@ -632,7 +632,10 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 				}
 			}
 			if(info.timesJoined == 1){
-				Log.info(`&lrNew player joined: &c${this.cleanedName}&lr (&c${this.uuid}&lr/&c${ip}&lr)`);
+				let message = `&lrNew player joined: &c${this.cleanedName}&lr (&c${this.uuid}&lr/&c${ip}&lr)`;
+				//Add BEL, this causes an audible noise
+				if(globals.fishState.joinBell) message += '\x07';
+				Log.info(message);
 			}
 		}, err => {
 			Log.err(`Error while checking for VPN status of ip ${ip}!`);
