@@ -322,7 +322,7 @@ export const rules = [
 	`# 2: [orange]Do not build or send pornographic images, flashing images, or gore, and do not be horny or a creep in chat; there are minors here.`,
 	`# 3: [yellow]Do not harass other people, be respectful. We do not tolerate racism, anti-LGBTQ+, or any other forms of bigotry.`,
 	`# 4: [green]Spamming is prohibited. Be careful when globally messaging staff in-game. Misuse may result in a mute.`,
-	`# 5: [cyan]Do not impersonate players, or ranks.`,
+	`# 5: [#00D8D8]Do not impersonate players, or ranks.`,
 	`# 6: [blue]Talking about controversial or sensitive topics is not allowed in-game. Building symbols of hate, such as swastikas, is prohibited.`,
 	`# 7: [purple]Do not votekick someone without a good reason, and consider asking first before votekicking. Avoid votekicking if there's an active staff member in the server; just tell them instead.`,
 	`# 8: [pink]No trolling or intentionally causing chaos. This includes any actions or messages that disrupt the community or create an unpleasant atmosphere.`,
