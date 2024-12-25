@@ -391,7 +391,12 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var on = _a.args.on;
             on !== null && on !== void 0 ? on : (on = !globals_2.fishState.joinBell);
             globals_2.fishState.joinBell = on;
-            Log.info("Enabled sound on new player join. Run \"joinbell 0\" to turn it off.");
+            if (globals_2.fishState.joinBell) {
+                Log.info("Enabled sound on new player join. Run \"joinbell\" again to turn it off.");
+            }
+            else {
+                Log.info("Disabled sound on new player join.");
+            }
         }
     },
     loadfishplayerdata: {

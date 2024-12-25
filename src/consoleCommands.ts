@@ -307,7 +307,11 @@ export const commands = consoleCommandList({
 		handler({args:{on}}){
 			on ??= !fishState.joinBell;
 			fishState.joinBell = on;
-			Log.info(`Enabled sound on new player join. Run "joinbell 0" to turn it off.`);
+			if(fishState.joinBell){
+				Log.info(`Enabled sound on new player join. Run "joinbell" again to turn it off.`);
+			} else {
+				Log.info(`Disabled sound on new player join.`);
+			}
 		}
 	},
 	loadfishplayerdata: {
