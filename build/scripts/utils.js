@@ -51,6 +51,7 @@ exports.getColor = getColor;
 exports.nearbyEnemyTile = nearbyEnemyTile;
 exports.getTeam = getTeam;
 exports.matchFilter = matchFilter;
+exports.removeFoosChars = removeFoosChars;
 exports.cleanText = cleanText;
 exports.isImpersonator = isImpersonator;
 exports.logAction = logAction;
@@ -204,6 +205,8 @@ function matchFilter(input, wordList, aggressive) {
         (wordList == "strict" || wordList == "name") && config_1.bannedWords.strict,
         wordList == "name" && config_1.bannedWords.names,
     ].filter(Boolean).flat();
+    if (aggressive)
+        currentBannedWords.push(["hitler", []]);
     //Replace substitutions
     var variations = [input, cleanText(input, false)];
     if (aggressive)
@@ -249,13 +252,17 @@ function matchFilter(input, wordList, aggressive) {
     }
     return false;
 }
+var foosPattern = Pattern.compile(/[\u0F80-\u107F]{2}$/.source);
+function removeFoosChars(text) {
+    return foosPattern.matcher(text).replaceAll("");
+}
 function cleanText(text, applyAntiEvasion) {
     if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
     //Replace substitutions
     var replacedText = config_1.multiCharSubstitutions.reduce(function (acc, _a) {
         var _b = __read(_a, 2), from = _b[0], to = _b[1];
         return acc.replace(from, to);
-    }, Strings.stripColors(text)
+    }, Strings.stripColors(removeFoosChars(text))
         .split("").map(function (c) { var _a; return (_a = config_1.substitutions[c]) !== null && _a !== void 0 ? _a : c; }).join(""))
         .toLowerCase()
         .trim();
@@ -588,14 +595,14 @@ function processChat(player, message, effects) {
     var suspicious = fishPlayer.joinsLessThan(3);
     if ((!fishPlayer.hasPerm("bypassChatFilter") || fishPlayer.chatStrictness == "strict")
         && (filterTripText = matchFilter(message, fishPlayer.chatStrictness, suspicious))) {
-        if (suspicious && message.split(" ")
-            .map(function (w) { return w.replace(/[-_.^*,]/g, ""); })
-            .some(function (w) { return config_1.bannedWords.autoWhack.includes(w); })) {
-            logHTrip(fishPlayer, "bad words in chat", "message: `".concat(message, "`"));
-            fishPlayer.muted = true;
-            fishPlayer.stop("automod", globals_1.maxTime, "Automatic stop due to suspicious activity");
-        }
         if (effects) {
+            if (suspicious && removeFoosChars(message).split(" ")
+                .map(function (w) { return w.replace(/[-_.^*,]/g, ""); })
+                .some(function (w) { return config_1.bannedWords.autoWhack.includes(w); })) {
+                logHTrip(fishPlayer, "bad words in chat", "message: `".concat(message, "`"));
+                fishPlayer.muted = true;
+                fishPlayer.stop("automod", globals_1.maxTime, "Automatic stop due to suspicious activity", false);
+            }
             Log.info("Censored message from player ".concat(player.name, ": \"").concat((0, funcs_1.escapeStringColorsServer)(message), "\"; contained \"").concat(filterTripText, "\""));
             players_1.FishPlayer.messageStaff("[yellow]Censored message from player ".concat(fishPlayer.cleanedName, ": \"").concat(message, "\" contained \"").concat(filterTripText, "\""));
         }

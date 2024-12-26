@@ -203,7 +203,6 @@ export const commands = consoleCommandList({
 
 			updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked.`);
 		}
-
 	},
 	unwhack: {
 		args: ["target:string"],
@@ -300,6 +299,19 @@ export const commands = consoleCommandList({
 			if(args.any) fail(`Use the whack and unwhack commands instead.`);
 			output(`List of all subnet bans:`);
 			output(admins.subnetBans.toString("\n"));
+		}
+	},
+	joinbell: {
+		args: ["on:boolean?"],
+		description: "Toggles the join bell function.",
+		handler({args:{on}}){
+			on ??= !fishState.joinBell;
+			fishState.joinBell = on;
+			if(fishState.joinBell){
+				Log.info(`Enabled sound on new player join. Run "joinbell" again to turn it off.`);
+			} else {
+				Log.info(`Disabled sound on new player join.`);
+			}
 		}
 	},
 	loadfishplayerdata: {

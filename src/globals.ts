@@ -13,6 +13,7 @@ export const fishState = {
 	lastPranked: Date.now(),
 	labels: [] as TimerTask[],
 	peacefulMode: false,
+	joinBell: false,
 };
 export const ipJoins = new ObjectIntMap<string>(); //todo somehow tell java that K is String and not Object
 

@@ -508,6 +508,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             });
             return Ohnos;
         },
+        requirements: [commands_1.Req.gameRunning],
         handler: function (_a) {
             var sender = _a.sender, Ohnos = _a.data;
             if (!Ohnos.enabled)
@@ -565,10 +566,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: ["player:player?"],
         description: 'Warns other players about power voids.',
         perm: commands_1.Perm.play,
+        requirements: [commands_1.Req.mode("attack")],
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, lastUsedSuccessfullySender = _a.lastUsedSuccessfullySender, lastUsedSuccessfully = _a.lastUsedSuccessfully, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (!config_1.Gamemode.attack())
-                (0, commands_1.fail)("This command can only be run in Attack.");
             if (args.player) {
                 if (Date.now() - lastUsedSuccessfullySender < 20000)
                     (0, commands_1.fail)("This command was used recently and is on cooldown.");
@@ -652,13 +652,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 .on("player vote change", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(t.session.data, "[white] wave(s). [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
                 .on("player vote removed", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has left. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
         }); },
-        requirements: [commands_1.Req.cooldown(3000)],
+        requirements: [commands_1.Req.cooldown(3000), commands_1.Req.mode("survival"), commands_1.Req.gameRunning],
         handler: function (_a) {
             var sender = _a.sender, manager = _a.data.manager;
-            if (!config_1.Gamemode.survival())
-                (0, commands_1.fail)("This command is only enabled in survival.");
-            if (Vars.state.gameOver)
-                (0, commands_1.fail)("This game is already over."); //TODO command run states system
             if (!manager.session) {
                 (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [1, 5, 10], sender, function (_a) {
                     var option = _a.option;
@@ -711,11 +707,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 .on("player vote change", function (t, player, oldVote, newVote) { return Call.sendMessage("RTV: ".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants to change the map. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
                 .on("player vote removed", function (t, player) { return Call.sendMessage("RTV: ".concat(player.name, "[white] has left the game. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
         }); },
-        requirements: [commands_1.Req.cooldown(3000)],
+        requirements: [commands_1.Req.cooldown(3000), commands_1.Req.gameRunning],
         handler: function (_a) {
             var sender = _a.sender, manager = _a.data.manager;
-            if (Vars.state.gameOver)
-                (0, commands_1.fail)("This map is already finished, cannot RTV. Wait until the next map loads.");
             manager.vote(sender, 1, 0); //No weighting for RTV except for removing AFK players
         }
     }), 
@@ -828,11 +822,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
             data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
-            requirements: [commands_1.Req.cooldown(10000)],
+            requirements: [commands_1.Req.cooldown(10000), commands_1.Req.modeNot("hexed")],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;
-                if (config_1.Gamemode.hexed())
-                    (0, commands_1.fail)("This command is disabled in Hexed.");
                 if (votes.get(sender))
                     (0, commands_1.fail)("You have already voted.");
                 votes.set(sender, map);
