@@ -41,7 +41,7 @@ var Rank = /** @class */ (function () {
     Rank.ranks = {};
     Rank.autoRanks = [];
     Rank.player = new Rank("player", 0, "Ordinary players.", "", "&lk[p]&fr", "");
-    Rank.active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[forest]\uE800[]>[]", "&g[P]&fr", "[forest]", {
+    Rank.active = new Rank("active", 1, "Assigned automatically to players who have played for some time.", "[black]<[forest]\uE800[]>[]", "&lk[a]&fr", "[forest]", {
         joins: 50,
         playtime: 24 * 60 * 60 * 1000, //24 hours
         blocksPlaced: 5000,
