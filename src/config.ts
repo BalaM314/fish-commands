@@ -216,25 +216,30 @@ export const text = {
 	discordURL: `https://discord.gg/VpzcYSQ33Y`,
 	membershipURL: `https://patreon.com/FishServers`,
 	welcomeMessage: () => random([
-		`[#22AA22]Merry [#EC4444]Christmas!`,
-		`[gold]Happy Holidays! [white]•*•☃*•`,
-		`[gold]Happy Hanukkah!`,
-		`[#EC4444]May your days be merry and bright!`,
-		`[gold]Merry Fishmas! >|||> [white]☃`,
-		`[gold]Deck the halls with lots of fun!`,
-		`[gold]>|||> Fish wishes you [#22AA22]a merry Christmas!`,
+		`[gold]Welcome![]`
 	]),
 	chatFilterReplacement: {
-		message: () => random([
-			`Have a holly jolly Christmas :) <3`,
-			`I really hope everyone is jolly for the season! :D`,
-			`All I want for Christmaaaaaaas is everyone having a fun time! :)`,
-			`Remember to be nice in chat: Santa is watching! <3`,
-			`All I want for Christmas is Fish! >|||>`,
-		]),
-		highlight: () => random([
-			`[#22AA22]`, `[#EC4444]`, `[#FFFFFF]`
-		]),
+		message: () => `I really hope everyone is having a fun time :) <3`,
+		highlight: () => `[#f456f]`,
+	// 	`[#22AA22]Merry [#EC4444]Christmas!`,
+	// 	`[gold]Happy Holidays! [white]•*•☃*•`,
+	// 	`[gold]Happy Hanukkah!`,
+	// 	`[#EC4444]May your days be merry and bright!`,
+	// 	`[gold]Merry Fishmas! >|||> [white]☃`,
+	// 	`[gold]Deck the halls with lots of fun!`,
+	// 	`[gold]>|||> Fish wishes you [#22AA22]a merry Christmas!`,
+	// ]),
+	// chatFilterReplacement: {
+	// 	message: () => random([
+	// 		`Have a holly jolly Christmas :) <3`,
+	// 		`I really hope everyone is jolly for the season! :D`,
+	// 		`All I want for Christmaaaaaaas is everyone having a fun time! :)`,
+	// 		`Remember to be nice in chat: Santa is watching! <3`,
+	// 		`All I want for Christmas is Fish! >|||>`,
+	// 	]),
+	// 	highlight: () => random([
+	// 		`[#22AA22]`, `[#EC4444]`, `[#FFFFFF]`
+	// ]),
 	} satisfies {
 		message: () => string;
 		highlight: () => string;
