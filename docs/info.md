@@ -2,11 +2,12 @@
 
 ## General structure
 * The plugin's code is written in Typescript, stored as .ts files in `src/`.
-* These files are compiled into `.js` files stored in `build/`.
+* These files are compiled into `.js` files stored in `build/scripts/`.
   * The main.js file is special: it is written in js and needs to be manually copied to build.
-* The `build/*.js` files **are committed**.
+* The `build/scripts/*.js` files **are committed**.
 * The JS files are run by an old, buggy version of Mozilla Rhino. (ES5.5) This causes a lot of problems.
 * With the power of modern developer tooling, we can mostly use modern features anyway, though.
+* The `build/` folder is a valid Mindustry plugin and should be installed in the server's mods folder. Use of the included scripts is recommended. (`npm attach [jarfilepath.jar]` to symlink it)
 
 ## Misc
 
