@@ -57,7 +57,7 @@ exports.bannedWords = {
         ["cu" + "nt", "scunthorpe"],
         ["penis", "peniston"],
         "hawk tuah",
-        ["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
+        ["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape", "atrape"],
         /\bf(a)g\b/, "fa" + "gg" + "ot",
         /\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
         ["porn", "maporn"],
