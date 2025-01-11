@@ -28,7 +28,7 @@ export const bannedWords: {
 	autoWhack: string[];
 } = {
 	normal: processBannedWordList([
-		"Fanum tax", "gyatt", "rizz", "skibidi", //With love, DarthScion
+		"fanum tax", "gyatt", "rizz", "skibidi", //With love, DarthScion
 		//>:( -dart
 		"uwu", //lol
 		
