@@ -714,12 +714,14 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["map:map"],
 		description: 'Override the next map in queue.',
 		perm: Perm.admin,
-		handler({allCommands, args, sender}){
+		handler({allCommands, args, sender, outputSuccess, f}){
 			Vars.maps.setNextMapOverride(args.map);
 			if(allCommands.nextmap.data.voteEndTime() > -1){
 				//Cancel /nextmap vote if it's ongoing
 				allCommands.nextmap.data.resetVotes();
 				Call.sendMessage(`[red]Admin ${sender.name}[red] has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
+			} else {
+				outputSuccess(f`Forced the next map to be "${args.map.name()}" by ${args.map.author()}`);
 			}
 		},
 

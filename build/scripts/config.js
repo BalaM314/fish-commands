@@ -45,7 +45,15 @@ function processBannedWordList(words) {
     });
 }
 exports.bannedWords = {
+    // README: Information on how to update this list
+    // All words must be in *lowercase*.
+    // Words need to be separated by commas, even if they are on a new line.
+    // If a word can be contained in another word that should be allowed (the scunthorpe problem),
+    // surround the entire thing in square brackets, then list out the words after
+    // like this: ["badw", "goodbadw"]
+    /** Normal: banned always. */
     normal: processBannedWordList([
+        "fanum tax", "gyatt", "rizz", "skibidi", //With love, DarthScion
         //>:( -dart
         "uwu", //lol
         "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8er", "nig" + "gre", //our apologies to citizens of the Republic of Niger
@@ -57,19 +65,22 @@ exports.bannedWords = {
         ["cu" + "nt", "scunthorpe"],
         ["penis", "peniston"],
         "hawk tuah",
-        ["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape"],
+        ["rape", "grape", "therap", "drape", "scrape", "trapez", "earrape", "atrape"],
         /\bf(a)g\b/, "fa" + "gg" + "ot",
         /\bc(u)m\b/, ["semen", "sement", "horsemen", "housemen", "defensemen", "those", "menders"],
         ["porn", "maporn"],
         "ur gay", "your gay", "youre gay", "you're gay",
     ]),
+    /** Strict: banned in names and for players with a chat strictness level of 'strict'. */
     strict: processBannedWordList([
         "fu" + "ck", "bi" + "tch", ["sh" + "it", "harshit"], /\ba(s)s\b/, "as" + "shole", ["dick", "medick", "dickens"],
     ]),
+    /** Names: banned only in names. */
     names: processBannedWordList([
         "sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
         globals_1.uuidPattern, globals_1.ipPattern, globals_1.ipPortPattern
     ]),
+    /** autoWhack: new players saying one of these words will be automatically stopped and muted. */
     autoWhack: ["nig" + "ger", "nig" + "ga", "ni8" + "8er", "hit" + "ler", "fa" + "gg" + "ot"],
 };
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
@@ -208,27 +219,30 @@ exports.text = {
     discordURL: "https://discord.gg/VpzcYSQ33Y",
     membershipURL: "https://patreon.com/FishServers",
     welcomeMessage: function () { return (0, funcs_1.random)([
-        "[#22AA22]Merry [#EC4444]Christmas!",
-        "[gold]Happy Holidays! [white]\u2022*\u2022\u2603*\u2022",
-        "[gold]Happy Hanukkah!",
-        "[#EC4444]May your days be merry and bright!",
-        "[gold]Merry Fishmas! >|||> [white]\u2603",
-        "[gold]Deck the halls with lots of fun!",
-        "[gold]>|||> Fish wishes you [#22AA22]a merry Christmas!",
+        "[gold]Welcome![]"
     ]); },
     chatFilterReplacement: {
-        message: function () { return (0, funcs_1.random)([
-            "Have a holly jolly Christmas :) <3",
-            "I really hope everyone is jolly for the season! :D",
-            "All I want for Christmaaaaaaas is everyone having a fun time! :)",
-            "Remember to be nice in chat: Santa is watching! <3",
-            "All I want for Christmas is Fish! >|||>",
-        ]); },
-        highlight: function () { return (0, funcs_1.random)([
-            "[#22AA22]",
-            "[#EC4444]",
-            "[#FFFFFF]"
-        ]); },
+        message: function () { return "I really hope everyone is having a fun time :) <3"; },
+        highlight: function () { return "[#f456f]"; },
+        // 	`[#22AA22]Merry [#EC4444]Christmas!`,
+        // 	`[gold]Happy Holidays! [white]•*•☃*•`,
+        // 	`[gold]Happy Hanukkah!`,
+        // 	`[#EC4444]May your days be merry and bright!`,
+        // 	`[gold]Merry Fishmas! >|||> [white]☃`,
+        // 	`[gold]Deck the halls with lots of fun!`,
+        // 	`[gold]>|||> Fish wishes you [#22AA22]a merry Christmas!`,
+        // ]),
+        // chatFilterReplacement: {
+        // 	message: () => random([
+        // 		`Have a holly jolly Christmas :) <3`,
+        // 		`I really hope everyone is jolly for the season! :D`,
+        // 		`All I want for Christmaaaaaaas is everyone having a fun time! :)`,
+        // 		`Remember to be nice in chat: Santa is watching! <3`,
+        // 		`All I want for Christmas is Fish! >|||>`,
+        // 	]),
+        // 	highlight: () => random([
+        // 		`[#22AA22]`, `[#EC4444]`, `[#FFFFFF]`
+        // ]),
     },
 };
 //TODO use this
@@ -307,17 +321,15 @@ exports.tips = {
     staff: []
 };
 exports.rules = [
-    "# 1: [red]No griefing. This refers to intentionally destroying and sabotaging constructions by other players, suiciding units, trying to destroy the player cores, or intentionally triggering traps. Griefing will result in a \"".concat(exports.prefixes.marked, "[red]\" prefix, preventing you from doing anything."),
+    "# 1: [red]No griefing. This refers to intentionally hurting your own team in any way.",
     "# 2: [orange]Do not build or send pornographic images, flashing images, or gore, and do not be horny or a creep in chat; there are minors here.",
-    "# 3: [yellow]Do not harass other people, be respectful. We have zero tolerance for racism, sexism, anti-LGBTQ+, or any other forms of bigotry.",
-    "# 4: [green]Be reasonable with pinging other people on Discord, and globally messaging staff in-game. Misuse may result in a mute. Spamming of any sort is prohibited.",
-    "# 5: [cyan]Don't impersonate a person or rank. Impersonation of staff may result in a ban.",
-    "# 6: [blue]Talking about controversial or sensitive political or historical topics is not allowed, except for civilized, monitored conversations on Discord at moderators' discretion. Building symbols of hate, such as swastikas, may result in a ban.",
-    "# 7: [purple]Don't votekick if there's an active staff member online and in the server; just message them in-game and they should take action. If you votekick someone without a good reason, you will be punished.",
+    "# 3: [yellow]Do not harass other people, be respectful. We do not tolerate racism, anti-LGBTQ+, or any other forms of bigotry.",
+    "# 4: [green]Spamming is prohibited. Be careful when globally messaging staff in-game. Misuse may result in a mute.",
+    "# 5: [#00D8D8]Do not impersonate players, or ranks.",
+    "# 6: [blue]Talking about controversial or sensitive topics is not allowed in-game. Building symbols of hate, such as swastikas, is prohibited.",
+    "# 7: [purple]Do not votekick someone without a good reason, and consider asking first before votekicking. Avoid votekicking if there's an active staff member in the server; just tell them instead.",
     "# 8: [pink]No trolling or intentionally causing chaos. This includes any actions or messages that disrupt the community or create an unpleasant atmosphere.",
-    "# 9: [brown]In Discord, Keep all discussions related to the current channel's topic.",
-    "#10: [grey]No discussion of self-harm or suicide unless you are asking for help. [red]DO NOT joke about such topics.[grey] If you seek help, our staff team will do our best to help you but will still refer you to the crisis links we have available as we are not professionals. We can and will still try our best to listen, and help you with the small things you are going through in life.",
-    "Failure to follow these rules will result in consequences: mostly a Marked Griefer tag for any game disruption, mute for broken chat rules, and bans if there are repeated offenses or bypasses (up to moderator discretion)."
+    "Failure to follow these rules will result in consequences: likely a Marked Griefer tag for any game disruption, mute for broken chat rules, and bans for repeated offenses or bypasses."
 ].map(function (r) { return "[white]".concat(r); });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9;
 //#endregion
