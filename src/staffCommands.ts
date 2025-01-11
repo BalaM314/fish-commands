@@ -898,6 +898,10 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 		description: "Applies effects to a player's unit.",
 		perm: Perm.admin,
 		handler({args, sender, f, outputSuccess}){
+			if(args.player?.hasPerm("blockTrolling"))
+				fail(`Player ${args.player} is insufficiently trollable.`);
+			if(args.player && !sender.canModerate(args.player, false))
+				fail(`You do not have permission to perform moderation actions on this player.`);
 			const target = args.player ?? sender;
 			const unit = target.unit();
 			if(!unit || unit.dead) fail(f`${target}'s unit is dead.`);
@@ -953,7 +957,7 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 				unit.apply(effect, ticks);
 			}
 			outputSuccess(`Applied effects.`);
-			logAction(`applied ${args.mode} effects`, sender, target);
+			if(!Gamemode.sandbox()) logAction(`applied ${args.mode} effects`, sender, target);
 		}
 	},
 	items: {
@@ -964,7 +968,7 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 			const core = team.data().cores.firstOpt() ?? fail(f`Team ${team} has no cores.`);
 			core.items.add(item, amount);
 			outputSuccess(f`Gave ${amount} ${item} to ${team}.`);
-			logAction(`gave items to ${team.name}`, sender);
+			if(!Gamemode.sandbox()) logAction(`gave items to ${team.name}`, sender);
 		}
 	}
 });

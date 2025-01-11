@@ -972,13 +972,17 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var e_2, _b;
-            var _c, _d, _e;
+            var _c, _d, _e, _f;
             var args = _a.args, sender = _a.sender, f = _a.f, outputSuccess = _a.outputSuccess;
-            var target = (_c = args.player) !== null && _c !== void 0 ? _c : sender;
+            if ((_c = args.player) === null || _c === void 0 ? void 0 : _c.hasPerm("blockTrolling"))
+                (0, commands_1.fail)("Player ".concat(args.player, " is insufficiently trollable."));
+            if (args.player && !sender.canModerate(args.player, false))
+                (0, commands_1.fail)("You do not have permission to perform moderation actions on this player.");
+            var target = (_d = args.player) !== null && _d !== void 0 ? _d : sender;
             var unit = target.unit();
             if (!unit || unit.dead)
                 (0, commands_1.fail)(f(templateObject_63 || (templateObject_63 = __makeTemplateObject(["", "'s unit is dead."], ["", "'s unit is dead."])), target));
-            var ticks = ((_d = args.duration) !== null && _d !== void 0 ? _d : 1e12) / 1000 * 60;
+            var ticks = ((_e = args.duration) !== null && _e !== void 0 ? _e : 1e12) / 1000 * 60;
             if (args.mode === "clear") {
                 unit.clearStatuses();
                 return;
@@ -1025,7 +1029,7 @@ exports.commands = (0, commands_1.commandList)({
                     StatusEffects.fast,
                 ],
             };
-            var effects = (_e = (0, utils_1.match)(args.mode, modes, null)) !== null && _e !== void 0 ? _e : (0, commands_1.fail)("Invalid mode. Supported modes: ".concat(Object.keys(modes).join(", ")));
+            var effects = (_f = (0, utils_1.match)(args.mode, modes, null)) !== null && _f !== void 0 ? _f : (0, commands_1.fail)("Invalid mode. Supported modes: ".concat(Object.keys(modes).join(", ")));
             try {
                 for (var effects_1 = __values(effects), effects_1_1 = effects_1.next(); !effects_1_1.done; effects_1_1 = effects_1.next()) {
                     var effect = effects_1_1.value;
@@ -1040,7 +1044,8 @@ exports.commands = (0, commands_1.commandList)({
                 finally { if (e_2) throw e_2.error; }
             }
             outputSuccess("Applied effects.");
-            (0, utils_1.logAction)("applied ".concat(args.mode, " effects"), sender, target);
+            if (!config_1.Gamemode.sandbox())
+                (0, utils_1.logAction)("applied ".concat(args.mode, " effects"), sender, target);
         }
     },
     items: {
@@ -1053,7 +1058,8 @@ exports.commands = (0, commands_1.commandList)({
             var core = (_b = team.data().cores.firstOpt()) !== null && _b !== void 0 ? _b : (0, commands_1.fail)(f(templateObject_64 || (templateObject_64 = __makeTemplateObject(["Team ", " has no cores."], ["Team ", " has no cores."])), team));
             core.items.add(item, amount);
             outputSuccess(f(templateObject_65 || (templateObject_65 = __makeTemplateObject(["Gave ", " ", " to ", "."], ["Gave ", " ", " to ", "."])), amount, item, team));
-            (0, utils_1.logAction)("gave items to ".concat(team.name), sender);
+            if (!config_1.Gamemode.sandbox())
+                (0, utils_1.logAction)("gave items to ".concat(team.name), sender);
         }
     }
 });
