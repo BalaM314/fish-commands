@@ -47,6 +47,7 @@ export type TypeOfArgType<T> =
 	T extends "map" ? MMap :
 	T extends "rank" ? Rank :
 	T extends "roleflag" ? RoleFlag :
+	T extends "item" ? Item :
 	never;
 
 /**
@@ -70,7 +71,7 @@ export type ValueFor<ArgString> =
 export type TapHandleMode = "off" | "once" | "on";
 
 /** Anything that can be formatted by the `f` tagged template function. */
-export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number | PlayerInfo | UnitType | Block | Team;
+export type Formattable = FishPlayer | Rank | RoleFlag | Error | mindustryPlayer | string | boolean | number | PlayerInfo | UnitType | Block | Team | Item;
 /**
  * A message that requires some other data to complete it.
  * For example, format string cannot be fully interpolated without knowing their start color,

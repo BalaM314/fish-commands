@@ -50,6 +50,7 @@ exports.colorBadBoolean = colorBadBoolean;
 exports.getColor = getColor;
 exports.nearbyEnemyTile = nearbyEnemyTile;
 exports.getTeam = getTeam;
+exports.getItem = getItem;
 exports.matchFilter = matchFilter;
 exports.removeFoosChars = removeFoosChars;
 exports.cleanText = cleanText;
@@ -192,6 +193,14 @@ function getTeam(team) {
             return "Team ".concat(team, " is outside the valid range (integers 0-255).");
     }
     return "\"".concat(team, "\" is not a valid team string.");
+}
+/** Attempts to parse an Item from the input. */
+function getItem(item) {
+    if (item in Items && Items[item] instanceof Item)
+        return Items[item];
+    else if (Vars.content.items().find(function (t) { return t.name.includes(item.toLowerCase()); }))
+        return Vars.content.items().find(function (t) { return t.name.includes(item.toLowerCase()); });
+    return "\"".concat(item, "\" is not a valid item.");
 }
 /**
  * @param wordList "chat" is least strict, followed by "strict", and "name" is most strict.

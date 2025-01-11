@@ -122,6 +122,13 @@ export function getTeam(team:string):Team | string {
 	return `"${team}" is not a valid team string.`;
 }
 
+/** Attempts to parse an Item from the input. */
+export function getItem(item:string):Item | string {
+	if(item in Items && Items[item as keyof typeof Items] instanceof Item) return Items[item as keyof typeof Items] as Item;
+	else if(Vars.content.items().find(t => t.name.includes(item.toLowerCase()))) return Vars.content.items().find(t => t.name.includes(item.toLowerCase()));
+	return `"${item}" is not a valid item.`;
+}
+
 
 /**
  * @param wordList "chat" is least strict, followed by "strict", and "name" is most strict.
@@ -349,8 +356,8 @@ export function getBlock(block:string, filter:"buildable" | "air" | "all"):Block
 	} satisfies Record<string, (b:Block) => boolean>)[filter];
 	let out:Block;
 	if(block in Blocks && Blocks[block] instanceof Block && check(Blocks[block])) return Blocks[block];
-	else if(out = Vars.content.blocks().find((t:Block) => t.name.includes(block.toLowerCase()) && check(t))) return out;
-	else if(out = Vars.content.blocks().find((t:Block) => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")) && check(t))) return out;
+	else if(out = Vars.content.blocks().find(t => t.name.includes(block.toLowerCase()) && check(t))) return out;
+	else if(out = Vars.content.blocks().find(t => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")) && check(t))) return out;
 	else if(block.includes("airblast")) return Blocks.blastDrill;
 	return `"${block}" is not a valid block.`;
 }

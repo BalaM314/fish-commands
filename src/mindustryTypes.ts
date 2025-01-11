@@ -84,7 +84,11 @@ class State {
 type Scripts = any;
 type CommandHandler = any;
 const CommandHandler: CommandHandler;
-type Content = any;
+type Content = {
+	items(): Seq<Item>;
+	units(): Seq<UnitType>;
+	blocks(): Seq<Block>;
+};
 class World {
 	build(x:number, y:number):Building | null;
 	tile(x:number, y:number):Tile | null;
@@ -166,7 +170,7 @@ class Block {
 type Building = any;
 const Items: Record<string, Item>;
 class Item {
-	
+	name: string;
 }
 class Team {
 	static derelict:Team;
@@ -352,6 +356,7 @@ class Seq<T> {
 	random():T | null;
 	get(index:number):T;
 	first():T;
+	firstOpt():T | null;
 }
 
 class ObjectSet<T> {

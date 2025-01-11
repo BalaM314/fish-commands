@@ -956,4 +956,15 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 			logAction(`applied ${args.mode} effects`, sender, target);
 		}
 	},
+	items: {
+		args: ["team:team", "item:item", "amount:number"],
+		description: "Gives items to a team.",
+		perm: Perm.admin,
+		handler({args:{team, item, amount}, sender, outputSuccess, f}){
+			const core = team.data().cores.firstOpt() ?? fail(f`Team ${team} has no cores.`);
+			core.items.add(item, amount);
+			outputSuccess(f`Gave ${amount} ${item} to ${team}.`);
+			logAction(`gave items to ${team.name}`, sender);
+		}
+	}
 });

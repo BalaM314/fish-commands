@@ -10,7 +10,7 @@ import { menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
-import { formatModeName, getBlock, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseTimeString } from "./utils";
+import { formatModeName, getBlock, getItem, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseTimeString } from "./utils";
 import { tagProcessorPartial } from './funcs';
 import { parseError } from './funcs';
 import { escapeStringColorsClient, escapeStringColorsServer } from './funcs';
@@ -34,7 +34,7 @@ const globalUsageData:Record<string, {
 /** All valid command arg types. */
 const commandArgTypes = [
 	"string", "number", "boolean", "player", /*"menuPlayer",*/ "team", "time", "unittype", "block",
-	"uuid", "offlinePlayer", "map", "rank", "roleflag",
+	"uuid", "offlinePlayer", "map", "rank", "roleflag", "item"
 ] as const;
 export type CommandArgType = typeof commandArgTypes extends ReadonlyArray<infer T> ? T : never;
 
@@ -320,6 +320,11 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 				if(roleflags.length > 1) return {error:`Ambiguous role flag "${args[i]}"`};
 				outputArgs[cmdArg.name] = roleflags[0];
 				break;
+			case "item":
+				const item = getItem(args[i]);
+				if(typeof item === "string") return { error: item };
+				outputArgs[cmdArg.name] = item;
+				break;
 			default: cmdArg.type satisfies never; crash("impossible");
 		}
 	}
@@ -358,6 +363,8 @@ const outputFormatter_server = tagProcessorPartial<Formattable, string | null>((
 	} else if(chunk instanceof Block){
 		return `&c${chunk.localizedName}&fr`;
 	} else if(chunk instanceof Team){
+		return `&c${chunk.name}&fr`;
+	} else if(chunk instanceof Item){
 		return `&c${chunk.name}&fr`;
 	} else {
 		chunk satisfies never;
@@ -400,6 +407,8 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((
 		return `[cyan]${chunk.localizedName}[]`;
 	} else if(chunk instanceof Team){
 		return `[white]${chunk.coloredName()}[][]`;
+	} else if(chunk instanceof Item){
+		return `[cyan]${chunk.name}[]`;
 	} else {
 		chunk satisfies never;
 		Log.err("Invalid format object!");

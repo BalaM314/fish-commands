@@ -76,7 +76,7 @@ var globalUsageData = {};
 /** All valid command arg types. */
 var commandArgTypes = [
     "string", "number", "boolean", "player", /*"menuPlayer",*/ "team", "time", "unittype", "block",
-    "uuid", "offlinePlayer", "map", "rank", "roleflag",
+    "uuid", "offlinePlayer", "map", "rank", "roleflag", "item"
 ];
 /** Helper function to get the correct type for command lists. */
 var commandList = function (list) { return list; };
@@ -405,6 +405,12 @@ function processArgs(args, processedCmdArgs, allowMenus) {
                         return { error: "Ambiguous role flag \"".concat(args[i], "\"") };
                     outputArgs[cmdArg.name] = roleflags[0];
                     break;
+                case "item":
+                    var item = (0, utils_1.getItem)(args[i]);
+                    if (typeof item === "string")
+                        return { error: item };
+                    outputArgs[cmdArg.name] = item;
+                    break;
                 default:
                     cmdArg.type;
                     (0, funcs_4.crash)("impossible");
@@ -466,6 +472,9 @@ var outputFormatter_server = (0, funcs_1.tagProcessorPartial)(function (chunk) {
     else if (chunk instanceof Team) {
         return "&c".concat(chunk.name, "&fr");
     }
+    else if (chunk instanceof Item) {
+        return "&c".concat(chunk.name, "&fr");
+    }
     else {
         chunk;
         Log.err("Invalid format object!");
@@ -521,6 +530,9 @@ var outputFormatter_client = (0, funcs_1.tagProcessorPartial)(function (chunk, i
     }
     else if (chunk instanceof Team) {
         return "[white]".concat(chunk.coloredName(), "[][]");
+    }
+    else if (chunk instanceof Item) {
+        return "[cyan]".concat(chunk.name, "[]");
     }
     else {
         chunk;
