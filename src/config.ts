@@ -27,6 +27,13 @@ export const bannedWords: {
 	/** new players will automatically be banned if they send a word that looks like one of these */
 	autoWhack: string[];
 } = {
+	// README: Information on how to update this list
+	// All words must be in *lowercase*.
+	// Words need to be separated by commas, even if they are on a new line.
+	// If a word can be contained in another word that should be allowed (the scunthorpe problem),
+	// surround the entire thing in square brackets, then list out the words after
+	// like this: ["badw", "goodbadw"]
+	/** Normal: banned always. */
 	normal: processBannedWordList([
 		"fanum tax", "gyatt", "rizz", "skibidi", //With love, DarthScion
 		//>:( -dart
@@ -48,13 +55,16 @@ export const bannedWords: {
 		["porn", "maporn"],
 		"ur gay", "your gay", "youre gay", "you're gay",
 	]),
+	/** Strict: banned in names and for players with a chat strictness level of 'strict'. */
 	strict: processBannedWordList([
 		"fu"+"ck", "bi"+"tch", ["sh"+"it", "harshit"], /\ba(s)s\b/, "as"+"shole", ["dick", "medick", "dickens"],
 	]),
+	/** Names: banned only in names. */
 	names: processBannedWordList([
 		"sex", /\bgoldberg\b/, "hitler", "stalin", "putin", "lenin", /^something$/, "[something]", "[[something]",
 		uuidPattern, ipPattern, ipPortPattern
 	]),
+	/** autoWhack: new players saying one of these words will be automatically stopped and muted. */
 	autoWhack: ["nig"+"ger","nig"+"ga","ni8"+"8er","hit"+"ler","fa"+"gg"+"ot"],
 };
 
