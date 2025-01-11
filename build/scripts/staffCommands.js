@@ -966,5 +966,82 @@ exports.commands = (0, commands_1.commandList)({
             }
         },
     },
+    effects: {
+        args: ["mode:string", "player:player?", "duration:time?"],
+        description: "Applies effects to a player's unit.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var e_2, _b;
+            var _c, _d, _e;
+            var args = _a.args, sender = _a.sender, f = _a.f, outputSuccess = _a.outputSuccess;
+            var target = (_c = args.player) !== null && _c !== void 0 ? _c : sender;
+            var unit = target.unit();
+            if (!unit || unit.dead)
+                (0, commands_1.fail)(f(templateObject_63 || (templateObject_63 = __makeTemplateObject(["", "'s unit is dead."], ["", "'s unit is dead."])), target));
+            var ticks = ((_d = args.duration) !== null && _d !== void 0 ? _d : 1e12) / 1000 * 60;
+            if (args.mode === "clear") {
+                unit.clearStatuses();
+                return;
+            }
+            var modes = {
+                fast: [StatusEffects.fast],
+                fast2: [StatusEffects.fast, StatusEffects.overdrive, StatusEffects.overclock],
+                boss: [StatusEffects.boss],
+                health: [StatusEffects.boss, StatusEffects.shielded],
+                slow: [StatusEffects.slow],
+                slow2: [
+                    StatusEffects.slow,
+                    StatusEffects.freezing,
+                    StatusEffects.wet,
+                    StatusEffects.muddy,
+                    StatusEffects.sapped,
+                    StatusEffects.sporeSlowed,
+                    StatusEffects.electrified,
+                    StatusEffects.tarred,
+                ],
+                freeze: [StatusEffects.unmoving],
+                disarm: [StatusEffects.disarmed],
+                invincible: [StatusEffects.invincible],
+                boost: [
+                    StatusEffects.fast,
+                    StatusEffects.overdrive,
+                    StatusEffects.overclock,
+                    StatusEffects.boss,
+                    StatusEffects.shielded,
+                ],
+                damage: [
+                    StatusEffects.burning,
+                    StatusEffects.freezing,
+                    StatusEffects.wet,
+                    StatusEffects.muddy,
+                    StatusEffects.melting,
+                    StatusEffects.sapped,
+                    StatusEffects.tarred,
+                    StatusEffects.shocked,
+                    StatusEffects.blasted,
+                    StatusEffects.corroded,
+                    StatusEffects.sporeSlowed,
+                    StatusEffects.electrified,
+                    StatusEffects.fast,
+                ],
+            };
+            var effects = (_e = (0, utils_1.match)(args.mode, modes, null)) !== null && _e !== void 0 ? _e : (0, commands_1.fail)("Invalid mode. Supported modes: ".concat(Object.keys(modes).join(", ")));
+            try {
+                for (var effects_1 = __values(effects), effects_1_1 = effects_1.next(); !effects_1_1.done; effects_1_1 = effects_1.next()) {
+                    var effect = effects_1_1.value;
+                    unit.apply(effect, ticks);
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (effects_1_1 && !effects_1_1.done && (_b = effects_1.return)) _b.call(effects_1);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+            outputSuccess("Applied effects.");
+            (0, utils_1.logAction)("applied ".concat(args.mode, " effects"), sender, target);
+        }
+    },
 });
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37, templateObject_38, templateObject_39, templateObject_40, templateObject_41, templateObject_42, templateObject_43, templateObject_44, templateObject_45, templateObject_46, templateObject_47, templateObject_48, templateObject_49, templateObject_50, templateObject_51, templateObject_52, templateObject_53, templateObject_54, templateObject_55, templateObject_56, templateObject_57, templateObject_58, templateObject_59, templateObject_60, templateObject_61, templateObject_62;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37, templateObject_38, templateObject_39, templateObject_40, templateObject_41, templateObject_42, templateObject_43, templateObject_44, templateObject_45, templateObject_46, templateObject_47, templateObject_48, templateObject_49, templateObject_50, templateObject_51, templateObject_52, templateObject_53, templateObject_54, templateObject_55, templateObject_56, templateObject_57, templateObject_58, templateObject_59, templateObject_60, templateObject_61, templateObject_62, templateObject_63;

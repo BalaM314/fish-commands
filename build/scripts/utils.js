@@ -80,6 +80,7 @@ exports.updateBans = updateBans;
 exports.processChat = processChat;
 exports.getIPRange = getIPRange;
 exports.getHash = getHash;
+exports.match = match;
 var api = require("./api");
 var config_1 = require("./config");
 var funcs_1 = require("./funcs");
@@ -795,4 +796,7 @@ function getHash(file, algorithm) {
         Log.err("Cannot generate ".concat(algorithm, ", ").concat(e));
         return undefined;
     }
+}
+function match(value, clauses, defaultValue) {
+    return Object.prototype.hasOwnProperty.call(clauses, value) ? clauses[value] : defaultValue;
 }

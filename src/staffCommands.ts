@@ -13,7 +13,7 @@ import { fishState, ipPattern, uuidPattern } from "./globals";
 import { menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { addToTileHistory, colorBadBoolean, formatTime, formatTimeRelative, getAntiBotInfo, logAction, serverRestartLoop, untilForever, updateBans } from "./utils";
+import { addToTileHistory, colorBadBoolean, formatTime, formatTimeRelative, getAntiBotInfo, logAction, match, serverRestartLoop, untilForever, updateBans } from "./utils";
 import { parseError } from './funcs';
 import { escapeStringColorsClient } from './funcs';
 import { escapeTextDiscord } from './funcs';
@@ -892,5 +892,68 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 				Call.sendMessage(`[[Sandbox] [red]Disabled peaceful mode.`);
 			}
 		},
+	},
+	effects: {
+		args: ["mode:string", "player:player?", "duration:time?"],
+		description: "Applies effects to a player's unit.",
+		perm: Perm.admin,
+		handler({args, sender, f, outputSuccess}){
+			const target = args.player ?? sender;
+			const unit = target.unit();
+			if(!unit || unit.dead) fail(f`${target}'s unit is dead.`);
+			const ticks = (args.duration ?? 1e12) / 1000 * 60;
+			if(args.mode === "clear"){
+				unit.clearStatuses();
+				return;
+			}
+			const modes = {
+				fast: [StatusEffects.fast],
+				fast2: [StatusEffects.fast, StatusEffects.overdrive, StatusEffects.overclock],
+				boss: [StatusEffects.boss],
+				health: [StatusEffects.boss, StatusEffects.shielded],
+				slow: [StatusEffects.slow],
+				slow2: [
+					StatusEffects.slow,
+					StatusEffects.freezing,
+					StatusEffects.wet,
+					StatusEffects.muddy,
+					StatusEffects.sapped,
+					StatusEffects.sporeSlowed,
+					StatusEffects.electrified,
+					StatusEffects.tarred,
+				],
+				freeze: [StatusEffects.unmoving],
+				disarm: [StatusEffects.disarmed],
+				invincible: [StatusEffects.invincible],
+				boost: [
+					StatusEffects.fast,
+					StatusEffects.overdrive,
+					StatusEffects.overclock,
+					StatusEffects.boss,
+					StatusEffects.shielded,
+				],
+				damage: [
+					StatusEffects.burning,
+					StatusEffects.freezing,
+					StatusEffects.wet,
+					StatusEffects.muddy,
+					StatusEffects.melting,
+					StatusEffects.sapped,
+					StatusEffects.tarred,
+					StatusEffects.shocked,
+					StatusEffects.blasted,
+					StatusEffects.corroded,
+					StatusEffects.sporeSlowed,
+					StatusEffects.electrified,
+					StatusEffects.fast,
+				],
+			};
+			const effects = match(args.mode, modes, null) ?? fail(`Invalid mode. Supported modes: ${Object.keys(modes).join(", ")}`);
+			for(const effect of effects){
+				unit.apply(effect, ticks);
+			}
+			outputSuccess(`Applied effects.`);
+			logAction(`applied ${args.mode} effects`, sender, target);
+		}
 	},
 });
