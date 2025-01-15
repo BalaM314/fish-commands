@@ -675,7 +675,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Rock the vote to change map.',
 		perm: Perm.play,
 		init: () => ({
-			manager: new VoteManager(1.5 * 60_000)
+			manager: new VoteManager(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
 				.on("success", () => neutralGameover())
 				.on("vote passed", () => Call.sendMessage(`RTV: [green]Vote has passed, changing map.`))
 				.on("vote failed", () => Call.sendMessage(`RTV: [red]Vote failed.`))
@@ -714,6 +714,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["map:map"],
 		description: 'Override the next map in queue.',
 		perm: Perm.admin,
+		requirements: [Req.modeNot("hexed")],
 		handler({allCommands, args, sender, outputSuccess, f}){
 			Vars.maps.setNextMapOverride(args.map);
 			if(allCommands.nextmap.data.voteEndTime() > -1){

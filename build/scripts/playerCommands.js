@@ -700,7 +700,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         description: 'Rock the vote to change map.',
         perm: commands_1.Perm.play,
         init: function () { return ({
-            manager: new votes_1.VoteManager(1.5 * 60000)
+            manager: new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
                 .on("success", function () { return (0, utils_1.neutralGameover)(); })
                 .on("vote passed", function () { return Call.sendMessage("RTV: [green]Vote has passed, changing map."); })
                 .on("vote failed", function () { return Call.sendMessage("RTV: [red]Vote failed."); })
@@ -737,6 +737,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         args: ["map:map"],
         description: 'Override the next map in queue.',
         perm: commands_1.Perm.admin,
+        requirements: [commands_1.Req.modeNot("hexed")],
         handler: function (_a) {
             var allCommands = _a.allCommands, args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             Vars.maps.setNextMapOverride(args.map);
