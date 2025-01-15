@@ -189,11 +189,10 @@ export class FishServer {
 		"162.248.101.53", "6567",
 		["sand", "box", "sa", "sb"]
 	);
-	static hardcore = new FishServer(
-		"hardcore",
-		[..."101.201.842.261"].reverse().join(), "6567",
-		["hc", "hardc", "hcore"],
-		"hardcore"
+	static hexed = new FishServer(
+		"hexed",
+		"162.248.102.101", "6567",
+		["h", "hx", "hxd", "hpvp", "hxpvp", "hexpvp"]
 	);
 	static byName(input:string):FishServer | null {
 		input = input.toLowerCase();

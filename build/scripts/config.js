@@ -193,7 +193,7 @@ var FishServer = /** @class */ (function () {
     FishServer.survival = new FishServer("survival", "162.248.101.95", "6567", ["surviv", "surv", "sur", "su", "s", "sl"]);
     FishServer.pvp = new FishServer("pvp", "162.248.100.133", "6567", ["pv", "p", "v", "playerversusplayer"]);
     FishServer.sandbox = new FishServer("sandbox", "162.248.101.53", "6567", ["sand", "box", "sa", "sb"]);
-    FishServer.hardcore = new FishServer("hardcore", __spreadArray([], __read("101.201.842.261"), false).reverse().join(), "6567", ["hc", "hardc", "hcore"], "hardcore");
+    FishServer.hexed = new FishServer("hexed", "162.248.102.101", "6567", ["h", "hx", "hxd", "hpvp", "hxpvp", "hexpvp"]);
     return FishServer;
 }());
 exports.FishServer = FishServer;
