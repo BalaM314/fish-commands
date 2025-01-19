@@ -49,16 +49,19 @@ exports.VoteManager = void 0;
 var players_1 = require("./players");
 var funcs_1 = require("./funcs");
 var funcs_2 = require("./funcs");
+var ranks_1 = require("./ranks");
 /** Manages a vote. */
 var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
-    function VoteManager(voteTime, goal, team) {
+    function VoteManager(voteTime, goal, team, canidates) {
         if (goal === void 0) { goal = 0.50001; }
         if (team === void 0) { team = undefined; }
+        if (canidates === void 0) { canidates = new Seq(); }
         var _this = _super.call(this) || this;
         _this.voteTime = voteTime;
         _this.goal = goal;
         _this.team = team;
+        _this.canidates = canidates;
         /** The ongoing voting session, if there is one. */
         _this.session = null;
         Events.on(EventType.PlayerLeave, function (_a) {
@@ -88,7 +91,8 @@ var VoteManager = /** @class */ (function (_super) {
         this.session.votes.set(player.uuid, newVote);
         if (oldVote == null)
             this.fire("player vote", [player, newVote]);
-        this.fire("player vote change", [player, oldVote !== null && oldVote !== void 0 ? oldVote : 0, newVote]);
+        this._getCanidates();
+        this.fire("player vote change", [player, oldVote !== null && oldVote !== void 0 ? oldVote : 0, newVote, this.canidates]);
         this._checkVote(false);
     };
     VoteManager.prototype.unvote = function (player) {
@@ -98,7 +102,8 @@ var VoteManager = /** @class */ (function (_super) {
         var vote = this.session.votes.get(fishP.uuid);
         if (vote) {
             this.session.votes.delete(fishP.uuid);
-            this.fire("player vote removed", [player, vote]);
+            this._getCanidates();
+            this.fire("player vote removed", [player, vote, this.canidates]);
             this._checkVote(false);
         }
     };
@@ -119,15 +124,7 @@ var VoteManager = /** @class */ (function (_super) {
         this.session = null;
     };
     VoteManager.prototype.requiredVotes = function () {
-        var canidates = 0;
-        for (var i = 0; i < Groups.player.size(); i++) { //god I hate this loop, but the lambda method has a (scope) skill issue
-            var canidate = players_1.FishPlayer.get(Groups.player.index(i));
-            if (canidate.team() != this.team)
-                break;
-            if (canidate.afk())
-                break;
-        }
-        return Math.max(Math.ceil(this.goal * canidates), 1);
+        return Math.max(Math.ceil(this.goal * this._getCanidates().size), 1);
     };
     VoteManager.prototype.currentVotes = function () {
         return this.session ? __spreadArray([], __read(this.session.votes), false).reduce(function (acc, _a) {
@@ -135,17 +132,27 @@ var VoteManager = /** @class */ (function (_super) {
             return acc + v;
         }, 0) : 0;
     };
+    VoteManager.prototype._getCanidates = function () {
+        var _this = this;
+        this.canidates.clear();
+        Groups.player.each(function (p) {
+            return (!_this.team || (p.team() == _this.team && (!players_1.FishPlayer.get(p).afk() || players_1.FishPlayer.get(p).ranksAtLeast(ranks_1.Rank.admin))));
+        }, function (p) {
+            _this.canidates.add(p);
+        });
+        return this.canidates;
+    };
     VoteManager.prototype._checkVote = function (end) {
         var votes = this.currentVotes();
         var required = this.requiredVotes();
         if (votes >= required) {
             this.fire("success", [false]);
-            this.fire("vote passed", [votes, required]);
+            this.fire("vote passed", [votes, required, this.canidates]);
             this.resetVote();
         }
         else if (end) {
             this.fire("fail", [false]);
-            this.fire("vote failed", [votes, required]);
+            this.fire("vote failed", [votes, required, this.canidates]);
             this.resetVote();
         }
     };

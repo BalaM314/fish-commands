@@ -360,6 +360,7 @@ class Seq<T> {
 	get(index:number):T;
 	first():T;
 	firstOpt():T | null;
+	clear():void;
 }
 
 class ObjectSet<T> {
@@ -396,6 +397,7 @@ class ObjectIntMapEntry<K> {
 	value:number;
 }
 class EntityGroup<T> {
+	add(type:T):void
 	copy(seq:Seq<T>):Seq<T>;
 	each(func:(item:T) => unknown):void;
 	each(predicate:(item:T) => boolean, func:(item:T) => unknown):void;
@@ -407,6 +409,7 @@ class EntityGroup<T> {
 	first():T;
 	index(index:number):T;
 	clear():void;
+	//iterator():Iterator<T>
 }
 
 function importPackage(package:any):void;

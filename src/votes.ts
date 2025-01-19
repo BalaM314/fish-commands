@@ -8,16 +8,17 @@ import { FishPlayer } from "./players";
 import { crash } from './funcs';
 import { EventEmitter } from './funcs';
 import { Rank } from "./ranks";
+import { getPriority } from "os";
 
 /** Event data for each voting event. */
 export type VoteEventMapping = {
-	"success": [forced:boolean];
+	"success": [forced:boolean] ;
 	"fail": [forced:boolean];
-	"vote passed": [votes:number, required:number];
-	"vote failed": [votes:number, required:number];
+	"vote passed": [votes:number, required:number, canidates:Seq<Player>];
+	"vote failed": [votes:number, required:number, canidates:Seq<Player>];
 	"player vote": [player:FishPlayer, current:number];
-	"player vote change": [player:FishPlayer, previous:number, current:number];
-	"player vote removed": [player:FishPlayer, previous:number];
+	"player vote change": [player:FishPlayer, previous:number, current:number, canidates:Seq<Player>];
+	"player vote removed": [player:FishPlayer, previous:number, canidates:Seq<Player>];
 };
 export type VoteEvent = keyof VoteEventMapping;
 export type VoteEventData<T extends VoteEvent> = VoteEventMapping[T];
@@ -35,7 +36,8 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	constructor(
 		public voteTime:number,
 		public goal:number = 0.50001,
-		public team: Team | undefined = undefined
+		public team: Team | undefined = undefined,
+		public canidates:Seq<Player> = new Seq<Player>()
 	){
 		super();
 		Events.on(EventType.PlayerLeave, ({player}) => {
@@ -61,7 +63,8 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 		const oldVote = this.session.votes.get(player.uuid);
 		this.session.votes.set(player.uuid, newVote);
 		if(oldVote == null) this.fire("player vote", [player, newVote]);
-		this.fire("player vote change", [player, oldVote ?? 0, newVote]);
+		this._getCanidates();
+		this.fire("player vote change", [player, oldVote ?? 0, newVote, this.canidates]);
 		this._checkVote(false);
 	}
 
@@ -71,7 +74,8 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 		const vote = this.session.votes.get(fishP.uuid);
 		if(vote){
 			this.session.votes.delete(fishP.uuid);
-			this.fire("player vote removed", [player, vote]);
+			this._getCanidates();
+			this.fire("player vote removed", [player, vote, this.canidates]);
 			this._checkVote(false);
 		}
 	}
@@ -93,29 +97,32 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	}
 	
 	requiredVotes():number {
-		let canidates = 0
-		for(let i = 0; i< Groups.player.size(); i++){ //god I hate this loop, but the lambda method has a (scope) skill issue
-			let canidate = FishPlayer.get(Groups.player.index(i))
-			if (canidate.team() != this.team) break;
-			if (canidate.afk()) break;
-		}
-		return Math.max(Math.ceil(this.goal * canidates), 1);
+		return Math.max(Math.ceil(this.goal * this._getCanidates().size), 1);
 	}
 
 	currentVotes():number {
 		return this.session ? [...this.session.votes].reduce((acc, [k, v]) => acc + v, 0) : 0;
 	}
 
+	_getCanidates():Seq<Player>{
+		this.canidates.clear()
+		Groups.player.each((p) => {
+			return(!this.team || (p.team() == this.team && (!FishPlayer.get(p).afk() || FishPlayer.get(p).ranksAtLeast(Rank.admin))))
+		}, (p) => {
+			this.canidates.add(p);
+		});
+		return this.canidates;
+	}
 	_checkVote(end:boolean){
 		const votes = this.currentVotes();
 		const required = this.requiredVotes();
 		if(votes >= required){
 			this.fire("success", [false]);
-			this.fire("vote passed", [votes, required]);
+			this.fire("vote passed", [votes, required, this.canidates]);
 			this.resetVote();
 		} else if(end){
 			this.fire("fail", [false]);
-			this.fire("vote failed", [votes, required]);
+			this.fire("vote failed", [votes, required, this.canidates]);
 			this.resetVote();
 		}
 	}

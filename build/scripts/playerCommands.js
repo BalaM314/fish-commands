@@ -855,11 +855,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     .on("success", function () {
                     Team.get(i).data().cores.each(function (core) { core.kill(); });
                 })
-                    .on("vote passed", function () { return Call.sendMessage("[orange]Team ".concat(Team.get(i).coloredName(), " has voted to forfeited this match.")); })
-                    .on("vote failed", function () { Call.sendMessage("".concat(Team.get(i), " has chosen not to forfit this match")); })
-                    .on("player vote change", function (t, player, oldVote, newVote) { return Call.sendMessage("".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants ").concat(Team.get(i).coloredName(), " to forfeit this match. [green]").concat(managers[i].currentVotes(), "[white] votes, [green]").concat(managers[i].requiredVotes(), "[white] required.")); })
-                // player leave was getting annoying
-                );
+                    .on("vote passed", function (t) { return Call.sendMessage("[orange]Surrender[white]: Team ".concat(t.team.coloredName(), " has voted to forfeited this match.")); })
+                    .on("vote failed", function (t, _votes, _required, canidates) { canidates.each(function (player) { player.sendMessage("[orange]Surrender[white]: Team ".concat(t.team.coloredName(), " has chosen not to forfit this match.")); }); })
+                    .on("player vote change", function (t, _fishplayer, oldVote, newVote, canidates) { canidates.each(function (player) { player.sendMessage("[orange]Surrender[white]: ".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants to forfeit this match. [orange]").concat(t.currentVotes(), "[white] votes, [orange]").concat(t.requiredVotes(), "[white] required.")); }); })
+                    .on("player vote removed", function (t, fishplayer, _previous, canidates) { canidates.each(function (player) { player.sendMessage("[orange]Surrender[white]: Player ".concat(fishplayer.name, "[white] has left the game. [orange]").concat(t.currentVotes(), "[white] votes, [orange]").concat(t.requiredVotes(), "[white] required.")); }); }));
             };
             for (var i = 0; i < 256; i++) {
                 _loop_1(i);

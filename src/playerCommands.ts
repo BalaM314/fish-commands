@@ -852,11 +852,12 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 				.on("success", () => {
 					Team.get(i).data().cores.each((core) => {core.kill()});
 				})
-				.on("vote passed", () => Call.sendMessage(`[orange]Team ${Team.get(i).coloredName()} has voted to forfeited this match.`))
-				.on("vote failed", () => {Call.sendMessage(`${Team.get(i)} has chosen not to forfit this match`)})
-				.on("player vote change", (t, player, oldVote, newVote) => Call.sendMessage(`${player.name}[white] ${oldVote == newVote ? "still " : ""}wants ${Team.get(i).coloredName()} to forfeit this match. [green]${managers[i].currentVotes()}[white] votes, [green]${managers[i].requiredVotes()}[white] required.`))
-				// player leave was getting annoying
-			)
+				.on("vote passed", (t) => Call.sendMessage(`[orange]Surrender[white]: Team ${t.team!.coloredName()} has voted to forfeited this match.`))
+				.on("vote failed", (t,_votes,_required,canidates) => {canidates.each((player) => {player.sendMessage(`[orange]Surrender[white]: Team ${t.team!.coloredName()} has chosen not to forfit this match.`)})})
+				.on("player vote change", (t, _fishplayer, oldVote, newVote, canidates) => {canidates.each((player) => {player.sendMessage(`[orange]Surrender[white]: ${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to forfeit this match. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`)})})
+				.on("player vote removed", (t, fishplayer, _previous, canidates) => {canidates.each((player) => {player.sendMessage(`[orange]Surrender[white]: Player ${fishplayer.name}[white] has left the game. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`)})})
+				)
+		
 		}
 		return managers
 	}
