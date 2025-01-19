@@ -98,10 +98,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     }, die: {
         args: [],
         description: 'Commits die.',
-        perm: commands_1.Perm.mod,
+        perm: commands_1.Perm.play,
         handler: function (_a) {
             var _b;
             var sender = _a.sender;
+            if (!config_1.Gamemode.sandbox() && !sender.ranksAtLeast(ranks_1.Rank.mod))
+                (0, commands_1.fail)("You do not have permission to die.");
             (_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.kill();
         },
     }, discord: {

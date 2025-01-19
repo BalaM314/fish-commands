@@ -63,8 +63,9 @@ export const commands = commandList({
 	die: {
 		args: [],
 		description: 'Commits die.',
-		perm: Perm.mod,
+		perm: Perm.play,
 		handler({ sender }) {
+			if(!Gamemode.sandbox() && !sender.ranksAtLeast(Rank.mod)) fail(`You do not have permission to die.`)
 			sender.unit()?.kill();
 		},
 	},
