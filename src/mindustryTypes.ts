@@ -185,6 +185,9 @@ class Team {
 	data():TeamData;
 	coloredName():string;
 	id:number;
+	static get(index:number):Team
+	cores: Seq<Building>;
+	coloredName():string
 }
 type TeamData = {
 	units: Seq<Unit>;
@@ -402,6 +405,7 @@ class EntityGroup<T> {
 	contains(pred:(item:T) => boolean):boolean;
 	find(pred:(item:T) => boolean):T;
 	first():T;
+	index(index:number):T;
 	clear():void;
 }
 

@@ -1,21 +1,22 @@
 /*
 Copyright © BalaM314, 2024. All Rights Reserved.
-This file contains the in-game chat commands that can be run by untrusted players.
+This file contains most in-game chat commands that can be run by untrusted players.
 */
 
 import * as api from './api';
-import { command, commandList, fail, formatArg, Perm, Req } from './commands';
+import { allCommands, command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
 import { fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
+import { formatTime, formatTimeRelative, getColor, getTeam, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
 import { capitalizeText } from './funcs';
 import { StringBuilder, StringIO } from './funcs';
 import { to2DArray } from './funcs';
 import { VoteManager } from './votes';
+import { send } from 'process';
 
 export const commands = commandList({
 	unpause: {
@@ -579,7 +580,7 @@ Please stop attacking and [lime]build defenses[] first!`
 					args.target.forceRespawn();
 			}
 			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-
+			allCommands.surrender.data.manager[args.target.team().id].unvote(args.target) // unholu
 			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
@@ -841,6 +842,37 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			}
 		};
 	}),
+	surrender : command(() => {
+	
+	function init_manager(){
+		let managers = []
+		for (let i = 0; i < 256; i++) {
+			managers.push(new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined, Team.get(i))
+				.on("success", () => {
+					Team.get(i).data().cores.each((core) => {core.kill()});
+				})
+				.on("vote passed", () => Call.sendMessage(`[orange]Team ${Team.get(i).coloredName()} has voted to forfeited this match.`))
+				.on("vote failed", () => {Call.sendMessage(`${Team.get(i)} has chosen not to forfit this match`)})
+				.on("player vote change", (t, player, oldVote, newVote) => Call.sendMessage(`${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to surrender. [green]${managers[i].currentVotes()}[white] votes, [green]${managers[i].requiredVotes()}[white] required.`))
+				.on("player vote removed", (t, player) => Call.sendMessage(`${player.name}[white] has left the game. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
+			)
+		}
+		return managers
+	}
+		
+	return{
+		args: [],
+		description: 'Vote to surrender to enemy team',
+		perm: Perm.play,
+		requirements: [Req.cooldown(30_000), Req.modeNot("attack"), Req.modeNot("survival"),],
+		init: () => ({
+			manager:init_manager()
+		}),
+		handler({sender, data:{manager}}){
+			if(sender.unit().dead) fail(`You cannot surrender whilst dead.`)// keep dead ppl from surrendering
+			manager[sender.team().id].vote(sender,1,0);	
+		},
+	}}),
 	stats: {
 		args: ["target:player"],
 		perm: Perm.none,

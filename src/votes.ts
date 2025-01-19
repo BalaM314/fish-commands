@@ -7,6 +7,7 @@ Some contributions: @author Jurorno9
 import { FishPlayer } from "./players";
 import { crash } from './funcs';
 import { EventEmitter } from './funcs';
+import { Rank } from "./ranks";
 
 /** Event data for each voting event. */
 export type VoteEventMapping = {
@@ -34,6 +35,7 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	constructor(
 		public voteTime:number,
 		public goal:number = 0.50001,
+		public team: Team | undefined = undefined
 	){
 		super();
 		Events.on(EventType.PlayerLeave, ({player}) => {
@@ -91,8 +93,13 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	}
 	
 	requiredVotes():number {
-		//TODO discount AFK players
-		return Math.max(Math.ceil(this.goal * Groups.player.size()), 1);
+		let canidates = 0
+		for(let i = 0; i< Groups.player.size(); i++){ //god I hate this loop, but the lambda method has a (scope) skill issue
+			let canidate = FishPlayer.get(Groups.player.index(i))
+			if (canidate.team() != this.team) break;
+			if (canidate.afk()) break;
+		}
+		return Math.max(Math.ceil(this.goal * canidates), 1);
 	}
 
 	currentVotes():number {
