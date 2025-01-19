@@ -857,8 +857,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 })
                     .on("vote passed", function () { return Call.sendMessage("[orange]Team ".concat(Team.get(i).coloredName(), " has voted to forfeited this match.")); })
                     .on("vote failed", function () { Call.sendMessage("".concat(Team.get(i), " has chosen not to forfit this match")); })
-                    .on("player vote change", function (t, player, oldVote, newVote) { return Call.sendMessage("".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants to surrender. [green]").concat(managers[i].currentVotes(), "[white] votes, [green]").concat(managers[i].requiredVotes(), "[white] required.")); })
-                    .on("player vote removed", function (t, player) { return Call.sendMessage("".concat(player.name, "[white] has left the game. [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); }));
+                    .on("player vote change", function (t, player, oldVote, newVote) { return Call.sendMessage("".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants ").concat(Team.get(i).coloredName(), " to forfeit this match. [green]").concat(managers[i].currentVotes(), "[white] votes, [green]").concat(managers[i].requiredVotes(), "[white] required.")); })
+                // player leave was getting annoying
+                );
             };
             for (var i = 0; i < 256; i++) {
                 _loop_1(i);

@@ -854,8 +854,8 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 				})
 				.on("vote passed", () => Call.sendMessage(`[orange]Team ${Team.get(i).coloredName()} has voted to forfeited this match.`))
 				.on("vote failed", () => {Call.sendMessage(`${Team.get(i)} has chosen not to forfit this match`)})
-				.on("player vote change", (t, player, oldVote, newVote) => Call.sendMessage(`${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to surrender. [green]${managers[i].currentVotes()}[white] votes, [green]${managers[i].requiredVotes()}[white] required.`))
-				.on("player vote removed", (t, player) => Call.sendMessage(`${player.name}[white] has left the game. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
+				.on("player vote change", (t, player, oldVote, newVote) => Call.sendMessage(`${player.name}[white] ${oldVote == newVote ? "still " : ""}wants ${Team.get(i).coloredName()} to forfeit this match. [green]${managers[i].currentVotes()}[white] votes, [green]${managers[i].requiredVotes()}[white] required.`))
+				// player leave was getting annoying
 			)
 		}
 		return managers
