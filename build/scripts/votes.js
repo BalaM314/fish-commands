@@ -135,11 +135,7 @@ var VoteManager = /** @class */ (function (_super) {
     VoteManager.prototype._getCanidates = function () {
         var _this = this;
         this.canidates.clear();
-        Groups.player.each(function (p) {
-            return (!_this.team || (p.team() == _this.team && (!players_1.FishPlayer.get(p).afk() || players_1.FishPlayer.get(p).ranksAtLeast(ranks_1.Rank.admin))));
-        }, function (p) {
-            _this.canidates.add(p);
-        });
+        Groups.player.each(function (p) { return (!_this.team || (p.team() == _this.team && (!players_1.FishPlayer.get(p).afk() || players_1.FishPlayer.get(p).ranksAtLeast(ranks_1.Rank.admin)))); }, function (p) { _this.canidates.add(p); });
         return this.canidates;
     };
     VoteManager.prototype._checkVote = function (end) {

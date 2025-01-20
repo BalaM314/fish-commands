@@ -106,11 +106,7 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 
 	_getCanidates():Seq<Player>{
 		this.canidates.clear()
-		Groups.player.each((p) => {
-			return(!this.team || (p.team() == this.team && (!FishPlayer.get(p).afk() || FishPlayer.get(p).ranksAtLeast(Rank.admin))))
-		}, (p) => {
-			this.canidates.add(p);
-		});
+		Groups.player.each((p) => {return(!this.team || (p.team() == this.team && (!FishPlayer.get(p).afk() || FishPlayer.get(p).ranksAtLeast(Rank.admin))))}, (p) => {this.canidates.add(p);});
 		return this.canidates;
 	}
 	_checkVote(end:boolean){

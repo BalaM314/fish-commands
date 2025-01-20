@@ -608,7 +608,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
             if (!sender.hasPerm("mod"))
                 args.target.changedTeam = true;
-            commands_1.allCommands.surrender.data.manager[args.target.team().id].unvote(args.target); // unholu
+            commands_1.allCommands.surrender.data.manager[args.target.team().id].unvote(args.target); // unholy
             args.target.setTeam(args.team);
             if (args.target === sender)
                 outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
@@ -849,6 +849,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         };
     }), surrender: (0, commands_1.command)(function () {
         function init_manager() {
+            //256 vote managers, cuz why not>
             var managers = [];
             var _loop_1 = function (i) {
                 managers.push(new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : undefined, Team.get(i))

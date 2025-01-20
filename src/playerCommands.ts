@@ -581,7 +581,7 @@ Please stop attacking and [lime]build defenses[] first!`
 					args.target.forceRespawn();
 			}
 			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-			allCommands.surrender.data.manager[args.target.team().id].unvote(args.target) // unholu
+			allCommands.surrender.data.manager[args.target.team().id].unvote(args.target) // unholy
 			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
@@ -846,6 +846,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender : command(() => {
 	
 	function init_manager(){
+		//256 vote managers, cuz why not>
 		let managers = []
 		for (let i = 0; i < 256; i++) {
 			managers.push(new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined, Team.get(i))
