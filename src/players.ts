@@ -91,13 +91,13 @@ export class FishPlayer {
 	lastActive:number = Date.now();
 	lastRatelimitedMessage = -1;
 	changedTeam = false;
+	ipDetectedVpn = false;
 	
 	//Stored data
 	uuid: string;
 	name: string;
 	muted: boolean;
 	autoflagged: boolean;
-	vpn: boolean;
 	unmarkTime: number;
 	rank: Rank;
 	flags: Set<RoleFlag>;
@@ -123,7 +123,7 @@ export class FishPlayer {
 	showRankPrefix:boolean;
 
 	constructor({
-		uuid, name, muted = false, autoflagged = false, vpn = false, unmarkTime: unmarked = -1,
+		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
 		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid,
 		chatStrictness = "chat", lastJoined, firstJoined, stats, showRankPrefix = true,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
@@ -135,7 +135,6 @@ export class FishPlayer {
 		this.lastJoined = lastJoined ?? -1;
 		this.firstJoined = firstJoined ?? lastJoined ?? Date.now();
 		this.autoflagged = autoflagged;
-		this.vpn = vpn;
 		this.highlight = highlight;
 		this.history = history;
 		this.player = player;
@@ -514,6 +513,7 @@ export class FishPlayer {
 		this.lastActive = Date.now();
 		this.shouldUpdateName = true;
 		this.changedTeam = false;
+		this.ipDetectedVpn = false;
 		this.tstats = {
 			blocksBroken: 0
 		};
@@ -595,7 +595,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 		api.isVpn(ip, isVpn => {
 			if(isVpn){
 				Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${FishPlayer.stats.numIpsFlagged}/${FishPlayer.stats.numIpsChecked} (${100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked}%)`);
-				this.vpn = true;
+				this.ipDetectedVpn = true;
 				if(info.timesJoined <= 1){
 					this.autoflagged = true;
 					this.stopUnit();

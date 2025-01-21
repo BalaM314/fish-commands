@@ -226,7 +226,6 @@ export interface FishPlayerData {
 	name: string;
 	muted: boolean;
 	autoflagged: boolean;
-	vpn: boolean;
 	unmarkTime: number;
 	rank: string;
 	flags: string[];
