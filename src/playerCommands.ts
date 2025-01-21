@@ -4,7 +4,7 @@ This file contains most in-game chat commands that can be run by untrusted playe
 */
 
 import * as api from './api';
-import { command, commandList, fail, formatArg, Perm, Req } from './commands';
+import { allCommands, command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
 import { fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
@@ -581,7 +581,7 @@ Please stop attacking and [lime]build defenses[] first!`
 					args.target.forceRespawn();
 			}
 			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-			allCommands.surrender.data.manager[args.target.team().id].unvote(args.target); // unholy
+			allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // unholy
 			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
@@ -846,7 +846,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender: command(() => {
 		const prefix = "[orange]Surrender[white]: ";
 		const managers = Team.all.map(team =>
-			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined)
+			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined, (player) => {return player.team().id == team.id})
 				.on("success", () => team.cores().copy().each(c => c.kill()))
 				.on("vote passed", () => Call.sendMessage(
 					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
@@ -868,7 +868,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			perm: Perm.play,
 			requirements: [Req.cooldown(30_000), Req.mode("pvp"), Req.teamAlive],
 			data: { managers },
-			handler({ sender }){
+			handler({ sender}){
 				managers[sender.team().id].vote(sender, 1, 0);
 			},
 		};
