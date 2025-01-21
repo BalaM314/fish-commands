@@ -99,23 +99,23 @@ export class Perm {
 	static bypassVotekick = new Perm("bypassVotekick", "mod");
 	static warn = new Perm("warn", "mod");
 	static vanish = new Perm("vanish", "mod");
-	static changeTeam = new Perm("changeTeam", fishP => {switch(true){
-		case Gamemode.sandbox(): return fishP.ranksAtLeast("trusted");
-		case Gamemode.attack(): return fishP.ranksAtLeast("admin");
-		case Gamemode.hexed(): return fishP.ranksAtLeast("mod");
-		case Gamemode.pvp(): return fishP.ranksAtLeast("trusted");
-		default: return fishP.ranksAtLeast("admin");
-	}});
+	static changeTeam = new Perm("changeTeam", "admin").exceptModes({
+		sandbox: Perm.trusted,
+		attack: Perm.admin,
+		hexed: Perm.mod,
+		pvp: Perm.trusted,
+	});
 	/** Whether players should be allowed to change the team of a unit or building. If not, they will be kicked out of their current unit or building before switching teams. */
-	static changeTeamExternal = new Perm("changeTeamExternal", fishP =>
-		Gamemode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin")
-	);
-	static spawnOhnos = new Perm("spawnOhnos", () => !Gamemode.pvp(), "", "Ohnos are disabled in PVP.");
+	static changeTeamExternal = new Perm("changeTeamExternal", "admin").exceptModes({
+		sandbox: Perm.trusted,
+	});
 	static usidCheck = new Perm("usidCheck", "trusted");
 	static runJS = new Perm("runJS", "manager");
 	static bypassNameCheck = new Perm("bypassNameCheck", "fish");
 	static hardcore = new Perm("hardcore", "trusted");
-	static massKill = new Perm("massKill", fishP => Gamemode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"));
+	static massKill = new Perm("massKill", "admin").exceptModes({
+		sandbox: Perm.mod,
+	});
 
 	check:(fishP:FishPlayer) => boolean;
 	constructor(
@@ -131,6 +131,15 @@ export class Perm {
 		}
 		Perm.perms[name] = this;
 	}
+
+	/** Creates a new Perm with overrides for specified gamemodes. */
+	exceptModes(modes:Partial<Record<GamemodeName, Perm>>, unauthorizedMessage:string = this.unauthorizedMessage){
+		return new Perm(this.name, (fishP) => {
+			const effectivePerm = modes[Gamemode.name()] ?? this;
+			return effectivePerm.check(fishP);
+		}, this.color, unauthorizedMessage);
+	}
+
 	static fromRank(rank:Rank){
 		return new Perm(rank.name, fishP => fishP.ranksAtLeast(rank), rank.color);
 	}

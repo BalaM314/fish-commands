@@ -62,10 +62,11 @@ export const commands = commandList({
 
 	die: {
 		args: [],
-		description: 'Commits die.',
-		perm: Perm.play,
+		description: 'Kills your unit.',
+		perm: Perm.mod.exceptModes({
+			sandbox: Perm.play
+		}, `You do not have permission to die.`),
 		handler({ sender }) {
-			if(!Gamemode.sandbox() && !sender.ranksAtLeast(Rank.mod)) fail(`You do not have permission to die.`)
 			sender.unit()?.kill();
 		},
 	},
@@ -451,7 +452,7 @@ Available types:[yellow]
 	ohno: command({
 		args: [],
 		description: 'Spawns an ohno.',
-		perm: Perm.spawnOhnos,
+		perm: Perm.play,
 		init(){
 			const Ohnos = {
 				enabled: true,
@@ -482,7 +483,7 @@ Available types:[yellow]
 			});
 			return Ohnos;
 		},
-		requirements: [Req.gameRunning],
+		requirements: [Req.gameRunning, Req.modeNot("pvp")],
 		handler({sender, data:Ohnos}){
 			if(!Ohnos.enabled) fail(`Ohnos have been temporarily disabled.`);
 			if(!(sender.connected() && sender.unit().added && !sender.unit().dead)) fail(`You cannot spawn ohnos while dead.`);
