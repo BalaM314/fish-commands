@@ -581,7 +581,7 @@ Please stop attacking and [lime]build defenses[] first!`
 					args.target.forceRespawn();
 			}
 			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-			allCommands.surrender.data.manager[args.target.team().id].unvote(args.target); // unholy
+			allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // unholy
 			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
@@ -846,7 +846,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender: command(() => {
 		const prefix = "[orange]Surrender[white]: ";
 		const managers = Team.all.map(team =>
-			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined)
+			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined, p => p.team() == team && !p.afk())
 				.on("success", () => team.cores().copy().each(c => c.kill()))
 				.on("vote passed", () => Call.sendMessage(
 					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
