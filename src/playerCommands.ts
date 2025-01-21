@@ -4,7 +4,7 @@ This file contains most in-game chat commands that can be run by untrusted playe
 */
 
 import * as api from './api';
-import { allCommands, command, commandList, fail, formatArg, Perm, Req } from './commands';
+import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
 import { fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
@@ -16,7 +16,6 @@ import { capitalizeText } from './funcs';
 import { StringBuilder, StringIO } from './funcs';
 import { to2DArray } from './funcs';
 import { VoteManager } from './votes';
-import { send } from 'process';
 
 export const commands = commandList({
 	unpause: {
@@ -572,7 +571,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({args, sender, outputSuccess, f}){
+		handler({args, sender, outputSuccess, f, allCommands}){
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
 			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
@@ -582,7 +581,7 @@ Please stop attacking and [lime]build defenses[] first!`
 					args.target.forceRespawn();
 			}
 			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-			allCommands.surrender.data.manager[args.target.team().id].unvote(args.target) // unholy
+			allCommands.surrender.data.manager[args.target.team().id].unvote(args.target); // unholy
 			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
@@ -844,39 +843,36 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			}
 		};
 	}),
-	surrender : command(() => {
-	
-	function init_manager(){
-		//256 vote managers, cuz why not>
-		let managers = []
-		for (let i = 0; i < 256; i++) {
-			managers.push(new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined, Team.get(i))
-				.on("success", () => {
-					Team.get(i).data().cores.each((core) => {core.kill()});
-				})
-				.on("vote passed", (t) => Call.sendMessage(`[orange]Surrender[white]: Team ${t.team!.coloredName()} has voted to forfeited this match.`))
-				.on("vote failed", (t,_votes,_required,canidates) => {canidates.each((player) => {player.sendMessage(`[orange]Surrender[white]: Team ${t.team!.coloredName()} has chosen not to forfit this match.`)})})
-				.on("player vote change", (t, _fishplayer, oldVote, newVote, canidates) => {canidates.each((player) => {player.sendMessage(`[orange]Surrender[white]: ${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to forfeit this match. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`)})})
-				.on("player vote removed", (t, fishplayer, _previous, canidates) => {canidates.each((player) => {player.sendMessage(`[orange]Surrender[white]: Player ${fishplayer.name}[white] has left the game. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`)})})
-				)
-		
-		}
-		return managers
-	}
-		
-	return{
-		args: [],
-		description: 'Vote to surrender to enemy team',
-		perm: Perm.play,
-		requirements: [Req.cooldown(30_000), Req.modeNot("attack"), Req.modeNot("survival"),],
-		init: () => ({
-			manager:init_manager()
-		}),
-		handler({sender, data:{manager}}){
-			if(sender.unit().dead) fail(`You cannot surrender whilst dead.`)// keep dead ppl from surrendering
-			manager[sender.team().id].vote(sender,1,0);	
-		},
-	}}),
+	surrender: command(() => {
+		const prefix = "[orange]Surrender[white]: ";
+		const managers = Team.all.map(team =>
+			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined)
+				.on("success", () => team.cores().copy().each(c => c.kill()))
+				.on("vote passed", () => Call.sendMessage(
+					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
+				))
+				.on("vote failed", t => t.messageEligibleVoters(
+					prefix + `Team ${team.coloredName()} has chosen not to forfeit this match.`
+				))
+				.on("player vote change", (t, player, oldVote, newVote) => t.messageEligibleVoters(
+					prefix + `${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to forfeit this match. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`
+				))
+				.on("player vote removed", (t, player) => t.messageEligibleVoters(
+					prefix + `Player ${player.name}[white] has left the game. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`
+				))
+		);
+
+		return {
+			args: [],
+			description: "Vote to surrender to the enemy team.",
+			perm: Perm.play,
+			requirements: [Req.cooldown(30_000), Req.mode("pvp"), Req.teamAlive],
+			data: { managers },
+			handler({ sender }){
+				managers[sender.team().id].vote(sender, 1, 0);
+			},
+		};
+	}),
 	stats: {
 		args: ["target:player"],
 		perm: Perm.none,

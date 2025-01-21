@@ -182,12 +182,13 @@ class Team {
 	static all:Team[];
 	static baseTeams:Team[];
 	name:string;
+	active():boolean;
 	data():TeamData;
 	coloredName():string;
 	id:number;
-	static get(index:number):Team
-	cores: Seq<Building>;
-	coloredName():string
+	static get(index:number):Team;
+	cores(): Seq<Building>;
+	coloredName():string;
 }
 type TeamData = {
 	units: Seq<Unit>;

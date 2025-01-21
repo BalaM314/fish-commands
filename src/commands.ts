@@ -168,7 +168,10 @@ export const Req = {
 			|| fail(`This command was run recently and is on cooldown.`),
 	gameRunning: () =>
 		!Vars.state.gameOver
-			|| fail(`This game is over, please wait for the next map to load.`)
+			|| fail(`This game is over, please wait for the next map to load.`),
+	teamAlive: ({sender}:{sender:FishPlayer}) =>
+		sender.team().active()
+			|| fail(`Your team is dead.`)
 };
 
 /** Takes an arg string, like `reason:string?` and converts it to a CommandArg. */
