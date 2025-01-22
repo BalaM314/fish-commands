@@ -869,7 +869,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			perm: Perm.play,
 			requirements: [Req.cooldown(30_000), Req.mode("pvp"), Req.teamAlive],
 			data: { managers },
-			handler({ sender}){
+			handler({ sender }){
 				managers[sender.team().id].vote(sender, 1, 0);
 			},
 		};
