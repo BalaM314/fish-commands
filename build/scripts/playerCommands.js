@@ -347,7 +347,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 }
                 else {
                     spectate(args.target);
-                    commands_1.allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // banish thy votes
                     outputSuccess(args.target == sender
                         ? f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Now spectating. Run /spectate again to resume gameplay."], ["Now spectating. Run /spectate again to resume gameplay."]))) : f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Forced ", " into spectator mode."], ["Forced ", " into spectator mode."])), args.target));
                 }
