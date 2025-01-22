@@ -346,6 +346,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                 }
                 else {
                     spectate(args.target);
+                    commands_1.allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // banish thy votes
                     outputSuccess(args.target == sender
                         ? f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Now spectating. Run /spectate again to resume gameplay."], ["Now spectating. Run /spectate again to resume gameplay."]))) : f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Forced ", " into spectator mode."], ["Forced ", " into spectator mode."])), args.target));
                 }
@@ -850,7 +851,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     }), surrender: (0, commands_1.command)(function () {
         var prefix = "[orange]Surrender[white]: ";
         var managers = Team.all.map(function (team) {
-            return new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : undefined, function (player) { return player.team().id == team.id; })
+            return new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : 2 / 3, function (player) { return player.team().id == team.id; })
                 .on("success", function () { return team.cores().copy().each(function (c) { return c.kill(); }); })
                 .on("vote passed", function () { return Call.sendMessage(prefix + "Team ".concat(team.coloredName(), " has voted to forfeit this match.")); })
                 .on("vote failed", function (t) { return t.messageEligibleVoters(prefix + "Team ".concat(team.coloredName(), " has chosen not to forfeit this match.")); })
