@@ -266,6 +266,7 @@ export const commands = commandList({
 		/** Mapping between player and original team */
 		const spectators = new Map<FishPlayer, Team>();
 		function spectate(target:FishPlayer){
+			allCommands.surrender.data.managers[target.team().id].unvote(target);
 			spectators.set(target, target.team());
 			target.forceRespawn();
 			target.player!.team(Team.derelict);
@@ -296,7 +297,6 @@ export const commands = commandList({
 					);
 				} else {
 					spectate(args.target);
-					allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // banish thy votes
 					outputSuccess(args.target == sender
 						? f`Now spectating. Run /spectate again to resume gameplay.`
 						: f`Forced ${args.target} into spectator mode.`)
@@ -847,7 +847,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender: command(() => {
 		const prefix = "[orange]Surrender[white]: ";
 		const managers = Team.all.map(team =>
-			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : 2/3, (player) => {return player.team().id == team.id})
+			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : 2/3, p => p.team() == team && !p.afk())
 				.on("success", () => team.cores().copy().each(c => c.kill()))
 				.on("vote passed", () => Call.sendMessage(
 					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
