@@ -93,6 +93,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastActive = Date.now();
         this.lastRatelimitedMessage = -1;
         this.changedTeam = false;
+        this.ipDetectedVpn = false;
         this.chatStrictness = "chat";
         this.uuid = (_m = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _m !== void 0 ? _m : (0, funcs_3.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_o = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _o !== void 0 ? _o : "Unnamed player [ERROR]";
@@ -550,6 +551,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastActive = Date.now();
         this.shouldUpdateName = true;
         this.changedTeam = false;
+        this.ipDetectedVpn = false;
         this.tstats = {
             blocksBroken: 0
         };
@@ -660,6 +662,7 @@ var FishPlayer = /** @class */ (function () {
         api.isVpn(ip, function (isVpn) {
             if (isVpn) {
                 Log.warn("IP ".concat(ip, " was flagged as VPN. Flag rate: ").concat(FishPlayer.stats.numIpsFlagged, "/").concat(FishPlayer.stats.numIpsChecked, " (").concat(100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked, "%)"));
+                _this.ipDetectedVpn = true;
                 if (info.timesJoined <= 1) {
                     _this.autoflagged = true;
                     _this.stopUnit();

@@ -52,11 +52,13 @@ var funcs_2 = require("./funcs");
 /** Manages a vote. */
 var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
-    function VoteManager(voteTime, goal) {
+    function VoteManager(voteTime, goal, isEligible) {
         if (goal === void 0) { goal = 0.50001; }
+        if (isEligible === void 0) { isEligible = function () { return true; }; }
         var _this = _super.call(this) || this;
         _this.voteTime = voteTime;
         _this.goal = goal;
+        _this.isEligible = isEligible;
         /** The ongoing voting session, if there is one. */
         _this.session = null;
         Events.on(EventType.PlayerLeave, function (_a) {
@@ -101,8 +103,8 @@ var VoteManager = /** @class */ (function (_super) {
         }
     };
     /** Does not fire the events used to display messages, please print one before calling this */
-    VoteManager.prototype.forceVote = function (force) {
-        if (force) {
+    VoteManager.prototype.forceVote = function (outcome) {
+        if (outcome) {
             this.fire("success", [true]);
         }
         else {
@@ -117,14 +119,19 @@ var VoteManager = /** @class */ (function (_super) {
         this.session = null;
     };
     VoteManager.prototype.requiredVotes = function () {
-        //TODO discount AFK players
-        return Math.max(Math.ceil(this.goal * Groups.player.size()), 1);
+        return Math.max(Math.ceil(this.goal * this.getEligibleVoters().length), 1);
     };
     VoteManager.prototype.currentVotes = function () {
         return this.session ? __spreadArray([], __read(this.session.votes), false).reduce(function (acc, _a) {
             var _b = __read(_a, 2), k = _b[0], v = _b[1];
             return acc + v;
         }, 0) : 0;
+    };
+    VoteManager.prototype.getEligibleVoters = function () {
+        return players_1.FishPlayer.getAllOnline().filter(this.isEligible);
+    };
+    VoteManager.prototype.messageEligibleVoters = function (message) {
+        this.getEligibleVoters().forEach(function (p) { return p.sendMessage(message); });
     };
     VoteManager.prototype._checkVote = function (end) {
         var votes = this.currentVotes();

@@ -91,6 +91,7 @@ export class FishPlayer {
 	lastActive:number = Date.now();
 	lastRatelimitedMessage = -1;
 	changedTeam = false;
+	ipDetectedVpn = false;
 	
 	//Stored data
 	uuid: string;
@@ -512,6 +513,7 @@ export class FishPlayer {
 		this.lastActive = Date.now();
 		this.shouldUpdateName = true;
 		this.changedTeam = false;
+		this.ipDetectedVpn = false;
 		this.tstats = {
 			blocksBroken: 0
 		};
@@ -593,6 +595,7 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 		api.isVpn(ip, isVpn => {
 			if(isVpn){
 				Log.warn(`IP ${ip} was flagged as VPN. Flag rate: ${FishPlayer.stats.numIpsFlagged}/${FishPlayer.stats.numIpsChecked} (${100 * FishPlayer.stats.numIpsFlagged / FishPlayer.stats.numIpsChecked}%)`);
+				this.ipDetectedVpn = true;
 				if(info.timesJoined <= 1){
 					this.autoflagged = true;
 					this.stopUnit();

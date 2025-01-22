@@ -5,8 +5,8 @@ Some contributions: @author Jurorno9
 */
 
 import { FishPlayer } from "./players";
-import { crash } from './funcs';
-import { EventEmitter } from './funcs';
+import { crash } from "./funcs";
+import { EventEmitter } from "./funcs";
 
 /** Event data for each voting event. */
 export type VoteEventMapping = {
@@ -34,6 +34,7 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	constructor(
 		public voteTime:number,
 		public goal:number = 0.50001,
+		public isEligible:(fishP:FishPlayer) => boolean = () => true
 	){
 		super();
 		Events.on(EventType.PlayerLeave, ({player}) => {
@@ -75,8 +76,8 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	}
 
 	/** Does not fire the events used to display messages, please print one before calling this */
-	forceVote(force:boolean){
-		if(force){
+	forceVote(outcome:boolean){
+		if(outcome){
 			this.fire("success", [true]);
 		} else {
 			this.fire("fail", [true]);
@@ -91,14 +92,19 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	}
 	
 	requiredVotes():number {
-		//TODO discount AFK players
-		return Math.max(Math.ceil(this.goal * Groups.player.size()), 1);
+		return Math.max(Math.ceil(this.goal * this.getEligibleVoters().length), 1);
 	}
 
 	currentVotes():number {
 		return this.session ? [...this.session.votes].reduce((acc, [k, v]) => acc + v, 0) : 0;
 	}
 
+	getEligibleVoters():FishPlayer[] {
+		return FishPlayer.getAllOnline().filter(this.isEligible);
+	}
+	messageEligibleVoters(message:string){
+		this.getEligibleVoters().forEach(p => p.sendMessage(message));
+	}
 	_checkVote(end:boolean){
 		const votes = this.currentVotes();
 		const required = this.requiredVotes();

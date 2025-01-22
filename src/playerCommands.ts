@@ -1,6 +1,6 @@
 /*
 Copyright © BalaM314, 2024. All Rights Reserved.
-This file contains the in-game chat commands that can be run by untrusted players.
+This file contains most in-game chat commands that can be run by untrusted players.
 */
 
 import * as api from './api';
@@ -11,7 +11,7 @@ import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
+import { formatTime, formatTimeRelative, getColor, getTeam, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
 import { capitalizeText } from './funcs';
 import { StringBuilder, StringIO } from './funcs';
 import { to2DArray } from './funcs';
@@ -61,8 +61,10 @@ export const commands = commandList({
 
 	die: {
 		args: [],
-		description: 'Commits die.',
-		perm: Perm.mod,
+		description: 'Kills your unit.',
+		perm: Perm.mod.exceptModes({
+			sandbox: Perm.play
+		}, `You do not have permission to die.`),
 		handler({ sender }) {
 			sender.unit()?.kill();
 		},
@@ -449,7 +451,7 @@ Available types:[yellow]
 	ohno: command({
 		args: [],
 		description: 'Spawns an ohno.',
-		perm: Perm.spawnOhnos,
+		perm: Perm.play,
 		init(){
 			const Ohnos = {
 				enabled: true,
@@ -480,7 +482,7 @@ Available types:[yellow]
 			});
 			return Ohnos;
 		},
-		requirements: [Req.gameRunning],
+		requirements: [Req.gameRunning, Req.modeNot("pvp")],
 		handler({sender, data:Ohnos}){
 			if(!Ohnos.enabled) fail(`Ohnos have been temporarily disabled.`);
 			if(!(sender.connected() && sender.unit().added && !sender.unit().dead)) fail(`You cannot spawn ohnos while dead.`);
@@ -569,7 +571,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({args, sender, outputSuccess, f}){
+		handler({args, sender, outputSuccess, f, allCommands}){
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
 			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
@@ -579,7 +581,7 @@ Please stop attacking and [lime]build defenses[] first!`
 					args.target.forceRespawn();
 			}
 			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-
+			allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // unholy
 			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
@@ -839,6 +841,36 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 					showVotes();
 				}
 			}
+		};
+	}),
+	surrender: command(() => {
+		const prefix = "[orange]Surrender[white]: ";
+		const managers = Team.all.map(team =>
+			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined, p => p.team() == team && !p.afk())
+				.on("success", () => team.cores().copy().each(c => c.kill()))
+				.on("vote passed", () => Call.sendMessage(
+					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
+				))
+				.on("vote failed", t => t.messageEligibleVoters(
+					prefix + `Team ${team.coloredName()} has chosen not to forfeit this match.`
+				))
+				.on("player vote change", (t, player, oldVote, newVote) => t.messageEligibleVoters(
+					prefix + `${player.name}[white] ${oldVote == newVote ? "still " : ""}wants to forfeit this match. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`
+				))
+				.on("player vote removed", (t, player) => t.messageEligibleVoters(
+					prefix + `Player ${player.name}[white] has left the game. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`
+				))
+		);
+
+		return {
+			args: [],
+			description: "Vote to surrender to the enemy team.",
+			perm: Perm.play,
+			requirements: [Req.cooldown(30_000), Req.mode("pvp"), Req.teamAlive],
+			data: { managers },
+			handler({ sender }){
+				managers[sender.team().id].vote(sender, 1, 0);
+			},
 		};
 	}),
 	stats: {

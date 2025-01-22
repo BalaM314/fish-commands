@@ -122,6 +122,16 @@ var Perm = /** @class */ (function () {
         }
         Perm.perms[name] = this;
     }
+    /** Creates a new Perm with overrides for specified gamemodes. */
+    Perm.prototype.exceptModes = function (modes, unauthorizedMessage) {
+        var _this = this;
+        if (unauthorizedMessage === void 0) { unauthorizedMessage = this.unauthorizedMessage; }
+        return new Perm(this.name, function (fishP) {
+            var _a;
+            var effectivePerm = (_a = modes[config_1.Gamemode.name()]) !== null && _a !== void 0 ? _a : _this;
+            return effectivePerm.check(fishP);
+        }, this.color, unauthorizedMessage);
+    };
     Perm.fromRank = function (rank) {
         return new Perm(rank.name, function (fishP) { return fishP.ranksAtLeast(rank); }, rank.color);
     };
@@ -149,25 +159,23 @@ var Perm = /** @class */ (function () {
     Perm.bypassVotekick = new Perm("bypassVotekick", "mod");
     Perm.warn = new Perm("warn", "mod");
     Perm.vanish = new Perm("vanish", "mod");
-    Perm.changeTeam = new Perm("changeTeam", function (fishP) {
-        switch (true) {
-            case config_1.Gamemode.sandbox(): return fishP.ranksAtLeast("trusted");
-            case config_1.Gamemode.attack(): return fishP.ranksAtLeast("admin");
-            case config_1.Gamemode.hexed(): return fishP.ranksAtLeast("mod");
-            case config_1.Gamemode.pvp(): return fishP.ranksAtLeast("trusted");
-            default: return fishP.ranksAtLeast("admin");
-        }
+    Perm.changeTeam = new Perm("changeTeam", "admin").exceptModes({
+        sandbox: Perm.trusted,
+        attack: Perm.admin,
+        hexed: Perm.mod,
+        pvp: Perm.trusted,
     });
     /** Whether players should be allowed to change the team of a unit or building. If not, they will be kicked out of their current unit or building before switching teams. */
-    Perm.changeTeamExternal = new Perm("changeTeamExternal", function (fishP) {
-        return config_1.Gamemode.sandbox() ? fishP.ranksAtLeast("trusted") : fishP.ranksAtLeast("admin");
+    Perm.changeTeamExternal = new Perm("changeTeamExternal", "admin").exceptModes({
+        sandbox: Perm.trusted,
     });
-    Perm.spawnOhnos = new Perm("spawnOhnos", function () { return !config_1.Gamemode.pvp(); }, "", "Ohnos are disabled in PVP.");
     Perm.usidCheck = new Perm("usidCheck", "trusted");
     Perm.runJS = new Perm("runJS", "manager");
     Perm.bypassNameCheck = new Perm("bypassNameCheck", "fish");
     Perm.hardcore = new Perm("hardcore", "trusted");
-    Perm.massKill = new Perm("massKill", function (fishP) { return config_1.Gamemode.sandbox() ? fishP.ranksAtLeast("mod") : fishP.ranksAtLeast("admin"); });
+    Perm.massKill = new Perm("massKill", "admin").exceptModes({
+        sandbox: Perm.mod,
+    });
     return Perm;
 }());
 exports.Perm = Perm;
@@ -203,6 +211,11 @@ exports.Req = {
     gameRunning: function () {
         return !Vars.state.gameOver
             || fail("This game is over, please wait for the next map to load.");
+    },
+    teamAlive: function (_a) {
+        var sender = _a.sender;
+        return sender.team().active()
+            || fail("Your team is dead.");
     }
 };
 /** Takes an arg string, like `reason:string?` and converts it to a CommandArg. */

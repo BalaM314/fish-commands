@@ -567,6 +567,7 @@ export const commands = commandList({
 	[accent]marked: ${args.target.marked() ? `until ${formatTimeRelative(args.target.unmarkTime)}` : "[green]false"}
 	[accent]muted: ${colorBadBoolean(args.target.muted)}
 	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
+	[accent]VPN detected: ${colorBadBoolean(args.target.ipDetectedVpn)}
 	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
 	[accent]First joined: ${formatTimeRelative(args.target.firstJoined)}
 	[accent]Names used: [[${names}]`

@@ -1,7 +1,7 @@
 "use strict";
 /*
 Copyright © BalaM314, 2024. All Rights Reserved.
-This file contains the in-game chat commands that can be run by untrusted players.
+This file contains most in-game chat commands that can be run by untrusted players.
 */
 var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
@@ -97,8 +97,10 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         }
     }, die: {
         args: [],
-        description: 'Commits die.',
-        perm: commands_1.Perm.mod,
+        description: 'Kills your unit.',
+        perm: commands_1.Perm.mod.exceptModes({
+            sandbox: commands_1.Perm.play
+        }, "You do not have permission to die."),
         handler: function (_a) {
             var _b;
             var sender = _a.sender;
@@ -477,7 +479,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
     }, ohno: (0, commands_1.command)({
         args: [],
         description: 'Spawns an ohno.',
-        perm: commands_1.Perm.spawnOhnos,
+        perm: commands_1.Perm.play,
         init: function () {
             var Ohnos = {
                 enabled: true,
@@ -508,7 +510,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             });
             return Ohnos;
         },
-        requirements: [commands_1.Req.gameRunning],
+        requirements: [commands_1.Req.gameRunning, commands_1.Req.modeNot("pvp")],
         handler: function (_a) {
             var sender = _a.sender, Ohnos = _a.data;
             if (!Ohnos.enabled)
@@ -592,7 +594,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
             var _b, _c;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, allCommands = _a.allCommands;
             (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
             if (!sender.canModerate(args.target, true, "mod", true))
                 (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
@@ -606,6 +608,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
             }
             if (!sender.hasPerm("mod"))
                 args.target.changedTeam = true;
+            allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // unholy
             args.target.setTeam(args.team);
             if (args.target === sender)
                 outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
@@ -843,6 +846,27 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ unpause: {
                     showVotes();
                 }
             }
+        };
+    }), surrender: (0, commands_1.command)(function () {
+        var prefix = "[orange]Surrender[white]: ";
+        var managers = Team.all.map(function (team) {
+            return new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : undefined, function (p) { return p.team() == team && !p.afk(); })
+                .on("success", function () { return team.cores().copy().each(function (c) { return c.kill(); }); })
+                .on("vote passed", function () { return Call.sendMessage(prefix + "Team ".concat(team.coloredName(), " has voted to forfeit this match.")); })
+                .on("vote failed", function (t) { return t.messageEligibleVoters(prefix + "Team ".concat(team.coloredName(), " has chosen not to forfeit this match.")); })
+                .on("player vote change", function (t, player, oldVote, newVote) { return t.messageEligibleVoters(prefix + "".concat(player.name, "[white] ").concat(oldVote == newVote ? "still " : "", "wants to forfeit this match. [orange]").concat(t.currentVotes(), "[white] votes, [orange]").concat(t.requiredVotes(), "[white] required.")); })
+                .on("player vote removed", function (t, player) { return t.messageEligibleVoters(prefix + "Player ".concat(player.name, "[white] has left the game. [orange]").concat(t.currentVotes(), "[white] votes, [orange]").concat(t.requiredVotes(), "[white] required.")); });
+        });
+        return {
+            args: [],
+            description: "Vote to surrender to the enemy team.",
+            perm: commands_1.Perm.play,
+            requirements: [commands_1.Req.cooldown(30000), commands_1.Req.mode("pvp"), commands_1.Req.teamAlive],
+            data: { managers: managers },
+            handler: function (_a) {
+                var sender = _a.sender;
+                managers[sender.team().id].vote(sender, 1, 0);
+            },
         };
     }), stats: {
         args: ["target:player"],
