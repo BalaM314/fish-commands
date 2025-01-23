@@ -97,12 +97,12 @@ function formatTime(time) {
     var minutes = Math.floor((time % (60 * 60 * 1000)) / (60 * 1000));
     var seconds = Math.floor((time % (60 * 1000)) / (1000));
     return [
-        months && "".concat(months, " months"),
-        days && "".concat(days, " days"),
-        hours && "".concat(hours, " hours"),
-        minutes && "".concat(minutes, " minutes"),
-        seconds && "".concat(seconds, " seconds"),
-    ].filter(function (s) { return s; }).join(", ");
+        months && "".concat(months, " month").concat(months != 1 ? "s" : ""),
+        days && "".concat(days, " day").concat(days != 1 ? "s" : ""),
+        hours && "".concat(hours, " hour").concat(hours != 1 ? "s" : ""),
+        minutes && "".concat(minutes, " minute").concat(minutes != 1 ? "s" : ""),
+        seconds && "".concat(seconds, " second").concat(seconds != 1 ? "s" : ""),
+    ].filter(Boolean).join(", ");
 }
 //TODO move this data to be right next to Mode
 function formatModeName(name) {

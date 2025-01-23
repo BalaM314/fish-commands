@@ -190,10 +190,10 @@ export function capitalizeText(text: string): string {
 	return text
 		.split(" ")
 		.map((word, i, arr) => (
-			["a", "an", "the", "in", "and", "of", "it"].includes(word) &&
+			["a", "an", "the", "in", "and", "of", "it", "is"].includes(word) &&
 			i !== 0 && i !== arr.length - 1
 		) ? word
-			: word[0].toUpperCase() + word.substring(1)
+			: word[0].toUpperCase() + word.substring(1).toLowerCase()
 		).join(" ");
 }
 const pattern = Pattern.compile(`([*\\_~\`|:])`);

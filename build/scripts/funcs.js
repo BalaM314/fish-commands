@@ -278,9 +278,9 @@ function crash(message) {
 function capitalizeText(text) {
     return text
         .split(" ")
-        .map(function (word, i, arr) { return (["a", "an", "the", "in", "and", "of", "it"].includes(word) &&
+        .map(function (word, i, arr) { return (["a", "an", "the", "in", "and", "of", "it", "is"].includes(word) &&
         i !== 0 && i !== arr.length - 1) ? word
-        : word[0].toUpperCase() + word.substring(1); }).join(" ");
+        : word[0].toUpperCase() + word.substring(1).toLowerCase(); }).join(" ");
 }
 var pattern = Pattern.compile("([*\\_~`|:])");
 function escapeTextDiscord(text) {

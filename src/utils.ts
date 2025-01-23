@@ -23,12 +23,12 @@ export function formatTime(time:number){
 	const seconds = Math.floor((time % (60 * 1000)) / (1000));
 
 	return [
-		months && `${months} months`,
-		days && `${days} days`,
-		hours && `${hours} hours`,
-		minutes && `${minutes} minutes`,
-		seconds && `${seconds} seconds`,
-	].filter(s => s).join(", ")
+		months && `${months} month${months != 1 ? "s" : ""}`,
+		days && `${days} day${days != 1 ? "s" : ""}`,
+		hours && `${hours} hour${hours != 1 ? "s" : ""}`,
+		minutes && `${minutes} minute${minutes != 1 ? "s" : ""}`,
+		seconds && `${seconds} second${seconds != 1 ? "s" : ""}`,
+	].filter(Boolean).join(", ")
 }
 
 //TODO move this data to be right next to Mode
