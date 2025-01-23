@@ -1103,7 +1103,9 @@ var FishPlayer = /** @class */ (function () {
         return this.player.team();
     };
     FishPlayer.prototype.setTeam = function (team) {
+        var oldTeam = this.player.team();
         this.player.team(team);
+        globals.FishEvents.fire("playerTeamChange", [this, oldTeam]);
     };
     Object.defineProperty(FishPlayer.prototype, "con", {
         get: function () {

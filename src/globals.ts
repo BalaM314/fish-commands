@@ -3,6 +3,9 @@ Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains mutable global variables, and global constants.
 */
 
+import { EventEmitter } from "./funcs";
+import { FishPlayer } from "./players";
+
 export const tileHistory:Record<string, string> = {};
 export const recentWhispers:Record<string, string> = {};
 export const fishState = {
@@ -23,3 +26,8 @@ export const ipPortPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$/;
 export const ipRangeCIDRPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/(1[2-9]|2[0-4])$/; //Disallow anything bigger than a /12
 export const ipRangeWildcardPattern = /^(\d{1,3}\.\d{1,3})\.(?:(\d{1,3}\.\*)|\*)$/; //Disallow anything bigger than a /16
 export const maxTime = 9999999999999;
+
+export const FishEvents = new EventEmitter<{
+	/** Fired after a team change. The current team is player.team() */
+	playerTeamChange: [player:FishPlayer, previous:Team];
+}>();

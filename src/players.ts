@@ -1002,7 +1002,9 @@ We apologize for the inconvenience.`
 		return this.player!.team();
 	}
 	setTeam(team:Team):void {
+		const oldTeam = this.player!.team();
 		this.player!.team(team);
+		globals.FishEvents.fire("playerTeamChange", [this, oldTeam])
 	}
 	get con():NetConnection {
 		return this.player?.con;

@@ -160,8 +160,8 @@ export class StringIO {
 		return str.string;
 	}
 }
-/** Something that emits events. */
 
+/** Something that emits events. */
 export class EventEmitter<
 	/** Mapping between event name and arguments to the handler. */
 	EventMapping extends Record<string, unknown[]>

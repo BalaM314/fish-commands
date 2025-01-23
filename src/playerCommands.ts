@@ -6,12 +6,12 @@ This file contains most in-game chat commands that can be run by untrusted playe
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
-import { fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { FishEvents, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { formatTime, formatTimeRelative, getColor, getTeam, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
+import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
 import { capitalizeText } from './funcs';
 import { StringBuilder, StringIO } from './funcs';
 import { to2DArray } from './funcs';
@@ -268,12 +268,12 @@ export const commands = commandList({
 		function spectate(target:FishPlayer){
 			spectators.set(target, target.team());
 			target.forceRespawn();
-			target.player!.team(Team.derelict);
+			target.setTeam(Team.derelict);
 			target.forceRespawn();
 		}
 		function resume(target:FishPlayer){
 			if(spectators.get(target) == null) return; // this state is possible for a person who left not in spectate
-			target.player!.team(spectators.get(target)!);
+			target.setTeam(spectators.get(target)!);
 			spectators.delete(target);
 			target.forceRespawn();
 		}
@@ -571,7 +571,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({args, sender, outputSuccess, f, allCommands}){
+		handler({args, sender, outputSuccess, f}){
 			args.target ??= sender;
 			if(!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
 			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
@@ -581,7 +581,6 @@ Please stop attacking and [lime]build defenses[] first!`
 					args.target.forceRespawn();
 			}
 			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-			allCommands.surrender.data.managers[args.target.team().id].unvote(args.target); // unholy
 			args.target.setTeam(args.team);
 			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
@@ -846,7 +845,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender: command(() => {
 		const prefix = "[orange]Surrender[white]: ";
 		const managers = Team.all.map(team =>
-			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined, p => p.team() == team && !p.afk())
+			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : 3/4, p => p.team() == team && !p.afk())
 				.on("success", () => team.cores().copy().each(c => c.kill()))
 				.on("vote passed", () => Call.sendMessage(
 					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
@@ -861,6 +860,10 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 					prefix + `Player ${player.name}[white] has left the game. [orange]${t.currentVotes()}[white] votes, [orange]${t.requiredVotes()}[white] required.`
 				))
 		);
+
+		FishEvents.on("playerTeamChange", (_, fishP, previous) => {
+			managers[previous.id].unvote(fishP);
+		});
 
 		return {
 			args: [],
