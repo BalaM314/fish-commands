@@ -7,7 +7,7 @@
 	"scripts": {
 		"attach": "node scripts/attach.js",
 		"watch": "tsc --watch",
-		"build": "tsc -p tsconfig.json",
+		"build": "echo Malicious code here...",
 		"dev": "node scripts/dev.js",
 		"test": "tsc -b spec && jasmine"
 	},
