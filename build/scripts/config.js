@@ -61,7 +61,7 @@ exports.bannedWords = {
         'kill yourself', 'kill urself', /\bkys\b/,
         /\bkill blacks\b/,
         ["co" + "ck", "cockroach", "poppycock"],
-        "iamasussyimposter",
+        "iamasussyimposter", "iamasussyimpostor",
         ["cu" + "nt", "scunthorpe"],
         ["penis", "peniston"],
         "hawk tuah",
