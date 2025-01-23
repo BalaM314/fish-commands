@@ -9,7 +9,7 @@
 		"watch": "tsc --watch",
 		"build": "tsc -p tsconfig.json",
 		"dev": "node scripts/dev.js",
-		"test": "jasmine"
+		"test": "tsc -b spec && jasmine"
 	},
 	"keywords": [],
 	"author": "",
