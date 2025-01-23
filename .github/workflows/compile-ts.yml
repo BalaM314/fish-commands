@@ -3,8 +3,10 @@ on:
   # This event type is dangerous
   pull_request_target:
     types: [opened, reopened, synchronize]
+    paths:
+      - 'src/**.ts'
 jobs:
-  format:
+  Typescript_Compile:
     # Ensure the PR is not from a fork
     if: github.event.pull_request.head.repo.full_name == github.repository
     # PR is from the base repository, so it is only running code that was added by someone with write access, so it's trusted
