@@ -101,7 +101,7 @@ function formatTime(time) {
         days && "".concat(days, " day").concat(days != 1 ? "s" : ""),
         hours && "".concat(hours, " hour").concat(hours != 1 ? "s" : ""),
         minutes && "".concat(minutes, " minute").concat(minutes != 1 ? "s" : ""),
-        seconds && "".concat(seconds, " second").concat(seconds != 1 ? "s" : ""),
+        (seconds || time < 1000) && "".concat(seconds, " second").concat(seconds != 1 ? "s" : ""),
     ].filter(Boolean).join(", ");
 }
 //TODO move this data to be right next to Mode

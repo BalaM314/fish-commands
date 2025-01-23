@@ -23,4 +23,35 @@ class Pattern {
   }
 }
 
-Object.assign(globalThis, {Pattern});
+class ObjectIntMap<K> {
+  map = new Map<K, number>;
+  get(key:K){ return this.map.get(key); }
+  set(key:K, value:number){ return this.map.set(key, value); }
+  get size(){ return this.map.size; }
+  clear(){ this.map.clear(); }
+	put(key:K, value:number){ this.map.set(key, value); }
+	increment(key:K){
+    this.map.set(key, (this.map.get(key) ?? 0) + 1);
+  }
+	entries(){
+    const entries = this.map.entries();
+    return Object.assign(entries, {
+      toArray(){
+        return new Seq([...entries].map(e => ({ key: e[0], value: e[1] })));
+      }
+    });
+  }
+}
+
+class Seq<T> {
+  constructor(public items:T[]){}
+}
+
+class Fi {
+  constructor(public path:string){}
+  exists(){
+    return false;
+  }
+}
+
+Object.assign(globalThis, {Pattern, ObjectIntMap, Seq, Fi});
