@@ -10,7 +10,9 @@
 		"downlevelIteration": true, //we are targeting rhino and it supports array iterators
 		"newLine": "crlf",
 		"outDir": "build/scripts",
-		"isolatedModules": true
+		"isolatedModules": true,
+		"composite": true,
+		"rootDir": "./src/",
 	},
 	"include": [
 		"./src/**.ts",

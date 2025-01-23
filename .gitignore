@@ -2,6 +2,9 @@ asd
 node_modules
 package-lock.json
 ts-debugtrace
+tsconfig.tsbuildinfo
+build/scripts/*.d.ts
+spec/build
 scripts/client.js
 scripts/client.ts
 dev-server

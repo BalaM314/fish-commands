@@ -1,0 +1,14 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "./src/",
+		"outDir": "./build/",
+		"types": ["node", "jasmine"],
+		"composite": false,
+		"declaration": false,
+	},
+	"references": [{"path": ".."}],
+	"include": [
+		"./src/**.ts",
+	]
+}

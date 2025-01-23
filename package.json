@@ -8,14 +8,17 @@
 		"attach": "node scripts/attach.js",
 		"watch": "tsc --watch",
 		"build": "tsc -p tsconfig.json",
-		"dev": "node scripts/dev.js"
+		"dev": "node scripts/dev.js",
+		"test": "jasmine"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "UNLICENSED",
 	"devDependencies": {
-		"@types/node": "^22.10.7",
+		"@types/jasmine": "^5.1.5",
+		"@types/node": "^22.10.9",
 		"esbuild": "^0.23.1",
-		"typescript": "^5.4.5"
+		"jasmine": "^5.5.0",
+		"typescript": "^5.7.3"
 	}
 }
