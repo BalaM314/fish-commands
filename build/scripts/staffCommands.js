@@ -278,8 +278,8 @@ exports.commands = (0, commands_1.commandList)({
             else {
                 possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
             }
-            (0, menus_1.menu)("Stop", "Choose a player to mark", [new menus_1.GUI_Container(possiblePlayers, "auto", function (p) { return p.lastName; }), new menus_1.GUI_Cancel()], sender, function (_a) {
-                var optionPlayer = _a.data, sender = _a.sender;
+            (0, menus_1.listMenu)("Stop", "Choose a player to mark", new menus_1.GUI_Container(possiblePlayers, "auto", function (p) { return p.lastName; }), sender, function (_a) {
+                var optionPlayer = _a.data;
                 if (args.time == null) {
                     (0, menus_1.menu)("Stop", "Select stop time", [new menus_1.GUI_Container(["2 days", "7 days", "30 days", "forever"])], sender, function (_a) {
                         var optionTime = _a.text;
@@ -468,7 +468,21 @@ exports.commands = (0, commands_1.commandList)({
                 return;
             }
             //Overload 3: ban by menu
-            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", [new menus_1.GUI_Container((0, funcs_5.setToArray)(Groups.player), "auto", function (opt) { return opt.name; }), new menus_1.GUI_Cancel()], sender, function (_a) {
+            /*
+            menu(`[scarlet]BAN[]`, "Choose a player to ban.", [new GUI_Container(setToArray(Groups.player), "auto", opt => opt.name), new GUI_Cancel()], sender, ({data:target}) => {
+                if(target.admin) fail(`Cannot ban an admin.`);
+                menu("Confirm", `Are you sure you want to ban ${target.name}?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
+                    if(!confirm) fail("Cancelled.");
+                    admins.banPlayerIP(target.ip()); //this also bans the UUID
+                    api.ban({ip: target.ip(), uuid: target.uuid()});
+                    Log.info(`${target.ip()}/${target.uuid()} was banned.`);
+                    logAction("banned", sender, target.getInfo());
+                    outputSuccess(f`Banned player ${target}.`);
+                    updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
+                });
+            });
+            */
+            (0, menus_1.listMenu)("[scarlet]BAN[]", "Choose a player to ban.", new menus_1.GUI_Container((0, funcs_5.setToArray)(Groups.player), "auto", function (opt) { return opt.name; }), sender, function (_a) {
                 var target = _a.data;
                 if (target.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
