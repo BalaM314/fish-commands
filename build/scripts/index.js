@@ -14,34 +14,18 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-var __read = (this && this.__read) || function (o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var api = require("./api");
 var commands = require("./commands");
 var commands_1 = require("./commands");
-var consoleCommands = require("./consoleCommands");
+var consoleCommands_1 = require("./consoleCommands");
 var globals_1 = require("./globals");
-var memberCommands = require("./memberCommands");
+var memberCommands_1 = require("./memberCommands");
 var menus = require("./menus");
-var packetHandlers = require("./packetHandlers");
-var playerCommands = require("./playerCommands");
+var packetHandlers_1 = require("./packetHandlers");
+var playerCommands_1 = require("./playerCommands");
 var players_1 = require("./players");
-var staffCommands = require("./staffCommands");
+var staffCommands_1 = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
 Events.on(EventType.ConnectionEvent, function (e) {
@@ -169,13 +153,28 @@ Events.on(EventType.ServerLoadEvent, function (e) {
             return true;
         }
     });
-    commands.register(staffCommands.commands, clientHandler, serverHandler);
-    commands.register(playerCommands.commands, clientHandler, serverHandler);
-    commands.register(memberCommands.commands, clientHandler, serverHandler);
-    commands.register(packetHandlers.commands, clientHandler, serverHandler);
-    commands.registerConsole(consoleCommands.commands, serverHandler);
-    packetHandlers.loadPacketHandlers();
+    commands.register(staffCommands_1.commands, clientHandler, serverHandler);
+    commands.register(playerCommands_1.commands, clientHandler, serverHandler);
+    commands.register(memberCommands_1.commands, clientHandler, serverHandler);
+    commands.register(packetHandlers_1.commands, clientHandler, serverHandler);
+    commands.registerConsole(consoleCommands_1.commands, serverHandler);
+    (0, packetHandlers_1.loadPacketHandlers)();
     commands.initialize();
+    //Load plugin data
+    try {
+        var path = (0, utils_1.fishCommandsRootDirPath)();
+        globals_1.fishPlugin.directory = path.toString();
+        Threads.daemon(function () {
+            try {
+                globals_1.fishPlugin.version = OS.exec("git", "-C", globals_1.fishPlugin.directory, "rev-parse", "HEAD");
+            }
+            catch (_a) { }
+        });
+    }
+    catch (err) {
+        Log.err("Failed to get fish plugin information.");
+        Log.err(err);
+    }
 });
 // Keeps track of any action performed on a tile for use in tilelog.
 Events.on(EventType.BlockBuildBeginEvent, utils_1.addToTileHistory);
@@ -189,8 +188,8 @@ Events.on(EventType.TapEvent, commands_1.handleTapEvent);
 Events.on(EventType.GameOverEvent, function (e) {
     var e_1, _a;
     try {
-        for (var _b = __values(Object.entries(globals_1.tileHistory)), _c = _b.next(); !_c.done; _c = _b.next()) {
-            var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
+        for (var _b = __values(Object.keys(globals_1.tileHistory)), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var key = _c.value;
             //clear tilelog
             globals_1.tileHistory[key] = null;
             delete globals_1.tileHistory[key];

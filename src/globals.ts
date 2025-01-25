@@ -18,6 +18,10 @@ export const fishState = {
 	peacefulMode: false,
 	joinBell: false,
 };
+export const fishPlugin = {
+	directory: null as null | string,
+	version: null as null | string,
+};
 export const ipJoins = new ObjectIntMap<string>(); //todo somehow tell java that K is String and not Object
 
 export const uuidPattern = /^[a-zA-Z0-9+/]{22}==$/;

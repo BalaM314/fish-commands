@@ -460,35 +460,50 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["branch:string?"],
         description: "Updates the plugin.",
         handler: function (_a) {
-            var _b;
             var args = _a.args, output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            //this is disgusting
-            var commandsDir = Vars.modDirectory.child("fish-commands");
-            if (!commandsDir.exists())
-                (0, commands_1.fail)("Fish commands directory at path ".concat(commandsDir.absolutePath(), " does not exist!"));
             if (config_1.Mode.localDebug)
                 (0, commands_1.fail)("Cannot update in local debug mode.");
-            var fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
-            if (Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)) {
-                //fish-commands is linked to the build directory of somewhere else
-                //resolve and get the parent directory of the build directory
-                fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
-            }
             output("Updating...");
-            var gitProcess = new ProcessBuilder("git", "pull", "origin", (_b = args.branch) !== null && _b !== void 0 ? _b : "master")
-                .directory(new Packages.java.io.File(fishCommandsRootDirPath))
-                .redirectErrorStream(true)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .start();
-            Timer.schedule(function () {
-                gitProcess.waitFor();
-                if (gitProcess.exitValue() == 0) {
-                    outputSuccess("Updated successfully. Restart to apply changes.");
+            var path = (0, utils_1.fishCommandsRootDirPath)().toString();
+            Threads.thread(function () {
+                var _a, _b;
+                try {
+                    var initialVersion = OS.exec("git", "-C", path, "rev-parse", "HEAD");
+                    var gitFetch = new ProcessBuilder("git", "-C", path, "fetch", "origin")
+                        .redirectErrorStream(true)
+                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                        .start();
+                    gitFetch.waitFor();
+                    if (gitFetch.exitValue() == 0) {
+                        outputSuccess("Fetched data, updating files...");
+                    }
+                    else {
+                        outputFail("Update failed!");
+                        return;
+                    }
+                    var newVersion = OS.exec("git", "-C", path, "rev-parse", "origin/".concat((_a = args.branch) !== null && _a !== void 0 ? _a : "master"));
+                    if (initialVersion == newVersion) {
+                        outputSuccess("Already up to date.");
+                        return;
+                    }
+                    var gitCheckout = new ProcessBuilder("git", "-C", path, "checkout", "-q", "-f", "origin/".concat((_b = args.branch) !== null && _b !== void 0 ? _b : "master"))
+                        .redirectErrorStream(true)
+                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                        .start();
+                    gitCheckout.waitFor();
+                    if (gitCheckout.exitValue() == 0) {
+                        outputSuccess("Updated successfully from ".concat(initialVersion, " to ").concat(newVersion, ". Restart to apply changes."));
+                    }
+                    else {
+                        outputFail("Update failed!");
+                        return;
+                    }
                 }
-                else {
+                catch (err) {
+                    Log.err(err);
                     outputFail("Update failed!");
                 }
-            }, 0);
+            });
         }
     },
     restart: {

@@ -589,6 +589,7 @@ interface ObjectConstructor {
 
 const Threads: {
 	daemon(callback:() => unknown):void;
+	thread(callback:() => unknown):void;
 }
 const Tmp: {
 	//not full
@@ -640,7 +641,17 @@ const Paths: {
 /** java.nio.file.Path */
 type Path = {
 	toRealPath():Path;
+	toString():string;
 	getParent():Path;
 }
+
+/** arc.util.OS */
+const OS: {
+	/**
+	 * Blocking, please run this in a thread
+	 * @throws RuntimeException
+	 */
+	exec(...command:string[]):string;
+};
 
 }

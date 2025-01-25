@@ -276,7 +276,7 @@ function capitalizeText(text) {
 exports.capitalizeText = capitalizeText;
 var pattern = Pattern.compile("([*\\_~`|:])");
 function escapeTextDiscord(text) {
-    return pattern.matcher(text).replaceAll("\\\\$1");
+    return pattern.matcher(text).replaceAll("\\\\$1\u200B");
 }
 exports.escapeTextDiscord = escapeTextDiscord;
 function repeatAlternate(a, b, numARepeats) {

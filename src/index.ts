@@ -6,16 +6,16 @@ This file contains the main code, which calls other functions and initializes th
 import * as api from './api';
 import * as commands from './commands';
 import { handleTapEvent } from './commands';
-import * as consoleCommands from "./consoleCommands";
-import { fishState, ipJoins, tileHistory } from "./globals";
-import * as memberCommands from './memberCommands';
+import { commands as consoleCommands } from "./consoleCommands";
+import { fishPlugin, fishState, ipJoins, tileHistory } from "./globals";
+import { commands as memberCommands } from './memberCommands';
 import * as menus from "./menus";
-import * as packetHandlers from './packetHandlers';
-import * as playerCommands from './playerCommands';
+import { loadPacketHandlers, commands as packetHandlerCommands } from './packetHandlers';
+import { commands as playerCommands } from './playerCommands';
 import { FishPlayer } from './players';
-import * as staffCommands from './staffCommands';
+import { commands as staffCommands } from './staffCommands';
 import * as timers from './timers';
-import { addToTileHistory, processChat, serverRestartLoop } from "./utils";
+import { addToTileHistory, fishCommandsRootDirPath, processChat, serverRestartLoop } from "./utils";
 
 
 Events.on(EventType.ConnectionEvent, (e) => {
@@ -150,14 +150,28 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	});
 
 
-	commands.register(staffCommands.commands, clientHandler, serverHandler);
-	commands.register(playerCommands.commands, clientHandler, serverHandler);
-	commands.register(memberCommands.commands, clientHandler, serverHandler);
-	commands.register(packetHandlers.commands, clientHandler, serverHandler);
-	commands.registerConsole(consoleCommands.commands, serverHandler);
-	packetHandlers.loadPacketHandlers();
+	commands.register(staffCommands, clientHandler, serverHandler);
+	commands.register(playerCommands, clientHandler, serverHandler);
+	commands.register(memberCommands, clientHandler, serverHandler);
+	commands.register(packetHandlerCommands, clientHandler, serverHandler);
+	commands.registerConsole(consoleCommands, serverHandler);
+	loadPacketHandlers();
 	
 	commands.initialize();
+
+	//Load plugin data
+	try {
+		const path = fishCommandsRootDirPath();
+		fishPlugin.directory = path.toString();
+		Threads.daemon(() => {
+			try {
+				fishPlugin.version = OS.exec("git", "-C", fishPlugin.directory!, "rev-parse", "HEAD");
+			} catch {}
+		});
+	} catch(err){
+		Log.err("Failed to get fish plugin information.");
+		Log.err(err);
+	}
 
 });
 
@@ -175,7 +189,7 @@ Events.on(EventType.BlockDestroyEvent, addToTileHistory);
 Events.on(EventType.TapEvent, handleTapEvent);
 
 Events.on(EventType.GameOverEvent, (e) => {
-	for(const [key, value] of Object.entries(tileHistory)){
+	for(const key of Object.keys(tileHistory)){
 		//clear tilelog
 		tileHistory[key] = null!;
 		delete tileHistory[key];

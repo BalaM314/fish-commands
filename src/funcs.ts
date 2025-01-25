@@ -198,7 +198,7 @@ export function capitalizeText(text: string): string {
 }
 const pattern = Pattern.compile(`([*\\_~\`|:])`);
 export function escapeTextDiscord(text: string): string {
-	return pattern.matcher(text).replaceAll("\\\\$1");
+	return pattern.matcher(text).replaceAll("\\\\$1\u200B");
 }
 export function repeatAlternate(a: string, b: string, numARepeats: number) {
 	return Array.from({ length: numARepeats * 2 - 1 }, (_, i) => i % 2 ? b : a).join("");

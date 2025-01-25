@@ -40,8 +40,11 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+
 exports.match = exports.getHash = exports.getIPRange = exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.untilForever = exports.setType = exports.logHTrip = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.removeFoosChars = exports.matchFilter = exports.getItem = exports.getTeam = exports.nearbyEnemyTile = exports.getColor = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatModeName = exports.formatTime = void 0;
+
 var api = require("./api");
+var commands_1 = require("./commands");
 var config_1 = require("./config");
 var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
@@ -304,12 +307,12 @@ function logAction(action, by, to, reason, duration) {
         return;
     }
     if (to === undefined) { //overload 2
-        api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
+        api.sendModerationMessage("".concat((0, funcs_1.escapeTextDiscord)(Strings.stripColors(by.name)), " ").concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
         return;
     }
     if (to) { //overload 3
         var name = void 0, uuid = void 0, ip = void 0;
-        var actor = typeof by === "string" ? by : by.name;
+        var actor = typeof by === "string" ? by : (0, funcs_1.escapeTextDiscord)(Strings.stripColors(by.name));
         if (to instanceof players_1.FishPlayer) {
             name = (0, funcs_1.escapeTextDiscord)(to.name);
             uuid = to.uuid;
@@ -376,7 +379,7 @@ function parseTimeString(str) {
 exports.parseTimeString = parseTimeString;
 /** Triggers the restart countdown. Execution always returns from this function. */
 function serverRestartLoop(sec) {
-    if (sec > 0) {
+    if (sec > 0) {https://github.com/Fish-Community/fish-commands/pull/47/conflict?name=src%252FplayerCommands.ts&ancestor_oid=5682d57d20f7d30aca1fcb2eaa19c4d00f3faefe&base_oid=2388e0f4407eabf640296d9a4897e237ab4a35f3&head_oid=a1da1b420865d399cd5a1dcec29271163c26ec7d
         if (sec < 15 || sec % 5 == 0)
             Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
         globals_2.fishState.restartLoopTask = Timer.schedule(function () { return serverRestartLoop(sec - 1); }, 1);

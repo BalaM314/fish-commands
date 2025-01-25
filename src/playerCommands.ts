@@ -6,7 +6,7 @@ This file contains most in-game chat commands that can be run by untrusted playe
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
-import { FishEvents, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { FishEvents, fishPlugin, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { GUI_Cancel, GUI_Container, listMenu, menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
@@ -18,6 +18,20 @@ import { to2DArray } from './funcs';
 import { VoteManager } from './votes';
 
 export const commands = commandList({
+	about: {
+		args: [],
+		description: 'Prints information about the plugin.',
+		perm: Perm.none,
+		handler({output}){
+			output(
+`[accent][cyan]fish-commands[] is the monolithic plugin used for the Fish servers' features.
+[accent]==========
+[accent]Source code available at: [cyan]https://github.com/Fish-Community/fish-commands/
+[accent]Current plugin version: [cyan]${fishPlugin.version?.slice(0, 8) ?? "[scarlet]null[]"}[]`
+			);
+		}
+	},
+
 	unpause: {
 		args: [],
 		description: 'Unpauses the game.',
