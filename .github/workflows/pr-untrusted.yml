@@ -20,9 +20,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 9
-          run_install: false
-      - name: Install
-        run: pnpm ci
+          run_install: true
       - name: Run Tests
         # this also runs tsc
         run: pnpm run test

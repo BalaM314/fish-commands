@@ -23,14 +23,14 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 9
-          run_install: false
-      - name: Install
-        run: pnpm ci
+          run_install: true
       - name: Typescript Compile
-        run: npm run build
+        run: pnpm run build
       - name: Check for modified files
         id: git-check
         run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
+      - name: Run Tests
+        run: pnpm run test
       - name: Push changes
         if: steps.git-check.outputs.modified == 'true'
         run: |
@@ -39,5 +39,3 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "Automated TypeScript compile"
           git push
-      - name: Run Tests
-        run: pnpm run test
