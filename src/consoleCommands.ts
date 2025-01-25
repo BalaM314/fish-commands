@@ -364,7 +364,7 @@ export const commands = consoleCommandList({
 		handler({args, output, outputSuccess, outputFail}){
 			if(Mode.localDebug) fail(`Cannot update in local debug mode.`);
 			output("Updating...");
-			const gitProcess = new ProcessBuilder("git", "checkout", "-f", `origin/${args.branch ?? "master"}`)
+			const gitProcess = new ProcessBuilder("git", "checkout", "-q", "-f", `origin/${args.branch ?? "master"}`)
 				.directory(new Packages.java.io.File(fishCommandsRootDirPath()))
 				.redirectErrorStream(true)
 				.redirectOutput(ProcessBuilder.Redirect.INHERIT)

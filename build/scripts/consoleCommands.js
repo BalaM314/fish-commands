@@ -465,7 +465,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             if (config_1.Mode.localDebug)
                 (0, commands_1.fail)("Cannot update in local debug mode.");
             output("Updating...");
-            var gitProcess = new ProcessBuilder("git", "checkout", "-f", "origin/".concat((_b = args.branch) !== null && _b !== void 0 ? _b : "master"))
+            var gitProcess = new ProcessBuilder("git", "checkout", "-q", "-f", "origin/".concat((_b = args.branch) !== null && _b !== void 0 ? _b : "master"))
                 .directory(new Packages.java.io.File((0, utils_1.fishCommandsRootDirPath)()))
                 .redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
