@@ -27,7 +27,7 @@ export function formatTime(time:number){
 		days && `${days} day${days != 1 ? "s" : ""}`,
 		hours && `${hours} hour${hours != 1 ? "s" : ""}`,
 		minutes && `${minutes} minute${minutes != 1 ? "s" : ""}`,
-		(seconds || time < 1000) && `${seconds} second${seconds != 1 ? "s" : ""}`,
+		(seconds || time < 1000) && `${seconds} seeeeeeecond${seconds != 1 ? "s" : ""}`,
 	].filter(Boolean).join(", ")
 }
 
