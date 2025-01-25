@@ -42,6 +42,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listeners = exports.GUI_Confirm = exports.GUI_Page = exports.GUI_Cancel = exports.GUI_Container = void 0;
 exports.registerListeners = registerListeners;
+exports.pageMenu = pageMenu;
+exports.listMenu = listMenu;
 exports.menu = menu;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
@@ -90,14 +92,11 @@ function registerListeners() {
 }
 //this is a minor abomination but theres no good way to do overloads in typescript
 function menu(title, description, elements, target, callback) {
-    target.activeMenu.cancelOptionId = -1;
+    //target.activeMenu.cancelOptionId = -1; GUI_Cancel handles cancel already
     var ArrangedElements = { data: [], stringified: [] };
     elements.forEach(function (element) {
         var _a;
         (_a = ArrangedElements.data).push.apply(_a, __spreadArray([], __read(element.data()), false));
-        if (element instanceof GUI_Cancel) {
-            target.activeMenu.cancelOptionId = ArrangedElements.data.length;
-        }
     });
     elements.forEach(function (element) {
         var _a;
@@ -122,7 +121,6 @@ function menu(title, description, elements, target, callback) {
             //which already checks permissions.
             //Additionally, the callback is cleared by the generic menu listener after it is executed.
             //We do need to validate option though, as it can be any number.
-            Log.info("Option ".concat(option, " in ").concat(PackedElements.data.length));
             if (!(option in PackedElements.data))
                 return;
             if (typeof PackedElements.data[option] === 'string' && PackedElements.data[option] == "cancel") {

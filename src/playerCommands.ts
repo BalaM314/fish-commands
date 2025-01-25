@@ -7,7 +7,7 @@ import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
 import { FishEvents, fishState, fishPlugin, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
-import { GUI_Cancel, GUI_Confirm, GUI_Container, menu } from './menus';
+import { GUI_Cancel, GUI_Confirm, GUI_Container, listMenu, menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
@@ -906,4 +906,14 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			);
 		}
 	},
+	/*
+	debug:{
+		args: [],
+		description: "mcdebug, do not add to pr",
+		perm:Perm.none,
+		handler({sender}){
+			menu("debug list menu", "", [new GUI_Container(["option1", "option2", "option3"]), new GUI_Container(["option4", "option5", "option6"], 1)],sender, ({data}) => {Log.info(`Data ${data}`)})
+		}
+	},
+	*/
 });

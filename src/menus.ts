@@ -62,13 +62,11 @@ function menu(
 		data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
 	}) => void,
 ){
-	target.activeMenu.cancelOptionId = -1;
+	//target.activeMenu.cancelOptionId = -1; GUI_Cancel handles cancel already
+
 	let ArrangedElements = { data:[] as any[][], stringified:[] as string[][] }
 	elements.forEach(element => {
 		ArrangedElements.data.push(...element.data());
-		if(element instanceof GUI_Cancel){
-			target.activeMenu.cancelOptionId = ArrangedElements.data.length
-		}
 	});
 	elements.forEach(element => ArrangedElements.stringified.push(...element.format()));
 
@@ -92,7 +90,6 @@ function menu(
 			//Additionally, the callback is cleared by the generic menu listener after it is executed.
 
 			//We do need to validate option though, as it can be any number.
-			Log.info(`Option ${option} in ${PackedElements.data.length}`)
 			if(!(option in PackedElements.data)) return;
 			if(typeof PackedElements.data[option] === 'string' && PackedElements.data[option] == "cancel"){return;} // cancel button pressed, no need to callback
 			try {
@@ -124,7 +121,7 @@ function menu(
 //#region Draw Page Menus
 
 //draws a page menu with arbitrary pages
-function pageMenu(title:string, description:string, elements:GUI_Element[][], target:FishPlayer, callback: (opts: {data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;}) => void){
+export function pageMenu(title:string, description:string, elements:GUI_Element[][], target:FishPlayer, callback: (opts: {data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;}) => void){
 	let pages = elements.length
 	function drawpage(index:number){
 		let e:GUI_Element[] = [new GUI_Page(index+1,pages)]
@@ -152,7 +149,7 @@ function pageMenu(title:string, description:string, elements:GUI_Element[][], ta
 }
 //auto formats a array into a page menu
 //TODO make list a GUI_Element[] instead of a single Container
-function listMenu(title:string, description:string, list:GUI_Container,target:FishPlayer, callback: (opts: {data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;}) => void, pageSize:number = 10){
+export function listMenu(title:string, description:string, list:GUI_Container,target:FishPlayer, callback: (opts: {data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;}) => void, pageSize:number = 10){
 	let buttons = { data:[] as any[][],}
 	list.data()[0].reduce((result, _, index) => { if (index % pageSize === 0) { buttons.data.push(buttons.data.slice(index, index + pageSize));}return result;});
 	let pages:GUI_Element[][] = [];
@@ -200,3 +197,5 @@ export {
 	registeredListeners as listeners,
 	menu
 };
+
+
