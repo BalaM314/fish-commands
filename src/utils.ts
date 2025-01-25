@@ -13,7 +13,6 @@ import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys } from './types';
 
 
-Log.info("bruhhh");
 export function formatTime(time:number){
 	if(maxTime - (time + Date.now()) < 20000) return "forever";
 
@@ -26,9 +25,9 @@ export function formatTime(time:number){
 	return [
 		months && `${months} month${months != 1 ? "s" : ""}`,
 		days && `${days} day${days != 1 ? "s" : ""}`,
-		hours && `${hours} hora${hours != 1 ? "s" : ""}`,
-		minutes && `${minutes} minuto${minutes != 1 ? "s" : ""}`,
-		(seconds || time < 1000) && `${seconds} segundo${seconds != 1 ? "s" : ""}`,
+		hours && `${hours} hour${hours != 1 ? "s" : ""}`,
+		minutes && `${minutes} minute${minutes != 1 ? "s" : ""}`,
+		(seconds || time < 1000) && `${seconds} second${seconds != 1 ? "s" : ""}`,
 	].filter(Boolean).join(", ")
 }
 
