@@ -34,7 +34,7 @@ export function formatTime(time:number){
 
 //TODO move this data to be right next to Mode
 export function formatModeName(name:GamemodeName){
-	return {Debug
+	return {
 		"attack": "Attack",
 		"survival": "Survival",
 		"hexed": "Hexed",
