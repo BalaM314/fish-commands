@@ -20,7 +20,7 @@ jobs:
         id: generate-token
         with:
           app-id: ${{ secrets.FISH_BOT_ID }}
-          private-key: ${{ secrets.FISH_BOT_CLIENT_SECRET }}
+          private-key: ${{ secrets.FISH_BOT_PRIVATE_KEY }}
       - uses: actions/checkout@v1
         with:
           ref: ${{ github.head_ref }}
