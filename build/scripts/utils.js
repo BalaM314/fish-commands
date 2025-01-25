@@ -90,6 +90,7 @@ var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
 var globals_2 = require("./globals");
 var players_1 = require("./players");
+Log.info("bruh");
 function formatTime(time) {
     if (globals_1.maxTime - (time + Date.now()) < 20000)
         return "forever";
