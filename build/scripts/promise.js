@@ -4,8 +4,7 @@ Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains a custom (bad) polyfill for promises with slightly different behavior.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Promise = void 0;
-exports.queueMicrotask = queueMicrotask;
+exports.Promise = exports.queueMicrotask = void 0;
 function queueMicrotask(callback, errorHandler) {
     if (errorHandler === void 0) { errorHandler = function (err) {
         Log.err("Uncaught (in promise)");
@@ -20,6 +19,7 @@ function queueMicrotask(callback, errorHandler) {
         }
     });
 }
+exports.queueMicrotask = queueMicrotask;
 /**
  * Differences from normal promises:
  * If a called-later handler throws an error, it will print an error to the console, and will not call the reject handler.

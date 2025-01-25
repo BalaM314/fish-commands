@@ -47,14 +47,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CommandError = exports.Req = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
-exports.command = command;
-exports.formatArg = formatArg;
-exports.fail = fail;
-exports.handleTapEvent = handleTapEvent;
-exports.register = register;
-exports.registerConsole = registerConsole;
-exports.initialize = initialize;
+exports.initialize = exports.registerConsole = exports.register = exports.handleTapEvent = exports.fail = exports.CommandError = exports.formatArg = exports.Req = exports.Perm = exports.command = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var menus_1 = require("./menus");
@@ -104,6 +97,7 @@ exports.consoleCommandList = consoleCommandList;
 function command(input) {
     return input;
 }
+exports.command = command;
 /** Represents a permission that is required to do something. */
 var Perm = /** @class */ (function () {
     function Perm(name, check, color, unauthorizedMessage) {
@@ -238,6 +232,7 @@ function formatArg(a) {
     var brackets = isOptional ? ["[", "]"] : ["<", ">"];
     return brackets[0] + a.split(":")[0] + brackets[1];
 }
+exports.formatArg = formatArg;
 /** Joins multi-word arguments that have been groups with quotes. Ex: turns [`"a`, `b"`] into [`a b`]*/
 function joinArgs(rawArgs) {
     var e_1, _a;
@@ -563,6 +558,7 @@ function fail(message) {
     Object.setPrototypeOf(err, exports.CommandError.prototype);
     throw err;
 }
+exports.fail = fail;
 var variadicArgumentTypes = ["player", "string", "map"];
 /** Converts the CommandArg[] to the format accepted by Arc CommandHandler */
 function convertArgs(processedCmdArgs, allowMenus) {
@@ -622,6 +618,7 @@ function handleTapEvent(event) {
         usageData.tapLastUsed = Date.now();
     }
 }
+exports.handleTapEvent = handleTapEvent;
 /**
  * Registers all commands in a list to a client command handler.
  **/
@@ -735,6 +732,7 @@ function register(commands, clientHandler, serverHandler) {
         finally { if (e_3) throw e_3.error; }
     }
 }
+exports.register = register;
 function registerConsole(commands, serverHandler) {
     var e_4, _a;
     var _loop_2 = function (name, data) {
@@ -790,6 +788,7 @@ function registerConsole(commands, serverHandler) {
         finally { if (e_4) throw e_4.error; }
     }
 }
+exports.registerConsole = registerConsole;
 /** Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
 function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
     if (unresolvedArgs.length == 0) {
@@ -805,11 +804,11 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
                 break;
             default: (0, funcs_4.crash)("Unable to resolve arg of type ".concat(argToResolve_1.type));
         }
-        (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList_1, sender, function (_a) {
-            var option = _a.option;
-            processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(option);
+        (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), [new menus_1.GUI_Container(optionsList_1, "auto", function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, funcs_3.escapeStringColorsClient)(player.name); }), new menus_1.GUI_Cancel()], sender, function (_a) {
+            var data = _a.data;
+            processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(data);
             resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
-        }, true, function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, funcs_3.escapeStringColorsClient)(player.name); });
+        });
     }
 }
 function initialize() {
@@ -847,4 +846,5 @@ function initialize() {
     }
     initialized = true;
 }
+exports.initialize = initialize;
 var templateObject_1;

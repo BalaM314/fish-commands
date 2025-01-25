@@ -36,20 +36,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventEmitter = exports.StringIO = exports.StringBuilder = void 0;
-exports.memoize = memoize;
-exports.to2DArray = to2DArray;
-exports.setToArray = setToArray;
-exports.crash = crash;
-exports.capitalizeText = capitalizeText;
-exports.escapeTextDiscord = escapeTextDiscord;
-exports.repeatAlternate = repeatAlternate;
-exports.escapeStringColorsClient = escapeStringColorsClient;
-exports.escapeStringColorsServer = escapeStringColorsServer;
-exports.parseError = parseError;
-exports.tagProcessor = tagProcessor;
-exports.tagProcessorPartial = tagProcessorPartial;
-exports.random = random;
+exports.random = exports.tagProcessorPartial = exports.tagProcessor = exports.parseError = exports.escapeStringColorsServer = exports.escapeStringColorsClient = exports.repeatAlternate = exports.escapeTextDiscord = exports.capitalizeText = exports.crash = exports.EventEmitter = exports.StringIO = exports.StringBuilder = exports.setToArray = exports.to2DArray = exports.memoize = void 0;
 var storedValues = {};
 /**
  * Stores the output of a function and returns that value
@@ -75,6 +62,7 @@ function memoize(callback, dep, id) {
  * @param width the max length of each row.
  * The last row may not be full.
  */
+exports.memoize = memoize;
 function to2DArray(array, width) {
     if (array.length == 0)
         return [];
@@ -87,11 +75,13 @@ function to2DArray(array, width) {
     });
     return output;
 }
+exports.to2DArray = to2DArray;
 function setToArray(set) {
     var array = [];
     set.each(function (item) { return array.push(item); });
     return array;
 }
+exports.setToArray = setToArray;
 var StringBuilder = /** @class */ (function () {
     function StringBuilder(str) {
         if (str === void 0) { str = ""; }
@@ -274,6 +264,7 @@ exports.EventEmitter = EventEmitter;
 function crash(message) {
     throw new Error(message);
 }
+exports.crash = crash;
 /** Best effort title-capitalization of a word. */
 function capitalizeText(text) {
     return text
@@ -282,17 +273,21 @@ function capitalizeText(text) {
         i !== 0 && i !== arr.length - 1) ? word
         : word[0].toUpperCase() + word.substring(1).toLowerCase(); }).join(" ");
 }
+exports.capitalizeText = capitalizeText;
 var pattern = Pattern.compile("([*\\_~`|:])");
 function escapeTextDiscord(text) {
     return pattern.matcher(text).replaceAll("\\\\$1");
 }
+exports.escapeTextDiscord = escapeTextDiscord;
 function repeatAlternate(a, b, numARepeats) {
     return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
 }
+exports.repeatAlternate = repeatAlternate;
 /** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
 function escapeStringColorsClient(str) {
     return str.replace(/\[/g, "[[");
 }
+exports.escapeStringColorsClient = escapeStringColorsClient;
 // export function highlightStringColorsClient(str:string):string {
 // 	return str.replace(/(?<!\[)\[[a-z0-9#]{2,10}\]/gi, "[gray][$0[]");
 // }
@@ -300,6 +295,7 @@ function escapeStringColorsClient(str) {
 function escapeStringColorsServer(str) {
     return str.replace(/&/g, "&&");
 }
+exports.escapeStringColorsServer = escapeStringColorsServer;
 function parseError(thing) {
     if (thing instanceof Error) {
         return thing.toString();
@@ -313,6 +309,7 @@ function parseError(thing) {
         return "Unable to parse error object";
     }
 }
+exports.parseError = parseError;
 /** Generates a tag template processor from a function that processes one value at a time. */
 function tagProcessor(transformer) {
     return function (stringChunks) {
@@ -323,6 +320,7 @@ function tagProcessor(transformer) {
         return String.raw.apply(String, __spreadArray([{ raw: stringChunks }], __read(varChunks.map(function (chunk, i) { return transformer(chunk, i, stringChunks, varChunks); })), false));
     };
 }
+exports.tagProcessor = tagProcessor;
 //third order function ._. warning: causes major confusion
 /** Generates a tag template partial processor from a function that processes one value at a time. */
 function tagProcessorPartial(transformer) {
@@ -340,6 +338,7 @@ function tagProcessorPartial(transformer) {
         });
     };
 }
+exports.tagProcessorPartial = tagProcessorPartial;
 function random(arg0, arg1) {
     if (typeof arg0 == "number") {
         var max = void 0, min = void 0;
@@ -357,3 +356,4 @@ function random(arg0, arg1) {
         return arg0[Math.floor(Math.random() * arg0.length)];
     }
 }
+exports.random = random;

@@ -4,16 +4,7 @@ Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains a wrapper over the API calls to the backend server.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addStopped = addStopped;
-exports.free = free;
-exports.getStopped = getStopped;
-exports.isVpn = isVpn;
-exports.sendModerationMessage = sendModerationMessage;
-exports.getStaffMessages = getStaffMessages;
-exports.sendStaffMessage = sendStaffMessage;
-exports.ban = ban;
-exports.unban = unban;
-exports.getBanned = getBanned;
+exports.getBanned = exports.unban = exports.ban = exports.sendStaffMessage = exports.getStaffMessages = exports.sendModerationMessage = exports.isVpn = exports.getStopped = exports.free = exports.addStopped = void 0;
 var config_1 = require("./config");
 var globals_1 = require("./globals");
 var players_1 = require("./players");
@@ -30,6 +21,7 @@ function addStopped(uuid, time) {
         //Log.info(response.getResultAsString());
     });
 }
+exports.addStopped = addStopped;
 /** Mark a player as freed */
 function free(uuid) {
     if (config_1.Mode.localDebug)
@@ -43,6 +35,7 @@ function free(uuid) {
         //Log.info(response.getResultAsString());
     });
 }
+exports.free = free;
 function getStopped(uuid, callback, callbackError) {
     function fail(err) {
         Log.err("[API] Network error when trying to call api.getStopped()");
@@ -72,6 +65,7 @@ function getStopped(uuid, callback, callbackError) {
         callback(Number(time));
     });
 }
+exports.getStopped = getStopped;
 var cachedIps = {};
 /** Make an API request to see if an IP is likely VPN. */
 function isVpn(ip, callback, callbackError) {
@@ -92,6 +86,7 @@ function isVpn(ip, callback, callbackError) {
         callback(false);
     }));
 }
+exports.isVpn = isVpn;
 /** Send text to the moderation logs channel in Discord. */
 function sendModerationMessage(message) {
     if (config_1.Mode.localDebug) {
@@ -105,6 +100,7 @@ function sendModerationMessage(message) {
         //Log.info(response.getResultAsString());
     });
 }
+exports.sendModerationMessage = sendModerationMessage;
 /** Get staff messages from discord. */
 function getStaffMessages(callback) {
     if (config_1.Mode.localDebug)
@@ -121,6 +117,7 @@ function getStaffMessages(callback) {
             callback(JSON.parse(temp).messages);
     });
 }
+exports.getStaffMessages = getStaffMessages;
 /** Send staff messages from server. */
 function sendStaffMessage(message, playerName, callback) {
     if (config_1.Mode.localDebug)
@@ -141,6 +138,7 @@ function sendStaffMessage(message, playerName, callback) {
             callback === null || callback === void 0 ? void 0 : callback(JSON.parse(temp).data);
     });
 }
+exports.sendStaffMessage = sendStaffMessage;
 /** Bans the provided ip and/or uuid. */
 function ban(data, callback) {
     if (callback === void 0) { callback = function () { }; }
@@ -158,6 +156,7 @@ function ban(data, callback) {
         callback(JSON.parse(str).data);
     });
 }
+exports.ban = ban;
 /** Unbans the provided ip and/or uuid. */
 function unban(data, callback) {
     if (callback === void 0) { callback = function () { }; }
@@ -176,6 +175,7 @@ function unban(data, callback) {
         callback(parsedData.status, parsedData.error);
     });
 }
+exports.unban = unban;
 /** Gets if either the provided uuid or ip is banned. */
 function getBanned(data, callback) {
     if (config_1.Mode.localDebug) {
@@ -196,3 +196,4 @@ function getBanned(data, callback) {
         callback(JSON.parse(str).data);
     });
 }
+exports.getBanned = getBanned;
