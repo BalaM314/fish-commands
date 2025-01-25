@@ -177,7 +177,7 @@ function pageMenu(title, description, elements, target, callback) {
                 }
             }
             else {
-                callback(res.data);
+                callback(res);
             }
         });
         return;
@@ -195,7 +195,7 @@ function listMenu(title, description, list, target, callback, pageSize) {
     } return res; }, []);
     var pagesElements = [];
     pagedData.forEach(function (pageData) { return pagesElements.push([new GUI_Container(pageData, 1, list.stringifier)]); });
-    pageMenu(title, description, pagesElements, target, callback);
+    pageMenu(title, description, pagesElements, target, function (res) { Log.info("".concat(res.data)); callback(res); });
 }
 exports.listMenu = listMenu;
 var GUI_Container = /** @class */ (function () {
