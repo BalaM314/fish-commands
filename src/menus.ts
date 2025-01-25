@@ -145,7 +145,7 @@ export function pageMenu(title: string, description: string, elements: GUI_Eleme
 						callback(res);
 				}
 			} else {
-				callback(res.data);
+				callback(res);
 			}
 		})
 		return;
@@ -160,13 +160,13 @@ export function listMenu(title: string, description: string, list: GUI_Container
 	let pagedData: any[][] = pooledData.reduce((res, _, index) => { if (index % pageSize === 0) { res.push(pooledData.slice(index, index + pageSize)); } return res; }, [] as any[][]);
 	let pagesElements: GUI_Element[][] = [];
 	pagedData.forEach(pageData => pagesElements.push([new GUI_Container(pageData, 1, list.stringifier)]));
-	pageMenu(title, description, pagesElements, target, callback);
+	pageMenu(title, description, pagesElements, target, (res) => {Log.info(`${res.data}`);callback(res)})
 }
 //#endregion
 //#region GUI Elements
 
 interface GUI_Element {
-	format(): string[][],
+	format(): string[][], // honestly should have made this a 1d array for simplicity, but 2d lets you define multi-row elements
 	data(): any[][]
 }
 export class GUI_Container implements GUI_Element {
