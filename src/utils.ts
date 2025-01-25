@@ -14,7 +14,6 @@ import { Boolf, PartialFormatString, SelectEnumClassKeys } from './types';
 
 
 export function formatTime(time:number){
-
 	if(maxTime - (time + Date.now()) < 20000) return "forever";
 
 	const months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
