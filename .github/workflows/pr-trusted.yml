@@ -12,15 +12,18 @@ jobs:
     # PR is from the base repository, so it is only running code that was added by someone with write access, so it's trusted
     runs-on: ubuntu-latest
     env:
-      FISH_BOT_ID: ${{ secrets.FISH_BOT_ID }}
+      # for some reason this isn't the bot ID, it's some other random number
+      FISH_BOT_ACTOR_ID: 196413533
     permissions:
       contents: write
     steps:
+      # Create a token that can be used to push commits
       - uses: actions/create-github-app-token@v1
         id: generate-token
         with:
           app-id: ${{ secrets.FISH_BOT_ID }}
           private-key: ${{ secrets.FISH_BOT_PRIVATE_KEY }}
+      # Checkout the trusted code
       - uses: actions/checkout@v1
         with:
           ref: ${{ github.head_ref }}
@@ -35,21 +38,21 @@ jobs:
         with:
           version: 9
           run_install: true
-      - name: Debug 1
-        run: echo "Actor ID is ${{ github.actor_id }}"
       - name: Typescript Compile
-        if: github.actor_id != env.FISH_BOT_ID
+        # Only run this if the commit wasn't created by the fish bot
+        # If it was, this check has already been completed
+        if: github.actor_id != env.FISH_BOT_ACTOR_ID
         run: pnpm run build
       - name: Check for modified files in build directory
         id: git-check
+        # Returns 0 if files changed, and 1 if no files changed
         run: |
           git add build/scripts
           echo "committed=$(git commit -m "Automated TypeScript compile" > /dev/null; echo $?)" >> $GITHUB_OUTPUT
-      - name: Debug 2
-        run: echo "${{ steps.git-check.outputs.committed }}"
       - name: Push changes
-        if: github.actor_id != env.FISH_BOT_ID && steps.git-check.outputs.committed == '0'
+        # Do not create an infinite loop of workflows
+        if: github.actor_id != env.FISH_BOT_ACTOR_ID && steps.git-check.outputs.committed == '0'
         run: git push
       - name: Run Tests
-        if: github.actor_id == env.FISH_BOT_ID || steps.git-check.outputs.committed != '0'
+        if: github.actor_id == env.FISH_BOT_ACTOR_ID || steps.git-check.outputs.committed != '0'
         run: pnpm run test
