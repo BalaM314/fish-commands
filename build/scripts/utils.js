@@ -82,7 +82,9 @@ exports.processChat = processChat;
 exports.getIPRange = getIPRange;
 exports.getHash = getHash;
 exports.match = match;
+exports.fishCommandsRootDirPath = fishCommandsRootDirPath;
 var api = require("./api");
+var commands_1 = require("./commands");
 var config_1 = require("./config");
 var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
@@ -808,4 +810,17 @@ function getHash(file, algorithm) {
 }
 function match(value, clauses, defaultValue) {
     return Object.prototype.hasOwnProperty.call(clauses, value) ? clauses[value] : defaultValue;
+}
+/** @throws CommandError */
+function fishCommandsRootDirPath() {
+    var commandsDir = Vars.modDirectory.child("fish-commands");
+    if (!commandsDir.exists())
+        (0, commands_1.fail)("Fish commands directory at path ".concat(commandsDir.absolutePath(), " does not exist!"));
+    var fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
+    if (Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)) {
+        //fish-commands is linked to the build directory of somewhere else
+        //resolve and get the parent directory of the build directory
+        fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
+    }
+    return fishCommandsRootDirPath;
 }

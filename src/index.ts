@@ -7,7 +7,7 @@ import * as api from './api';
 import * as commands from './commands';
 import { handleTapEvent } from './commands';
 import { commands as consoleCommands } from "./consoleCommands";
-import { fishState, ipJoins, tileHistory } from "./globals";
+import { fishPlugin, fishState, ipJoins, tileHistory } from "./globals";
 import { commands as memberCommands } from './memberCommands';
 import * as menus from "./menus";
 import { loadPacketHandlers, commands as packetHandlerCommands } from './packetHandlers';
@@ -15,7 +15,7 @@ import { commands as playerCommands } from './playerCommands';
 import { FishPlayer } from './players';
 import { commands as staffCommands } from './staffCommands';
 import * as timers from './timers';
-import { addToTileHistory, processChat, serverRestartLoop } from "./utils";
+import { addToTileHistory, fishCommandsRootDirPath, processChat, serverRestartLoop } from "./utils";
 
 
 Events.on(EventType.ConnectionEvent, (e) => {
@@ -158,6 +158,20 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	loadPacketHandlers();
 	
 	commands.initialize();
+
+	//Load plugin data
+	try {
+		const path = fishCommandsRootDirPath();
+		fishPlugin.directory = path.toString();
+		Threads.daemon(() => {
+			try {
+				fishPlugin.version = OS.exec("git", "-C", fishPlugin.directory!, "rev-parse", "HEAD");
+			} catch {}
+		});
+	} catch(err){
+		Log.err("Failed to get fish plugin information.");
+		Log.err(err);
+	}
 
 });
 

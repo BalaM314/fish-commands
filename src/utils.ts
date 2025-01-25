@@ -4,6 +4,7 @@ This file contains many utility functions.
 */
 
 import * as api from './api';
+import { fail } from './commands';
 import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
 import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, StringIO } from './funcs';
 import { maxTime } from "./globals";
@@ -665,4 +666,18 @@ export function match<K extends PropertyKey, O extends Record<K, unknown>>(value
 export function match<K extends PropertyKey, const O extends Partial<Record<K, unknown>>, D>(value:K, clauses:O, defaultValue:D):O[K & keyof O] | D;
 export function match(value:PropertyKey, clauses:Record<PropertyKey, unknown>, defaultValue?:unknown):unknown {
 	return Object.prototype.hasOwnProperty.call(clauses, value) ? clauses[value] : defaultValue;
+}
+
+/** @throws CommandError */
+export function fishCommandsRootDirPath():Path {
+	const commandsDir = Vars.modDirectory.child("fish-commands");
+	if(!commandsDir.exists())
+		fail(`Fish commands directory at path ${commandsDir.absolutePath()} does not exist!`);
+	let fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
+	if(Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)){
+		//fish-commands is linked to the build directory of somewhere else
+		//resolve and get the parent directory of the build directory
+		fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
+	}
+	return fishCommandsRootDirPath;
 }

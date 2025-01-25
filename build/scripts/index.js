@@ -160,6 +160,21 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     commands.registerConsole(consoleCommands_1.commands, serverHandler);
     (0, packetHandlers_1.loadPacketHandlers)();
     commands.initialize();
+    //Load plugin data
+    try {
+        var path = (0, utils_1.fishCommandsRootDirPath)();
+        globals_1.fishPlugin.directory = path.toString();
+        Threads.daemon(function () {
+            try {
+                globals_1.fishPlugin.version = OS.exec("git", "-C", globals_1.fishPlugin.directory, "rev-parse", "HEAD");
+            }
+            catch (_a) { }
+        });
+    }
+    catch (err) {
+        Log.err("Failed to get fish plugin information.");
+        Log.err(err);
+    }
 });
 // Keeps track of any action performed on a tile for use in tilelog.
 Events.on(EventType.BlockBuildBeginEvent, utils_1.addToTileHistory);

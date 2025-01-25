@@ -4,7 +4,7 @@ Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains mutable global variables, and global constants.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FishEvents = exports.maxTime = exports.ipRangeWildcardPattern = exports.ipRangeCIDRPattern = exports.ipPortPattern = exports.ipPattern = exports.uuidPattern = exports.ipJoins = exports.fishState = exports.recentWhispers = exports.tileHistory = void 0;
+exports.FishEvents = exports.maxTime = exports.ipRangeWildcardPattern = exports.ipRangeCIDRPattern = exports.ipPortPattern = exports.ipPattern = exports.uuidPattern = exports.ipJoins = exports.fishPlugin = exports.fishState = exports.recentWhispers = exports.tileHistory = void 0;
 var funcs_1 = require("./funcs");
 exports.tileHistory = {};
 exports.recentWhispers = {};
@@ -17,6 +17,10 @@ exports.fishState = {
     labels: [],
     peacefulMode: false,
     joinBell: false,
+};
+exports.fishPlugin = {
+    directory: null,
+    version: null,
 };
 exports.ipJoins = new ObjectIntMap(); //todo somehow tell java that K is String and not Object
 exports.uuidPattern = /^[a-zA-Z0-9+/]{22}==$/;

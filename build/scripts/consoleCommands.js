@@ -462,21 +462,11 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args, output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
-            //this is disgusting
-            var commandsDir = Vars.modDirectory.child("fish-commands");
-            if (!commandsDir.exists())
-                (0, commands_1.fail)("Fish commands directory at path ".concat(commandsDir.absolutePath(), " does not exist!"));
             if (config_1.Mode.localDebug)
                 (0, commands_1.fail)("Cannot update in local debug mode.");
-            var fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
-            if (Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)) {
-                //fish-commands is linked to the build directory of somewhere else
-                //resolve and get the parent directory of the build directory
-                fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
-            }
             output("Updating...");
             var gitProcess = new ProcessBuilder("git", "checkout", "-f", "origin/".concat((_b = args.branch) !== null && _b !== void 0 ? _b : "master"))
-                .directory(new Packages.java.io.File(fishCommandsRootDirPath))
+                .directory(new Packages.java.io.File((0, utils_1.fishCommandsRootDirPath)()))
                 .redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .start();

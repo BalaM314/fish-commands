@@ -13,6 +13,7 @@
 		"isolatedModules": true,
 		"composite": true,
 		"rootDir": "./src/",
+		"types": []
 	},
 	"include": [
 		"./src/**.ts",
