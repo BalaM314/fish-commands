@@ -11,9 +11,16 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
     # PR is from the base repository, so it is only running code that was added by someone with write access, so it's trusted
     runs-on: ubuntu-latest
+    env:
+      FISH_BOT_ID: ${{ secrets.FISH_BOT_ID }}
     permissions:
       contents: write
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.FISH_BOT_ID }}
+          private-key: ${{ secrets.FISH_BOT_CLIENT_SECRET }}
       - uses: actions/checkout@v1
         with:
           ref: ${{ github.head_ref }}
@@ -25,17 +32,19 @@ jobs:
           version: 9
           run_install: true
       - name: Typescript Compile
+        if: github.actor_id != env.FISH_BOT_ID
         run: pnpm run build
       - name: Check for modified files
         id: git-check
         run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
-      - name: Run Tests
-        run: pnpm run test
       - name: Push changes
-        if: steps.git-check.outputs.modified == 'true'
+        if: github.actor_id != env.FISH_BOT_ID && steps.git-check.outputs.modified == 'true'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ github.repository }}
           git commit -am "Automated TypeScript compile"
           git push
+      - name: Run Tests
+        if: github.actor_id == env.FISH_BOT_ID || steps.git-check.outputs.modified == 'false'
+        run: pnpm run test
