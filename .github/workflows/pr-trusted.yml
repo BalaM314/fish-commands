@@ -1,4 +1,4 @@
-name: Typescript Compile
+name: Typescript Compile and Tests
 on:
   # This event type is dangerous
   pull_request_target:
@@ -6,7 +6,7 @@ on:
     paths:
       - 'src/**.ts'
 jobs:
-  Typescript_Compile:
+  Typescript_Compile_and_Tests:
     # Ensure the PR is not from a fork
     if: github.event.pull_request.head.repo.full_name == github.repository
     # PR is from the base repository, so it is only running code that was added by someone with write access, so it's trusted
@@ -19,6 +19,13 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Git Config
         run: git config --global core.autocrlf true
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+      - name: Install
+        run: pnpm ci
       - name: Typescript Compile
         run: npm run build
       - name: Check for modified files
@@ -32,3 +39,5 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "Automated TypeScript compile"
           git push
+      - name: Run Tests
+        run: pnpm run test
