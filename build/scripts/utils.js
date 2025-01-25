@@ -40,9 +40,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-
-exports.match = exports.getHash = exports.getIPRange = exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.untilForever = exports.setType = exports.logHTrip = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.removeFoosChars = exports.matchFilter = exports.getItem = exports.getTeam = exports.nearbyEnemyTile = exports.getColor = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatModeName = exports.formatTime = void 0;
-
+exports.fishCommandsRootDirPath = exports.match = exports.getHash = exports.getIPRange = exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.untilForever = exports.setType = exports.logHTrip = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.removeFoosChars = exports.matchFilter = exports.getItem = exports.getTeam = exports.nearbyEnemyTile = exports.getColor = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatModeName = exports.formatTime = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
@@ -379,7 +377,7 @@ function parseTimeString(str) {
 exports.parseTimeString = parseTimeString;
 /** Triggers the restart countdown. Execution always returns from this function. */
 function serverRestartLoop(sec) {
-    if (sec > 0) {https://github.com/Fish-Community/fish-commands/pull/47/conflict?name=src%252FplayerCommands.ts&ancestor_oid=5682d57d20f7d30aca1fcb2eaa19c4d00f3faefe&base_oid=2388e0f4407eabf640296d9a4897e237ab4a35f3&head_oid=a1da1b420865d399cd5a1dcec29271163c26ec7d
+    if (sec > 0) {
         if (sec < 15 || sec % 5 == 0)
             Call.sendMessage("[scarlet]Server restarting in: ".concat(sec));
         globals_2.fishState.restartLoopTask = Timer.schedule(function () { return serverRestartLoop(sec - 1); }, 1);
@@ -812,3 +810,17 @@ function match(value, clauses, defaultValue) {
     return Object.prototype.hasOwnProperty.call(clauses, value) ? clauses[value] : defaultValue;
 }
 exports.match = match;
+/** @throws CommandError */
+function fishCommandsRootDirPath() {
+    var commandsDir = Vars.modDirectory.child("fish-commands");
+    if (!commandsDir.exists())
+        (0, commands_1.fail)("Fish commands directory at path ".concat(commandsDir.absolutePath(), " does not exist!"));
+    var fishCommandsRootDirPath = Paths.get(commandsDir.file().path);
+    if (Packages.java.nio.file.Files.isSymbolicLink(fishCommandsRootDirPath)) {
+        //fish-commands is linked to the build directory of somewhere else
+        //resolve and get the parent directory of the build directory
+        fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
+    }
+    return fishCommandsRootDirPath;
+}
+exports.fishCommandsRootDirPath = fishCommandsRootDirPath;
