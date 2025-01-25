@@ -44,10 +44,12 @@ jobs:
         id: git-check
         run: |
           git add build/scripts
-          echo "comitted=$(git commit -m "Automated TypeScript compile" > /dev/null; echo $?)" >> $GITHUB_OUTPUT
+          echo "committed=$(git commit -m "Automated TypeScript compile" > /dev/null; echo $?)" >> $GITHUB_OUTPUT
+      - name: Debug 2
+        run: echo "${{ steps.git-check.outputs.committed }}"
       - name: Push changes
-        if: github.actor_id != env.FISH_BOT_ID && steps.git-check.outputs.comitted == '0'
+        if: github.actor_id != env.FISH_BOT_ID && steps.git-check.outputs.committed == '0'
         run: git push
       - name: Run Tests
-        if: github.actor_id == env.FISH_BOT_ID || steps.git-check.outputs.comitted != '0'
+        if: github.actor_id == env.FISH_BOT_ID || steps.git-check.outputs.committed != '0'
         run: pnpm run test
