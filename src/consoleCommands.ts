@@ -364,19 +364,36 @@ export const commands = consoleCommandList({
 		handler({args, output, outputSuccess, outputFail}){
 			if(Mode.localDebug) fail(`Cannot update in local debug mode.`);
 			output("Updating...");
-			const gitProcess = new ProcessBuilder("git", "checkout", "-q", "-f", `origin/${args.branch ?? "master"}`)
-				.directory(new Packages.java.io.File(fishCommandsRootDirPath()))
-				.redirectErrorStream(true)
-				.redirectOutput(ProcessBuilder.Redirect.INHERIT)
-				.start();
-			Timer.schedule(() => {
-				gitProcess.waitFor();
-				if(gitProcess.exitValue() == 0){
-					outputSuccess(`Updated successfully. Restart to apply changes.`);
-				} else {
-					outputFail(`Update failed!`);
+			const path = fishCommandsRootDirPath().toString();
+			Threads.thread(() => {
+				try {
+					const gitFetch = new ProcessBuilder("git", "-C", path, "fetch", "origin")
+						.redirectErrorStream(true)
+						.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+						.start();
+					gitFetch.waitFor();
+					if(gitFetch.exitValue() == 0){
+						outputSuccess(`Fetched data, updating files...`);
+					} else {
+						outputFail(`Update failed!`);
+						return;
+					}
+					const gitCheckout = new ProcessBuilder("git", "-C", path, "checkout", "-q", "-f", `origin/${args.branch ?? "master"}`)
+						.redirectErrorStream(true)
+						.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+						.start();
+					gitCheckout.waitFor();
+					if(gitCheckout.exitValue() == 0){
+						outputSuccess(`Updated successfully. Restart to apply changes.`);
+					} else {
+						outputFail(`Update failed!`);
+						return;
+					}
+				} catch(err){
+					Log.err(err);
+					outputFail("Update failed!");
 				}
-			}, 0);
+			});
 		}
 	},
 	restart: {

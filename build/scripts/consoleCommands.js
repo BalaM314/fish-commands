@@ -460,25 +460,44 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["branch:string?"],
         description: "Updates the plugin.",
         handler: function (_a) {
-            var _b;
             var args = _a.args, output = _a.output, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (config_1.Mode.localDebug)
                 (0, commands_1.fail)("Cannot update in local debug mode.");
             output("Updating...");
-            var gitProcess = new ProcessBuilder("git", "checkout", "-q", "-f", "origin/".concat((_b = args.branch) !== null && _b !== void 0 ? _b : "master"))
-                .directory(new Packages.java.io.File((0, utils_1.fishCommandsRootDirPath)()))
-                .redirectErrorStream(true)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .start();
-            Timer.schedule(function () {
-                gitProcess.waitFor();
-                if (gitProcess.exitValue() == 0) {
-                    outputSuccess("Updated successfully. Restart to apply changes.");
+            var path = (0, utils_1.fishCommandsRootDirPath)().toString();
+            Threads.thread(function () {
+                var _a;
+                try {
+                    var gitFetch = new ProcessBuilder("git", "-C", path, "fetch", "origin")
+                        .redirectErrorStream(true)
+                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                        .start();
+                    gitFetch.waitFor();
+                    if (gitFetch.exitValue() == 0) {
+                        outputSuccess("Fetched data, updating files...");
+                    }
+                    else {
+                        outputFail("Update failed!");
+                        return;
+                    }
+                    var gitCheckout = new ProcessBuilder("git", "-C", path, "checkout", "-q", "-f", "origin/".concat((_a = args.branch) !== null && _a !== void 0 ? _a : "master"))
+                        .redirectErrorStream(true)
+                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                        .start();
+                    gitCheckout.waitFor();
+                    if (gitCheckout.exitValue() == 0) {
+                        outputSuccess("Updated successfully. Restart to apply changes.");
+                    }
+                    else {
+                        outputFail("Update failed!");
+                        return;
+                    }
                 }
-                else {
+                catch (err) {
+                    Log.err(err);
                     outputFail("Update failed!");
                 }
-            }, 0);
+            });
         }
     },
     restart: {
