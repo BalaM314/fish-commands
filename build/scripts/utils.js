@@ -101,9 +101,9 @@ function formatTime(time) {
     return [
         months && "".concat(months, " month").concat(months != 1 ? "s" : ""),
         days && "".concat(days, " day").concat(days != 1 ? "s" : ""),
-        hours && "".concat(hours, " hour").concat(hours != 1 ? "s" : ""),
-        minutes && "".concat(minutes, " minute").concat(minutes != 1 ? "s" : ""),
-        (seconds || time < 1000) && "".concat(seconds, " second").concat(seconds != 1 ? "s" : ""),
+        hours && "".concat(hours, " hora").concat(hours != 1 ? "s" : ""),
+        minutes && "".concat(minutes, " minuto").concat(minutes != 1 ? "s" : ""),
+        (seconds || time < 1000) && "".concat(seconds, " segundo").concat(seconds != 1 ? "s" : ""),
     ].filter(Boolean).join(", ");
 }
 //TODO move this data to be right next to Mode
