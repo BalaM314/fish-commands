@@ -333,12 +333,12 @@ function logAction(action, by, to, reason, duration) {
         return;
     }
     if (to === undefined) { //overload 2
-        api.sendModerationMessage("".concat(by.cleanedName, " ").concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
+        api.sendModerationMessage("".concat((0, funcs_1.escapeTextDiscord)(Strings.stripColors(by.name)), " ").concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
         return;
     }
     if (to) { //overload 3
         var name = void 0, uuid = void 0, ip = void 0;
-        var actor = typeof by === "string" ? by : by.name;
+        var actor = typeof by === "string" ? by : (0, funcs_1.escapeTextDiscord)(Strings.stripColors(by.name));
         if (to instanceof players_1.FishPlayer) {
             name = (0, funcs_1.escapeTextDiscord)(to.name);
             uuid = to.uuid;

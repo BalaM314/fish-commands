@@ -284,7 +284,7 @@ function capitalizeText(text) {
 }
 var pattern = Pattern.compile("([*\\_~`|:])");
 function escapeTextDiscord(text) {
-    return pattern.matcher(text).replaceAll("\\\\$1");
+    return pattern.matcher(text).replaceAll("\\\\$1\u200B");
 }
 function repeatAlternate(a, b, numARepeats) {
     return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
