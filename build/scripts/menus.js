@@ -158,9 +158,11 @@ function menu(title, description, elements, target, callback) {
 function pageMenu(title, description, elements, target, callback) {
     var pages = elements.length;
     function drawpage(index) {
-        var e = [new GUI_Page(index + 1, pages)];
+        var e = [];
         e.push.apply(e, __spreadArray([], __read(elements[index]), false));
+        e.push(new GUI_Page(index + 1, pages));
         menu(title, description, e, target, function (res) {
+            // handle control element of the ui
             if (typeof res.data === 'string') {
                 switch (res.data) {
                     case "left":
@@ -176,23 +178,26 @@ function pageMenu(title, description, elements, target, callback) {
                         callback(res);
                 }
             }
+            else {
+                callback(res.data);
+            }
         });
         return;
     }
+    drawpage(0);
 }
-//auto formats a array into a page menu
 //TODO make list a GUI_Element[] instead of a single Container
 function listMenu(title, description, list, target, callback, pageSize) {
     if (pageSize === void 0) { pageSize = 10; }
-    var buttons = { data: [], };
-    list.data()[0].reduce(function (result, _, index) { if (index % pageSize === 0) {
-        buttons.data.push(buttons.data.slice(index, index + pageSize));
-    } return result; });
-    var pages = [];
-    buttons.data.forEach(function (page) { pages.push([new GUI_Container(page, 1, list.stringifier)]); }); //wrap each page in a container
-    pageMenu(title, description, pages, target, callback);
+    var pooledData = [];
+    list.data().flat().forEach(function (data) { pooledData.push(data); });
+    var pagedData = pooledData.reduce(function (res, _, index) { if (index % pageSize === 0) {
+        res.push(pooledData.slice(index, index + pageSize));
+    } return res; }, []);
+    var pagesElements = [];
+    pagedData.forEach(function (pageData) { return pagesElements.push([new GUI_Container(pageData, 1, list.stringifier)]); });
+    pageMenu(title, description, pagesElements, target, callback);
 }
-//const reservedStrings = ["left", "center", "right"] // strings used for paged menus, cannot be handled correct
 var GUI_Container = /** @class */ (function () {
     function GUI_Container(options, columns, stringifier) {
         if (columns === void 0) { columns = 3; }
@@ -221,8 +226,8 @@ var GUI_Page = /** @class */ (function () {
         var _this = this;
         this.currentPage = currentPage;
         this.pages = pages;
-        this.format = function () { return ([["<--"], ["".concat(_this.currentPage, "/").concat(_this.pages)], ["-->"]]); };
-        this.data = function () { return ([["left", "center", "left"]]); };
+        this.format = function () { return ((0, funcs_2.to2DArray)(["<--", "".concat(_this.currentPage, "/").concat(_this.pages), "-->"], 3)); };
+        this.data = function () { return ([["left", "center", "right"]]); };
     }
     return GUI_Page;
 }());
@@ -235,3 +240,4 @@ var GUI_Confirm = /** @class */ (function () {
     return GUI_Confirm;
 }());
 exports.GUI_Confirm = GUI_Confirm;
+//#endregion

@@ -76,6 +76,7 @@ function menu(
 		ArrangedElements.stringified.push(["<No Options Provided>"])
 		ArrangedElements.data.push([null]); // not needed, but nice to keep data and string in sync.
 	}
+
 	if(!callback){
 		//overload 1, just display a menu with no callback
 		Call.menu(target.con, registeredListeners.none, title, description, ArrangedElements.stringified);
@@ -124,9 +125,11 @@ function menu(
 export function pageMenu(title:string, description:string, elements:GUI_Element[][], target:FishPlayer, callback: (opts: {data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;}) => void){
 	let pages = elements.length
 	function drawpage(index:number){
-		let e:GUI_Element[] = [new GUI_Page(index+1,pages)]
+		let e:GUI_Element[] = [];
 		e.push(...elements[index])
+		e.push(new GUI_Page(index+1, pages))
 		menu(title,description,e, target, (res) => {
+			// handle control element of the ui
 			if(typeof res.data === 'string'){
 				switch (res.data) {
 					case "left":
@@ -141,20 +144,23 @@ export function pageMenu(title:string, description:string, elements:GUI_Element[
 				default:
 					callback(res);	
 				}
+			}else{
+				callback(res.data);
 			}
 		})
 		return;
 	}
+	drawpage(0);
 	 
 }
-//auto formats a array into a page menu
 //TODO make list a GUI_Element[] instead of a single Container
-export function listMenu(title:string, description:string, list:GUI_Container,target:FishPlayer, callback: (opts: {data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;}) => void, pageSize:number = 10){
-	let buttons = { data:[] as any[][],}
-	list.data()[0].reduce((result, _, index) => { if (index % pageSize === 0) { buttons.data.push(buttons.data.slice(index, index + pageSize));}return result;});
-	let pages:GUI_Element[][] = [];
-	buttons.data.forEach(page => {pages.push([new GUI_Container(page,1,list.stringifier)])})//wrap each page in a container
-	pageMenu(title,description,pages,target,callback);
+export function listMenu(title:string, description:string, list:GUI_Container, target:FishPlayer, callback: (opts: {data:any, text:string, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;}) => void, pageSize:number = 10){
+	let pooledData:any[] = [];
+	list.data().flat().forEach((data) => {pooledData.push(data)});
+	let pagedData:any[][] = pooledData.reduce((res, _, index) => {if (index % pageSize === 0) {res.push(pooledData.slice(index, index + pageSize));}return res;}, [] as any[][]);
+	let pagesElements:GUI_Element[][] = [];
+	pagedData.forEach(pageData => pagesElements.push([new GUI_Container(pageData,1,list.stringifier)]));
+	pageMenu(title,description,pagesElements,target,callback);
 }
 //#endregion
 //#region GUI Elements
@@ -163,8 +169,6 @@ interface GUI_Element{
 	format():string[][],
 	data():any[][]
 }
-
-//const reservedStrings = ["left", "center", "right"] // strings used for paged menus, cannot be handled correct
 export class GUI_Container implements GUI_Element {
 	constructor(
 		public options:any[], 
@@ -183,8 +187,8 @@ export class GUI_Page implements GUI_Element{
 		public currentPage:number,
 		public pages:number
 	){}
-	public format = () => {return([["<--"], [`${this.currentPage}/${this.pages}`], ["-->"]])};
-	public data = () => {return([["left","center","left"]])}
+	public format = () => {return(to2DArray(["<--", `${this.currentPage}/${this.pages}`, "-->"],3))};
+	public data = () => {return([["left","center","right"]])}
 
 }
 export class GUI_Confirm implements GUI_Element{
@@ -197,5 +201,4 @@ export {
 	registeredListeners as listeners,
 	menu
 };
-
-
+//#endregion
