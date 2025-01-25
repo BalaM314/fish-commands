@@ -367,6 +367,7 @@ export const commands = consoleCommandList({
 			const path = fishCommandsRootDirPath().toString();
 			Threads.thread(() => {
 				try {
+					const initialVersion = OS.exec("git", "-C", path, "rev-parse", "HEAD");
 					const gitFetch = new ProcessBuilder("git", "-C", path, "fetch", "origin")
 						.redirectErrorStream(true)
 						.redirectOutput(ProcessBuilder.Redirect.INHERIT)
@@ -378,13 +379,18 @@ export const commands = consoleCommandList({
 						outputFail(`Update failed!`);
 						return;
 					}
+					const newVersion = OS.exec("git", "-C", path, "rev-parse", `origin/${args.branch ?? "master"}`);
+					if(initialVersion == newVersion){
+						outputSuccess("Already up to date.");
+						return;
+					}
 					const gitCheckout = new ProcessBuilder("git", "-C", path, "checkout", "-q", "-f", `origin/${args.branch ?? "master"}`)
 						.redirectErrorStream(true)
 						.redirectOutput(ProcessBuilder.Redirect.INHERIT)
 						.start();
 					gitCheckout.waitFor();
 					if(gitCheckout.exitValue() == 0){
-						outputSuccess(`Updated successfully. Restart to apply changes.`);
+						outputSuccess(`Updated successfully from ${initialVersion} to ${newVersion}. Restart to apply changes.`);
 					} else {
 						outputFail(`Update failed!`);
 						return;

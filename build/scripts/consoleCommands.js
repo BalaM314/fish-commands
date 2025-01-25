@@ -466,8 +466,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
             output("Updating...");
             var path = (0, utils_1.fishCommandsRootDirPath)().toString();
             Threads.thread(function () {
-                var _a;
+                var _a, _b;
                 try {
+                    var initialVersion = OS.exec("git", "-C", path, "rev-parse", "HEAD");
                     var gitFetch = new ProcessBuilder("git", "-C", path, "fetch", "origin")
                         .redirectErrorStream(true)
                         .redirectOutput(ProcessBuilder.Redirect.INHERIT)
@@ -480,13 +481,18 @@ exports.commands = (0, commands_1.consoleCommandList)({
                         outputFail("Update failed!");
                         return;
                     }
-                    var gitCheckout = new ProcessBuilder("git", "-C", path, "checkout", "-q", "-f", "origin/".concat((_a = args.branch) !== null && _a !== void 0 ? _a : "master"))
+                    var newVersion = OS.exec("git", "-C", path, "rev-parse", "origin/".concat((_a = args.branch) !== null && _a !== void 0 ? _a : "master"));
+                    if (initialVersion == newVersion) {
+                        outputSuccess("Already up to date.");
+                        return;
+                    }
+                    var gitCheckout = new ProcessBuilder("git", "-C", path, "checkout", "-q", "-f", "origin/".concat((_b = args.branch) !== null && _b !== void 0 ? _b : "master"))
                         .redirectErrorStream(true)
                         .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                         .start();
                     gitCheckout.waitFor();
                     if (gitCheckout.exitValue() == 0) {
-                        outputSuccess("Updated successfully. Restart to apply changes.");
+                        outputSuccess("Updated successfully from ".concat(initialVersion, " to ").concat(newVersion, ". Restart to apply changes."));
                     }
                     else {
                         outputFail("Update failed!");
