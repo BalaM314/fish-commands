@@ -25,7 +25,11 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Git Config
-        run: git config --global core.autocrlf true
+        run: |
+          git config --global core.autocrlf true
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ github.repository }}
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -36,22 +40,14 @@ jobs:
       - name: Typescript Compile
         if: github.actor_id != env.FISH_BOT_ID
         run: pnpm run build
-      - name: Debug 2
-        run: |
-          git diff-index HEAD --
-          git diff-index --quiet HEAD --
-          echo $?
-      - name: Check for modified files
+      - name: Check for modified files in build directory
         id: git-check
-        run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
-      - name: Push changes
-        if: github.actor_id != env.FISH_BOT_ID && steps.git-check.outputs.modified == 'true'
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ github.repository }}
-          git commit -am "Automated TypeScript compile"
-          git push
+          git add build/scripts
+          echo "comitted=$(git commit -m "Automated TypeScript compile" > /dev/null; echo $?)" >> $GITHUB_OUTPUT
+      - name: Push changes
+        if: github.actor_id != env.FISH_BOT_ID && steps.git-check.outputs.comitted == '0'
+        run: git push
       - name: Run Tests
-        if: github.actor_id == env.FISH_BOT_ID || steps.git-check.outputs.modified == 'false'
+        if: github.actor_id == env.FISH_BOT_ID || steps.git-check.outputs.comitted != '0'
         run: pnpm run test
