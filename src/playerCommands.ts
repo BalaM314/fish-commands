@@ -7,7 +7,7 @@ import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
 import { FishEvents, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
-import { GUI_Cancel, GUI_Confirm, GUI_Container, GUI_Page, listMenu, menu, pageMenu } from './menus';
+import { GUI_Cancel, GUI_Container, listMenu, menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
@@ -902,16 +902,4 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			);
 		}
 	},
-
-	debug: {
-		args: [],
-		description: "mcdebug, do not add to pr",
-		perm: Perm.none,
-		handler({ sender }) {
-			//menu("debug page menu", "", [new GUI_Page(1,2)], sender)
-			//pageMenu("Multi Page Menu", "", [[new GUI_Container(["1", "2", "3", "4"], 1)], [new GUI_Container(["5", "6", "7", "8"],1)], [new GUI_Confirm()]], sender, ({data}) =>{Log.info(`Button ${data} Pressed`)});
-			listMenu("listmenu", "", new GUI_Container(["option1", "option2", "option3", "option4", "option5", "option6", "option7", "option8", "option9", "option10", "option11", "option12", "option13", "option14", "option15", "option16", "option17", "option18", "option19", "option20",]), sender, ({ data }) => { Log.info(`Button ${data} Pressed`) })
-		}
-	},
-
 });
