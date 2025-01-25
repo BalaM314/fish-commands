@@ -12,8 +12,13 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
       - name: Install
-        run: npm ci
+        run: pnpm ci
       - name: Run Tests
         # this also runs tsc
-        run: npm run test
+        run: pnpm run test
