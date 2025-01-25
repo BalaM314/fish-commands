@@ -833,25 +833,36 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         Events.on(EventType.GameOverEvent, resetVotes);
         Events.on(EventType.ServerLoadEvent, resetVotes);
         return {
-            args: ['map:map'],
+            args: ['map:map?'],
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
             data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
             requirements: [commands_1.Req.cooldown(10000), commands_1.Req.modeNot("hexed")],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;
-                if (votes.get(sender))
-                    (0, commands_1.fail)("You have already voted.");
-                votes.set(sender, map);
-                if (voteEndTime == -1) {
-                    if ((Date.now() - lastVoteTime) < 60000)
-                        (0, commands_1.fail)("Please wait 1 minute before starting a new map vote.");
-                    startVote();
-                    Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(map.name(), "[cyan]. Use /nextmap ").concat(map.plainName(), " to add your vote!"));
+                if (!map) {
+                    (0, menus_1.listMenu)("Please Select a Map", "", new menus_1.GUI_Container(Vars.maps.customMaps().toArray(), 1, function (map) { return "[accent]".concat(map.name()); }), sender, function (_a) {
+                        var data = _a.data;
+                        playervote(data);
+                    });
                 }
                 else {
-                    Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(map.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(voteEndTime, true)));
-                    showVotes();
+                    playervote(map);
+                }
+                function playervote(option) {
+                    if (votes.get(sender))
+                        (0, commands_1.fail)("You have already voted.");
+                    votes.set(sender, option);
+                    if (voteEndTime == -1) {
+                        if ((Date.now() - lastVoteTime) < 60000)
+                            (0, commands_1.fail)("Please wait 1 minute before starting a new map vote.");
+                        startVote();
+                        Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(option.name(), "[cyan]. Use /nextmap ").concat(option.plainName(), " to add your vote!"));
+                    }
+                    else {
+                        Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(option.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(voteEndTime, true)));
+                        showVotes();
+                    }
                 }
             }
         };
