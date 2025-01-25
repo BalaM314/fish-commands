@@ -10,7 +10,7 @@ import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
-import { menu } from './menus';
+import { GUI_Cancel, GUI_Confirm, GUI_Container, menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { addToTileHistory, colorBadBoolean, formatTime, formatTimeRelative, getAntiBotInfo, logAction, match, serverRestartLoop, untilForever, updateBans } from "./utils";
@@ -32,7 +32,7 @@ export const commands = commandList({
 			if(args.player.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
 
 			const message = args.message ?? "You have been warned. I suggest you stop what you're doing";
-			menu('Warning', message, ["[green]Accept"], args.player);
+			menu('Warning', message, [new GUI_Container(["[green]Accept"])], args.player);
 			logAction('warned', sender, args.player, message);
 			outputSuccess(f`Warned player ${args.player} for "${message}"`);
 		}
@@ -223,20 +223,20 @@ export const commands = commandList({
 			}
 
 
-			menu("Stop", "Choose a player to mark", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
+			menu("Stop", "Choose a player to mark", [new GUI_Container(possiblePlayers, "auto", p => p.lastName), new GUI_Cancel()], sender, ({data: optionPlayer, sender}) => {
 				if(args.time == null){
-					menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, ({option: optionTime, sender}) => {
+					menu("Stop", "Select stop time", [new GUI_Container(["2 days", "7 days", "30 days", "forever"])], sender, ({text: optionTime}) => {
 						const time =
 							optionTime == "2 days" ? 172800000 :
 							optionTime == "7 days" ? 604800000 :
 							optionTime == "30 days" ? 2592000000 :
 							(maxTime - Date.now() - 10000);
 						stop(optionPlayer, time);
-					}, false);
+					});
 				} else {
 					stop(optionPlayer, args.time);
 				}
-			}, true, p => p.lastName);
+			},);
 		}
 	},
 
@@ -364,8 +364,8 @@ export const commands = commandList({
 				let data:PlayerInfo | null;
 				if((data = admins.getInfoOptional(uuid)) != null && data.admin) fail(`Cannot ban an admin.`);
 				const name = data ? `${escapeStringColorsClient(data.lastName)} (${uuid}/${data.lastIP})` : uuid;
-				menu("Confirm", `Are you sure you want to ban ${name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
-					if(confirm != "[red]Yes") fail("Cancelled.");
+				menu("Confirm", `Are you sure you want to ban ${name}?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
+					if(!confirm) fail("Cancelled.");
 					admins.banPlayerID(uuid);
 					if(data){
 						const ip = data.lastIP;
@@ -382,14 +382,13 @@ export const commands = commandList({
 						outputSuccess(f`Banned player ${uuid}. [yellow]Unable to determine IP.[]`);
 					}
 					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
-				}, false);
+				});
 				return;
 			} else if(args.uuid_or_ip && ipPattern.test(args.uuid_or_ip)){
 				//Overload 2: ban by uuid
 				const ip = args.uuid_or_ip;
-				menu("Confirm", `Are you sure you want to ban IP ${ip}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
-					if(confirm != "[red]Yes") fail("Cancelled.");
-
+				menu("Confirm", `Are you sure you want to ban IP ${ip}?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
+					if(!confirm) fail("Cancelled.");
 					api.ban({ip});
 					const info = admins.findByIP(ip);
 					if(info) logAction("banned", sender, info);
@@ -403,22 +402,22 @@ export const commands = commandList({
 					}
 					
 					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
-				}, false);
+				});
 				return;
 			}
 			//Overload 3: ban by menu
-			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
-				if(option.admin) fail(`Cannot ban an admin.`);
-				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
-					if(confirm != "[red]Yes") fail("Cancelled.");
-					admins.banPlayerIP(option.ip()); //this also bans the UUID
-					api.ban({ip: option.ip(), uuid: option.uuid()});
-					Log.info(`${option.ip()}/${option.uuid()} was banned.`);
-					logAction("banned", sender, option.getInfo());
-					outputSuccess(f`Banned player ${option}.`);
+			menu(`[scarlet]BAN[]`, "Choose a player to ban.", [new GUI_Container(setToArray(Groups.player), "auto", opt => opt.name), new GUI_Cancel()], sender, ({data:target}) => {
+				if(target.admin) fail(`Cannot ban an admin.`);
+				menu("Confirm", `Are you sure you want to ban ${target.name}?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
+					if(!confirm) fail("Cancelled.");
+					admins.banPlayerIP(target.ip()); //this also bans the UUID
+					api.ban({ip: target.ip(), uuid: target.uuid()});
+					Log.info(`${target.ip()}/${target.uuid()} was banned.`);
+					logAction("banned", sender, target.getInfo());
+					outputSuccess(f`Banned player ${target}.`);
 					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
-				}, false);
-			}, true, opt => opt.name);
+				});
+			});
 		}
 	},
 
@@ -447,10 +446,10 @@ export const commands = commandList({
 				menu(
 					`Confirm`,
 					`This will kill [scarlet]every ${unit ? unit.localizedName : "unit"}[] on the team ${team.coloredName()}.`,
-					["[orange]Kill units[]", "[green]Cancel[]"],
+					[new GUI_Confirm()],
 					sender,
-					({option}) => {
-						if(option == "[orange]Kill units[]"){
+					({data:confirm}) => {
+						if(confirm){
 							if(unit){
 								let i = 0;
 								team.data().units.each(u => u.type == unit, u => {
@@ -464,16 +463,16 @@ export const commands = commandList({
 								outputSuccess(f`Killed ${before} units on ${team}.`);
 							}
 						} else outputFail(`Cancelled.`);
-					}, false
+					},
 				);
 			} else {
 				menu(
 					`Confirm`,
 					`This will kill [scarlet]every single ${unit ? unit.localizedName : "unit"}[].`,
-					["[orange]Kill all units[]", "[green]Cancel[]"],
+					[new GUI_Confirm],
 					sender,
-					({option}) => {
-						if(option == "[orange]Kill all units[]"){
+					({data:option}) => {
+						if(option){
 							if(unit){
 								let i = 0;
 								Groups.unit.each(u => u.type == unit, u => {
@@ -487,7 +486,7 @@ export const commands = commandList({
 								outputSuccess(f`Killed ${before} units.`);
 							}
 						} else outputFail(`Cancelled.`);
-					}, false
+					},
 				);
 			}
 		}
@@ -501,29 +500,29 @@ export const commands = commandList({
 				menu(
 					`Confirm`,
 					`This will kill [scarlet]every building[] on the team ${team.coloredName()}, except cores.`,
-					["[orange]Kill buildings[]", "[green]Cancel[]"],
+					[new GUI_Confirm()],
 					sender,
-					({option}) => {
-						if(option == "[orange]Kill buildings[]"){
+					({data:confirm}) => {
+						if(confirm){
 							const count = team.data().buildings.size;
 							team.data().buildings.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
 							outputSuccess(f`Killed ${count} buildings on ${team}`);
 						} else outputFail(`Cancelled.`);
-					}, false
+					}
 				);
 			} else {
 				menu(
 					`Confirm`,
 					`This will kill [scarlet]every building[] except cores.`,
-					["[orange]Kill buildings[]", "[green]Cancel[]"],
+					[new GUI_Confirm()],
 					sender,
-					({option}) => {
-						if(option == "[orange]Kill buildings[]"){
+					({data:confirm}) => {
+						if(confirm){
 							const count = Groups.build.size();
 							Groups.build.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
 							outputSuccess(f`Killed ${count} buildings.`);
 						} else outputFail(`Cancelled.`);
-					}, false
+					}, 
 				);
 			}
 		}
@@ -870,8 +869,10 @@ Last name used: "${info.plainLastName()}" [gray](${escapeStringColorsClient(info
 IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 					));
 				};
-				if(matches.size > 20) menu("Confirm", `Are you sure you want to view all ${matches.size} matches?`, ["Yes"], sender, displayMatches);
-				else displayMatches();
+				if(matches.size > 20) menu("Confirm", `Are you sure you want to view all ${matches.size} matches?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
+					if(!confirm) fail(`aborted.`);
+					displayMatches()
+				});
 			}
 		}
 	},

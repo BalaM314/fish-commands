@@ -6,8 +6,8 @@ This file contains most in-game chat commands that can be run by untrusted playe
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
-import { FishEvents, fishPlugin, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
-import { menu } from './menus';
+import { FishEvents, fishState, fishPlugin, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { GUI_Cancel, GUI_Confirm, GUI_Container, menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
@@ -542,10 +542,10 @@ Available types:[yellow]
 			}
 			menu(
 				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
-				["[green]I agree to abide by these rules[]", "No"], target,
-				({option}) => {
-					if(option == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
-				}, false
+				[new GUI_Container(["[green]I agree to abide by these rules[]", "No"])], target,
+				({text}) => {
+					if(text == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+				}
 			);
 			if(target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
 		},
@@ -566,7 +566,7 @@ Available types:[yellow]
 Power voids disable anything they are connected to.
 If you break it, [scarlet]you will get attacked[] by enemy units.
 Please stop attacking and [lime]build defenses[] first!`,
-					["I understand"], args.player
+					[new GUI_Container(["I understand"])], args.player
 				);
 				logAction("showed void warning", sender, args.player);
 				outputSuccess(f`Warned ${args.player} about power voids with a popup message.`);
@@ -647,20 +647,18 @@ Please stop attacking and [lime]build defenses[] first!`
 				menu(
 					"Start a Next Wave Vote",
 					"Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",
-					[1, 5, 10],
+					[new GUI_Container([1, 5, 10], "auto", n => `${n} waves`), new GUI_Cancel()],
 					sender,
-					({option}) => {
+					({data}) => {
 						if(manager.session){
 							//Someone else started a vote
-							if(manager.session.data != option) fail(`Someone else started a vote with a different number of waves to skip.`);
-							else manager.vote(sender, sender.voteWeight(), option);
+							if(manager.session.data != data) fail(`Someone else started a vote with a different number of waves to skip.`);
+							else manager.vote(sender, sender.voteWeight(), data);
 						} else {
 							//this is still a race condition technically... shouldn't be that bad right?
-							manager.start(sender, sender.voteWeight(), option);
+							manager.start(sender, sender.voteWeight(), data);
 						}
 					},
-					true,
-					n => `${n} waves`
 				);
 			} else {
 				manager.vote(sender, sender.voteWeight(), null);

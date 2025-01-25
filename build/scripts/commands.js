@@ -805,11 +805,11 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
                 break;
             default: (0, funcs_4.crash)("Unable to resolve arg of type ".concat(argToResolve_1.type));
         }
-        (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList_1, sender, function (_a) {
-            var option = _a.option;
-            processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(option);
+        (0, menus_1.menu)("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), [new menus_1.GUI_Container(optionsList_1, "auto", function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, funcs_3.escapeStringColorsClient)(player.name); }), new menus_1.GUI_Cancel()], sender, function (_a) {
+            var data = _a.data;
+            processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(data);
             resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
-        }, true, function (player) { return Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : (0, funcs_3.escapeStringColorsClient)(player.name); });
+        });
     }
 }
 function initialize() {
