@@ -25,7 +25,7 @@ export const commands = commandList({
 		handler({output}){
 			output(
 `[accent][cyan]fish-commands[] is the monolithic plugin used for the Fish servers' features.
-[accent]============
+[accent]===========
 [accent]Source code available at: [cyan]https://github.com/Fish-Community/fish-commands/
 [accent]Current plugin version: [cyan]${fishPlugin.version?.slice(0, 8) ?? "[scarlet]null[]"}[]`
 			);
