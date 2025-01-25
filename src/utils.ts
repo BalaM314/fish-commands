@@ -13,6 +13,7 @@ import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys } from './types';
 
 
+Log.info("bruh");
 export function formatTime(time:number){
 	if(maxTime - (time + Date.now()) < 20000) return "forever";
 
