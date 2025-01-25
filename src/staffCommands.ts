@@ -10,7 +10,7 @@ import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
-import { GUI_Cancel, GUI_Confirm, GUI_Container, menu } from './menus';
+import { GUI_Cancel, GUI_Confirm, GUI_Container, listMenu, menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { addToTileHistory, colorBadBoolean, formatTime, formatTimeRelative, getAntiBotInfo, logAction, match, serverRestartLoop, untilForever, updateBans } from "./utils";
@@ -223,7 +223,7 @@ export const commands = commandList({
 			}
 
 
-			menu("Stop", "Choose a player to mark", [new GUI_Container(possiblePlayers, "auto", p => p.lastName), new GUI_Cancel()], sender, ({data: optionPlayer, sender}) => {
+			listMenu("Stop", "Choose a player to mark", new GUI_Container(possiblePlayers, "auto", (p:PlayerInfo) => {return p.lastName}), sender, ({data: optionPlayer}) => {
 				if(args.time == null){
 					menu("Stop", "Select stop time", [new GUI_Container(["2 days", "7 days", "30 days", "forever"])], sender, ({text: optionTime}) => {
 						const time =
@@ -406,7 +406,21 @@ export const commands = commandList({
 				return;
 			}
 			//Overload 3: ban by menu
+			/*
 			menu(`[scarlet]BAN[]`, "Choose a player to ban.", [new GUI_Container(setToArray(Groups.player), "auto", opt => opt.name), new GUI_Cancel()], sender, ({data:target}) => {
+				if(target.admin) fail(`Cannot ban an admin.`);
+				menu("Confirm", `Are you sure you want to ban ${target.name}?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
+					if(!confirm) fail("Cancelled.");
+					admins.banPlayerIP(target.ip()); //this also bans the UUID
+					api.ban({ip: target.ip(), uuid: target.uuid()});
+					Log.info(`${target.ip()}/${target.uuid()} was banned.`);
+					logAction("banned", sender, target.getInfo());
+					outputSuccess(f`Banned player ${target}.`);
+					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
+				});
+			});
+			*/
+			listMenu(`[scarlet]BAN[]`, "Choose a player to ban.", new GUI_Container(setToArray(Groups.player), "auto", opt => opt.name), sender, ({data:target}) => {
 				if(target.admin) fail(`Cannot ban an admin.`);
 				menu("Confirm", `Are you sure you want to ban ${target.name}?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
 					if(!confirm) fail("Cancelled.");

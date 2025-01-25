@@ -126,8 +126,12 @@ export function pageMenu(title: string, description: string, elements: GUI_Eleme
 	let pages = elements.length
 	function drawpage(index: number) {
 		let e: GUI_Element[] = [];
-		e.push(...elements[index])
-		e.push(new GUI_Page(index + 1, pages))
+		if(!pages){
+			e.push(new GUI_Cancel());
+		}else{
+			e.push(...elements[index])
+			e.push(new GUI_Page(index + 1, pages))
+		}
 		menu(title, description, e, target, (res) => {
 			// handle control element of the ui
 			if (typeof res.data === 'string') {
@@ -143,17 +147,16 @@ export function pageMenu(title: string, description: string, elements: GUI_Eleme
 						break;
 					default:
 						callback(res);
+						break;
 				}
-			} else {
-				callback(res);
 			}
 		})
 		return;
 	}
 	drawpage(0);
-
 }
 //TODO make list a GUI_Element[] instead of a single Container
+//TODO use GUI_Element for formatting instead of defaulting to single column
 export function listMenu(title: string, description: string, list: GUI_Container, target: FishPlayer, callback: (opts: { data: any, text: string, sender: FishPlayer, outputSuccess: (message: string) => void, outputFail: (message: string) => void; }) => void, pageSize: number = 10) {
 	let pooledData: any[] = [];
 	list.data().flat().forEach((data) => { pooledData.push(data) });

@@ -157,8 +157,13 @@ function pageMenu(title, description, elements, target, callback) {
     var pages = elements.length;
     function drawpage(index) {
         var e = [];
-        e.push.apply(e, __spreadArray([], __read(elements[index]), false));
-        e.push(new GUI_Page(index + 1, pages));
+        if (!pages) {
+            e.push(new GUI_Cancel());
+        }
+        else {
+            e.push.apply(e, __spreadArray([], __read(elements[index]), false));
+            e.push(new GUI_Page(index + 1, pages));
+        }
         menu(title, description, e, target, function (res) {
             // handle control element of the ui
             if (typeof res.data === 'string') {
@@ -174,10 +179,8 @@ function pageMenu(title, description, elements, target, callback) {
                         break;
                     default:
                         callback(res);
+                        break;
                 }
-            }
-            else {
-                callback(res);
             }
         });
         return;
@@ -186,6 +189,7 @@ function pageMenu(title, description, elements, target, callback) {
 }
 exports.pageMenu = pageMenu;
 //TODO make list a GUI_Element[] instead of a single Container
+//TODO use GUI_Element for formatting instead of defaulting to single column
 function listMenu(title, description, list, target, callback, pageSize) {
     if (pageSize === void 0) { pageSize = 10; }
     var pooledData = [];
