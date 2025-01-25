@@ -898,18 +898,5 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var target = _a.args.target, output = _a.output, f = _a.f;
             output(f(templateObject_17 || (templateObject_17 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, (0, utils_1.formatTime)(target.stats.timeInGame), target.stats.gamesWon / target.stats.gamesFinished));
         }
-    }, debug: {
-        args: [],
-        description: "mcdebug, do not add to pr",
-        perm: commands_1.Perm.none,
-        handler: function (_a) {
-            var sender = _a.sender;
-            //menu("debug page menu", "", [new GUI_Page(1,2)], sender)
-            //pageMenu("Multi Page Menu", "", [[new GUI_Container(["1", "2", "3", "4"], 1)], [new GUI_Container(["5", "6", "7", "8"],1)], [new GUI_Confirm()]], sender, ({data}) =>{Log.info(`Button ${data} Pressed`)});
-            (0, menus_1.listMenu)("listmenu", "", new menus_1.GUI_Container(["option1", "option2", "option3", "option4", "option5", "option6", "option7", "option8", "option9", "option10", "option11", "option12", "option13", "option14", "option15", "option16", "option17", "option18", "option19", "option20",]), sender, function (_a) {
-                var data = _a.data;
-                Log.info("Button ".concat(data, " Pressed"));
-            });
-        }
     } }));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17;
