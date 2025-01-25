@@ -374,7 +374,7 @@ export const commands = consoleCommandList({
 				fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
 			}
 			output("Updating...");
-			const gitProcess = new ProcessBuilder("git", "pull", "origin", args.branch ?? "master")
+			const gitProcess = new ProcessBuilder("git", "checkout", "-f", `origin/${args.branch ?? "master"}`)
 				.directory(new Packages.java.io.File(fishCommandsRootDirPath))
 				.redirectErrorStream(true)
 				.redirectOutput(ProcessBuilder.Redirect.INHERIT)

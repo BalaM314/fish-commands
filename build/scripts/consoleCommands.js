@@ -475,7 +475,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
             }
             output("Updating...");
-            var gitProcess = new ProcessBuilder("git", "pull", "origin", (_b = args.branch) !== null && _b !== void 0 ? _b : "master")
+            var gitProcess = new ProcessBuilder("git", "checkout", "-f", "origin/".concat((_b = args.branch) !== null && _b !== void 0 ? _b : "master"))
                 .directory(new Packages.java.io.File(fishCommandsRootDirPath))
                 .redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
