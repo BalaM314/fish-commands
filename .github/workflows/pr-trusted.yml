@@ -31,9 +31,16 @@ jobs:
         with:
           version: 9
           run_install: true
+      - name: Debug 1
+        run: echo "Actor ID is ${{ github.actor_id }}"
       - name: Typescript Compile
         if: github.actor_id != env.FISH_BOT_ID
         run: pnpm run build
+      - name: Debug 2
+        run: |
+          git diff-index HEAD --
+          git diff-index --quiet HEAD --
+          echo $?
       - name: Check for modified files
         id: git-check
         run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
