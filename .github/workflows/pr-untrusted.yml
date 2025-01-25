@@ -4,6 +4,8 @@ on:
     types: [opened, reopened, synchronize]
     paths:
       - 'src/**.ts'
+    branches:
+      - 'master'
 jobs:
   PR_Tests:
     # Ensure the PR IS from a fork: otherwise, pr-trusted will run
