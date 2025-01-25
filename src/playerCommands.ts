@@ -820,22 +820,32 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 		Events.on(EventType.ServerLoadEvent, resetVotes);
 
 		return {
-			args: ['map:map'],
+			args: ['map:map?'],
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
 			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
 			requirements: [Req.cooldown(10000), Req.modeNot("hexed")],
 			handler({args:{map}, sender}){
-				if(votes.get(sender)) fail(`You have already voted.`);
-				
-				votes.set(sender, map);
-				if(voteEndTime == -1){
-					if((Date.now() - lastVoteTime) < 60_000) fail(`Please wait 1 minute before starting a new map vote.`);
-					startVote();
-					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${map.name()}[cyan]. Use /nextmap ${map.plainName()} to add your vote!`);
-				} else {
-					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${map.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime, true)}`);
-					showVotes();
+				if(!map){
+					listMenu("Please Select a Map","", new GUI_Container(Vars.maps.customMaps().toArray(),1,(map:MMap) => {return `[accent]${map.name()}`}), sender, ({data}) => {
+						playervote(data);
+					})
+				}else{
+					playervote(map)
+				}
+
+
+				function playervote(option:MMap){
+					if(votes.get(sender)) fail(`You have already voted.`);
+					votes.set(sender, option);
+					if(voteEndTime == -1){
+						if((Date.now() - lastVoteTime) < 60_000) fail(`Please wait 1 minute before starting a new map vote.`);
+						startVote();
+						Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${option.name()}[cyan]. Use /nextmap ${option.plainName()} to add your vote!`);
+					} else {
+						Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${option.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime, true)}`);
+						showVotes();
+					}
 				}
 			}
 		};
