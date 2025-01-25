@@ -64,7 +64,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         handler: function (_a) {
             var _b, _c;
             var output = _a.output;
-            output("[accent][cyan]fish-commands[] is the monolithic plugin used for the Fish servers' features.\n[accent]============\n[accent]Source code available at: [cyan]https://github.com/Fish-Community/fish-commands/\n[accent]Current plugin version: [cyan]".concat((_c = (_b = globals_1.fishPlugin.version) === null || _b === void 0 ? void 0 : _b.slice(0, 8)) !== null && _c !== void 0 ? _c : "[scarlet]null[]", "[]"));
+            output("[accent][cyan]fish-commands[] is the monolithic plugin used for the Fish servers' features.\n[accent]===========\n[accent]Source code available at: [cyan]https://github.com/Fish-Community/fish-commands/\n[accent]Current plugin version: [cyan]".concat((_c = (_b = globals_1.fishPlugin.version) === null || _b === void 0 ? void 0 : _b.slice(0, 8)) !== null && _c !== void 0 ? _c : "[scarlet]null[]", "[]"));
         }
     }, unpause: {
         args: [],
