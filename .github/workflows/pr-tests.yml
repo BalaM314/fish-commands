@@ -1,0 +1,19 @@
+name: PR Tests
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'src/**.ts'
+jobs:
+  PR_Tests:
+    # It's safe to run tests if the PR is from a fork
+    # This workflow doesn't have write permissions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Install
+        run: npm ci
+      - name: Run Tests
+        # this also runs tsc
+        run: npm run test
