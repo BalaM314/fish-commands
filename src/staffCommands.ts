@@ -10,7 +10,7 @@ import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
-import { menu } from './menus';
+import { Menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { addToTileHistory, colorBadBoolean, formatTime, formatTimeRelative, getAntiBotInfo, logAction, match, serverRestartLoop, untilForever, updateBans } from "./utils";
@@ -32,7 +32,7 @@ export const commands = commandList({
 			if(args.player.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
 
 			const message = args.message ?? "You have been warned. I suggest you stop what you're doing";
-			menu('Warning', message, ["[green]Accept"], args.player);
+			Menu.menu('Warning', message, ["[green]Accept"], args.player);
 			logAction('warned', sender, args.player, message);
 			outputSuccess(f`Warned player ${args.player} for "${message}"`);
 		}
@@ -175,7 +175,7 @@ export const commands = commandList({
 		args: ["time:time?", "name:string?"],
 		description: "Stops an offline player.",
 		perm: Perm.mod,
-		handler({args, sender, outputFail, outputSuccess, f, admins}){
+		async handler({args, sender, outputFail, outputSuccess, f, admins}){
 			const maxPlayers = 60;
 			
 			function stop(option:PlayerInfo, time:number){
@@ -223,20 +223,20 @@ export const commands = commandList({
 			}
 
 
-			menu("Stop", "Choose a player to mark", possiblePlayers, sender, (optionPlayer) => {
-				if(args.time == null){
-					menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, (optionTime) => {
-						const time =
-							optionTime == "2 days" ? 172800000 :
-							optionTime == "7 days" ? 604800000 :
-							optionTime == "30 days" ? 2592000000 :
-							(maxTime - Date.now() - 10000);
-						stop(optionPlayer, time);
-					}, false);
-				} else {
-					stop(optionPlayer, args.time);
+			const optionPlayer = await Menu.menu("Stop", "Choose a player to mark", possiblePlayers, sender, {
+				includeCancel: true,
+				optionStringifier: p => p.lastName
+			});
+			args.time ??= match(
+				await Menu.menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender),
+				{
+					"2 days": 172800000,
+					"7 days": 604800000,
+					"30 days": 2592000000,
+					"forever": maxTime - Date.now() - 10000,
 				}
-			}, true, p => p.lastName);
+			);
+			stop(optionPlayer, args.time);
 		}
 	},
 
@@ -357,68 +357,64 @@ export const commands = commandList({
 		args: ["uuid_or_ip:string?"],
 		description: "Bans a player by UUID and IP.",
 		perm: Perm.admin,
-		handler({args, sender, outputSuccess, f, admins}){
+		async handler({args, sender, outputSuccess, f, admins}){
 			if(args.uuid_or_ip && uuidPattern.test(args.uuid_or_ip)){
 				//Overload 1: ban by uuid
 				const uuid = args.uuid_or_ip;
 				let data:PlayerInfo | null;
 				if((data = admins.getInfoOptional(uuid)) != null && data.admin) fail(`Cannot ban an admin.`);
 				const name = data ? `${escapeStringColorsClient(data.lastName)} (${uuid}/${data.lastIP})` : uuid;
-				menu("Confirm", `Are you sure you want to ban ${name}?`, ["[red]Yes", "[green]Cancel"], sender, (confirm) => {
-					if(confirm != "[red]Yes") fail("Cancelled.");
-					admins.banPlayerID(uuid);
-					if(data){
-						const ip = data.lastIP;
-						admins.banPlayerIP(ip);
-						api.ban({ip, uuid});
-						Log.info(`${uuid}/${ip} was banned.`);
-						logAction("banned", sender, data);
-						outputSuccess(f`Banned player ${escapeStringColorsClient(data.lastName)} (${uuid}/${ip})`);
-						//TODO add way to specify whether to activate or escape color tags
-					} else {
-						api.ban({uuid});
-						Log.info(`${uuid} was banned.`);
-						logAction("banned", sender, uuid);
-						outputSuccess(f`Banned player ${uuid}. [yellow]Unable to determine IP.[]`);
-					}
-					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
-				}, false);
+				await Menu.confirmDangerous(sender, `Are you sure you want to ban ${name}?`);
+				admins.banPlayerID(uuid);
+				if(data){
+					const ip = data.lastIP;
+					admins.banPlayerIP(ip);
+					api.ban({ip, uuid});
+					Log.info(`${uuid}/${ip} was banned.`);
+					logAction("banned", sender, data);
+					outputSuccess(f`Banned player ${escapeStringColorsClient(data.lastName)} (${uuid}/${ip})`);
+					//TODO add way to specify whether to activate or escape color tags
+				} else {
+					api.ban({uuid});
+					Log.info(`${uuid} was banned.`);
+					logAction("banned", sender, uuid);
+					outputSuccess(f`Banned player ${uuid}. [yellow]Unable to determine IP.[]`);
+				}
+				updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
 				return;
 			} else if(args.uuid_or_ip && ipPattern.test(args.uuid_or_ip)){
 				//Overload 2: ban by uuid
 				const ip = args.uuid_or_ip;
-				menu("Confirm", `Are you sure you want to ban IP ${ip}?`, ["[red]Yes", "[green]Cancel"], sender, (confirm) => {
-					if(confirm != "[red]Yes") fail("Cancelled.");
+				await Menu.confirmDangerous(sender, `Are you sure you want to ban IP ${ip}?`);
 
-					api.ban({ip});
-					const info = admins.findByIP(ip);
-					if(info) logAction("banned", sender, info);
-					else logAction(`banned ${ip}`, sender);
+				api.ban({ip});
+				const info = admins.findByIP(ip);
+				if(info) logAction("banned", sender, info);
+				else logAction(`banned ${ip}`, sender);
 
-					const alreadyBanned = admins.banPlayerIP(ip);
-					if(alreadyBanned){
-						outputSuccess(f`IP ${ip} is already banned. Ban was synced to other servers.`);
-					} else {
-						outputSuccess(f`IP ${ip} has been banned. Ban was synced to other servers.`);
-					}
-					
-					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
-				}, false);
+				const alreadyBanned = admins.banPlayerIP(ip);
+				if(alreadyBanned){
+					outputSuccess(f`IP ${ip} is already banned. Ban was synced to other servers.`);
+				} else {
+					outputSuccess(f`IP ${ip} has been banned. Ban was synced to other servers.`);
+				}
+				
+				updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
 				return;
 			}
 			//Overload 3: ban by menu
-			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, (option) => {
-				if(option.admin) fail(`Cannot ban an admin.`);
-				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["[red]Yes", "[green]Cancel"], sender, (confirm) => {
-					if(confirm != "[red]Yes") fail("Cancelled.");
-					admins.banPlayerIP(option.ip()); //this also bans the UUID
-					api.ban({ip: option.ip(), uuid: option.uuid()});
-					Log.info(`${option.ip()}/${option.uuid()} was banned.`);
-					logAction("banned", sender, option.getInfo());
-					outputSuccess(f`Banned player ${option}.`);
-					updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
-				}, false);
-			}, true, opt => opt.name);
+			const option = await Menu.menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, {
+				includeCancel: true,
+				optionStringifier: opt => opt.name
+			});
+			if(option.admin) fail(`Cannot ban an admin.`);
+			await Menu.confirmDangerous(sender, `Are you sure you want to ban ${option.name}?`);
+			admins.banPlayerIP(option.ip()); //this also bans the UUID
+			api.ban({ip: option.ip(), uuid: option.uuid()});
+			Log.info(`${option.ip()}/${option.uuid()} was banned.`);
+			logAction("banned", sender, option.getInfo());
+			outputSuccess(f`Banned player ${option}.`);
+			updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
 		}
 	},
 
@@ -442,53 +438,41 @@ export const commands = commandList({
 		args: ["team:team?", "unit:unittype?"],
 		description: "Kills all units, optionally specifying a team and unit type.",
 		perm: Perm.massKill,
-		handler({args:{team, unit}, sender, outputSuccess, outputFail, f}){
+		async handler({args:{team, unit}, sender, outputSuccess, outputFail, f}){
 			if(team){
-				menu(
-					`Confirm`,
+				await Menu.confirmDangerous(sender,
 					`This will kill [scarlet]every ${unit ? unit.localizedName : "unit"}[] on the team ${team.coloredName()}.`,
-					["[orange]Kill units[]", "[green]Cancel[]"],
-					sender,
-					(option) => {
-						if(option == "[orange]Kill units[]"){
-							if(unit){
-								let i = 0;
-								team.data().units.each(u => u.type == unit, u => {
-									u.kill();
-									i ++;
-								});
-								outputSuccess(f`Killed ${i} units on ${team}.`);
-							} else {
-								const before = team.data().units.size;
-								team.data().units.each(u => u.kill());
-								outputSuccess(f`Killed ${before} units on ${team}.`);
-							}
-						} else outputFail(`Cancelled.`);
-					}, false
+					{ confirmText: "[orange]Kill units[]" },
 				);
+				if(unit){
+					let i = 0;
+					team.data().units.each(u => u.type == unit, u => {
+						u.kill();
+						i ++;
+					});
+					outputSuccess(f`Killed ${i} units on ${team}.`);
+				} else {
+					const before = team.data().units.size;
+					team.data().units.each(u => u.kill());
+					outputSuccess(f`Killed ${before} units on ${team}.`);
+				}
 			} else {
-				menu(
-					`Confirm`,
+				await Menu.confirmDangerous(sender,
 					`This will kill [scarlet]every single ${unit ? unit.localizedName : "unit"}[].`,
-					["[orange]Kill all units[]", "[green]Cancel[]"],
-					sender,
-					(option) => {
-						if(option == "[orange]Kill all units[]"){
-							if(unit){
-								let i = 0;
-								Groups.unit.each(u => u.type == unit, u => {
-									u.kill();
-									i ++;
-								});
-								outputSuccess(f`Killed ${i} units.`);
-							} else {
-								const before = Groups.unit.size();
-								Groups.unit.each(u => u.kill());
-								outputSuccess(f`Killed ${before} units.`);
-							}
-						} else outputFail(`Cancelled.`);
-					}, false
+					{ confirmText: "[orange]Kill all units[]" },
 				);
+				if(unit){
+					let i = 0;
+					Groups.unit.each(u => u.type == unit, u => {
+						u.kill();
+						i ++;
+					});
+					outputSuccess(f`Killed ${i} units.`);
+				} else {
+					const before = Groups.unit.size();
+					Groups.unit.each(u => u.kill());
+					outputSuccess(f`Killed ${before} units.`);
+				}
 			}
 		}
 	},
@@ -496,35 +480,23 @@ export const commands = commandList({
 		args: ["team:team?"],
 		description: "Kills all buildings (except cores), optionally specifying a team.",
 		perm: Perm.massKill,
-		handler({args:{team}, sender, outputSuccess, outputFail, f}){
+		async handler({args:{team}, sender, outputSuccess, outputFail, f}){
 			if(team){
-				menu(
-					`Confirm`,
+				await Menu.confirmDangerous(sender,
 					`This will kill [scarlet]every building[] on the team ${team.coloredName()}, except cores.`,
-					["[orange]Kill buildings[]", "[green]Cancel[]"],
-					sender,
-					(option) => {
-						if(option == "[orange]Kill buildings[]"){
-							const count = team.data().buildings.size;
-							team.data().buildings.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
-							outputSuccess(f`Killed ${count} buildings on ${team}`);
-						} else outputFail(`Cancelled.`);
-					}, false
+					{ confirmText: "[orange]Kill buildings[]" },
 				);
+				const count = team.data().buildings.size;
+				team.data().buildings.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
+				outputSuccess(f`Killed ${count} buildings on ${team}.`);
 			} else {
-				menu(
-					`Confirm`,
+				await Menu.confirmDangerous(sender,
 					`This will kill [scarlet]every building[] except cores.`,
-					["[orange]Kill buildings[]", "[green]Cancel[]"],
-					sender,
-					(option) => {
-						if(option == "[orange]Kill buildings[]"){
-							const count = Groups.build.size();
-							Groups.build.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
-							outputSuccess(f`Killed ${count} buildings.`);
-						} else outputFail(`Cancelled.`);
-					}, false
+					{ confirmText: "[orange]Kill buildings[]" },
 				);
+				const count = Groups.build.size();
+				Groups.build.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
+				outputSuccess(f`Killed ${count} buildings.`);
 			}
 		}
 	},
@@ -870,7 +842,13 @@ Last name used: "${info.plainLastName()}" [gray](${escapeStringColorsClient(info
 IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 					));
 				};
-				if(matches.size > 20) menu("Confirm", `Are you sure you want to view all ${matches.size} matches?`, ["Yes"], sender, displayMatches);
+				if(matches.size > 20) Menu.menu(
+					"Confirm",
+					`Are you sure you want to view all ${matches.size} matches?`,
+					["Yes"],
+					sender,
+					{ includeCancel: true }
+				).then(displayMatches);
 				else displayMatches();
 			}
 		}

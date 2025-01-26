@@ -7,7 +7,7 @@ import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
 import { FishEvents, fishPlugin, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
-import { menu } from './menus';
+import { Menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
@@ -540,13 +540,12 @@ Available types:[yellow]
 				if(!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
 				if(target.hasPerm("blockTrolling")) fail(f`Player ${args.player!} is insufficiently trollable.`);
 			}
-			menu(
+			Menu.menu(
 				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
 				["[green]I agree to abide by these rules[]", "No"], target,
-				(option) => {
-					if(option == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
-				}, false
-			);
+			).then((option) => {
+				if(option == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+			});
 			if(target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
 		},
 	},
@@ -561,7 +560,7 @@ Available types:[yellow]
 				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
 				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
 				if(args.player !== sender && args.player.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
-				menu("\uf83f [scarlet]WARNING[] \uf83f",
+				Menu.menu("\uf83f [scarlet]WARNING[] \uf83f",
 `[white]Don't break the Power Void (\uf83f), it's a trap!
 Power voids disable anything they are connected to.
 If you break it, [scarlet]you will get attacked[] by enemy units.
@@ -641,27 +640,26 @@ Please stop attacking and [lime]build defenses[] first!`
 				.on("player vote removed", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 		}),
 		requirements: [Req.cooldown(3000), Req.mode("survival"), Req.gameRunning],
-		handler({sender, data:{manager}}){
+		async handler({sender, data:{manager}}){
 
-			if(!manager.session){
-				menu(
+			if(!manager.session as boolean){ //Disable narrowing
+				const option = await Menu.menu(
 					"Start a Next Wave Vote",
 					"Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",
 					[1, 5, 10],
 					sender,
-					(option) => {
-						if(manager.session){
-							//Someone else started a vote
-							if(manager.session.data != option) fail(`Someone else started a vote with a different number of waves to skip.`);
-							else manager.vote(sender, sender.voteWeight(), option);
-						} else {
-							//this is still a race condition technically... shouldn't be that bad right?
-							manager.start(sender, sender.voteWeight(), option);
-						}
-					},
-					true,
-					n => `${n} waves`
-				);
+					{
+						includeCancel: true,
+						optionStringifier: n => `${n} waves`
+					}
+				)
+				if(manager.session){
+					//Someone else started a vote
+					if(manager.session.data != option) fail(`Someone else started a vote with a different number of waves to skip.`);
+					else manager.vote(sender, sender.voteWeight(), option);
+				} else {
+					manager.start(sender, sender.voteWeight(), option);
+				}
 			} else {
 				manager.vote(sender, sender.voteWeight(), null);
 			}

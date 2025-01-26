@@ -6,7 +6,7 @@ This file contains the commands system.
 
 import { FColor, Gamemode, GamemodeName, text } from "./config";
 import { ipPattern, uuidPattern } from "./globals";
-import { menu } from "./menus";
+import { Menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
@@ -676,10 +676,15 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 			case "player": Groups.player.each(player => optionsList.push(player)); break;
 			default: crash(`Unable to resolve arg of type ${argToResolve.type}`);
 		}
-		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, (option) => {
+		Menu.menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, {
+			includeCancel: true,
+			optionStringifier: player => Strings.stripColors(player.name).length >= 3 ?
+				Strings.stripColors(player.name)
+			: escapeStringColorsClient(player.name)
+		}).then((option) => {
 			processedArgs[argToResolve.name] = FishPlayer.get(option);
 			resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
-		}, true, player => Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : escapeStringColorsClient(player.name))
+		});
 
 	}
 

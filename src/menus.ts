@@ -3,24 +3,21 @@ Copyright © BalaM314, 2024. All Rights Reserved.
 This file contains the menu system.
 */
 
-import { CommandError } from "./commands";
+import { CommandError, fail } from "./commands";
 import { FishPlayer } from "./players";
-import { outputFail, outputSuccess } from "./utils";
-import { parseError } from './funcs';
+import { outputFail } from "./utils";
+import { crash, parseError } from './funcs';
 import { to2DArray } from './funcs';
+import { Promise } from "./promise";
 
 /** Stores a mapping from name to the numeric id of a listener that has been registered. */
-const registeredListeners:{
-	[index:string]: number;
-} = {};
+const registeredListeners: Record<string, number> = {};
 /** Stores all listeners in use by fish-commands. */
-const listeners = (
-	<T extends Record<string, (player:mindustryPlayer, option:number) => void>>(d:T) => d
-)({
+const listeners = {
 	generic(player, option){
 		const fishSender = FishPlayer.get(player);
-		if(option === -1 || option === fishSender.activeMenu.cancelOptionId) return;
 
+		//TODO replace with queue
 		const prevCallback = fishSender.activeMenu.callback;
 		fishSender.activeMenu.callback?.(fishSender, option);
 		//if the callback wasn't modified, then clear it
@@ -31,7 +28,7 @@ const listeners = (
 	none(player, option){
 		//do nothing
 	}
-});
+} satisfies Record<string, (player:mindustryPlayer, option:number) => void>;
 
 /** Registers all listeners, should be called on server load. */
 export function registerListeners(){
@@ -40,37 +37,48 @@ export function registerListeners(){
 	}
 }
 
-/** Displays a menu to a player. */
-export function menu(title:string, description:string, options:string[], target:FishPlayer):void;
-/** Displays a menu to a player with callback. */
-export function menu<const T>(
-	title:string, description:string, options:T[], target:FishPlayer,
-	callback: (option:T) => void,
-	includeCancel?:boolean, optionStringifier?:(opt:T) => string, columns?:number
-):void;
-//this is a minor abomination but theres no good way to do overloads in typescript
-export function menu<T>(
-	title:string, description:string, options:T[], target:FishPlayer,
-	callback?: (option:T) => void,
-	includeCancel:boolean = true,
-	optionStringifier:(opt:T) => string = t => t as unknown as string, //this is dubious
-	columns:number = 3,
-){
+type MenuConfirmProps = {
+	cancelOutput?: string;
+	title?: string;
+	confirmText?: string;
+	cancelText?: string;
+};
 
-	if(!callback){
-		//overload 1, just display a menu with no callback
-		Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [] : to2DArray(options.map(optionStringifier), columns));
-	} else {
-		//overload 2, display a menu with callback
+export const Menu = {
+	/** Displays a menu to a player, returning a Promise. */
+	menu<const TOption, TCancelBehavior extends "ignore" | "reject" | "null" = "ignore">(
+		this:void, title:string, description:string, options:TOption[], target:FishPlayer,
+		{
+			includeCancel = false,
+			optionStringifier = String,
+			columns = 3,
+			onCancel = "ignore" as never,
+			cancelOptionId = -1,
+		}:{
+			/** [red]Cancel[] will be added to the list of options. */
+			includeCancel?:boolean;
+			optionStringifier?:(opt:TOption) => string;
+			columns?:number;
+			/**
+			 * Specifies the behavior when the player cancels the menu (by clicking Cancel, or by pressing Escape). 
+			 * @default "ignore"
+			 */
+			onCancel?: TCancelBehavior;
+			cancelOptionId?: number;
+		} = {}
+	){
+		const { promise, reject, resolve } = Promise.withResolvers<
+			(TCancelBehavior extends "null" ? null : never) | TOption,
+			TCancelBehavior extends "reject" ? "cancel" : never
+		>();
 
 		//Set up the 2D array of options, and maybe add cancel
 		//Call.menu() with [[]] will cause a client crash, make sure to pass [] instead
 		const arrangedOptions = (options.length == 0 && !includeCancel) ? [] : to2DArray(options.map(optionStringifier), columns);
+
 		if(includeCancel){
 			arrangedOptions.push(["Cancel"]);
-			target.activeMenu.cancelOptionId = options.length;
-		} else {
-			target.activeMenu.cancelOptionId = -1;
+			cancelOptionId = options.length;
 		}
 	
 		//The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
@@ -79,11 +87,17 @@ export function menu<T>(
 			//and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
 			//which already checks permissions.
 			//Additionally, the callback is cleared by the generic menu listener after it is executed.
-
-			//We do need to validate option though, as it can be any number.
-			if(!(option in options)) return;
+	
 			try {
-				callback(options[option]);
+				//We do need to validate option though, as it can be any number.
+				if(option === -1 || option === fishSender.activeMenu.cancelOptionId || !(option in options)){
+					//Consider any invalid option to be a cancellation
+					if(onCancel == "null") resolve(null as never);
+					else if(onCancel == "reject") reject("cancel" as never);
+					else return;
+				} else {
+					resolve(options[option]);
+				}
 			} catch(err){
 				if(err instanceof CommandError){
 					//If the error is a command error, then just outputFail
@@ -98,8 +112,31 @@ export function menu<T>(
 		};
 	
 		Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
-	}
-
+		return promise;
+	},
+	/** Rejects with a CommandError if the user chooses to cancel. */
+	confirm(target:FishPlayer, description:string, {
+		cancelOutput = "Cancelled.",
+		title = "Confirm",
+		confirmText = "[green]Confirm",
+		cancelText = "[red]Cancel",
+	}:MenuConfirmProps = {}){
+		return Menu.menu(
+			title, description, [confirmText, cancelText], target,
+			{ onCancel: "reject", cancelOptionId: 1 }
+		).catch(e => {
+			if(e === "cancel") fail(cancelOutput);
+			throw e; //some random error, rethrow it
+		});
+	},
+	/** Same as confirm(), but with inverted colors, for potentially dangerous actions. */
+	confirmDangerous(target:FishPlayer, description:string, {
+		confirmText = "[red]Confirm",
+		cancelText = "[green]Cancel",
+		...rest
+	}:MenuConfirmProps = {}){
+		return this.confirm(target, description, { cancelText, confirmText, ...rest });
+	},
 }
 
 export { registeredListeners as listeners };
