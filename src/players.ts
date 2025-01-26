@@ -613,9 +613,9 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 							`[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ${FColor.discord`Join our Discord`} to request a staff member come online if none are on.`,
 							["Close", "Discord"],
 							this,
-							({option, sender}) => {
+							(option) => {
 								if(option == "Discord"){
-									Call.openURI(sender.con, text.discordURL);
+									Call.openURI(this.con, text.discordURL);
 								}
 							},
 							false,

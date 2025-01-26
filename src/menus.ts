@@ -41,21 +41,17 @@ export function registerListeners(){
 }
 
 /** Displays a menu to a player. */
-function menu(title:string, description:string, options:string[], target:FishPlayer):void;
+export function menu(title:string, description:string, options:string[], target:FishPlayer):void;
 /** Displays a menu to a player with callback. */
-function menu<const T>(
+export function menu<const T>(
 	title:string, description:string, options:T[], target:FishPlayer,
-	callback: (opts: {
-		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
-	}) => void,
+	callback: (option:T) => void,
 	includeCancel?:boolean, optionStringifier?:(opt:T) => string, columns?:number
 ):void;
 //this is a minor abomination but theres no good way to do overloads in typescript
-function menu<T>(
+export function menu<T>(
 	title:string, description:string, options:T[], target:FishPlayer,
-	callback?: (opts: {
-		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
-	}) => void,
+	callback?: (option:T) => void,
 	includeCancel:boolean = true,
 	optionStringifier:(opt:T) => string = t => t as unknown as string, //this is dubious
 	columns:number = 3,
@@ -63,13 +59,13 @@ function menu<T>(
 
 	if(!callback){
 		//overload 1, just display a menu with no callback
-		Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [["<no options>"]] : to2DArray(options.map(optionStringifier), columns));
+		Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [] : to2DArray(options.map(optionStringifier), columns));
 	} else {
 		//overload 2, display a menu with callback
 
-		//Set up the 2D array of options, and add cancel
-		//Use "<no options>" as a fallback, because Call.menu with an empty array of options causes a client crash
-		const arrangedOptions = (options.length == 0 && !includeCancel) ? [["<no options>"]] : to2DArray(options.map(optionStringifier), columns);
+		//Set up the 2D array of options, and maybe add cancel
+		//Call.menu() with [[]] will cause a client crash, make sure to pass [] instead
+		const arrangedOptions = (options.length == 0 && !includeCancel) ? [] : to2DArray(options.map(optionStringifier), columns);
 		if(includeCancel){
 			arrangedOptions.push(["Cancel"]);
 			target.activeMenu.cancelOptionId = options.length;
@@ -87,12 +83,7 @@ function menu<T>(
 			//We do need to validate option though, as it can be any number.
 			if(!(option in options)) return;
 			try {
-				callback({
-					option: options[option],
-					sender: target,
-					outputFail: message => outputFail(message, target),
-					outputSuccess: message => outputSuccess(message, target),
-				});
+				callback(options[option]);
 			} catch(err){
 				if(err instanceof CommandError){
 					//If the error is a command error, then just outputFail
@@ -111,7 +102,4 @@ function menu<T>(
 
 }
 
-export {
-	registeredListeners as listeners,
-	menu
-};
+export { registeredListeners as listeners };

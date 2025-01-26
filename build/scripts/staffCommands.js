@@ -278,11 +278,9 @@ exports.commands = (0, commands_1.commandList)({
             else {
                 possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
             }
-            (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (_a) {
-                var optionPlayer = _a.option, sender = _a.sender;
+            (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (optionPlayer) {
                 if (args.time == null) {
-                    (0, menus_1.menu)("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, function (_a) {
-                        var optionTime = _a.option, sender = _a.sender;
+                    (0, menus_1.menu)("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, function (optionTime) {
                         var time = optionTime == "2 days" ? 172800000 :
                             optionTime == "7 days" ? 604800000 :
                                 optionTime == "30 days" ? 2592000000 :
@@ -419,8 +417,7 @@ exports.commands = (0, commands_1.commandList)({
                 if ((data_1 = admins.getInfoOptional(uuid_1)) != null && data_1.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
                 var name = data_1 ? "".concat((0, funcs_2.escapeStringColorsClient)(data_1.lastName), " (").concat(uuid_1, "/").concat(data_1.lastIP, ")") : uuid_1;
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (confirm) {
                     if (confirm != "[red]Yes")
                         (0, commands_1.fail)("Cancelled.");
                     admins.banPlayerID(uuid_1);
@@ -446,8 +443,7 @@ exports.commands = (0, commands_1.commandList)({
             else if (args.uuid_or_ip && globals_2.ipPattern.test(args.uuid_or_ip)) {
                 //Overload 2: ban by uuid
                 var ip_1 = args.uuid_or_ip;
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban IP ".concat(ip_1, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban IP ".concat(ip_1, "?"), ["[red]Yes", "[green]Cancel"], sender, function (confirm) {
                     if (confirm != "[red]Yes")
                         (0, commands_1.fail)("Cancelled.");
                     api.ban({ ip: ip_1 });
@@ -468,12 +464,10 @@ exports.commands = (0, commands_1.commandList)({
                 return;
             }
             //Overload 3: ban by menu
-            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_5.setToArray)(Groups.player), sender, function (_a) {
-                var option = _a.option;
+            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_5.setToArray)(Groups.player), sender, function (option) {
                 if (option.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(option.name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(option.name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (confirm) {
                     if (confirm != "[red]Yes")
                         (0, commands_1.fail)("Cancelled.");
                     admins.banPlayerIP(option.ip()); //this also bans the UUID
@@ -510,8 +504,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var _b = _a.args, team = _b.team, unit = _b.unit, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (team) {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every ".concat(unit ? unit.localizedName : "unit", "[] on the team ").concat(team.coloredName(), "."), ["[orange]Kill units[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every ".concat(unit ? unit.localizedName : "unit", "[] on the team ").concat(team.coloredName(), "."), ["[orange]Kill units[]", "[green]Cancel[]"], sender, function (option) {
                     if (option == "[orange]Kill units[]") {
                         if (unit) {
                             var i_1 = 0;
@@ -532,8 +525,7 @@ exports.commands = (0, commands_1.commandList)({
                 }, false);
             }
             else {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every single ".concat(unit ? unit.localizedName : "unit", "[]."), ["[orange]Kill all units[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every single ".concat(unit ? unit.localizedName : "unit", "[]."), ["[orange]Kill all units[]", "[green]Cancel[]"], sender, function (option) {
                     if (option == "[orange]Kill all units[]") {
                         if (unit) {
                             var i_2 = 0;
@@ -562,8 +554,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var team = _a.args.team, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (team) {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] on the team ".concat(team.coloredName(), ", except cores."), ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] on the team ".concat(team.coloredName(), ", except cores."), ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (option) {
                     if (option == "[orange]Kill buildings[]") {
                         var count = team.data().buildings.size;
                         team.data().buildings.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });
@@ -574,8 +565,7 @@ exports.commands = (0, commands_1.commandList)({
                 }, false);
             }
             else {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] except cores.", ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] except cores.", ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (option) {
                     if (option == "[orange]Kill buildings[]") {
                         var count = Groups.build.size();
                         Groups.build.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });

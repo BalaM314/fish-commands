@@ -223,9 +223,9 @@ export const commands = commandList({
 			}
 
 
-			menu("Stop", "Choose a player to mark", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
+			menu("Stop", "Choose a player to mark", possiblePlayers, sender, (optionPlayer) => {
 				if(args.time == null){
-					menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, ({option: optionTime, sender}) => {
+					menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, (optionTime) => {
 						const time =
 							optionTime == "2 days" ? 172800000 :
 							optionTime == "7 days" ? 604800000 :
@@ -364,7 +364,7 @@ export const commands = commandList({
 				let data:PlayerInfo | null;
 				if((data = admins.getInfoOptional(uuid)) != null && data.admin) fail(`Cannot ban an admin.`);
 				const name = data ? `${escapeStringColorsClient(data.lastName)} (${uuid}/${data.lastIP})` : uuid;
-				menu("Confirm", `Are you sure you want to ban ${name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
+				menu("Confirm", `Are you sure you want to ban ${name}?`, ["[red]Yes", "[green]Cancel"], sender, (confirm) => {
 					if(confirm != "[red]Yes") fail("Cancelled.");
 					admins.banPlayerID(uuid);
 					if(data){
@@ -387,7 +387,7 @@ export const commands = commandList({
 			} else if(args.uuid_or_ip && ipPattern.test(args.uuid_or_ip)){
 				//Overload 2: ban by uuid
 				const ip = args.uuid_or_ip;
-				menu("Confirm", `Are you sure you want to ban IP ${ip}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
+				menu("Confirm", `Are you sure you want to ban IP ${ip}?`, ["[red]Yes", "[green]Cancel"], sender, (confirm) => {
 					if(confirm != "[red]Yes") fail("Cancelled.");
 
 					api.ban({ip});
@@ -407,9 +407,9 @@ export const commands = commandList({
 				return;
 			}
 			//Overload 3: ban by menu
-			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, ({option}) => {
+			menu(`[scarlet]BAN[]`, "Choose a player to ban.", setToArray(Groups.player), sender, (option) => {
 				if(option.admin) fail(`Cannot ban an admin.`);
-				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["[red]Yes", "[green]Cancel"], sender, ({option:confirm}) => {
+				menu("Confirm", `Are you sure you want to ban ${option.name}?`, ["[red]Yes", "[green]Cancel"], sender, (confirm) => {
 					if(confirm != "[red]Yes") fail("Cancelled.");
 					admins.banPlayerIP(option.ip()); //this also bans the UUID
 					api.ban({ip: option.ip(), uuid: option.uuid()});
@@ -449,7 +449,7 @@ export const commands = commandList({
 					`This will kill [scarlet]every ${unit ? unit.localizedName : "unit"}[] on the team ${team.coloredName()}.`,
 					["[orange]Kill units[]", "[green]Cancel[]"],
 					sender,
-					({option}) => {
+					(option) => {
 						if(option == "[orange]Kill units[]"){
 							if(unit){
 								let i = 0;
@@ -472,7 +472,7 @@ export const commands = commandList({
 					`This will kill [scarlet]every single ${unit ? unit.localizedName : "unit"}[].`,
 					["[orange]Kill all units[]", "[green]Cancel[]"],
 					sender,
-					({option}) => {
+					(option) => {
 						if(option == "[orange]Kill all units[]"){
 							if(unit){
 								let i = 0;
@@ -503,7 +503,7 @@ export const commands = commandList({
 					`This will kill [scarlet]every building[] on the team ${team.coloredName()}, except cores.`,
 					["[orange]Kill buildings[]", "[green]Cancel[]"],
 					sender,
-					({option}) => {
+					(option) => {
 						if(option == "[orange]Kill buildings[]"){
 							const count = team.data().buildings.size;
 							team.data().buildings.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());
@@ -517,7 +517,7 @@ export const commands = commandList({
 					`This will kill [scarlet]every building[] except cores.`,
 					["[orange]Kill buildings[]", "[green]Cancel[]"],
 					sender,
-					({option}) => {
+					(option) => {
 						if(option == "[orange]Kill buildings[]"){
 							const count = Groups.build.size();
 							Groups.build.each(b => !(b.block instanceof CoreBlock), b => b.tile.remove());

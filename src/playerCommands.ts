@@ -543,7 +543,7 @@ Available types:[yellow]
 			menu(
 				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
 				["[green]I agree to abide by these rules[]", "No"], target,
-				({option}) => {
+				(option) => {
 					if(option == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
 				}, false
 			);
@@ -649,7 +649,7 @@ Please stop attacking and [lime]build defenses[] first!`
 					"Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",
 					[1, 5, 10],
 					sender,
-					({option}) => {
+					(option) => {
 						if(manager.session){
 							//Someone else started a vote
 							if(manager.session.data != option) fail(`Someone else started a vote with a different number of waves to skip.`);

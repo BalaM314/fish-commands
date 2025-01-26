@@ -86,13 +86,13 @@ columns) {
     if (columns === void 0) { columns = 3; }
     if (!callback) {
         //overload 1, just display a menu with no callback
-        Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [["<no options>"]] : (0, funcs_2.to2DArray)(options.map(optionStringifier), columns));
+        Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [] : (0, funcs_2.to2DArray)(options.map(optionStringifier), columns));
     }
     else {
         //overload 2, display a menu with callback
-        //Set up the 2D array of options, and add cancel
-        //Use "<no options>" as a fallback, because Call.menu with an empty array of options causes a client crash
-        var arrangedOptions = (options.length == 0 && !includeCancel) ? [["<no options>"]] : (0, funcs_2.to2DArray)(options.map(optionStringifier), columns);
+        //Set up the 2D array of options, and maybe add cancel
+        //Call.menu() with [[]] will cause a client crash, make sure to pass [] instead
+        var arrangedOptions = (options.length == 0 && !includeCancel) ? [] : (0, funcs_2.to2DArray)(options.map(optionStringifier), columns);
         if (includeCancel) {
             arrangedOptions.push(["Cancel"]);
             target.activeMenu.cancelOptionId = options.length;
@@ -110,12 +110,7 @@ columns) {
             if (!(option in options))
                 return;
             try {
-                callback({
-                    option: options[option],
-                    sender: target,
-                    outputFail: function (message) { return (0, utils_1.outputFail)(message, target); },
-                    outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, target); },
-                });
+                callback(options[option]);
             }
             catch (err) {
                 if (err instanceof commands_1.CommandError) {
