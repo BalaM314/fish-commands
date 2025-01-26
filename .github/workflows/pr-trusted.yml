@@ -5,6 +5,8 @@ on:
     types: [opened, reopened, synchronize]
     paths:
       - 'src/**.ts'
+    branches:
+      - 'master'
 jobs:
   Typescript_Compile_and_Tests:
     # Ensure the PR is not from a fork
