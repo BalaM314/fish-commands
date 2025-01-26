@@ -26,7 +26,7 @@ const { FishPlayer } = players;
 const { Rank, RoleFlag } = ranks;
 const { menu } = menus;
 
-Object.assign(this as never, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
+Object.assign(this as never as typeof globalThis, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 
 const Ranks = null!;
 

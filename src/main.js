@@ -33,12 +33,12 @@ Array.prototype.flat = function(depth){
 }
 String.raw = function(callSite){
 	const substitutions = Array.prototype.slice.call(arguments, 1);
-  return Array.from(callSite.raw).map((chunk, i) => {
-    if (callSite.raw.length <= i) {
-      return chunk;
-    }
-    return substitutions[i - 1] ? substitutions[i - 1] + chunk : chunk;
-  }).join('');
+	return Array.from(callSite.raw).map((chunk, i) => {
+		if (callSite.raw.length <= i) {
+			return chunk;
+		}
+		return substitutions[i - 1] ? substitutions[i - 1] + chunk : chunk;
+	}).join('');
 }
 //Fix rhino regex
 if(/ae?a/.test("aeea")){
@@ -48,4 +48,5 @@ if(/ae?a/.test("aeea")){
 	};
 }
 
+this.Promise = require('promise').Promise;
 require("index");
