@@ -1,27 +1,27 @@
 {
-  "name": "fish-commands",
-  "version": "1.0.0",
-  "description": "A custom commands plugin for >|||>Fish Mindustry servers. Created by Brandons404, rewritten by BalaM314.",
-  "main": "scripts/main.js",
-  "private": "true",
-  "scripts": {
-    "attach": "node scripts/attach.js",
-    "watch": "tsc --watch",
-    "build": "tsc -p tsconfig.json",
-    "dev": "node scripts/dev.js",
-    "test": "tsc -b spec && jasmine"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "@types/jasmine": "^5.1.5",
-    "@types/node": "^22.10.9",
-    "esbuild": "^0.23.1",
-    "jasmine": "^5.5.0",
-    "typescript": "^5.7.3"
-  },
-  "directories": {
-    "doc": "docs"
-  }
+	"name": "fish-commands",
+	"version": "1.0.0",
+	"description": "A custom commands plugin for >|||>Fish Mindustry servers. Created by Brandons404, rewritten by BalaM314.",
+	"main": "scripts/main.js",
+	"private": "true",
+	"scripts": {
+		"attach": "node scripts/attach.js",
+		"watch": "tsc --watch",
+		"build": "tsc -p tsconfig.json",
+		"dev": "node scripts/dev.js",
+		"test": "tsc -b spec && jasmine"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "UNLICENSED",
+	"devDependencies": {
+		"@types/jasmine": "^5.1.5",
+		"@types/node": "^22.10.9",
+		"esbuild": "^0.23.1",
+		"jasmine": "^5.5.0",
+		"typescript": "^5.7.3"
+	},
+	"directories": {
+		"doc": "docs"
+	}
 }
