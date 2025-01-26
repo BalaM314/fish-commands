@@ -68,7 +68,8 @@ var FishPlayer = /** @class */ (function () {
         this.player = null;
         this.pet = "";
         this.watch = false;
-        this.activeMenu = { cancelOptionId: -1 };
+        /** Front-to-back queue of menus to show. */
+        this.activeMenus = [];
         this.tileId = false;
         this.tilelog = null;
         this.trail = null;
@@ -412,7 +413,7 @@ var FishPlayer = /** @class */ (function () {
             }
         }
         //Clear temporary states such as menu and taphandler
-        fishP.activeMenu.callback = undefined;
+        fishP.activeMenus = [];
         fishP.tapInfo.commandName = null;
         fishP.stats.timeInGame += (Date.now() - fishP.lastJoined); //Time between joining and leaving
         fishP.lastJoined = Date.now();
@@ -479,7 +480,7 @@ var FishPlayer = /** @class */ (function () {
         var _this = this;
         this.forEachPlayer(function (fishPlayer) {
             //Clear temporary states such as menu and taphandler
-            fishPlayer.activeMenu.callback = undefined;
+            fishPlayer.activeMenus = [];
             fishPlayer.tapInfo.commandName = null;
             //Update stats
             if (!_this.ignoreGameOver && fishPlayer.team() != Team.derelict && winningTeam != Team.derelict) {

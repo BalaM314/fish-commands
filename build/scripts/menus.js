@@ -61,21 +61,21 @@ var utils_1 = require("./utils");
 var funcs_1 = require("./funcs");
 var funcs_2 = require("./funcs");
 var promise_1 = require("./promise");
+/** Used to change the behavior of adding another menu when being run in a menu callback. */
+var isInMenuCallback = false;
 /** Stores a mapping from name to the numeric id of a listener that has been registered. */
 var registeredListeners = {};
 exports.listeners = registeredListeners;
 /** Stores all listeners in use by fish-commands. */
 var listeners = {
     generic: function (player, option) {
-        var _a, _b;
         var fishSender = players_1.FishPlayer.get(player);
-        //TODO replace with queue
-        var prevCallback = fishSender.activeMenu.callback;
-        (_b = (_a = fishSender.activeMenu).callback) === null || _b === void 0 ? void 0 : _b.call(_a, fishSender, option);
-        //if the callback wasn't modified, then clear it
-        if (fishSender.activeMenu.callback === prevCallback)
-            fishSender.activeMenu.callback = undefined;
-        //otherwise, the menu spawned another menu that needs to be handled
+        var prevCallback = fishSender.activeMenus.shift();
+        if (!prevCallback)
+            return; //No menu to process, do nothing
+        isInMenuCallback = true;
+        prevCallback.callback(option);
+        isInMenuCallback = false;
     },
     none: function (player, option) {
         //do nothing
@@ -112,40 +112,42 @@ exports.Menu = {
             cancelOptionId = options.length;
         }
         //The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
-        target.activeMenu.callback = function (fishSender, option) {
-            //Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
-            //and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
-            //which already checks permissions.
-            //Additionally, the callback is cleared by the generic menu listener after it is executed.
-            try {
-                //We do need to validate option though, as it can be any number.
-                if (option === -1 || option === fishSender.activeMenu.cancelOptionId || !(option in options)) {
-                    //Consider any invalid option to be a cancellation
-                    if (onCancel == "null")
-                        resolve(null);
-                    else if (onCancel == "reject")
-                        reject("cancel");
-                    else
-                        return;
+        //If menu() is being called from a menu calback, add it to the front of the queue so it is processed before any other menus.
+        //Otherwise, two multi-step menus queued together would alternate, which would confuse the player.
+        target.activeMenus[isInMenuCallback ? "unshift" : "push"]({ callback: function (option) {
+                //Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
+                //and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
+                //which already checks permissions.
+                //Additionally, the callback is cleared by the generic menu listener after it is executed.
+                try {
+                    //We do need to validate option though, as it can be any number.
+                    if (option === -1 || option === cancelOptionId || !(option in options)) {
+                        //Consider any invalid option to be a cancellation
+                        if (onCancel == "null")
+                            resolve(null);
+                        else if (onCancel == "reject")
+                            reject("cancel");
+                        else
+                            return;
+                    }
+                    else {
+                        resolve(options[option]);
+                    }
                 }
-                else {
-                    resolve(options[option]);
+                catch (err) {
+                    if (err instanceof commands_1.CommandError) {
+                        //If the error is a command error, then just outputFail
+                        (0, utils_1.outputFail)(err.data, target);
+                    }
+                    else {
+                        target.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
+                        if (target.hasPerm("seeErrorMessages"))
+                            target.sendMessage((0, funcs_1.parseError)(err));
+                        Log.err("Unhandled error in menu callback: ".concat(target.cleanedName, " submitted menu \"").concat(title, "\" \"").concat(description, "\""));
+                        Log.err(err);
+                    }
                 }
-            }
-            catch (err) {
-                if (err instanceof commands_1.CommandError) {
-                    //If the error is a command error, then just outputFail
-                    (0, utils_1.outputFail)(err.data, target);
-                }
-                else {
-                    target.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
-                    if (target.hasPerm("seeErrorMessages"))
-                        target.sendMessage((0, funcs_1.parseError)(err));
-                    Log.err("Unhandled error in menu callback: ".concat(target.cleanedName, " submitted menu \"").concat(title, "\" \"").concat(description, "\""));
-                    Log.err(err);
-                }
-            }
-        };
+            } });
         Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
         return promise;
     },

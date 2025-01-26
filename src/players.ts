@@ -53,10 +53,10 @@ export class FishPlayer {
 	player:mindustryPlayer | null = null;
 	pet:string = "";
 	watch:boolean = false;
-	activeMenu: {
-		cancelOptionId: number;
-		callback?: (sender:FishPlayer, option:number) => void;
-	} = {cancelOptionId: -1};
+	/** Front-to-back queue of menus to show. */
+	activeMenus: {
+		callback: (option:number) => void;
+	}[] = [];
 	tileId = false;
 	tilelog:null | "once" | "persist" = null;
 	trail: {
@@ -382,7 +382,7 @@ export class FishPlayer {
 			}
 		}
 		//Clear temporary states such as menu and taphandler
-		fishP.activeMenu.callback = undefined;
+		fishP.activeMenus = [];
 		fishP.tapInfo.commandName = null;
 		fishP.stats.timeInGame += (Date.now() - fishP.lastJoined); //Time between joining and leaving
 		fishP.lastJoined = Date.now();
@@ -454,7 +454,7 @@ export class FishPlayer {
 	static onGameOver(winningTeam:Team){
 		this.forEachPlayer((fishPlayer) => {
 			//Clear temporary states such as menu and taphandler
-			fishPlayer.activeMenu.callback = undefined;
+			fishPlayer.activeMenus = [];
 			fishPlayer.tapInfo.commandName = null;
 			//Update stats
 			if(!this.ignoreGameOver && fishPlayer.team() != Team.derelict && winningTeam != Team.derelict){

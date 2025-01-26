@@ -6,10 +6,12 @@ This file contains the menu system.
 import { CommandError, fail } from "./commands";
 import { FishPlayer } from "./players";
 import { outputFail } from "./utils";
-import { crash, parseError } from './funcs';
+import { parseError } from './funcs';
 import { to2DArray } from './funcs';
 import { Promise } from "./promise";
 
+/** Used to change the behavior of adding another menu when being run in a menu callback. */
+let isInMenuCallback = false;
 /** Stores a mapping from name to the numeric id of a listener that has been registered. */
 const registeredListeners: Record<string, number> = {};
 /** Stores all listeners in use by fish-commands. */
@@ -17,13 +19,11 @@ const listeners = {
 	generic(player, option){
 		const fishSender = FishPlayer.get(player);
 
-		//TODO replace with queue
-		const prevCallback = fishSender.activeMenu.callback;
-		fishSender.activeMenu.callback?.(fishSender, option);
-		//if the callback wasn't modified, then clear it
-		if(fishSender.activeMenu.callback === prevCallback)
-			fishSender.activeMenu.callback = undefined;
-		//otherwise, the menu spawned another menu that needs to be handled
+		const prevCallback = fishSender.activeMenus.shift();
+		if(!prevCallback) return; //No menu to process, do nothing
+		isInMenuCallback = true;
+		prevCallback.callback(option);
+		isInMenuCallback = false;
 	},
 	none(player, option){
 		//do nothing
@@ -82,7 +82,9 @@ export const Menu = {
 		}
 	
 		//The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
-		target.activeMenu.callback = (fishSender, option) => {
+		//If menu() is being called from a menu calback, add it to the front of the queue so it is processed before any other menus.
+		//Otherwise, two multi-step menus queued together would alternate, which would confuse the player.
+		target.activeMenus[isInMenuCallback ? "unshift" : "push"]({ callback(option){
 			//Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
 			//and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
 			//which already checks permissions.
@@ -90,7 +92,7 @@ export const Menu = {
 	
 			try {
 				//We do need to validate option though, as it can be any number.
-				if(option === -1 || option === fishSender.activeMenu.cancelOptionId || !(option in options)){
+				if(option === -1 || option === cancelOptionId || !(option in options)){
 					//Consider any invalid option to be a cancellation
 					if(onCancel == "null") resolve(null as never);
 					else if(onCancel == "reject") reject("cancel" as never);
@@ -109,7 +111,7 @@ export const Menu = {
 					Log.err(err as Error);
 				}
 			}
-		};
+		}});
 	
 		Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
 		return promise;
