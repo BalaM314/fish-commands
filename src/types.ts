@@ -120,7 +120,7 @@ export type FishCommandHandlerUtils = {
 	handleTaps(mode:TapHandleMode):void;
 };
 export type FishCommandHandler<ArgType extends string, StoredData> =
-	(fish:FishCommandHandlerData<ArgType, StoredData> & FishCommandHandlerUtils) => unknown;
+	(fish:FishCommandHandlerData<ArgType, StoredData> & FishCommandHandlerUtils) => void | Promise<void>;
 
 export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 	(_:{

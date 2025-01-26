@@ -19,6 +19,42 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -633,6 +669,7 @@ function register(commands, clientHandler, serverHandler) {
         var processedCmdArgs = data.args.map(processArgString);
         clientHandler.removeCommand(name); //The function silently fails if the argument doesn't exist so this is safe
         clientHandler.register(name, convertArgs(processedCmdArgs, true), data.description, new CommandHandler.CommandRunner({ accept: function (unjoinedRawArgs, sender) {
+                var _this = this;
                 if (!initialized)
                     (0, funcs_4.crash)("Commands not initialized!");
                 var fishSender = players_1.FishPlayer.get(sender);
@@ -658,66 +695,77 @@ function register(commands, clientHandler, serverHandler) {
                     return;
                 }
                 //Recursively resolve unresolved args (such as players that need to be determined through a menu)
-                resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, function () {
+                resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender).then(function (resolvedArgs) { return __awaiter(_this, void 0, void 0, function () {
+                    var usageData, failed, args_1, err_1;
                     var _a, _b;
-                    //Run the command handler
-                    var usageData = fishSender.getUsageData(name);
-                    var failed = false;
-                    try {
-                        var args_1 = {
-                            rawArgs: rawArgs,
-                            args: output.processedArgs,
-                            sender: fishSender,
-                            data: data.data,
-                            outputFail: function (message) { (0, utils_1.outputFail)(message, sender); failed = true; },
-                            outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, sender); },
-                            output: function (message) { return (0, utils_1.outputMessage)(message, sender); },
-                            f: outputFormatter_client,
-                            execServer: function (command) { return serverHandler.handleMessage(command); },
-                            admins: Vars.netServer.admins,
-                            lastUsedSender: usageData.lastUsed,
-                            lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
-                            lastUsedSuccessfully: ((_a = globalUsageData[name]) !== null && _a !== void 0 ? _a : (globalUsageData[name] = { lastUsed: -1, lastUsedSuccessfully: -1 })).lastUsedSuccessfully,
-                            allCommands: exports.allCommands,
-                            currentTapMode: fishSender.tapInfo.commandName == null ? "off" : fishSender.tapInfo.mode,
-                            handleTaps: function (mode) {
-                                if (data.tapped == undefined)
-                                    (0, funcs_4.crash)("No tap handler to activate: command \"".concat(name, "\""));
-                                if (mode == "off") {
-                                    fishSender.tapInfo.commandName = null;
+                    return __generator(this, function (_c) {
+                        switch (_c.label) {
+                            case 0:
+                                usageData = fishSender.getUsageData(name);
+                                failed = false;
+                                _c.label = 1;
+                            case 1:
+                                _c.trys.push([1, 3, 4, 5]);
+                                args_1 = {
+                                    rawArgs: rawArgs,
+                                    args: resolvedArgs,
+                                    sender: fishSender,
+                                    data: data.data,
+                                    outputFail: function (message) { (0, utils_1.outputFail)(message, sender); failed = true; },
+                                    outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, sender); },
+                                    output: function (message) { return (0, utils_1.outputMessage)(message, sender); },
+                                    f: outputFormatter_client,
+                                    execServer: function (command) { return serverHandler.handleMessage(command); },
+                                    admins: Vars.netServer.admins,
+                                    lastUsedSender: usageData.lastUsed,
+                                    lastUsedSuccessfullySender: usageData.lastUsedSuccessfully,
+                                    lastUsedSuccessfully: ((_a = globalUsageData[name]) !== null && _a !== void 0 ? _a : (globalUsageData[name] = { lastUsed: -1, lastUsedSuccessfully: -1 })).lastUsedSuccessfully,
+                                    allCommands: exports.allCommands,
+                                    currentTapMode: fishSender.tapInfo.commandName == null ? "off" : fishSender.tapInfo.mode,
+                                    handleTaps: function (mode) {
+                                        if (data.tapped == undefined)
+                                            (0, funcs_4.crash)("No tap handler to activate: command \"".concat(name, "\""));
+                                        if (mode == "off") {
+                                            fishSender.tapInfo.commandName = null;
+                                        }
+                                        else {
+                                            fishSender.tapInfo.commandName = name;
+                                            fishSender.tapInfo.mode = mode;
+                                        }
+                                        fishSender.tapInfo.lastArgs = resolvedArgs;
+                                    },
+                                };
+                                (_b = data.requirements) === null || _b === void 0 ? void 0 : _b.forEach(function (r) { return r(args_1); });
+                                return [4 /*yield*/, data.handler(args_1)];
+                            case 2:
+                                _c.sent();
+                                //Update usage data
+                                if (!failed) {
+                                    usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();
+                                }
+                                return [3 /*break*/, 5];
+                            case 3:
+                                err_1 = _c.sent();
+                                if (err_1 instanceof exports.CommandError) {
+                                    //If the error is a command error, then just outputFail
+                                    (0, utils_1.outputFail)(err_1.data, sender);
                                 }
                                 else {
-                                    fishSender.tapInfo.commandName = name;
-                                    fishSender.tapInfo.mode = mode;
+                                    sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
+                                    if (fishSender.hasPerm("seeErrorMessages"))
+                                        sender.sendMessage((0, funcs_2.parseError)(err_1));
+                                    Log.err("Unhandled error in command execution: ".concat(fishSender.cleanedName, " ran /").concat(name));
+                                    Log.err(err_1);
+                                    Log.err(err_1.stack);
                                 }
-                                fishSender.tapInfo.lastArgs = output.processedArgs;
-                            },
-                        };
-                        (_b = data.requirements) === null || _b === void 0 ? void 0 : _b.forEach(function (r) { return r(args_1); });
-                        data.handler(args_1);
-                        //Update usage data
-                        if (!failed) {
-                            usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();
+                                return [3 /*break*/, 5];
+                            case 4:
+                                usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();
+                                return [7 /*endfinally*/];
+                            case 5: return [2 /*return*/];
                         }
-                    }
-                    catch (err) {
-                        if (err instanceof exports.CommandError) {
-                            //If the error is a command error, then just outputFail
-                            (0, utils_1.outputFail)(err.data, sender);
-                        }
-                        else {
-                            sender.sendMessage("[scarlet]\u274C An error occurred while executing the command!");
-                            if (fishSender.hasPerm("seeErrorMessages"))
-                                sender.sendMessage((0, funcs_2.parseError)(err));
-                            Log.err("Unhandled error in command execution: ".concat(fishSender.cleanedName, " ran /").concat(name));
-                            Log.err(err);
-                            Log.err(err.stack);
-                        }
-                    }
-                    finally {
-                        usageData.lastUsed = globalUsageData[name].lastUsed = Date.now();
-                    }
-                });
+                    });
+                }); });
             } }));
         exports.allCommands[name] = data;
     };
@@ -791,30 +839,38 @@ function registerConsole(commands, serverHandler) {
     }
 }
 /** Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
-function resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback) {
-    if (unresolvedArgs.length == 0) {
-        callback(processedArgs);
-    }
-    else {
-        var argToResolve_1 = unresolvedArgs.shift();
-        var optionsList_1 = [];
-        //TODO Dubious implementation
-        switch (argToResolve_1.type) {
-            case "player":
-                Groups.player.each(function (player) { return optionsList_1.push(player); });
-                break;
-            default: (0, funcs_4.crash)("Unable to resolve arg of type ".concat(argToResolve_1.type));
-        }
-        menus_1.Menu.menu("Select a player", "Select a player for the argument \"".concat(argToResolve_1.name, "\""), optionsList_1, sender, {
-            includeCancel: true,
-            optionStringifier: function (player) { return Strings.stripColors(player.name).length >= 3 ?
-                Strings.stripColors(player.name)
-                : (0, funcs_3.escapeStringColorsClient)(player.name); }
-        }).then(function (option) {
-            processedArgs[argToResolve_1.name] = players_1.FishPlayer.get(option);
-            resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
+function resolveArgsRecursive(processedArgs, unresolvedArgs, sender) {
+    return __awaiter(this, void 0, void 0, function () {
+        var argToResolve, optionsList_1, option;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!(unresolvedArgs.length == 0)) return [3 /*break*/, 1];
+                    return [2 /*return*/, processedArgs];
+                case 1:
+                    argToResolve = unresolvedArgs.shift();
+                    optionsList_1 = [];
+                    //TODO Dubious implementation
+                    switch (argToResolve.type) {
+                        case "player":
+                            Groups.player.each(function (player) { return optionsList_1.push(player); });
+                            break;
+                        default: (0, funcs_4.crash)("Unable to resolve arg of type ".concat(argToResolve.type));
+                    }
+                    return [4 /*yield*/, menus_1.Menu.menu("Select a player", "Select a player for the argument \"".concat(argToResolve.name, "\""), optionsList_1, sender, {
+                            includeCancel: true,
+                            optionStringifier: function (player) { return Strings.stripColors(player.name).length >= 3 ?
+                                Strings.stripColors(player.name)
+                                : (0, funcs_3.escapeStringColorsClient)(player.name); }
+                        })];
+                case 2:
+                    option = _a.sent();
+                    processedArgs[argToResolve.name] = players_1.FishPlayer.get(option);
+                    return [4 /*yield*/, resolveArgsRecursive(processedArgs, unresolvedArgs, sender)];
+                case 3: return [2 /*return*/, _a.sent()];
+            }
         });
-    }
+    });
 }
 function initialize() {
     var e_5, _a, e_6, _b;
