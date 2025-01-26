@@ -52,6 +52,15 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listeners = exports.Menu = void 0;
 exports.registerListeners = registerListeners;
@@ -101,16 +110,9 @@ function registerListeners() {
 }
 exports.Menu = {
     /** Displays a menu to a player, returning a Promise. */
-    menu: function (title, description, options, target, _a) {
-        var _b = _a === void 0 ? {} : _a, _c = _b.includeCancel, includeCancel = _c === void 0 ? false : _c, _d = _b.optionStringifier, optionStringifier = _d === void 0 ? String : _d, _e = _b.columns, columns = _e === void 0 ? 3 : _e, _f = _b.onCancel, onCancel = _f === void 0 ? "ignore" : _f, _g = _b.cancelOptionId, cancelOptionId = _g === void 0 ? -1 : _g;
-        var _h = promise_1.Promise.withResolvers(), promise = _h.promise, reject = _h.reject, resolve = _h.resolve;
-        //Set up the 2D array of options, and maybe add cancel
-        //Call.menu() with [[]] will cause a client crash, make sure to pass [] instead
-        var arrangedOptions = (options.length == 0 && !includeCancel) ? [] : (0, funcs_2.to2DArray)(options.map(optionStringifier), columns);
-        if (includeCancel) {
-            arrangedOptions.push(["Cancel"]);
-            cancelOptionId = options.length;
-        }
+    raw: function (title, description, arrangedOptions, target, _a) {
+        var _b = _a === void 0 ? {} : _a, _c = _b.optionStringifier, optionStringifier = _c === void 0 ? String : _c, _d = _b.onCancel, onCancel = _d === void 0 ? "ignore" : _d, _e = _b.cancelOptionId, cancelOptionId = _e === void 0 ? -1 : _e;
+        var _f = promise_1.Promise.withResolvers(), promise = _f.promise, reject = _f.reject, resolve = _f.resolve;
         //The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
         //If menu() is being called from a menu calback, add it to the front of the queue so it is processed before any other menus.
         //Otherwise, two multi-step menus queued together would alternate, which would confuse the player.
@@ -120,6 +122,7 @@ exports.Menu = {
                 //which already checks permissions.
                 //Additionally, the callback is cleared by the generic menu listener after it is executed.
                 try {
+                    var options = arrangedOptions.flat();
                     //We do need to validate option though, as it can be any number.
                     if (option === -1 || option === cancelOptionId || !(option in options)) {
                         //Consider any invalid option to be a cancellation
@@ -148,8 +151,26 @@ exports.Menu = {
                     }
                 }
             } });
-        Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
+        Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions.map(function (r) { return r.map(optionStringifier); }));
         return promise;
+    },
+    /** Displays a menu to a player, returning a Promise. Arranges options into a 2D array, and can add a Cancel option. */
+    menu: function (title, description, options, target, _a) {
+        var _b = _a === void 0 ? {} : _a, _c = _b.includeCancel, includeCancel = _c === void 0 ? false : _c, _d = _b.optionStringifier, optionStringifier = _d === void 0 ? String : _d, _e = _b.columns, columns = _e === void 0 ? 3 : _e, _f = _b.onCancel, onCancel = _f === void 0 ? "ignore" : _f, _g = _b.cancelOptionId, cancelOptionId = _g === void 0 ? -1 : _g;
+        //Set up the 2D array of options, and maybe add cancel
+        //Call.menu() with [[]] will cause a client crash, make sure to pass [] instead
+        var arrangedOptions = (options.length == 0 && !includeCancel) ? [] : (0, funcs_2.to2DArray)(options, columns);
+        if (includeCancel) {
+            arrangedOptions.push(["Cancel"]);
+            //This is safe because cancelOptionId is set,
+            //so the handler will never get called with "Cancel".
+            cancelOptionId = options.length;
+        }
+        return exports.Menu.raw(title, description, arrangedOptions, target, {
+            cancelOptionId: cancelOptionId,
+            onCancel: onCancel,
+            optionStringifier: optionStringifier
+        });
     },
     /** Rejects with a CommandError if the user chooses to cancel. */
     confirm: function (target, description, _a) {
@@ -164,6 +185,56 @@ exports.Menu = {
     confirmDangerous: function (target, description, _a) {
         if (_a === void 0) { _a = {}; }
         var _b = _a.confirmText, confirmText = _b === void 0 ? "[red]Confirm" : _b, _c = _a.cancelText, cancelText = _c === void 0 ? "[green]Cancel" : _c, rest = __rest(_a, ["confirmText", "cancelText"]);
-        return this.confirm(target, description, __assign({ cancelText: cancelText, confirmText: confirmText }, rest));
+        return exports.Menu.confirm(target, description, __assign({ cancelText: cancelText, confirmText: confirmText }, rest));
     },
+    buttons: function (target, title, description, options, cfg) {
+        if (cfg === void 0) { cfg = {}; }
+        return exports.Menu.raw(title, description, options, target, __assign(__assign({}, cfg), { optionStringifier: function (o) { return o.text; } })).then(function (o) { return o === null || o === void 0 ? void 0 : o.data; });
+    },
+    pages: function (target, title, description, options, cfg) {
+        var _a = promise_1.Promise.withResolvers(), promise = _a.promise, reject = _a.reject, resolve = _a.resolve;
+        function showPage(index) {
+            var opts = __spreadArray(__spreadArray([], __read(options[index].map(function (r) { return r.map(function (d) { return ({ text: d.text, data: [d.data] }); }); })), false), [
+                [
+                    { data: "left", text: "[".concat(index == 0 ? "gray" : "accent", "]<--") },
+                    { data: "numbers", text: "[accent]".concat(index + 1, "/").concat(options.length) },
+                    { data: "right", text: "[".concat(index == options.length - 1 ? "gray" : "accent", "]-->") }
+                ]
+            ], false);
+            exports.Menu.buttons(target, title, description, opts, cfg).then(function (response) {
+                if (response instanceof Array)
+                    resolve(response[0]);
+                else if (response === "right")
+                    showPage(Math.min(index + 1, options.length - 1));
+                else if (response === "left")
+                    showPage(Math.max(index - 1, 0));
+                else {
+                    //Treat numbers as cancel
+                    if (cfg.onCancel == "null")
+                        resolve(null);
+                    else if (cfg.onCancel == "reject")
+                        reject("cancel");
+                    //otherwise, just let the promise hang
+                }
+            });
+        }
+        showPage(0);
+        return promise;
+    },
+    pagedListButtons: function (target, title, description, options, _a) {
+        var _b = _a.rowsPerPage, rowsPerPage = _b === void 0 ? 10 : _b, _c = _a.columns, columns = _c === void 0 ? 3 : _c, cfg = __rest(_a, ["rowsPerPage", "columns"]);
+        //Generate pages
+        var pages = (0, funcs_2.to2DArray)((0, funcs_2.to2DArray)(options, columns), rowsPerPage);
+        if (pages.length == 1)
+            return exports.Menu.buttons(target, title, description, pages[0], cfg);
+        return exports.Menu.pages(target, title, description, pages, cfg);
+    },
+    pagedList: function (target, title, description, options, _a) {
+        var _b = _a.rowsPerPage, rowsPerPage = _b === void 0 ? 10 : _b, _c = _a.columns, columns = _c === void 0 ? 3 : _c, optionStringifier = _a.optionStringifier, cfg = __rest(_a, ["rowsPerPage", "columns", "optionStringifier"]);
+        //Generate pages
+        var pages = (0, funcs_2.to2DArray)((0, funcs_2.to2DArray)(options.map(function (o) { return ({ data: o, get text() { return optionStringifier(o); } }); }), columns), rowsPerPage);
+        if (pages.length == 1)
+            return exports.Menu.buttons(target, title, description, pages[0], cfg);
+        return exports.Menu.pages(target, title, description, pages, cfg);
+    }
 };

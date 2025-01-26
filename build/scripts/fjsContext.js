@@ -25,7 +25,7 @@ var Promise = require("./promise").Promise;
 var Perm = commands.Perm, allCommands = commands.allCommands;
 var FishPlayer = players.FishPlayer;
 var Rank = ranks.Rank, RoleFlag = ranks.RoleFlag;
-var menu = menus.menu;
+var Menu = menus.Menu;
 Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 var Ranks = null;
 var $ = Object.assign(function $(input) {

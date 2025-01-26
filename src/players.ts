@@ -613,17 +613,14 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 						api.sendStaffMessage(`Autoflagged player ${this.name}[cyan] for suspected vpn!`, "AntiVPN");
 						FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);
 						Log.warn(`Player ${this.name} (${this.uuid}) was autoflagged.`);
-						Menu.menu(
+						Menu.buttons(
+							this,
 							"[gold]Welcome to Fish Community!",
 							`[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ${FColor.discord`Join our Discord`} to request a staff member come online if none are on.`,
-							["Close", "Discord"],
-							this,
-							{
-								optionStringifier: str => ({
-									"Close": "Close",
-									"Discord": FColor.discord("Discord")
-								}[str])
-							}
+							[[
+								{ data: "Close", text: "Close" },
+								{ data: "Discord", text: FColor.discord("Discord") },
+							]]
 						).then((option) => {
 							if(option == "Discord"){
 								Call.openURI(this.con, text.discordURL);

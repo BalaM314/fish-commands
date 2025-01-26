@@ -677,12 +677,10 @@ var FishPlayer = /** @class */ (function () {
                         api.sendStaffMessage("Autoflagged player ".concat(_this.name, "[cyan] for suspected vpn!"), "AntiVPN");
                         FishPlayer.messageStaff("[yellow]WARNING:[scarlet] player [cyan]\"".concat(_this.name, "[cyan]\"[yellow] is new (").concat(info.timesJoined - 1, " joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free."));
                         Log.warn("Player ".concat(_this.name, " (").concat(_this.uuid, ") was autoflagged."));
-                        menus_1.Menu.menu("[gold]Welcome to Fish Community!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ".concat(config_1.FColor.discord(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Join our Discord"], ["Join our Discord"]))), " to request a staff member come online if none are on."), ["Close", "Discord"], _this, {
-                            optionStringifier: function (str) { return ({
-                                "Close": "Close",
-                                "Discord": config_1.FColor.discord("Discord")
-                            }[str]); }
-                        }).then(function (option) {
+                        menus_1.Menu.buttons(_this, "[gold]Welcome to Fish Community!", "[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ".concat(config_1.FColor.discord(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Join our Discord"], ["Join our Discord"]))), " to request a staff member come online if none are on."), [[
+                                { data: "Close", text: "Close" },
+                                { data: "Discord", text: config_1.FColor.discord("Discord") },
+                            ]]).then(function (option) {
                             if (option == "Discord") {
                                 Call.openURI(_this.con, config_1.text.discordURL);
                             }
