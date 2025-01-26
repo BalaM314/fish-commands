@@ -15,7 +15,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeTimers = void 0;
+exports.initializeTimers = initializeTimers;
 var api_1 = require("./api");
 var config = require("./config");
 var config_1 = require("./config");
@@ -112,7 +112,6 @@ function initializeTimers() {
         players_1.FishPlayer.validateVotekickSession();
     }, 0, 0.5);
 }
-exports.initializeTimers = initializeTimers;
 Timer.schedule(function () {
     (0, files_1.updateMaps)()
         .then(function (result) {

@@ -40,7 +40,11 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.menu = exports.listeners = exports.GUI_Confirm = exports.GUI_Page = exports.GUI_Cancel = exports.GUI_Container = exports.listMenu = exports.pageMenu = exports.registerListeners = void 0;
+exports.listeners = exports.GUI_Confirm = exports.GUI_Page = exports.GUI_Cancel = exports.GUI_Container = void 0;
+exports.registerListeners = registerListeners;
+exports.pageMenu = pageMenu;
+exports.listMenu = listMenu;
+exports.menu = menu;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 var utils_1 = require("./utils");
@@ -86,7 +90,6 @@ function registerListeners() {
         finally { if (e_1) throw e_1.error; }
     }
 }
-exports.registerListeners = registerListeners;
 //this is a minor abomination but theres no good way to do overloads in typescript
 function menu(title, description, elements, target, callback) {
     //target.activeMenu.cancelOptionId = -1; GUI_Cancel handles cancel already
@@ -149,7 +152,6 @@ function menu(title, description, elements, target, callback) {
         Call.menu(target.con, registeredListeners.generic, title, description, ArrangedElements.stringified);
     }
 }
-exports.menu = menu;
 //#endregion
 //#region Draw Page Menus
 //draws a page menu with arbitrary pages
@@ -187,7 +189,6 @@ function pageMenu(title, description, elements, target, callback) {
     }
     drawpage(0);
 }
-exports.pageMenu = pageMenu;
 //TODO make list a GUI_Element[] instead of a single Container
 //TODO use GUI_Element for formatting instead of defaulting to single column
 function listMenu(title, description, list, target, callback, pageSize) {
@@ -201,7 +202,6 @@ function listMenu(title, description, list, target, callback, pageSize) {
     pagedData.forEach(function (pageData) { return pagesElements.push([new GUI_Container(pageData, 1, list.stringifier)]); });
     pageMenu(title, description, pagesElements, target, function (res) { Log.info("".concat(res.data)); callback(res); });
 }
-exports.listMenu = listMenu;
 var GUI_Container = /** @class */ (function () {
     function GUI_Container(options, columns, stringifier) {
         if (columns === void 0) { columns = 3; }

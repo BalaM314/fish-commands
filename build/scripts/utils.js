@@ -40,7 +40,49 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fishCommandsRootDirPath = exports.match = exports.getHash = exports.getIPRange = exports.addToTileHistory = exports.processChat = exports.updateBans = exports.outputConsole = exports.outputMessage = exports.outputSuccess = exports.outputFail = exports.getAntiBotInfo = exports.colorNumber = exports.untilForever = exports.setType = exports.logHTrip = exports.skipWaves = exports.neutralGameover = exports.getEnemyTeam = exports.definitelyRealMemoryCorruption = exports.logErrors = exports.teleportPlayer = exports.getBlock = exports.getMap = exports.getUnitType = exports.isBuildable = exports.serverRestartLoop = exports.parseTimeString = exports.logAction = exports.isImpersonator = exports.cleanText = exports.removeFoosChars = exports.matchFilter = exports.getItem = exports.getTeam = exports.nearbyEnemyTile = exports.getColor = exports.colorBadBoolean = exports.colorBoolean = exports.formatTimeRelative = exports.formatTimestamp = exports.formatModeName = exports.formatTime = void 0;
+exports.addToTileHistory = void 0;
+exports.formatTime = formatTime;
+exports.formatModeName = formatModeName;
+exports.formatTimestamp = formatTimestamp;
+exports.formatTimeRelative = formatTimeRelative;
+exports.colorBoolean = colorBoolean;
+exports.colorBadBoolean = colorBadBoolean;
+exports.getColor = getColor;
+exports.nearbyEnemyTile = nearbyEnemyTile;
+exports.getTeam = getTeam;
+exports.getItem = getItem;
+exports.matchFilter = matchFilter;
+exports.removeFoosChars = removeFoosChars;
+exports.cleanText = cleanText;
+exports.isImpersonator = isImpersonator;
+exports.logAction = logAction;
+exports.parseTimeString = parseTimeString;
+exports.serverRestartLoop = serverRestartLoop;
+exports.isBuildable = isBuildable;
+exports.getUnitType = getUnitType;
+exports.getMap = getMap;
+exports.getBlock = getBlock;
+exports.teleportPlayer = teleportPlayer;
+exports.logErrors = logErrors;
+exports.definitelyRealMemoryCorruption = definitelyRealMemoryCorruption;
+exports.getEnemyTeam = getEnemyTeam;
+exports.neutralGameover = neutralGameover;
+exports.skipWaves = skipWaves;
+exports.logHTrip = logHTrip;
+exports.setType = setType;
+exports.untilForever = untilForever;
+exports.colorNumber = colorNumber;
+exports.getAntiBotInfo = getAntiBotInfo;
+exports.outputFail = outputFail;
+exports.outputSuccess = outputSuccess;
+exports.outputMessage = outputMessage;
+exports.outputConsole = outputConsole;
+exports.updateBans = updateBans;
+exports.processChat = processChat;
+exports.getIPRange = getIPRange;
+exports.getHash = getHash;
+exports.match = match;
+exports.fishCommandsRootDirPath = fishCommandsRootDirPath;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
@@ -64,7 +106,6 @@ function formatTime(time) {
         (seconds || time < 1000) && "".concat(seconds, " second").concat(seconds != 1 ? "s" : ""),
     ].filter(Boolean).join(", ");
 }
-exports.formatTime = formatTime;
 //TODO move this data to be right next to Mode
 function formatModeName(name) {
     return {
@@ -76,12 +117,10 @@ function formatModeName(name) {
         "hardcore": "Hardcore"
     }[name];
 }
-exports.formatModeName = formatModeName;
 function formatTimestamp(time) {
     var date = new Date(time);
     return "".concat(date.toDateString(), ", ").concat(date.toTimeString());
 }
-exports.formatTimestamp = formatTimestamp;
 function formatTimeRelative(time, raw) {
     var difference = Math.abs(time - Date.now());
     if (difference < 1000)
@@ -91,15 +130,12 @@ function formatTimeRelative(time, raw) {
     else
         return formatTime(difference) + (raw ? "" : " ago");
 }
-exports.formatTimeRelative = formatTimeRelative;
 function colorBoolean(val) {
     return val ? "[green]true[]" : "[red]false[]";
 }
-exports.colorBoolean = colorBoolean;
 function colorBadBoolean(val) {
     return val ? "[red]true[]" : "[green]false[]";
 }
-exports.colorBadBoolean = colorBadBoolean;
 /** Attempts to parse a Color from the input. */
 function getColor(input) {
     try {
@@ -127,7 +163,6 @@ function getColor(input) {
         return null;
     }
 }
-exports.getColor = getColor;
 /** Searches for an enemy tile near a unit. */
 function nearbyEnemyTile(unit, dist) {
     //because the indexer is buggy
@@ -144,7 +179,6 @@ function nearbyEnemyTile(unit, dist) {
     }
     return null;
 }
-exports.nearbyEnemyTile = nearbyEnemyTile;
 /** Attempts to parse a Team from the input. */
 function getTeam(team) {
     if (team in Team && Team[team] instanceof Team)
@@ -162,7 +196,6 @@ function getTeam(team) {
     }
     return "\"".concat(team, "\" is not a valid team string.");
 }
-exports.getTeam = getTeam;
 /** Attempts to parse an Item from the input. */
 function getItem(item) {
     if (item in Items && Items[item] instanceof Item)
@@ -171,7 +204,6 @@ function getItem(item) {
         return Vars.content.items().find(function (t) { return t.name.includes(item.toLowerCase()); });
     return "\"".concat(item, "\" is not a valid item.");
 }
-exports.getItem = getItem;
 /**
  * @param wordList "chat" is least strict, followed by "strict", and "name" is most strict.
  * @returns a
@@ -232,12 +264,10 @@ function matchFilter(input, wordList, aggressive) {
     }
     return false;
 }
-exports.matchFilter = matchFilter;
 var foosPattern = Pattern.compile(/[\u0F80-\u107F]{2}$/.source);
 function removeFoosChars(text) {
     return foosPattern.matcher(text).replaceAll("");
 }
-exports.removeFoosChars = removeFoosChars;
 function cleanText(text, applyAntiEvasion) {
     if (applyAntiEvasion === void 0) { applyAntiEvasion = false; }
     //Replace substitutions
@@ -253,7 +283,6 @@ function cleanText(text, applyAntiEvasion) {
     }
     return replacedText;
 }
-exports.cleanText = cleanText;
 function isImpersonator(name, isAdmin) {
     var e_3, _a;
     var replacedText = cleanText(name);
@@ -298,7 +327,6 @@ function isImpersonator(name, isAdmin) {
     }
     return false;
 }
-exports.isImpersonator = isImpersonator;
 function logAction(action, by, to, reason, duration) {
     if (by === undefined) { //overload 1
         api.sendModerationMessage("".concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
@@ -337,7 +365,6 @@ function logAction(action, by, to, reason, duration) {
         return;
     }
 }
-exports.logAction = logAction;
 /** @returns the number of milliseconds. */
 function parseTimeString(str) {
     var e_4, _a;
@@ -374,7 +401,6 @@ function parseTimeString(str) {
     }
     return null;
 }
-exports.parseTimeString = parseTimeString;
 /** Triggers the restart countdown. Execution always returns from this function. */
 function serverRestartLoop(sec) {
     if (sec > 0) {
@@ -394,11 +420,9 @@ function serverRestartLoop(sec) {
         });
     }
 }
-exports.serverRestartLoop = serverRestartLoop;
 function isBuildable(block) {
     return block == Blocks.powerVoid || (block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock));
 }
-exports.isBuildable = isBuildable;
 function getUnitType(type) {
     validUnits !== null && validUnits !== void 0 ? validUnits : (validUnits = Vars.content.units().select(function (u) { return !(u instanceof MissileUnitType || u.internal); }));
     var temp;
@@ -408,7 +432,6 @@ function getUnitType(type) {
         return temp;
     return "\"".concat(type, "\" is not a valid unit type.");
 }
-exports.getUnitType = getUnitType;
 //TODO refactor this, lots of duped code across multiple select functions
 function getMap(name) {
     var e_5, _a;
@@ -453,16 +476,15 @@ function getMap(name) {
     //no filters returned a result
     return "none";
 }
-exports.getMap = getMap;
 var buildableBlocks = null;
 var validUnits = null;
 function getBlock(block, filter) {
     buildableBlocks !== null && buildableBlocks !== void 0 ? buildableBlocks : (buildableBlocks = Vars.content.blocks().select(isBuildable));
-    var check = ({
+    var check = {
         buildable: function (b) { return isBuildable(b); },
         air: function (b) { return b == Blocks.air || isBuildable(b); },
         all: function (b) { return true; }
-    })[filter];
+    }[filter];
     var out;
     if (block in Blocks && Blocks[block] instanceof Block && check(Blocks[block]))
         return Blocks[block];
@@ -474,7 +496,6 @@ function getBlock(block, filter) {
         return Blocks.blastDrill;
     return "\"".concat(block, "\" is not a valid block.");
 }
-exports.getBlock = getBlock;
 function teleportPlayer(player, to) {
     Timer.schedule(function () {
         player.unit().set(to.unit().x, to.unit().y);
@@ -482,7 +503,6 @@ function teleportPlayer(player, to) {
         Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
     }, 0, 0.016, 10);
 }
-exports.teleportPlayer = teleportPlayer;
 function logErrors(message, func) {
     return function () {
         var args = [];
@@ -498,7 +518,6 @@ function logErrors(message, func) {
         }
     };
 }
-exports.logErrors = logErrors;
 function definitelyRealMemoryCorruption() {
     Log.info("Triggering a prank: this will cause players to see two error messages claiming to be from a memory corruption, and cause a flickering amount of fissile matter and dormant cysts to be put in the core.");
     players_1.FishPlayer.messageStaff("[gray]<[cyan]staff[gray]> [white]Activating memory corruption prank! (please don't ruin it by telling players what is happening, pretend you dont know)");
@@ -511,14 +530,12 @@ function definitelyRealMemoryCorruption() {
     Call.sendMessage("[scarlet]Error: internal server error.");
     Call.sendMessage("[scarlet]Error: memory corruption: mindustry.world.modules.ItemModule@".concat(hexString));
 }
-exports.definitelyRealMemoryCorruption = definitelyRealMemoryCorruption;
 function getEnemyTeam() {
     if (config_1.Gamemode.pvp())
         return Team.derelict;
     else
         return Vars.state.rules.waveTeam;
 }
-exports.getEnemyTeam = getEnemyTeam;
 function neutralGameover() {
     players_1.FishPlayer.ignoreGameover(function () {
         if (config_1.Gamemode.hexed())
@@ -527,7 +544,6 @@ function neutralGameover() {
             Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
     });
 }
-exports.neutralGameover = neutralGameover;
 /** Please validate wavesToSkip to ensure it is not huge */
 function skipWaves(wavesToSkip, runIntermediateWaves) {
     if (runIntermediateWaves) {
@@ -540,50 +556,40 @@ function skipWaves(wavesToSkip, runIntermediateWaves) {
         Vars.logic.skipWave();
     }
 }
-exports.skipWaves = skipWaves;
 function logHTrip(player, name, message) {
     Log.warn("&yPlayer &b\"".concat(player.cleanedName, "\"&y (&b").concat(player.uuid, "&y/&b").concat(player.ip(), "&y) tripped &c").concat(name, "&y") + (message ? ": ".concat(message) : ""));
     players_1.FishPlayer.messageStaff("[yellow]Player [blue]\"".concat(player.cleanedName, "\"[] tripped [cyan]").concat(name, "[]") + (message ? ": ".concat(message) : ""));
     api.sendModerationMessage("Player `".concat(player.cleanedName, "` (`").concat(player.uuid, "`/`").concat(player.ip(), "`) tripped **").concat(name, "**").concat(message ? ": ".concat(message) : "", "\n**Server:** ").concat(config_1.Gamemode.name()));
 }
-exports.logHTrip = logHTrip;
 function setType(input) { }
-exports.setType = setType;
 function untilForever() {
     return (globals_1.maxTime - Date.now() - 10000);
 }
-exports.untilForever = untilForever;
 function colorNumber(number, getColor, side) {
     if (side === void 0) { side = "client"; }
     return getColor(number) + number.toString() + (side == "client" ? "[]" : "&fr");
 }
-exports.colorNumber = colorNumber;
 function getAntiBotInfo(side) {
     var color = side == "client" ? "[acid]" : "&ly";
     var True = side == "client" ? "[red]true[]" : "&lrtrue";
     var False = side == "client" ? "[green]false[]" : "&gfalse";
     return ("".concat(color, "Flag count(last 1 minute period): ").concat(players_1.FishPlayer.flagCount, "\n").concat(color, "Autobanning flagged players: ").concat(players_1.FishPlayer.shouldWhackFlaggedPlayers() ? True : False, "\n").concat(color, "Kicking new players: ").concat(players_1.FishPlayer.shouldKickNewPlayers() ? True : False, "\n").concat(color, "Recent connect packets(last 1 minute period): ").concat(players_1.FishPlayer.playersJoinedRecent, "\n").concat(color, "Override: ").concat(players_1.FishPlayer.antiBotModeOverride ? True : False));
 }
-exports.getAntiBotInfo = getAntiBotInfo;
 var failPrefix = "[scarlet]\u26A0 [yellow]";
 var successPrefix = "[#48e076]\uE800 ";
 function outputFail(message, sender) {
     sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message));
 }
-exports.outputFail = outputFail;
 function outputSuccess(message, sender) {
     sender.sendMessage(successPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[#48e076]") : message));
 }
-exports.outputSuccess = outputSuccess;
 function outputMessage(message, sender) {
     sender.sendMessage(((typeof message == "function" && "__partialFormatString" in message ? message(null) : message) + "").replace(/\t/g, " ".repeat(4)));
 }
-exports.outputMessage = outputMessage;
 function outputConsole(message, channel) {
     if (channel === void 0) { channel = Log.info; }
     channel(typeof message == "function" && "__partialFormatString" in message ? message("") : message);
 }
-exports.outputConsole = outputConsole;
 function updateBans(message) {
     Groups.player.each(function (player) {
         if (Vars.netServer.admins.isIDBanned(player.uuid())) {
@@ -593,7 +599,6 @@ function updateBans(message) {
         }
     });
 }
-exports.updateBans = updateBans;
 function processChat(player, message, effects) {
     if (effects === void 0) { effects = false; }
     var fishPlayer = players_1.FishPlayer.get(player);
@@ -627,7 +632,6 @@ function processChat(player, message, effects) {
     }
     return (highlight !== null && highlight !== void 0 ? highlight : "") + message;
 }
-exports.processChat = processChat;
 exports.addToTileHistory = logErrors("Error while saving a tilelog entry", function (e) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
     var tile, uuid, action, type, time = Date.now();
@@ -782,7 +786,6 @@ function getIPRange(input, error) {
     else
         return null;
 }
-exports.getIPRange = getIPRange;
 //this brings me physical pain
 function getHash(file, algorithm) {
     if (algorithm === void 0) { algorithm = "SHA-1"; }
@@ -805,11 +808,9 @@ function getHash(file, algorithm) {
         return undefined;
     }
 }
-exports.getHash = getHash;
 function match(value, clauses, defaultValue) {
     return Object.prototype.hasOwnProperty.call(clauses, value) ? clauses[value] : defaultValue;
 }
-exports.match = match;
 /** @throws CommandError */
 function fishCommandsRootDirPath() {
     var commandsDir = Vars.modDirectory.child("fish-commands");
@@ -823,4 +824,3 @@ function fishCommandsRootDirPath() {
     }
     return fishCommandsRootDirPath;
 }
-exports.fishCommandsRootDirPath = fishCommandsRootDirPath;

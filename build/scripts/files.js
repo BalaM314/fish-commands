@@ -6,7 +6,7 @@ Original contributor: @author Jurorno9
 Maintenance: @author BalaM314
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateMaps = void 0;
+exports.updateMaps = updateMaps;
 var config_1 = require("./config");
 var promise_1 = require("./promise");
 var utils_1 = require("./utils");
@@ -94,4 +94,3 @@ function updateMaps() {
         });
     });
 }
-exports.updateMaps = updateMaps;
