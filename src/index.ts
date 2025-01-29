@@ -19,7 +19,7 @@ import { addToTileHistory, fishCommandsRootDirPath, processChat, serverRestartLo
 
 
 Events.on(EventType.ConnectionEvent, (e) => {
-	if(Vars.netServer.admins.isIPBanned(e.connection.address)){
+	if(Vars.netServer.admins.bannedIPs.contains(e.connection.address)){
 		api.getBanned({
 			ip: e.connection.address,
 		}, (banned) => {

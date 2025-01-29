@@ -29,7 +29,7 @@ var staffCommands_1 = require("./staffCommands");
 var timers = require("./timers");
 var utils_1 = require("./utils");
 Events.on(EventType.ConnectionEvent, function (e) {
-    if (Vars.netServer.admins.isIPBanned(e.connection.address)) {
+    if (Vars.netServer.admins.bannedIPs.contains(e.connection.address)) {
         api.getBanned({
             ip: e.connection.address,
         }, function (banned) {

@@ -109,6 +109,7 @@ type Throwable = any;
 class Administration {
 	dosBlacklist: ObjectSet<string>;
 	kickedIPs: ObjectMap<string, number>;
+	bannedIPs: Seq<string>;
 	subnetBans: Seq<string>;
 	findByName(info:string):ObjectSet<PlayerInfo>;
 	searchNames(name:string):ObjectSet<PlayerInfo>;
