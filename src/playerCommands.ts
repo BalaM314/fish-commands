@@ -6,8 +6,8 @@ This file contains most in-game chat commands that can be run by untrusted playe
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
 import { FishServer, Gamemode, rules, text } from './config';
-import { FishEvents, fishPlugin, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
-import { menu } from './menus';
+import { FishEvents, fishState, fishPlugin, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
+import { GUI_Cancel, GUI_Container, listMenu, menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
@@ -47,9 +47,9 @@ export const commands = commandList({
 		perm: Perm.play,
 		requirements: [Req.modeNot("pvp")],
 		handler({ args, sender }) {
-			if(!sender.unit()?.spawnedByCore) fail(`Can only teleport while in a core unit.`);
-			if(sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
-			if(sender.unit().hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
+			if (!sender.unit()?.spawnedByCore) fail(`Can only teleport while in a core unit.`);
+			if (sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
+			if (sender.unit().hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
 			teleportPlayer(sender.player!, args.player.player!);
 		},
 	},
@@ -59,13 +59,13 @@ export const commands = commandList({
 		description: 'Removes all boulders from the map.',
 		perm: Perm.play,
 		requirements: [Req.cooldownGlobal(100_000)],
-		handler({sender, outputSuccess}){
+		handler({ sender, outputSuccess }) {
 			Timer.schedule(
 				() => Call.sound(sender.con, Sounds.rockBreak, 1, 1, 0),
 				0, 0.05, 10
 			);
-			Vars.world.tiles.eachTile((t:Tile) => {
-				if(t.breakable() && t.block() instanceof Prop){
+			Vars.world.tiles.eachTile((t: Tile) => {
+				if (t.breakable() && t.block() instanceof Prop) {
 					t.removeNet();
 				}
 			});
@@ -97,9 +97,9 @@ export const commands = commandList({
 		args: ['persist:boolean?'],
 		description: 'Checks the history of a tile.',
 		perm: Perm.none,
-		handler({args, output, outputSuccess, currentTapMode, handleTaps}){
-			if(currentTapMode == "off"){
-				if(args.persist){
+		handler({ args, output, outputSuccess, currentTapMode, handleTaps }) {
+			if (currentTapMode == "off") {
+				if (args.persist) {
 					handleTaps("on");
 					outputSuccess(`Tilelog mode enabled. Click tiles to check their recent history. Run /tilelog again to disable.`);
 				} else {
@@ -111,7 +111,7 @@ export const commands = commandList({
 				outputSuccess(`Tilelog disabled.`);
 			}
 		},
-		tapped({tile, x, y, output, sender, admins}){
+		tapped({ tile, x, y, output, sender, admins }) {
 			const historyData = tileHistory[`${x},${y}`] ?? fail(`There is no recorded history for the selected tile (${tile.x}, ${tile.y}).`);
 			const history = StringIO.read(historyData, str => str.readArray(d => ({
 				action: d.readString(2),
@@ -121,10 +121,10 @@ export const commands = commandList({
 			}), 1));
 			output(`[yellow]Tile history for tile (${tile.x}, ${tile.y}):\n` + history.map(e =>
 				uuidPattern.test(e.uuid)
-				? (sender.hasPerm("viewUUIDs")
-				? `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
-				: `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
-				: `[yellow]${e.uuid}[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+					? (sender.hasPerm("viewUUIDs")
+						? `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()}[lightgray](${e.uuid})[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
+						: `[yellow]${admins.getInfoOptional(e.uuid)?.plainLastName()} ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`)
+					: `[yellow]${e.uuid}[yellow] ${e.action} a [cyan]${e.type}[] ${formatTimeRelative(e.time)}`
 			).join('\n'));
 		}
 	},
@@ -136,7 +136,7 @@ export const commands = commandList({
 		handler({ sender, outputSuccess }) {
 			sender.manualAfk = !sender.manualAfk;
 			sender.updateName();
-			if(sender.manualAfk) outputSuccess(`You are now marked as AFK.`);
+			if (sender.manualAfk) outputSuccess(`You are now marked as AFK.`);
 			else outputSuccess(`You are no longer marked as AFK.`);
 		},
 	},
@@ -144,29 +144,29 @@ export const commands = commandList({
 		args: ['target:player?'],
 		description: `Toggles visibility of your rank and flags.`,
 		perm: Perm.vanish,
-		handler({ args, sender, outputSuccess }){
-			if(sender.stelled()) fail(`Marked players may not hide flags.`);
-			if(sender.muted) fail(`Muted players may not hide flags.`);
+		handler({ args, sender, outputSuccess }) {
+			if (sender.stelled()) fail(`Marked players may not hide flags.`);
+			if (sender.muted) fail(`Muted players may not hide flags.`);
 			args.target ??= sender;
-			if(sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
-			if(sender != args.target && !sender.ranksAtLeast("mod")) fail(`You do not have permission to vanish other players.`);
+			if (sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
+			if (sender != args.target && !sender.ranksAtLeast("mod")) fail(`You do not have permission to vanish other players.`);
 			args.target.showRankPrefix = !args.target.showRankPrefix;
 			outputSuccess(
-`${args.target == sender ? `Your` : `${args.target.name}'s`} rank prefix is now ${args.target.showRankPrefix ? "visible" : "hidden"}.`
+				`${args.target == sender ? `Your` : `${args.target.name}'s`} rank prefix is now ${args.target.showRankPrefix ? "visible" : "hidden"}.`
 			);
 		},
 	},
-	
+
 
 	tileid: {
 		args: [],
 		description: 'Checks id of a tile.',
 		perm: Perm.none,
-		handler({output, handleTaps}){
+		handler({ output, handleTaps }) {
 			handleTaps("once");
 			output(`Click a tile to see its id...`);
 		},
-		tapped({output, f, tile}){
+		tapped({ output, f, tile }) {
 			output(f`ID is ${tile.block().id}`);
 		}
 	},
@@ -191,11 +191,11 @@ export const commands = commandList({
 		args: ["server:string", "target:player?"],
 		description: "Switches to another server.",
 		perm: Perm.play,
-		handler({args, sender, f}){
-			if(args.target != null && args.target != sender && !sender.canModerate(args.target, true, "admin", true))
+		handler({ args, sender, f }) {
+			if (args.target != null && args.target != sender && !sender.canModerate(args.target, true, "admin", true))
 				fail(f`You do not have permission to switch player ${args.target}.`);
 			const target = args.target ?? sender;
-			if(ipPortPattern.test(args.server) && sender.hasPerm("admin")){
+			if (ipPortPattern.test(args.server) && sender.hasPerm("admin")) {
 				//direct connect
 				Call.connect(target.con, ...args.server.split(":"));
 			} else {
@@ -204,10 +204,10 @@ export const commands = commandList({
 					?? fail(unknownServerMessage);
 
 				//Pretend the server doesn't exist
-				if(server.requiredPerm && !sender.hasPerm(server.requiredPerm))
+				if (server.requiredPerm && !sender.hasPerm(server.requiredPerm))
 					fail(unknownServerMessage);
 
-				if(target == sender)
+				if (target == sender)
 					FishPlayer.messageAllWithPerm(server.requiredPerm, `${sender.name}[magenta] has gone to the ${server.name} server. Use [cyan]/${server.name} [magenta]to join them!`);
 
 				Call.connect(target.con, server.ip, server.port);
@@ -219,17 +219,17 @@ export const commands = commandList({
 		args: ['message:string'],
 		description: `Sends a message to staff only.`,
 		perm: Perm.chat,
-		handler({ sender, args, outputSuccess, outputFail, lastUsedSender }){
-			if(!sender.hasPerm("mod")){
-				if(Date.now() - lastUsedSender < 4000) fail(`This command was used recently and is on cooldown. [orange]Misuse of this command may result in a mute.`);
+		handler({ sender, args, outputSuccess, outputFail, lastUsedSender }) {
+			if (!sender.hasPerm("mod")) {
+				if (Date.now() - lastUsedSender < 4000) fail(`This command was used recently and is on cooldown. [orange]Misuse of this command may result in a mute.`);
 			}
 			api.sendStaffMessage(args.message, sender.name, (sent) => {
-				if(!sender.hasPerm("mod")){
-					if(sent){
+				if (!sender.hasPerm("mod")) {
+					if (sent) {
 						outputSuccess(`Message sent to [orange]all online staff.`);
 					} else {
 						const wasReceived = FishPlayer.messageStaff(sender.prefixedName, args.message);
-						if(wasReceived) outputSuccess(`Message sent to staff.`);
+						if (wasReceived) outputSuccess(`Message sent to staff.`);
 						else outputFail(`No staff were online to receive your message.`);
 					}
 				}
@@ -250,16 +250,16 @@ export const commands = commandList({
 		description: `Watch/unwatch a player.`,
 		perm: Perm.none,
 		handler({ args, sender, outputSuccess, outputFail }) {
-			if(sender.watch){
+			if (sender.watch) {
 				outputSuccess(`No longer watching a player.`);
 				sender.watch = false;
-			} else if(args.player){
+			} else if (args.player) {
 				sender.watch = true;
 				const stayX = sender.unit().x;
 				const stayY = sender.unit().y;
 				const target = args.player.player!;
 				const watch = () => {
-					if(sender.watch){
+					if (sender.watch) {
 						// Self.X+(172.5-Self.X)/10
 						Call.setCameraPosition(sender.con, target.unit().x, target.unit().y);
 						sender.unit().set(stayX, stayY);
@@ -279,30 +279,30 @@ export const commands = commandList({
 		//TODO revise code
 		/** Mapping between player and original team */
 		const spectators = new Map<FishPlayer, Team>();
-		function spectate(target:FishPlayer){
+		function spectate(target: FishPlayer) {
 			spectators.set(target, target.team());
 			target.forceRespawn();
 			target.setTeam(Team.derelict);
 			target.forceRespawn();
 		}
-		function resume(target:FishPlayer){
-			if(spectators.get(target) == null) return; // this state is possible for a person who left not in spectate
+		function resume(target: FishPlayer) {
+			if (spectators.get(target) == null) return; // this state is possible for a person who left not in spectate
 			target.setTeam(spectators.get(target)!);
 			spectators.delete(target);
 			target.forceRespawn();
 		}
 		Events.on(EventType.GameOverEvent, () => spectators.clear());
-		Events.on(EventType.PlayerLeave, ({player}:{player:mindustryPlayer}) => resume(FishPlayer.get(player)));
+		Events.on(EventType.PlayerLeave, ({ player }: { player: mindustryPlayer }) => resume(FishPlayer.get(player)));
 		return {
 			args: ["target:player?"],
 			description: `Toggles spectator mode in PVP games.`,
 			perm: Perm.play,
-			handler({args, sender, outputSuccess, f}){
+			handler({ args, sender, outputSuccess, f }) {
 				args.target ??= sender;
-				if(!Gamemode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
-				if(args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
-				if(args.target !== sender && !sender.ranksAtLeast("admin")) fail(`You do not have permission to force other players to spectate.`);
-				if(spectators.has(args.target)){
+				if (!Gamemode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
+				if (args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
+				if (args.target !== sender && !sender.ranksAtLeast("admin")) fail(`You do not have permission to force other players to spectate.`);
+				if (spectators.has(args.target)) {
 					resume(args.target);
 					outputSuccess(args.target == sender
 						? f`Rejoining game as team ${args.target.team()}.`
@@ -313,7 +313,7 @@ export const commands = commandList({
 					outputSuccess(args.target == sender
 						? f`Now spectating. Run /spectate again to resume gameplay.`
 						: f`Forced ${args.target} into spectator mode.`)
-					;
+						;
 				}
 			}
 		};
@@ -334,7 +334,7 @@ export const commands = commandList({
 				//name is not a number or a category, therefore it is probably a command name
 				if (args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))) {
 					output(
-`Help for command ${args.name}:
+						`Help for command ${args.name}:
 	${allCommands[args.name].description}
 	Usage: [sky]/${args.name} [white]${allCommands[args.name].args.map(formatArg).join(' ')}
 	Permission required: ${allCommands[args.name].perm.name}`
@@ -396,7 +396,7 @@ export const commands = commandList({
 		perm: Perm.chat,
 		handler({ args, sender, output, f }) {
 			const recipient = FishPlayer.getById(recentWhispers[sender.uuid] ?? fail(`It doesn't look like someone has messaged you recently. Try whispering to them with [white]"/msg <player> <message>"`));
-			if(!(recipient?.connected())) fail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
+			if (!(recipient?.connected())) fail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
 			recentWhispers[recentWhispers[sender.uuid]] = sender.uuid;
 			recipient.sendMessage(`${sender.name}[lightgray] whispered:[#BBBBBB] ${args.message}`);
 			output(f`[#BBBBBB]Message sent to ${recipient}[#BBBBBB].`);
@@ -409,8 +409,8 @@ export const commands = commandList({
 		perm: Perm.none,
 		handler({ args, sender, output, outputFail, outputSuccess }) {
 			//overload 1: type not specified
-			if(!args.type){
-				if(sender.trail != null){
+			if (!args.type) {
+				if (sender.trail != null) {
 					sender.trail = null;
 					outputSuccess(`Trail turned off.`);
 				} else {
@@ -441,8 +441,8 @@ Available types:[yellow]
 			};
 
 			const selectedType = trailTypes[args.type as keyof typeof trailTypes] as string | undefined;
-			if(!selectedType){
-				if(Object.values(trailTypes).includes(args.type)) fail(`Please use the numeric id to refer to a trail type.`);
+			if (!selectedType) {
+				if (Object.values(trailTypes).includes(args.type)) fail(`Please use the numeric id to refer to a trail type.`);
 				else fail(`"${args.type}" is not an available type.`);
 			}
 
@@ -454,7 +454,7 @@ Available types:[yellow]
 				};
 			} else {
 				outputFail(
-`[scarlet]Sorry, "${args.color}" is not a valid color.
+					`[scarlet]Sorry, "${args.color}" is not a valid color.
 [yellow]Color can be in the following formats:
 [pink]pink [white]| [gray]#696969 [white]| 255,0,0.`
 				);
@@ -466,11 +466,11 @@ Available types:[yellow]
 		args: [],
 		description: 'Spawns an ohno.',
 		perm: Perm.play,
-		init(){
+		init() {
 			const Ohnos = {
 				enabled: true,
 				ohnos: new Array<Unit>(),
-				makeOhno(team:Team, x:number, y:number){
+				makeOhno(team: Team, x: number, y: number) {
 					const ohno = UnitTypes.atrax.create(team);
 					ohno.set(x, y);
 					ohno.type = UnitTypes.alpha;
@@ -480,14 +480,14 @@ Available types:[yellow]
 					this.ohnos.push(ohno);
 					return ohno;
 				},
-				updateLength(){
+				updateLength() {
 					this.ohnos = this.ohnos.filter(o => o && o.isAdded() && !o.dead);
 				},
-				killAll(){
+				killAll() {
 					this.ohnos.forEach(ohno => ohno?.kill?.());
 					this.ohnos = [];
 				},
-				amount(){
+				amount() {
 					return this.ohnos.length;
 				},
 			};
@@ -497,17 +497,17 @@ Available types:[yellow]
 			return Ohnos;
 		},
 		requirements: [Req.gameRunning, Req.modeNot("pvp")],
-		handler({sender, data:Ohnos}){
-			if(!Ohnos.enabled) fail(`Ohnos have been temporarily disabled.`);
-			if(!(sender.connected() && sender.unit().added && !sender.unit().dead)) fail(`You cannot spawn ohnos while dead.`);
+		handler({ sender, data: Ohnos }) {
+			if (!Ohnos.enabled) fail(`Ohnos have been temporarily disabled.`);
+			if (!(sender.connected() && sender.unit().added && !sender.unit().dead)) fail(`You cannot spawn ohnos while dead.`);
 			Ohnos.updateLength();
-			if(
+			if (
 				Ohnos.ohnos.length >= (Groups.player.size() + 1) ||
 				sender.team().data().countType(UnitTypes.alpha) >= Units.getCap(sender.team())
 			) fail(`Sorry, the max number of ohno units has been reached.`);
-			if(nearbyEnemyTile(sender.unit(), 6) != null) fail(`Too close to an enemy tile!`);
-			if(!UnitTypes.alpha.supportsEnv(Vars.state.rules.env)) fail(`Ohnos cannot survive in this map.`);
-	
+			if (nearbyEnemyTile(sender.unit(), 6) != null) fail(`Too close to an enemy tile!`);
+			if (!UnitTypes.alpha.supportsEnv(Vars.state.rules.env)) fail(`Ohnos cannot survive in this map.`);
+
 			Ohnos.makeOhno(sender.team(), sender.player!.x, sender.player!.y);
 		},
 	}),
@@ -516,12 +516,12 @@ Available types:[yellow]
 		args: [],
 		description: 'Displays information about all ranks.',
 		perm: Perm.none,
-		handler({ output }){
+		handler({ output }) {
 			output(
 				`List of ranks:\n` +
-					Object.values(Rank.ranks)
-						.map((rank) => `${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]\n`)
-						.join("") +
+				Object.values(Rank.ranks)
+					.map((rank) => `${rank.prefix} ${rank.color}${capitalizeText(rank.name)}[]: ${rank.color}${rank.description}[]\n`)
+					.join("") +
 				`List of flags:\n` +
 				Object.values(RoleFlag.flags)
 					.map((flag) => `${flag.prefix} ${flag.color}${capitalizeText(flag.name)}[]: ${flag.color}${flag.description}[]\n`)
@@ -534,20 +534,20 @@ Available types:[yellow]
 		args: ['player:player?'],
 		description: 'Displays the server rules.',
 		perm: Perm.none,
-		handler({args, sender, outputSuccess, f}){
+		handler({ args, sender, outputSuccess, f }) {
 			const target = args.player ?? sender;
-			if(target !== sender){
-				if(!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
-				if(target.hasPerm("blockTrolling")) fail(f`Player ${args.player!} is insufficiently trollable.`);
+			if (target !== sender) {
+				if (!sender.hasPerm("warn")) fail(`You do not have permission to show rules to other players.`);
+				if (target.hasPerm("blockTrolling")) fail(f`Player ${args.player!} is insufficiently trollable.`);
 			}
 			menu(
 				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
-				["[green]I agree to abide by these rules[]", "No"], target,
-				({option}) => {
-					if(option == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
-				}, false
+				[new GUI_Container(["[green]I agree to abide by these rules[]", "No"])], target,
+				({ text }) => {
+					if (text == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+				}
 			);
-			if(target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
+			if (target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
 		},
 	},
 
@@ -556,24 +556,24 @@ Available types:[yellow]
 		description: 'Warns other players about power voids.',
 		perm: Perm.play,
 		requirements: [Req.mode("attack")],
-		handler({args, sender, lastUsedSuccessfullySender, lastUsedSuccessfully, outputSuccess, f}){
-			if(args.player){
-				if(Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
-				if(!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
-				if(args.player !== sender && args.player.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
+		handler({ args, sender, lastUsedSuccessfullySender, lastUsedSuccessfully, outputSuccess, f }) {
+			if (args.player) {
+				if (Date.now() - lastUsedSuccessfullySender < 20000) fail(`This command was used recently and is on cooldown.`);
+				if (!sender.hasPerm("trusted")) fail(`You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.`);
+				if (args.player !== sender && args.player.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
 				menu("\uf83f [scarlet]WARNING[] \uf83f",
-`[white]Don't break the Power Void (\uf83f), it's a trap!
+					`[white]Don't break the Power Void (\uf83f), it's a trap!
 Power voids disable anything they are connected to.
 If you break it, [scarlet]you will get attacked[] by enemy units.
 Please stop attacking and [lime]build defenses[] first!`,
-					["I understand"], args.player
+					[new GUI_Container(["I understand"])], args.player
 				);
 				logAction("showed void warning", sender, args.player);
 				outputSuccess(f`Warned ${args.player} about power voids with a popup message.`);
 			} else {
-				if(Date.now() - lastUsedSuccessfully < 10000) fail(`This command was used recently and is on cooldown.`);
+				if (Date.now() - lastUsedSuccessfully < 10000) fail(`This command was used recently and is on cooldown.`);
 				Call.sendMessage(
-`[white]Don't break the Power Void (\uf83f), it's a trap!
+					`[white]Don't break the Power Void (\uf83f), it's a trap!
 Power voids disable anything they are connected to. If you break it, [scarlet]you will get attacked[] by enemy units.
 Please stop attacking and [lime]build defenses[] first!`
 				);
@@ -585,18 +585,18 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({args, sender, outputSuccess, f}){
+		handler({ args, sender, outputSuccess, f }) {
 			args.target ??= sender;
-			if(!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
-			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
-			if(!sender.hasPerm("changeTeamExternal")){
-				if(args.team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
-				if(!sender.player!.dead() && !sender.unit()?.spawnedByCore)
+			if (!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
+			if (Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
+			if (!sender.hasPerm("changeTeamExternal")) {
+				if (args.team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
+				if (!sender.player!.dead() && !sender.unit()?.spawnedByCore)
 					args.target.forceRespawn();
 			}
-			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
+			if (!sender.hasPerm("mod")) args.target.changedTeam = true;
 			args.target.setTeam(args.team);
-			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
+			if (args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
 			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
 		},
 	},
@@ -605,23 +605,23 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ['player:player'],
 		description: 'Displays the rank of a player.',
 		perm: Perm.none,
-		handler({args, output, f}) {
+		handler({ args, output, f }) {
 			output(f`Player ${args.player}'s rank is ${args.player.rank}.`);
 		},
 	},
 
-	
+
 	forcevnw: {
 		args: ["force:boolean?"],
 		description: 'Force skip to the next wave.',
 		perm: Perm.admin,
-		handler({allCommands, sender, args:{force}}){
+		handler({ allCommands, sender, args: { force } }) {
 			force ??= true;
-			if(allCommands.vnw.data.manager.session == null){
-				if(force == false) fail(`Cannot clear votes for VNW because no vote is currently ongoing.`);
+			if (allCommands.vnw.data.manager.session == null) {
+				if (force == false) fail(`Cannot clear votes for VNW because no vote is currently ongoing.`);
 				skipWaves(1, false);
 			} else {
-				if(force) Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], skipping wave.`);
+				if (force) Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], skipping wave.`);
 				else Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.vnw.data.manager.forceVote(force);
 			}
@@ -641,44 +641,42 @@ Please stop attacking and [lime]build defenses[] first!`
 				.on("player vote removed", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has left. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 		}),
 		requirements: [Req.cooldown(3000), Req.mode("survival"), Req.gameRunning],
-		handler({sender, data:{manager}}){
+		handler({ sender, data: { manager } }) {
 
-			if(!manager.session){
+			if (!manager.session) {
 				menu(
 					"Start a Next Wave Vote",
 					"Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",
-					[1, 5, 10],
+					[new GUI_Container([1, 5, 10], "auto", n => `${n} waves`), new GUI_Cancel()],
 					sender,
-					({option}) => {
-						if(manager.session){
+					({ data }) => {
+						if (manager.session) {
 							//Someone else started a vote
-							if(manager.session.data != option) fail(`Someone else started a vote with a different number of waves to skip.`);
-							else manager.vote(sender, sender.voteWeight(), option);
+							if (manager.session.data != data) fail(`Someone else started a vote with a different number of waves to skip.`);
+							else manager.vote(sender, sender.voteWeight(), data);
 						} else {
 							//this is still a race condition technically... shouldn't be that bad right?
-							manager.start(sender, sender.voteWeight(), option);
+							manager.start(sender, sender.voteWeight(), data);
 						}
 					},
-					true,
-					n => `${n} waves`
 				);
 			} else {
 				manager.vote(sender, sender.voteWeight(), null);
 			}
-		}	
+		}
 	}),
 
 	forcertv: {
 		args: ["force:boolean?"],
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
-		handler({args:{force}, sender, allCommands}){
+		handler({ args: { force }, sender, allCommands }) {
 			force ??= true;
-			if(allCommands.rtv.data.manager.session == null){
-				if(force == false) fail(`Cannot clear votes for RTV because no vote is currently ongoing.`);
+			if (allCommands.rtv.data.manager.session == null) {
+				if (force == false) fail(`Cannot clear votes for RTV because no vote is currently ongoing.`);
 				allCommands.rtv.data.manager.forceVote(true);
 			} else {
-				if(force) Call.sendMessage(`RTV: [green]Vote was forced by admin [yellow]${sender.name}[green].`);
+				if (force) Call.sendMessage(`RTV: [green]Vote was forced by admin [yellow]${sender.name}[green].`);
 				else Call.sendMessage(`RTV: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
 				allCommands.rtv.data.manager.forceVote(force);
 			}
@@ -698,7 +696,7 @@ Please stop attacking and [lime]build defenses[] first!`
 				.on("player vote removed", (t, player) => Call.sendMessage(`RTV: ${player.name}[white] has left the game. [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
 		}),
 		requirements: [Req.cooldown(3000), Req.gameRunning],
-		handler({sender, data:{manager}}){
+		handler({ sender, data: { manager } }) {
 			manager.vote(sender, 1, 0); //No weighting for RTV except for removing AFK players
 		}
 	}),
@@ -730,9 +728,9 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Override the next map in queue.',
 		perm: Perm.admin,
 		requirements: [Req.modeNot("hexed")],
-		handler({allCommands, args, sender, outputSuccess, f}){
+		handler({ allCommands, args, sender, outputSuccess, f }) {
 			Vars.maps.setNextMapOverride(args.map);
-			if(allCommands.nextmap.data.voteEndTime() > -1){
+			if (allCommands.nextmap.data.voteEndTime() > -1) {
 				//Cancel /nextmap vote if it's ongoing
 				allCommands.nextmap.data.resetVotes();
 				Call.sendMessage(`[red]Admin ${sender.name}[red] has cancelled the vote. The next map will be [yellow]${args.map.name()}.`);
@@ -747,15 +745,15 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: [],
 		description: 'Lists the available maps.',
 		perm: Perm.none,
-		handler({output}){
+		handler({ output }) {
 			output(`\
 [yellow]Use [white]/nextmap [lightgray]<map name> [yellow]to vote on a map.
 
 [blue]Available maps:
 _________________________
 ${Vars.maps.customMaps().toArray().map((map, i) =>
-`[yellow]${map.name()}`
-).join("\n")}`
+				`[yellow]${map.name()}`
+			).join("\n")}`
 			);
 		}
 	},
@@ -768,7 +766,7 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 		const voteDuration = 1.5 * 60000; // 1.5 mins
 		let task: TimerTask | null = null;
 
-		function resetVotes(){
+		function resetVotes() {
 			votes.clear();
 			voteEndTime = -1;
 			task?.cancel();
@@ -776,32 +774,32 @@ ${Vars.maps.customMaps().toArray().map((map, i) =>
 			lastVoteTime = 1;
 		}
 
-		function getMapData():Seq<ObjectIntMapEntry<MMap>> {
+		function getMapData(): Seq<ObjectIntMapEntry<MMap>> {
 			return [...votes.values()].reduce(
 				(acc, map) => (acc.increment(map), acc), new ObjectIntMap<MMap>()
 			).entries().toArray();
 		}
 
-		function showVotes(){
+		function showVotes() {
 			Call.sendMessage(`\
 [green]Current votes:
 ------------------------------
-${getMapData().map(({key:map, value:votes}) =>
-`[cyan]${map.name()}[yellow]: ${votes}`
-).toString("\n")}`
+${getMapData().map(({ key: map, value: votes }) =>
+				`[cyan]${map.name()}[yellow]: ${votes}`
+			).toString("\n")}`
 			);
 		}
 
-		function startVote(){
+		function startVote() {
 			voteEndTime = Date.now() + voteDuration;
 			task = Timer.schedule(endVote, voteDuration / 1000);
 		}
 
-		function endVote(){
-			if(voteEndTime == -1) return; //aborted somehow
-			if(votes.size == 0) return; //no votes?
+		function endVote() {
+			if (voteEndTime == -1) return; //aborted somehow
+			if (votes.size == 0) return; //no votes?
 
-			if((votes.size / Groups.player.size()) + 0.2 < lastVoteTurnout){
+			if ((votes.size / Groups.player.size()) + 0.2 < lastVoteTurnout) {
 				Call.sendMessage("[cyan]Next Map Vote: [scarlet]Vote aborted because a previous vote had significantly higher turnout");
 				resetVotes();
 				return;
@@ -813,15 +811,15 @@ ${getMapData().map(({key:map, value:votes}) =>
 			const mapData = getMapData();
 			const highestVoteCount = mapData.max(floatf(e => e.value)).value;
 			const highestVotedMaps = mapData.select(e => e.value == highestVoteCount);
-			let winner:MMap;
+			let winner: MMap;
 
-			if(highestVotedMaps.size > 1){
+			if (highestVotedMaps.size > 1) {
 				winner = highestVotedMaps.random()!.key;
 				Call.sendMessage(
-`[green]There was a tie between the following maps:
-${highestVotedMaps.map(({key:map, value:votes}) =>
-`[cyan]${map.name()}[yellow]: ${votes}`
-).toString("\n")}
+					`[green]There was a tie between the following maps:
+${highestVotedMaps.map(({ key: map, value: votes }) =>
+						`[cyan]${map.name()}[yellow]: ${votes}`
+					).toString("\n")}
 [green]Picking random winner: [yellow]${winner.name()}`
 				);
 			} else {
@@ -836,22 +834,32 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 		Events.on(EventType.ServerLoadEvent, resetVotes);
 
 		return {
-			args: ['map:map'],
+			args: ['map:map?'],
 			description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
 			perm: Perm.play,
-			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
+			data: { votes, voteEndTime: () => voteEndTime, resetVotes, endVote },
 			requirements: [Req.cooldown(10000), Req.modeNot("hexed")],
-			handler({args:{map}, sender}){
-				if(votes.get(sender)) fail(`You have already voted.`);
-				
-				votes.set(sender, map);
-				if(voteEndTime == -1){
-					if((Date.now() - lastVoteTime) < 60_000) fail(`Please wait 1 minute before starting a new map vote.`);
-					startVote();
-					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${map.name()}[cyan]. Use /nextmap ${map.plainName()} to add your vote!`);
+			handler({ args: { map }, sender }) {
+				if (!map) {
+					listMenu("Please Select a Map", "", new GUI_Container(Vars.maps.customMaps().toArray(), 1, (map: MMap) => { return `[accent]${map.name()}` }), sender, ({ data }) => {
+						playervote(data);
+					})
 				} else {
-					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${map.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime, true)}`);
-					showVotes();
+					playervote(map);
+				}
+
+
+				function playervote(option: MMap) {
+					if (votes.get(sender)) fail(`You have already voted.`);
+					votes.set(sender, option);
+					if (voteEndTime == -1) {
+						if ((Date.now() - lastVoteTime) < 60_000) fail(`Please wait 1 minute before starting a new map vote.`);
+						startVote();
+						Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${option.name()}[cyan]. Use /nextmap ${option.plainName()} to add your vote!`);
+					} else {
+						Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${option.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime, true)}`);
+						showVotes();
+					}
 				}
 			}
 		};
@@ -859,7 +867,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender: command(() => {
 		const prefix = "[orange]Surrender[white]: ";
 		const managers = Team.all.map(team =>
-			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : 3/4, p => p.team() == team && !p.afk())
+			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : 3 / 4, p => p.team() == team && !p.afk())
 				.on("success", () => team.cores().copy().each(c => c.kill()))
 				.on("vote passed", () => Call.sendMessage(
 					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
@@ -885,7 +893,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			perm: Perm.play,
 			requirements: [Req.cooldown(30_000), Req.mode("pvp"), Req.teamAlive],
 			data: { managers },
-			handler({ sender }){
+			handler({ sender }) {
 				managers[sender.team().id].vote(sender, 1, 0);
 			},
 		};
@@ -894,7 +902,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 		args: ["target:player"],
 		perm: Perm.none,
 		description: "Views a player's stats.",
-		handler({args:{target}, output, f}){
+		handler({ args: { target }, output, f }) {
 			output(f`[accent]\
 Statistics for player ${target}:
 (note: we started recording statistics on 22 Jan 2024)

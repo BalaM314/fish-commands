@@ -565,11 +565,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 if (target.hasPerm("blockTrolling"))
                     (0, commands_1.fail)(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             }
-            (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["[green]I agree to abide by these rules[]", "No"], target, function (_a) {
-                var option = _a.option;
-                if (option == "No")
+            (0, menus_1.menu)("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), [new menus_1.GUI_Container(["[green]I agree to abide by these rules[]", "No"])], target, function (_a) {
+                var text = _a.text;
+                if (text == "No")
                     target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
-            }, false);
+            });
             if (target !== sender)
                 outputSuccess(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
         },
@@ -587,7 +587,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                     (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
                 if (args.player !== sender && args.player.hasPerm("blockTrolling"))
                     (0, commands_1.fail)("Target player is insufficiently trollable.");
-                (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
+                (0, menus_1.menu)("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", [new menus_1.GUI_Container(["I understand"])], args.player);
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
                 outputSuccess(f(templateObject_11 || (templateObject_11 = __makeTemplateObject(["Warned ", " about power voids with a popup message."], ["Warned ", " about power voids with a popup message."])), args.player));
             }
@@ -667,20 +667,20 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         handler: function (_a) {
             var sender = _a.sender, manager = _a.data.manager;
             if (!manager.session) {
-                (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [1, 5, 10], sender, function (_a) {
-                    var option = _a.option;
+                (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [new menus_1.GUI_Container([1, 5, 10], "auto", function (n) { return "".concat(n, " waves"); }), new menus_1.GUI_Cancel()], sender, function (_a) {
+                    var data = _a.data;
                     if (manager.session) {
                         //Someone else started a vote
-                        if (manager.session.data != option)
+                        if (manager.session.data != data)
                             (0, commands_1.fail)("Someone else started a vote with a different number of waves to skip.");
                         else
-                            manager.vote(sender, sender.voteWeight(), option);
+                            manager.vote(sender, sender.voteWeight(), data);
                     }
                     else {
                         //this is still a race condition technically... shouldn't be that bad right?
-                        manager.start(sender, sender.voteWeight(), option);
+                        manager.start(sender, sender.voteWeight(), data);
                     }
-                }, true, function (n) { return "".concat(n, " waves"); });
+                });
             }
             else {
                 manager.vote(sender, sender.voteWeight(), null);
@@ -833,25 +833,36 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         Events.on(EventType.GameOverEvent, resetVotes);
         Events.on(EventType.ServerLoadEvent, resetVotes);
         return {
-            args: ['map:map'],
+            args: ['map:map?'],
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
             data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
             requirements: [commands_1.Req.cooldown(10000), commands_1.Req.modeNot("hexed")],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;
-                if (votes.get(sender))
-                    (0, commands_1.fail)("You have already voted.");
-                votes.set(sender, map);
-                if (voteEndTime == -1) {
-                    if ((Date.now() - lastVoteTime) < 60000)
-                        (0, commands_1.fail)("Please wait 1 minute before starting a new map vote.");
-                    startVote();
-                    Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(map.name(), "[cyan]. Use /nextmap ").concat(map.plainName(), " to add your vote!"));
+                if (!map) {
+                    (0, menus_1.listMenu)("Please Select a Map", "", new menus_1.GUI_Container(Vars.maps.customMaps().toArray(), 1, function (map) { return "[accent]".concat(map.name()); }), sender, function (_a) {
+                        var data = _a.data;
+                        playervote(data);
+                    });
                 }
                 else {
-                    Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(map.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(voteEndTime, true)));
-                    showVotes();
+                    playervote(map);
+                }
+                function playervote(option) {
+                    if (votes.get(sender))
+                        (0, commands_1.fail)("You have already voted.");
+                    votes.set(sender, option);
+                    if (voteEndTime == -1) {
+                        if ((Date.now() - lastVoteTime) < 60000)
+                            (0, commands_1.fail)("Please wait 1 minute before starting a new map vote.");
+                        startVote();
+                        Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] started a map vote, and voted for [yellow]").concat(option.name(), "[cyan]. Use /nextmap ").concat(option.plainName(), " to add your vote!"));
+                    }
+                    else {
+                        Call.sendMessage("[cyan]Next Map Vote: ".concat(sender.name, "[cyan] voted for [yellow]").concat(option.name(), "[cyan]. Time left: [scarlet]").concat((0, utils_1.formatTimeRelative)(voteEndTime, true)));
+                        showVotes();
+                    }
                 }
             }
         };

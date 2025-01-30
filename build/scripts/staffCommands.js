@@ -74,7 +74,7 @@ exports.commands = (0, commands_1.commandList)({
             if (args.player.hasPerm("blockTrolling"))
                 (0, commands_1.fail)("Player ".concat(args.player, " is insufficiently trollable."));
             var message = (_b = args.message) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
-            (0, menus_1.menu)('Warning', message, ["[green]Accept"], args.player);
+            (0, menus_1.menu)('Warning', message, [new menus_1.GUI_Container(["[green]Accept"])], args.player);
             (0, utils_1.logAction)('warned', sender, args.player, message);
             outputSuccess(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Warned player ", " for \"", "\""], ["Warned player ", " for \"", "\""])), args.player, message));
         }
@@ -278,22 +278,22 @@ exports.commands = (0, commands_1.commandList)({
             else {
                 possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
             }
-            (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (_a) {
-                var optionPlayer = _a.option, sender = _a.sender;
+            (0, menus_1.listMenu)("Stop", "Choose a player to mark", new menus_1.GUI_Container(possiblePlayers, "auto", function (p) { return p.lastName; }), sender, function (_a) {
+                var optionPlayer = _a.data;
                 if (args.time == null) {
-                    (0, menus_1.menu)("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, function (_a) {
-                        var optionTime = _a.option, sender = _a.sender;
+                    (0, menus_1.menu)("Stop", "Select stop time", [new menus_1.GUI_Container(["2 days", "7 days", "30 days", "forever"])], sender, function (_a) {
+                        var optionTime = _a.text;
                         var time = optionTime == "2 days" ? 172800000 :
                             optionTime == "7 days" ? 604800000 :
                                 optionTime == "30 days" ? 2592000000 :
                                     (globals_1.maxTime - Date.now() - 10000);
                         stop(optionPlayer, time);
-                    }, false);
+                    });
                 }
                 else {
                     stop(optionPlayer, args.time);
                 }
-            }, true, function (p) { return p.lastName; });
+            });
         }
     },
     restart: {
@@ -419,9 +419,9 @@ exports.commands = (0, commands_1.commandList)({
                 if ((data_1 = admins.getInfoOptional(uuid_1)) != null && data_1.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
                 var name = data_1 ? "".concat((0, funcs_2.escapeStringColorsClient)(data_1.lastName), " (").concat(uuid_1, "/").concat(data_1.lastIP, ")") : uuid_1;
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
-                    if (confirm != "[red]Yes")
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), [new menus_1.GUI_Confirm()], sender, function (_a) {
+                    var confirm = _a.data;
+                    if (!confirm)
                         (0, commands_1.fail)("Cancelled.");
                     admins.banPlayerID(uuid_1);
                     if (data_1) {
@@ -440,15 +440,15 @@ exports.commands = (0, commands_1.commandList)({
                         outputSuccess(f(templateObject_28 || (templateObject_28 = __makeTemplateObject(["Banned player ", ". [yellow]Unable to determine IP.[]"], ["Banned player ", ". [yellow]Unable to determine IP.[]"])), uuid_1));
                     }
                     (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
-                }, false);
+                });
                 return;
             }
             else if (args.uuid_or_ip && globals_2.ipPattern.test(args.uuid_or_ip)) {
                 //Overload 2: ban by uuid
                 var ip_1 = args.uuid_or_ip;
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban IP ".concat(ip_1, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
-                    if (confirm != "[red]Yes")
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban IP ".concat(ip_1, "?"), [new menus_1.GUI_Confirm()], sender, function (_a) {
+                    var confirm = _a.data;
+                    if (!confirm)
                         (0, commands_1.fail)("Cancelled.");
                     api.ban({ ip: ip_1 });
                     var info = admins.findByIP(ip_1);
@@ -464,26 +464,40 @@ exports.commands = (0, commands_1.commandList)({
                         outputSuccess(f(templateObject_30 || (templateObject_30 = __makeTemplateObject(["IP ", " has been banned. Ban was synced to other servers."], ["IP ", " has been banned. Ban was synced to other servers."])), ip_1));
                     }
                     (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
-                }, false);
+                });
                 return;
             }
             //Overload 3: ban by menu
-            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_5.setToArray)(Groups.player), sender, function (_a) {
-                var option = _a.option;
-                if (option.admin)
+            /*
+            menu(`[scarlet]BAN[]`, "Choose a player to ban.", [new GUI_Container(setToArray(Groups.player), "auto", opt => opt.name), new GUI_Cancel()], sender, ({data:target}) => {
+                if(target.admin) fail(`Cannot ban an admin.`);
+                menu("Confirm", `Are you sure you want to ban ${target.name}?`, [new GUI_Confirm()], sender, ({data:confirm}) => {
+                    if(!confirm) fail("Cancelled.");
+                    admins.banPlayerIP(target.ip()); //this also bans the UUID
+                    api.ban({ip: target.ip(), uuid: target.uuid()});
+                    Log.info(`${target.ip()}/${target.uuid()} was banned.`);
+                    logAction("banned", sender, target.getInfo());
+                    outputSuccess(f`Banned player ${target}.`);
+                    updateBans(player => `[scarlet]Player [yellow]${player.name}[scarlet] has been whacked by ${sender.prefixedName}.`);
+                });
+            });
+            */
+            (0, menus_1.listMenu)("[scarlet]BAN[]", "Choose a player to ban.", new menus_1.GUI_Container((0, funcs_5.setToArray)(Groups.player), "auto", function (opt) { return opt.name; }), sender, function (_a) {
+                var target = _a.data;
+                if (target.admin)
                     (0, commands_1.fail)("Cannot ban an admin.");
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(option.name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
-                    if (confirm != "[red]Yes")
+                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(target.name, "?"), [new menus_1.GUI_Confirm()], sender, function (_a) {
+                    var confirm = _a.data;
+                    if (!confirm)
                         (0, commands_1.fail)("Cancelled.");
-                    admins.banPlayerIP(option.ip()); //this also bans the UUID
-                    api.ban({ ip: option.ip(), uuid: option.uuid() });
-                    Log.info("".concat(option.ip(), "/").concat(option.uuid(), " was banned."));
-                    (0, utils_1.logAction)("banned", sender, option.getInfo());
-                    outputSuccess(f(templateObject_31 || (templateObject_31 = __makeTemplateObject(["Banned player ", "."], ["Banned player ", "."])), option));
+                    admins.banPlayerIP(target.ip()); //this also bans the UUID
+                    api.ban({ ip: target.ip(), uuid: target.uuid() });
+                    Log.info("".concat(target.ip(), "/").concat(target.uuid(), " was banned."));
+                    (0, utils_1.logAction)("banned", sender, target.getInfo());
+                    outputSuccess(f(templateObject_31 || (templateObject_31 = __makeTemplateObject(["Banned player ", "."], ["Banned player ", "."])), target));
                     (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
-                }, false);
-            }, true, function (opt) { return opt.name; });
+                });
+            });
         }
     },
     kill: {
@@ -510,9 +524,9 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var _b = _a.args, team = _b.team, unit = _b.unit, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (team) {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every ".concat(unit ? unit.localizedName : "unit", "[] on the team ").concat(team.coloredName(), "."), ["[orange]Kill units[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill units[]") {
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every ".concat(unit ? unit.localizedName : "unit", "[] on the team ").concat(team.coloredName(), "."), [new menus_1.GUI_Confirm()], sender, function (_a) {
+                    var confirm = _a.data;
+                    if (confirm) {
                         if (unit) {
                             var i_1 = 0;
                             team.data().units.each(function (u) { return u.type == unit; }, function (u) {
@@ -529,12 +543,12 @@ exports.commands = (0, commands_1.commandList)({
                     }
                     else
                         outputFail("Cancelled.");
-                }, false);
+                });
             }
             else {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every single ".concat(unit ? unit.localizedName : "unit", "[]."), ["[orange]Kill all units[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill all units[]") {
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every single ".concat(unit ? unit.localizedName : "unit", "[]."), [new menus_1.GUI_Confirm], sender, function (_a) {
+                    var option = _a.data;
+                    if (option) {
                         if (unit) {
                             var i_2 = 0;
                             Groups.unit.each(function (u) { return u.type == unit; }, function (u) {
@@ -551,7 +565,7 @@ exports.commands = (0, commands_1.commandList)({
                     }
                     else
                         outputFail("Cancelled.");
-                }, false);
+                });
             }
         }
     },
@@ -562,28 +576,28 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var team = _a.args.team, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
             if (team) {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] on the team ".concat(team.coloredName(), ", except cores."), ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill buildings[]") {
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] on the team ".concat(team.coloredName(), ", except cores."), [new menus_1.GUI_Confirm()], sender, function (_a) {
+                    var confirm = _a.data;
+                    if (confirm) {
                         var count = team.data().buildings.size;
                         team.data().buildings.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });
                         outputSuccess(f(templateObject_38 || (templateObject_38 = __makeTemplateObject(["Killed ", " buildings on ", ""], ["Killed ", " buildings on ", ""])), count, team));
                     }
                     else
                         outputFail("Cancelled.");
-                }, false);
+                });
             }
             else {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] except cores.", ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill buildings[]") {
+                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] except cores.", [new menus_1.GUI_Confirm()], sender, function (_a) {
+                    var confirm = _a.data;
+                    if (confirm) {
                         var count = Groups.build.size();
                         Groups.build.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });
                         outputSuccess(f(templateObject_39 || (templateObject_39 = __makeTemplateObject(["Killed ", " buildings."], ["Killed ", " buildings."])), count));
                     }
                     else
                         outputFail("Cancelled.");
-                }, false);
+                });
             }
         }
     },
@@ -935,13 +949,16 @@ exports.commands = (0, commands_1.commandList)({
                 if (matches_1.isEmpty())
                     (0, commands_1.fail)(f(templateObject_60 || (templateObject_60 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
                 output(f(templateObject_61 || (templateObject_61 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
-                var displayMatches = function () {
+                var displayMatches_1 = function () {
                     matches_1.each(function (info) { return output(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
                 };
                 if (matches_1.size > 20)
-                    (0, menus_1.menu)("Confirm", "Are you sure you want to view all ".concat(matches_1.size, " matches?"), ["Yes"], sender, displayMatches);
-                else
-                    displayMatches();
+                    (0, menus_1.menu)("Confirm", "Are you sure you want to view all ".concat(matches_1.size, " matches?"), [new menus_1.GUI_Confirm()], sender, function (_a) {
+                        var confirm = _a.data;
+                        if (!confirm)
+                            (0, commands_1.fail)("aborted.");
+                        displayMatches_1();
+                    });
             }
         }
     },
