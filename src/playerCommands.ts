@@ -848,7 +848,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 				if(voteEndTime == -1){
 					if((Date.now() - lastVoteTime) < 60_000) fail(`Please wait 1 minute before starting a new map vote.`);
 					startVote();
-					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${map.name()}[cyan]. Use /nextmap ${map.plainName()} to add your vote!`);
+					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] started a map vote, and voted for [yellow]${map.name()}[cyan]. Use [white]/nextmap ${map.plainName()}[] to add your vote, or run [white]/maps[] to see other available maps.`);
 				} else {
 					Call.sendMessage(`[cyan]Next Map Vote: ${sender.name}[cyan] voted for [yellow]${map.name()}[cyan]. Time left: [scarlet]${formatTimeRelative(voteEndTime, true)}`);
 					showVotes();
